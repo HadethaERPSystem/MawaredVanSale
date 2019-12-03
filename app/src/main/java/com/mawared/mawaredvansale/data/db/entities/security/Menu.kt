@@ -1,0 +1,15 @@
+package com.mawared.mawaredvansale.data.db.entities.security
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
+data class Menu (
+    var Order:Int?,
+    var MenuName: String,
+    var menu_code: String,
+    val icon: Int
+){
+    @PrimaryKey(autoGenerate = false)
+    var menu_id: Int = icon
+}

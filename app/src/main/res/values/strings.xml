@@ -1,0 +1,277 @@
+<resources>
+    <string name="app_name">Mawared VAN Sale</string>
+    <string name="client_name">AL-NADER</string>
+    <string name="user_name">User Name</string>
+    <string name="password">Enter password</string>
+    <string name="forget_password">Forget password?</string>
+    <string name="sign_in">Login</string>
+    <string name="do_you_have_account">SinUp</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <!-- all layout title string -->
+    <string name="home_page_title">Dashboard</string>
+    <string name="login_page_title">Login</string>
+
+    <string name="layout_invoice_list_title">Invoices</string>
+    <string name="layout_invoice_entry_title">Invoice</string>
+
+    <string name="layout_order_list_title">Orders</string>
+    <string name="layout_order_entry_title">Order</string>
+
+    <string name="layout_salereturn_list_title">Sales Return</string>
+    <string name="layout_salereturn_entry_title">Sale Return</string>
+
+    <string name="layout_receivable_list_title">Receipt Voucher</string>
+    <string name="layout_receivable_entry_title">Receipt Voucher</string>
+
+    <string name="layout_payable_list_title">Payment Voucher</string>
+    <string name="layout_payable_entry_title">Payment Voucher</string>
+
+    <string name="layout_settings_title">Settings</string>
+
+    <string name="layout_customer_list_title">Customers</string>
+    <string name="layout_customer_entry_title">Customer</string>
+
+    <string name="layout_survey_list_title">Surveys</string>
+    <string name="layout_survey_entry_title">Survey</string>
+
+    <string name="layout_delivery_list_title">Delivery</string>
+    <string name="layout_delivery_entry_title">Delivery</string>
+
+    <string name="layout_transfer_list_title">Transfer</string>
+    <string name="layout_transfer_entry_title">Transfer</string>
+    <!--sub title for all layout-->
+    <string name="layout_entry_sub_title">Add/Edit</string>
+
+    <!--Menu Items Translate-->
+    <string name="menu_ps_order">Presale Order</string>
+    <string name="menu_sale_order">Sale Order</string>
+    <string name="menu_sale">Sale Invoice</string>
+    <string name="menu_sale_return">Sale Return</string>
+    <string name="menu_receivable">Receipt</string>
+    <string name="menu_payable">Payment</string>
+    <string name="menu_transfer">Transfer</string>
+    <string name="menu_delivery">Delivery</string>
+    <string name="menu_survey">Survey</string>
+    <string name="menu_customers">Customers</string>
+    <string name="menu_reports">Reports</string>
+    <string name="menu_notification">Alert</string>
+    <string name="menu_settings">Settings</string>
+
+    <!-- labels caption -->
+    <string name="lbl_doc_no">Invoice No</string>
+    <string name="lbl_doc_date">Date</string>
+    <string name="lbl_customer_name">Customer Name</string>
+    <string name="lbl_region_name">Region Name</string>
+    <string name="lbl_count_items">Items count</string>
+    <string name="btn_view_caption">View</string>
+    <string name="btn_edit_caption">Edit</string>
+    <string name="btn_delete_caption">Delete</string>
+    <string name="lbl_barcode">Barcode</string>
+    <string name="lbl_prod_name">Product Name</string>
+    <string name="lbl_qty">Qty</string>
+    <string name="lbl_unit_price">Unit Price</string>
+    <string name="hint_unit_price">5.95</string>
+    <string name="lbl_usd_cr_symbol">$</string>
+    <string name="lbl_line_total">Total</string>
+    <string name="hint_line_total">119.00</string>
+    <string name="lbl_discount_per">Dis. Per.</string>
+    <string name="hint_zero">0.00</string>
+    <string name="tag_qty">20.00</string>
+    <string name="lbl_net_total">Net Total</string>
+    <string name="tag_net_total">119.00</string>
+    <string name="btn_new_caption">New</string>
+    <string name="btn_save_caption">Save</string>
+
+    <string name="tag_search">Search</string>
+    <string name="add_invoice_button_tag">Add Invoice</string>
+
+    <string name="btn_add_item_caption">add item</string>
+    <string name="save_invoice">Save Invoice</string>
+    <string name="btn_close_caption">Close</string>
+    <string name="download_data_from_server">Download Data from server</string>
+    <string name="start_download_btn">Start Download</string>
+    <string name="lbl_amount">Change Amount</string>
+
+    <string name="lbl_usd_symbol">$</string>
+    <string name="lbl_iqd_cr_symbol">IQD</string>
+    <string name="lbl_comment">Comment</string>
+    <string name="lbl_menu_logout">LogOut</string>
+    <string name="lbl_menu_settings">Settings</string>
+    <string name="change_language">Change Language</string>
+    <string name="lbl_loading">Please wait ...</string>
+    <string name="lbl_paid_amount_usd">Amount Paid $</string>
+    <string name="lbl_paid_amount_lc">Amount Paid IQD</string>
+    <string name="lbl_change_amount_usd">Amount Change $</string>
+    <string name="lbl_change_amount_lc">Amount Change IQD</string>
+    <string name="lbl_paid_amount">Amount Paid</string>
+    <string name="lbl_change_amount">Amount Change</string>
+    <string name="lbl_product_balance">Product Balance</string>
+    <string name="lbl_received_amount_usd">Received Amount $</string>
+    <string name="lbl_received_amount_iqd">Received Amount IQD</string>
+    <string name="lbl_order_no">Order No</string>
+    <string name="delete_dialog_title">Delete Record</string>
+    <!-- system messages -->
+    <string name="msg_confirm_delete">Are you sure to delete current record?</string>
+    <string name="msg_success_delete">Successfully deleted current selected record </string>
+    <string name="msg_failure_delete">Failure deleted current selected record</string>
+    <!-- error messages -->
+    <string name="msg_exception">There is error happen when try to save</string>
+    <string name="saved_successfully">Saved Successfully</string>
+    <string name="save_dialog_title">Save Record</string>
+    <string name="msg_save_confirm">Are you sure to save current data?</string>
+    <string name="msg_success_saved">Successfully saved data</string>
+    <string name="msg_failure_saved">Failure save data</string>
+    <string name="msg_error_invalid_date">Invalid entry date</string>
+    <string name="msg_error_no_customer">select customer</string>
+    <string name="msg_error_no_items">No items add to list</string>
+    <string name="msg_error_no_currency">this user did not have currency in his login data</string>
+    <string name="msg_error_fail_add_item">"Fail when we want to add new item to item list"</string>
+    <string name="msg_error_add_item">Error during add item in list createRow</string>
+    <string name="msg_error_invalid_qty">Invalid enter qty</string>
+    <string name="msg_error_invalid_product">Select product or enter barcode</string>
+    <string name="msg_error_invalid_price">Product dose not have price</string>
+
+    <string name="msg_error_invalid_received_Amount">Should enter received amount</string>
+    <string name="msg_error_invalid_paid_Amount">Should enter paid amount</string>
+    <string name="msg_error_cu_name">Should enter customer name</string>
+    <string name="msg_error_cu_trade_name">Should enter customer trade name</string>
+    <string name="msg_error_cu_payment_type">Should select customer payment type</string>
+    <string name="msg_error_cu_group">Should select customer group</string>
+    <string name="msg_error_address">Should enter address</string>
+    <string name="msg_error_mobile">Should enter mobile or phone number</string>
+    <string name="msg_error_logtude_latitude">Should enter longtude and latitude</string>
+
+    <string name="msg_error_no_from_warehouse">From warehouse is empty. Please select it</string>
+    <string name="msg_error_no_to_warehouse">To warehouse is empty. Please select it</string>
+
+    <string name="msg_notify_device_not_support_bluetooth">the device does not support bluetooth</string>
+    <string name="msg_notify_no_paired_bluetooth_device">no paired bluetooth devices found</string>
+
+    <string name="msg_notify_bluetooth_enabled">Bluetooth has been enabled</string>
+    <string name="msg_notify_bluetooth_disabled">Bluetooth has been disabled</string>
+    <string name="msg_notify_bluetooth_enabling_canceled">Bluetooth enabling has been canceled</string>
+    <string name="msg_notify_bluetooth_error">The device does not connect</string>
+    <string name="connecting">Connecting...</string>
+
+    <string name="activity_devicelist_title_paired_devices">Paired devices</string>
+    <string name="activity_devicelist_title_other_devices">Other devices</string>
+    <string name="activity_devicelist_button_scan">Scan bluetooth</string>
+    <string name="activity_devicelist_none_paired">None paired Devices</string>
+    <string name="activity_devicelist_scanning">Scanning......</string>
+    <string name="activity_devicelist_select_device"> Devices list</string>
+    <string name="activity_devicelist_connect">connect</string>
+    <string name="activity_devicelist_get_device_err">Get Device Error:</string>
+    <string name="activity_devicelist_bond_error">"Bond error!Please bond bluetooth printer in settings panel first."</string>
+
+    <!---->
+    <string name="lbl_cu_code">Customer Code</string>
+    <string name="lbl_customer_type">Customer Type</string>
+    <string name="lbl_customer_group">Customer Group</string>
+    <string name="lbl_trade_name">Trade Name</string>
+    <string name="lbl_english_address">English Address</string>
+    <string name="lbl_arabic_address">Arabic Address</string>
+    <string name="lbl_mobile_number">Mobile Number</string>
+    <string name="lbl_phone_number">Phone Number</string>
+    <string name="lbl_contact_name">Contact Name</string>
+    <string name="lbl_code">Code</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="refresh">Refresh</string>
+    <string name="btn_on">On</string>
+    <string name="btn_off">Off</string>
+    <string name="btn_disconnect">Disconnect</string>
+    <string name="lbl_printer_name">Printer Name</string>
+    <string name="lbl_select_salesman">Select Salesman</string>
+    <string name="lbl_select_van_sale">Select Van sale</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="lbl_longtude">Longtude</string>
+    <string name="lbl_latitude">Latitude</string>
+    <string name="lbl_open_google_map">Open Google Map</string>
+    <string name="btn_print">Print</string>
+    <string name="btn_connect">Connect</string>
+    <string name="lbl_no">No.:</string>
+    <string name="lbl_time">Time:</string>
+    <string name="lbl_total_discount">Total Discount:</string>
+    <string name="lbl_total">Total:</string>
+    <string name="lbl_net_amount">Net Amount:</string>
+    <string name="lbl_is_delivered">Is Delivered</string>
+
+
+    <string name="location_settings_inadequate_warning">The location settings on the device are not
+        adequate to run this sample. Fix in Settings.</string>
+
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+        functionality.</string>
+    <string name="settings">Settings</string>
+
+    <string name="latitude_label">Latitude</string>
+    <string name="longitude_label">Longitude</string>
+    <string name="last_update_time_label">Last location update time</string>
+    <string name="scan_btn">Scan...</string>
+    <string name="server_url">Server URL</string>
+    <string name="select_arabic_language_encode">Select Arabic Language Encode</string>
+    <string name="select_latin_language_encode">Select Latin Language Encode</string>
+    <string name="visit_no">Visit No</string>
+    <string name="survey_name">Survey Name</string>
+    <string name="previous_btn">Previous</string>
+    <string name="next_btn">Next</string>
+    <string name="finish_btn">Finish</string>
+    <string name="lbl_to_warehouse">To Warehouse</string>
+    <string name="lbl_from_warehouse">From Warehouse</string>
+    <string name="lbl_transfer_no">Transfer No.</string>
+    <string name="lbl_warehouse_name">Warehouse Name</string>
+
+    <string-array name="codepage">
+        <item>"Default"</item>
+        <item>"Chinese Simplified"</item>
+        <item>"Chinese Traditional"</item>
+        <item>"PC437(USA:Standard Europe)"</item>
+        <item>"KataKana"</item>
+        <item>"PC850(Multilingual)"</item>
+        <item>"PC860(Portuguese)"</item>
+        <item>"PC863(Canadian-French)"</item>
+        <item>"PC865(Nordic)"</item>
+        <item>"PC857(Turkish)"</item>
+        <item>"PC737(Greek)"</item>
+        <item>"ISO8859-7(Greek)"</item>
+        <item>"WPC1252"</item>
+        <item>"PC866(Cyrillic #2)"</item>
+        <item>"PC852(Latin 2)"</item>
+        <item>"PC858(Euro)"</item>
+        <item>"KU42"</item>
+        <item>"TIS11(Thai)"</item>
+        <item>"TIS18(Thai)"</item>
+        <item>"PC720"</item>
+        <item>"WPC775"</item>
+        <item>"PC855(Cyrillic)"</item>
+        <item>"PC862(Hebrew)"</item>
+        <item>"PC864(Arabic)"</item>
+        <item>"ISO8859-2(Latin2)"</item>
+        <item>"ISO8859-15(Latin9)"</item>
+        <item>"WPC1250"</item>
+        <item>"WPC1251(Cyrillic)"</item>
+        <item>"WPC1253"</item>
+        <item>"WPC1254"</item>
+        <item>"WPC1255"</item>
+        <item>"WPC1256"</item>
+        <item>"WPC1257"</item>
+        <item>"WPC1258"</item>
+        <item>"MIK(Cyrillic/Bulgarian)"</item>
+        <item>"CP755(East Europe,Latvian 2)"</item>
+        <item>"Iran"</item>
+        <item>"Iran II"</item>
+        <item>"Latvian"</item>
+        <item>"ISO-8859-1(West Europe)"</item>
+        <item>"ISO-8859-3(Latin 3)"</item>
+        <item>"ISO-8859-4(Baltic)"</item>
+        <item>"ISO-8859-5(Cyrillic)"</item>
+        <item>"ISO-8859-6(Arabic)"</item>
+        <item>"ISO-8859-8(Hebrew)"</item>
+        <item>"ISO-8859-9(Turkish)"</item>
+        <item>"PC856"</item>
+        <item>"ABICOMP"</item>
+        <item>"Khemr"</item>
+    </string-array>
+</resources>

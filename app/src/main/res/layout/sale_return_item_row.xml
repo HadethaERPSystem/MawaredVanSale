@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="entityEo"
+                type="com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return_Items" />
+
+        <variable
+                name="viewmodel"
+                type="com.mawared.mawaredvansale.controller.sales.salereturn.salereturnentry.SaleReturnEntryViewModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            app:cardMaxElevation="6dp"
+            app:contentPadding="5dp"
+            app:cardBackgroundColor="@android:color/white"
+            android:layout_margin="5dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="2dp"
+                android:minHeight="?listPreferredItemHeightLarge">
+
+            <!-- Item Name-->
+
+            <TextView
+                    android:id="@+id/lbl_prod_name"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_prod_name"
+                    android:gravity="start"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/prod_name"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:maxLines="3"
+                    android:text="@{entityEo.srd_prod_name + ` ` + entityEo.srd_barcode}"
+                    android:gravity="start"
+                    android:textColor="@android:color/black"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_delete"
+                    app:layout_constraintStart_toEndOf="@+id/lbl_prod_name"
+                    app:layout_constraintTop_toTopOf="@+id/lbl_prod_name"
+                    tools:ignore="SmallSp"
+                    tools:text="غرفة نوم نفرين" />
+
+            <!-- Qty Label -->
+            <TextView
+                    android:id="@+id/lbl_Qty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:gravity="center"
+                    android:text="@string/lbl_qty"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline6"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/prod_name"
+                    tools:ignore="SmallSp" />
+
+            <!-- Price Label-->
+            <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/tag_qty"
+                    android:text="@{String.valueOf(entityEo.srd_pack_qty)}"
+                    android:textAlignment="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline6"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_Qty"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/lbl_uprice"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/lbl_unit_price"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="@+id/guideline6"
+                    app:layout_constraintTop_toBottomOf="@+id/prod_name"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/txt_uprice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/hint_unit_price"
+                    android:text="@{String.valueOf(entityEo.srd_unit_price)}"
+                    android:textAlignment="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/lbl_cur1"
+                    app:layout_constraintStart_toEndOf="@+id/lbl_uprice"
+                    app:layout_constraintTop_toTopOf="@+id/lbl_uprice"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/lbl_cur1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:text="@string/lbl_usd_cr_symbol"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                    app:layout_constraintTop_toTopOf="@+id/txt_uprice"
+                    tools:ignore="SmallSp" />
+            <!-- Total Price Label-->
+            <TextView
+                    android:id="@+id/lbl_linetotal"
+                    android:layout_width="61dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/lbl_line_total"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toEndOf="@+id/lbl_cur1"
+                    app:layout_constraintTop_toTopOf="@+id/txt_uprice"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/txt_linetotal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/hint_line_total"
+                    android:text="@{String.valueOf(entityEo.srd_line_total)}"
+                    android:textAlignment="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/lbl_cur"
+                    app:layout_constraintStart_toEndOf="@+id/lbl_linetotal"
+                    app:layout_constraintTop_toTopOf="@+id/lbl_linetotal"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/lbl_cur"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:text="@string/lbl_usd_cr_symbol"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/txt_linetotal"
+                    tools:ignore="SmallSp" />
+            <!--Discount -->
+
+            <TextView
+                    android:id="@+id/lbl_discount"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:gravity="start"
+                    android:text="@string/lbl_discount_per"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="@+id/guideline6"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_uprice"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/txt_discount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/hint_zero"
+                    android:text="@{String.valueOf(entityEo.srd_dis_value)}"
+                    android:textAlignment="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/lbl_cur3"
+                    app:layout_constraintStart_toEndOf="@+id/lbl_discount"
+                    app:layout_constraintTop_toTopOf="@+id/lbl_discount"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/lbl_cur3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:text="@string/lbl_usd_cr_symbol"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                    app:layout_constraintTop_toTopOf="@+id/txt_discount"
+                    tools:ignore="SmallSp" />
+            <!-- Net Total -->
+
+            <TextView
+                    android:id="@+id/lbl_nettotal"
+                    android:layout_width="61dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/lbl_net_total"
+                    android:textSize="13sp"
+                    app:layout_constraintStart_toStartOf="@+id/guideline4"
+                    app:layout_constraintTop_toTopOf="@+id/txt_discount"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/txt_nettotal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/tag_net_total"
+                    android:text="@{String.valueOf(entityEo.srd_net_total)}"
+                    android:gravity="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/lbl_cur4"
+                    app:layout_constraintStart_toEndOf="@+id/lbl_nettotal"
+                    app:layout_constraintTop_toTopOf="@+id/lbl_nettotal"
+                    tools:ignore="SmallSp" />
+
+            <TextView
+                    android:id="@+id/lbl_cur4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:text="@string/lbl_usd_cr_symbol"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/txt_nettotal"
+                    tools:ignore="SmallSp" />
+
+            <!--Delete Button-->
+            <ImageButton
+                    android:id="@+id/btn_delete"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_delete_caption"
+                    android:onClick="@{()-> viewmodel.onItemDelete(entityEo)}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.161"
+                    app:srcCompat="@drawable/ic_delete" />
+
+            <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.64" />
+
+            <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.24" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

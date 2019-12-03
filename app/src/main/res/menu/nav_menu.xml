@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:textSize="16dp">
+
+    <item
+            android:id="@+id/menu_settings"
+            android:title="@string/lbl_menu_settings"
+            android:icon="@mipmap/ic_settings">
+
+    </item>
+    <item
+            android:id="@+id/menu_changeLanguage"
+            android:title="@string/change_language"
+            android:icon="@drawable/ic_language">
+    </item>
+    <item
+            android:id="@+id/menu_logout"
+            android:title="@string/lbl_menu_logout"
+            android:icon="@drawable/ic_logout">
+    </item>
+</menu>

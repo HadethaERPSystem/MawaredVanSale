@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+                name="viewmodel"
+                type="com.mawared.mawaredvansale.controller.inventory.stockin.addstockin.AddStockInViewModel" />
+    </data>
+    <LinearLayout
+            android:id="@+id/addInvoice_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardMaxElevation="6dp"
+                app:contentPadding="5dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_margin="5dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="?listPreferredItemHeightLarge"
+                    android:padding="2dp">
+
+                <!-- Inventory no label and data-->
+                <EditText
+                        android:id="@+id/sale_doc_no"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:hint="@string/lbl_doc_no"
+                        android:inputType="number"
+                        android:text="@={`` + viewmodel.docNo}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Inventory date label and data-->
+                <EditText
+                        android:id="@+id/etxt_date"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:hint="@string/lbl_doc_date"
+                        android:inputType="date"
+                        android:text="@={viewmodel.docDate}"
+                        android:textSize="14sp"
+                        android:layout_marginEnd="10dp"
+                        app:layout_constraintEnd_toStartOf="@+id/sale_doc_no"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                        android:id="@+id/btn_date"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/btn_delete_caption"
+                        android:onClick="@{viewmodel::onDatePicker}"
+                        app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
+                        app:layout_constraintEnd_toStartOf="@+id/etxt_date"
+                        app:layout_constraintTop_toTopOf="@+id/etxt_date"
+                        app:srcCompat="@drawable/ic_datepicker" />
+
+                <!-- Customer Info -->
+                <AutoCompleteTextView
+                        android:id="@+id/atc_customer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:hint="@string/lbl_customer_name"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@+id/sale_doc_no"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
+                <ImageButton
+                        android:id="@+id/btn_cancelCustomer"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@null"
+                        android:contentDescription="@string/btn_add_item_caption"
+                        android:onClick="@{()-> viewmodel.clear(`cu`)}"
+                        app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/atc_customer"
+                        app:srcCompat="@drawable/ic_action_close" />
+                <!-- Inventory status -->
+                <AutoCompleteTextView
+                        android:id="@+id/atc_invstatus"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:hint="نوع الادخال"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@+id/atc_customer"
+                        app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+
+                <ImageButton
+                        android:id="@+id/btn_cancelInvStatus"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@null"
+                        android:contentDescription="@string/btn_add_item_caption"
+                        android:onClick="@{()-> viewmodel.onClearInvStatus()}"
+                        app:layout_constraintBottom_toBottomOf="@+id/atc_invstatus"
+                        app:layout_constraintStart_toStartOf="@+id/atc_invstatus"
+                        app:layout_constraintTop_toTopOf="@+id/atc_invstatus"
+                        app:srcCompat="@drawable/ic_action_close" />
+
+                <AutoCompleteTextView
+                        android:id="@+id/atc_retRefNo"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:hint="اختر الفاتورة"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelInvStatus"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/btn_cancelInvStatus" />
+                <ImageButton
+                        android:id="@+id/btn_cancelRetRefNo"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@null"
+                        android:contentDescription="@string/btn_add_item_caption"
+                        android:onClick="@{()-> viewmodel.onClearRetRefNo()}"
+                        app:layout_constraintBottom_toBottomOf="@+id/atc_retRefNo"
+                        app:layout_constraintStart_toStartOf="@+id/atc_retRefNo"
+                        app:layout_constraintTop_toTopOf="@+id/atc_retRefNo"
+                        app:srcCompat="@drawable/ic_action_close" />
+                <!-- Item Name-->
+                <AutoCompleteTextView
+                        android:id="@+id/atc_product"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:hint="@string/lbl_prod_name"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="@+id/atc_invstatus"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/atc_invstatus" />
+                <ImageButton
+                        android:id="@+id/btn_cancelProduct"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@null"
+                        android:contentDescription="@string/btn_add_item_caption"
+                        android:onClick="@{()-> viewmodel.clear(`cu`)}"
+                        app:layout_constraintBottom_toBottomOf="@+id/atc_product"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/atc_product"
+                        app:srcCompat="@drawable/ic_action_close" />
+                <!-- Barcode -->
+                <EditText
+                        android:id="@+id/edtxt_barcode"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:layout_marginStart="10dp"
+                        android:inputType="text"
+                        android:hint="@string/lbl_barcode"
+                        android:text="@={viewmodel.searchBarcode}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="@+id/atc_product"
+                        app:layout_constraintStart_toEndOf="@+id/edtxt_Qty"
+                        app:layout_constraintTop_toBottomOf="@+id/atc_product" />
+
+                <!-- Qty -->
+                <EditText
+                        android:id="@+id/edtxt_Qty"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:hint="@string/lbl_qty"
+                        android:text="@={viewmodel.searchQty}"
+                        android:textAlignment="center"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toEndOf="@+id/btn_AddItem"
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
+                <!-- Image button for add item -->
+                <ImageButton
+                        android:id="@+id/btn_AddItem"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:contentDescription="@string/btn_add_item_caption"
+                        android:onClick="@{()-> viewmodel.onAddItem()}"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_Qty"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_Qty"
+                        app:srcCompat="@drawable/ic_keyboard_return" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/stockin_item_row"
+                android:id="@+id/rcv_stockin_items"/>
+    </LinearLayout>
+
+</layout>

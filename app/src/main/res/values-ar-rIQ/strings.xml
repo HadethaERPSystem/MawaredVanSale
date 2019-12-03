@@ -1,0 +1,275 @@
+<resources>
+    <string name="app_name">Mawared VAN Sale</string>
+    <string name="client_name">شركة الخضيري</string>
+    <string name="user_name">اسم المستخدم</string>
+    <string name="password">ادخل كلمة المرور</string>
+    <string name="forget_password">نسيت كلمة المرور?</string>
+    <string name="sign_in">تسجيل الدخول</string>
+    <string name="do_you_have_account">SinUp</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <!-- all layout title string -->
+
+    <string name="login_page_title">تسجيل الدخول</string>
+    <string name="home_page_title">لوحة القيادة</string>
+
+    <string name="layout_invoice_list_title">فواتير البيع</string>
+    <string name="layout_invoice_entry_title">فاتورة بيع</string>
+
+    <string name="layout_order_list_title">اوامر القطع</string>
+    <string name="layout_order_entry_title">امر قطع</string>
+
+    <string name="layout_salereturn_list_title">مردود البيع</string>
+    <string name="layout_salereturn_entry_title">مردود البيع</string>
+
+    <string name="layout_receivable_list_title">وصولات القبض</string>
+    <string name="layout_receivable_entry_title">وصل قبض</string>
+
+    <string name="layout_payable_list_title">وصولات الدفع</string>
+    <string name="layout_payable_entry_title">وصل الدفع</string>
+
+    <string name="layout_settings_title">الاعدادات</string>
+
+    <string name="layout_customer_list_title">الزبائن</string>
+    <string name="layout_customer_entry_title">الزبون</string>
+
+    <string name="layout_survey_list_title">والاستطلاعات</string>
+    <string name="layout_survey_entry_title">استطلاع</string>
+
+    <string name="layout_delivery_list_title">التوصيل</string>
+    <string name="layout_delivery_entry_title">التوصيل</string>
+
+    <string name="layout_transfer_list_title">طلبيات المناقلات</string>
+    <string name="layout_transfer_entry_title">مناقلة</string>
+
+    <!--sub title for all layout-->
+    <string name="layout_entry_sub_title">اضافة / تعديل</string>
+
+    <!--Menu Items Translate-->
+    <string name="menu_ps_order">امر قطع</string>
+    <string name="menu_sale_order">امر بيع</string>
+    <string name="menu_sale">فاتورة بيع</string>
+    <string name="menu_sale_return">مردود بيع</string>
+    <string name="menu_receivable">مستند قبض</string>
+    <string name="menu_payable">مستند دفع</string>
+    <string name="menu_transfer">طلبية مناقلة</string>
+    <string name="menu_delivery">التوصيل</string>
+    <string name="menu_survey">الاستطلاعات</string>
+    <string name="menu_customers">الزبائن</string>
+    <string name="menu_reports">التقارير</string>
+    <string name="menu_notification">التنبيهات</string>
+    <string name="menu_settings">الاعدادات</string>
+
+    <!-- lables caption -->
+    <string name="lbl_doc_no">رقم المستند</string>
+    <string name="lbl_doc_date">التاريخ</string>
+    <string name="lbl_customer_name">الزبون</string>
+    <string name="lbl_region_name">المنطقة</string>
+    <string name="lbl_count_items">عدد المواد</string>
+    <string name="btn_view_caption">عرض</string>
+    <string name="btn_edit_caption">تعديل</string>
+    <string name="btn_delete_caption">الغاء</string>
+    <string name="lbl_barcode">الباركود</string>
+    <string name="lbl_prod_name">المادة</string>
+    <string name="lbl_qty">الكمية</string>
+    <string name="lbl_unit_price">سعر الوحدة</string>
+    <string name="hint_unit_price">5.95</string>
+    <string name="lbl_usd_cr_symbol">$</string>
+    <string name="lbl_line_total">المجموع</string>
+    <string name="hint_line_total">119.00</string>
+    <string name="lbl_discount_per">نسبة الخصم</string>
+    <string name="hint_zero">0.00</string>
+    <string name="tag_qty">20.00</string>
+    <string name="lbl_net_total">الصافي</string>
+    <string name="tag_net_total">119.00</string>
+    <string name="btn_new_caption">جديد</string>
+    <string name="btn_save_caption">حفظ</string>
+
+    <string name="tag_search">بحث</string>
+    <string name="add_invoice_button_tag">جديد</string>
+
+    <string name="btn_add_item_caption">اضافة مادة</string>
+    <string name="save_invoice">حفظ</string>
+    <string name="btn_close_caption">اغلاق</string>
+    <string name="download_data_from_server">Download Data from server</string>
+    <string name="start_download_btn">Start Download</string>
+    <string name="lbl_amount">المبلغ</string>
+    <string name="lbl_usd_symbol">دولار</string>
+    <string name="lbl_iqd_cr_symbol">دينار</string>
+    <string name="lbl_comment">الملاحظات</string>
+    <string name="lbl_menu_logout">تسجيل الخروج</string>
+    <string name="lbl_menu_settings">الاعدادات</string>
+    <string name="change_language">تغيير اللغة</string>
+    <string name="lbl_loading">الانتظار رجاءا...</string>
+    <string name="lbl_paid_amount_usd">المبلغ المدفوع بالدولار</string>
+    <string name="lbl_paid_amount_lc">المبلغ المدفوع بالدينار</string>
+    <string name="lbl_change_amount_usd">المبلغ المسترجع بالدولار</string>
+    <string name="lbl_change_amount_lc">المبلغ المسترجع بالدينار</string>
+    <string name="lbl_paid_amount">المبلغ المدفوع</string>
+    <string name="lbl_change_amount">المبلغ المسترجع</string>
+    <string name="lbl_product_balance">رصيد المادة</string>
+    <string name="lbl_received_amount_usd">المبلغ المقبوض بالدولار</string>
+    <string name="lbl_received_amount_iqd">المبلغ المقبوض بالدينار</string>
+    <string name="lbl_order_no">رقم الامر</string>
+    <string name="delete_dialog_title">الغاء قيد</string>
+    <!-- system messages -->
+    <string name="msg_confirm_delete">هل انت متاكد من الغاء القيد الحالي؟</string>
+    <string name="msg_success_delete">تم الغاء القيد الحالي بنجاح </string>
+    <string name="msg_failure_delete">فشل في عملية الغاء القيد الحالي</string>
+
+    <!-- error messages -->
+    <string name="msg_exception">حدث خطأ خلال عملية حفظ البيانات</string>
+    <string name="saved_successfully">تم حفظ البيانات بنجاح</string>
+    <string name="save_dialog_title">حفظ البيانات</string>
+    <string name="msg_save_confirm">هل انت متاكد من حفظ البيانات؟</string>
+    <string name="msg_success_saved">تم حفظ البيانات بنجاح</string>
+    <string name="msg_failure_saved">فشل عملية حفظ البيانات</string>
+    <string name="msg_error_invalid_date">التاريخ المدخل غير صحيح</string>
+    <string name="msg_error_no_customer">يجب اختيار الزبون</string>
+    <string name="msg_error_no_items">لم يتم اضافة مواد</string>
+    <string name="msg_error_no_currency">لم يتم تحديد عملة للمستخدم الحالي</string>
+    <string name="msg_error_fail_add_item">"خطأ عند محاولة اضافة مادة"</string>
+    <string name="msg_error_add_item">خطأ خلال عملة اضافة مادة</string>
+    <string name="msg_error_invalid_qty">يجب ادخال الكمية</string>
+    <string name="msg_error_invalid_product">يجب اختيار مادة او قراءة الباركود</string>
+    <string name="msg_error_invalid_price">لايوجد تسعير لهذه المادة</string>
+
+    <string name="msg_error_invalid_received_Amount">يجب ادخال المبلغ المستلم</string>
+    <string name="msg_error_invalid_paid_Amount">يجب ادخال المبلغ المدفوع</string>
+
+    <string name="msg_error_cu_name">يجب ادخال اسم الزبون</string>
+    <string name="msg_error_cu_trade_name">يجب ادخال الاسم التجاري</string>
+    <string name="msg_error_cu_payment_type">يجب اختيار نوع الزبون</string>
+    <string name="msg_error_cu_group">يجب اختيار صنف الزبون</string>
+    <string name="msg_error_address">يجب ادخال العنوان</string>
+    <string name="msg_error_mobile">يجب ادخال رقم الجوال او الهاتف</string>
+    <string name="msg_error_logtude_latitude">يجب ادخال الموقع الجغرافي</string>
+    <string name="msg_error_no_from_warehouse">يجب اختيار المخزن التي يجب ان تنقل منه المواد</string>
+    <string name="msg_error_no_to_warehouse">يجب اختيار مخزن التي يجب ان تنقل اليه المواد</string>
+
+    <string name="msg_notify_device_not_support_bluetooth">الجهاز لا يدعم البلوتوث</string>
+    <string name="msg_notify_no_paired_bluetooth_device">لم يتم العثور على أجهزة بلوتوث مقترنة</string>
+    <string name="msg_notify_bluetooth_enabled">تم تمكين البلوتوث</string>
+    <string name="msg_notify_bluetooth_disabled">تم تعطيل البلوتوث</string>
+    <string name="msg_notify_bluetooth_enabling_canceled">تم إلغاء تمكين البلوتوث</string>
+    <string name="msg_notify_bluetooth_error">The device does not connect</string>
+    <string name="connecting">اتصال...</string>
+
+    <string name="activity_devicelist_title_paired_devices">Paired devices</string>
+    <string name="activity_devicelist_title_other_devices">Other devices</string>
+    <string name="activity_devicelist_button_scan">Scan bluetooth</string>
+    <string name="activity_devicelist_none_paired">None paired Devices</string>
+    <string name="activity_devicelist_scanning">Scanning......</string>
+    <string name="activity_devicelist_select_device"> Devices list</string>
+    <string name="activity_devicelist_connect">connect</string>
+    <string name="activity_devicelist_get_device_err">Get Device Error:</string>
+    <string name="activity_devicelist_bond_error">"Bond error!Please bond bluetooth printer in settings panel first."</string>
+    <!---->
+    <string name="lbl_cu_code">رمز الزبون</string>
+    <string name="lbl_customer_type">نوع الدفع</string>
+    <string name="lbl_customer_group">صنف الزبون</string>
+    <string name="lbl_trade_name">الاسم التجاري</string>
+    <string name="lbl_english_address">العنوان باللغة الانكليزية</string>
+    <string name="lbl_arabic_address">العنوان بالعربي</string>
+    <string name="lbl_mobile_number">رقم الجوال</string>
+    <string name="lbl_phone_number">رقم الهاتف</string>
+    <string name="lbl_contact_name">Contact Name</string>
+    <string name="lbl_code">الرمز</string>
+
+    <string name="refresh">تحديث</string>
+    <string name="btn_on">تشغيل</string>
+    <string name="btn_off">ايقاف</string>
+    <string name="btn_disconnect">قطع الاتصال</string>
+    <string name="lbl_printer_name">اسم الطابعة</string>
+    <string name="lbl_select_salesman">اختر مندوب المبيعات</string>
+    <string name="lbl_select_van_sale">اختر مركبة المبيعات</string>
+    <string name="save_settings">حفظ الاعدادات</string>
+    <string name="lbl_longtude">Longtude</string>
+    <string name="lbl_latitude">Latitude</string>
+    <string name="lbl_open_google_map">Open Google Map</string>
+    <string name="btn_print">طباعة</string>
+    <string name="btn_connect">اتصال</string>
+
+    <string name="lbl_no">الرقم:</string>
+    <string name="lbl_time">الوقت:</string>
+    <string name="lbl_total_discount">مجموع الخصم:</string>
+    <string name="lbl_total">المجموع:</string>
+    <string name="lbl_net_amount">صافي الفاتورة:</string>
+    <string name="lbl_is_delivered">تم التوصيل</string>
+
+    <string name="location_settings_inadequate_warning">The location settings on the device are not
+        adequate to run this sample. Fix in Settings.</string>
+
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+        functionality.</string>
+    <string name="settings">Settings</string>
+    <string name="latitude_label">Latitude</string>
+    <string name="longitude_label">Longitude</string>
+    <string name="last_update_time_label">Last location update time</string>
+    <string name="scan_btn">بحث ...</string>
+    <string name="server_url">Server URL</string>
+    <string name="select_arabic_language_encode">Select Arabic Language Encode</string>
+    <string name="select_latin_language_encode">Select Latin Language Encode</string>
+    <string name="visit_no">رقم الزبارة</string>
+    <string name="survey_name">اسم الاستطلاع</string>
+    <string name="previous_btn">السابق</string>
+    <string name="next_btn">التالي</string>
+    <string name="finish_btn">اغلاق</string>
+    <string name="lbl_to_warehouse">الى مخزن</string>
+    <string name="lbl_from_warehouse">من مخزن</string>
+    <string name="lbl_transfer_no">Transfer No.</string>
+    <string name="lbl_warehouse_name">Warehouse Name</string>
+
+    <string-array name="codepage">
+        <item>"Default"</item>
+        <item>"Chinese Simplified"</item>
+        <item>"Chinese Traditional"</item>
+        <item>"PC437(USA:Standard Europe)"</item>
+        <item>"KataKana"</item>
+        <item>"PC850(Multilingual)"</item>
+        <item>"PC860(Portuguese)"</item>
+        <item>"PC863(Canadian-French)"</item>
+        <item>"PC865(Nordic)"</item>
+        <item>"PC857(Turkish)"</item>
+        <item>"PC737(Greek)"</item>
+        <item>"ISO8859-7(Greek)"</item>
+        <item>"WPC1252"</item>
+        <item>"PC866(Cyrillic #2)"</item>
+        <item>"PC852(Latin 2)"</item>
+        <item>"PC858(Euro)"</item>
+        <item>"KU42"</item>
+        <item>"TIS11(Thai)"</item>
+        <item>"TIS18(Thai)"</item>
+        <item>"PC720"</item>
+        <item>"WPC775"</item>
+        <item>"PC855(Cyrillic)"</item>
+        <item>"PC862(Hebrew)"</item>
+        <item>"PC864(Arabic)"</item>
+        <item>"ISO8859-2(Latin2)"</item>
+        <item>"ISO8859-15(Latin9)"</item>
+        <item>"WPC1250"</item>
+        <item>"WPC1251(Cyrillic)"</item>
+        <item>"WPC1253"</item>
+        <item>"WPC1254"</item>
+        <item>"WPC1255"</item>
+        <item>"WPC1256"</item>
+        <item>"WPC1257"</item>
+        <item>"WPC1258"</item>
+        <item>"MIK(Cyrillic/Bulgarian)"</item>
+        <item>"CP755(East Europe,Latvian 2)"</item>
+        <item>"Iran"</item>
+        <item>"Iran II"</item>
+        <item>"Latvian"</item>
+        <item>"ISO-8859-1(West Europe)"</item>
+        <item>"ISO-8859-3(Latin 3)"</item>
+        <item>"ISO-8859-4(Baltic)"</item>
+        <item>"ISO-8859-5(Cyrillic)"</item>
+        <item>"ISO-8859-6(Arabic)"</item>
+        <item>"ISO-8859-8(Hebrew)"</item>
+        <item>"ISO-8859-9(Turkish)"</item>
+        <item>"PC856"</item>
+        <item>"ABICOMP"</item>
+        <item>"Khemr"</item>
+    </string-array>
+</resources>

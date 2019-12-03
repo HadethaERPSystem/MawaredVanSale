@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+                name="viewmodel"
+                type="com.mawared.mawaredvansale.controller.surveyentry.SurveyEntryViewModel" />
+    </data>
+    <LinearLayout
+            android:id="@+id/entry_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <!--    <include layout="@layout/sale_header"/>-->
+        <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mcv_invoices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardMaxElevation="6dp"
+                app:contentPadding="5dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_margin="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="?listPreferredItemHeightLarge"
+                    android:padding="2dp">
+
+                <!-- Invoice no label and data-->
+                <EditText
+                        android:id="@+id/sale_doc_no"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:gravity="center"
+                        android:hint="@string/visit_no"
+                        android:text="@={viewmodel.mSrv_vst_no}"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:inputType="text"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/etxt_date"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Invoice date label and data-->
+                <EditText
+                        android:id="@+id/etxt_date"
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:gravity="center"
+                        android:hint="@string/lbl_doc_date"
+                        android:inputType="date"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:text="@={viewmodel.mSrv_vst_date}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_date"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                        android:id="@+id/btn_date"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/etxt_date"
+                        app:srcCompat="@drawable/ic_datepicker" />
+
+
+                <!-- Survey Name -->
+                <EditText
+                        android:id="@+id/edtxt_barcode"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:hint="@string/survey_name"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mSrv_name}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/next_vst_date"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
+
+                <EditText
+                        android:id="@+id/next_vst_date"
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:gravity="center"
+                        android:hint="@string/lbl_doc_date"
+                        android:inputType="date"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:text="@={viewmodel.mSrv_vst_date}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_next_vst_date"
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
+
+                <ImageButton
+                        android:id="@+id/btn_next_vst_date"
+                        android:layout_width="30dp"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:onClick="@{viewmodel::onDatePicker}"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        app:layout_constraintBottom_toBottomOf="@+id/next_vst_date"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/next_vst_date"
+                        app:srcCompat="@drawable/ic_datepicker" />
+                <!-- Customer Info -->
+                <AutoCompleteTextView
+                        android:id="@+id/atc_customer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_customer_name"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/edtxt_barcode" />
+
+                <ImageButton
+                        android:id="@+id/btn_cancelCustomer"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@null"
+                        android:contentDescription="@string/btn_add_item_caption"
+                        android:onClick="@{()-> viewmodel.clear(`cu`)}"
+                        app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/atc_customer"
+                        app:srcCompat="@drawable/ic_action_close" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+        <RelativeLayout
+                android:id="@+id/survey_wrapper"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <LinearLayout
+                    android:id="@+id/content_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/spinner_box"
+                    android:layout_alignParentTop="true"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                <LinearLayout
+                        android:id="@+id/dot_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"/>
+
+                <TextView
+                        android:id="@+id/survey_question"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:text="@={viewmodel.mQustion_Name}"
+                        android:textColor="@color/text_black"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1.0dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="18dp"
+                        android:background="@color/colorPrimary" />
+
+                <LinearLayout
+                        android:id="@+id/ans_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                    <RadioGroup
+                            android:id="@+id/survey_radio_group"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
+
+                    </RadioGroup>
+
+                    <EditText
+                            android:id="@+id/survey_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@{viewmodel.mQustion_Name}"
+                            android:text="@={viewmodel.mAnswer_text}"
+                            android:visibility="gone" />
+
+                    <EditText
+                            android:id="@+id/survey_tva"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@{viewmodel.mQustion_Name}"
+                            android:text="@={viewmodel.mAnswer_text}"
+                            android:visibility="gone" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:id="@+id/spinner_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                <Button
+                        android:id="@+id/prev_qn_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorAccent"
+                        android:padding="12dp"
+                        android:layout_marginStart="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:text="@string/previous_btn"
+                        android:visibility="gone"
+                        android:textColor="@android:color/white" />
+
+                <Button
+                        android:id="@+id/next_qn_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorAccent"
+                        android:padding="12dp"
+                        android:text="@string/next_btn"
+                        android:textColor="@android:color/white" />
+            </LinearLayout>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+</layout>

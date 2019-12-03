@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="menu"
+                type="com.mawared.mawaredvansale.data.db.entities.security.Menu" />
+
+        <variable
+                name="viewModel"
+                type="com.mawared.mawaredvansale.controller.home.dashboard.DashboardViewModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="6dp"
+            app:cardMaxElevation="6dp"
+            app:contentPadding="5dp">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <ImageView
+                    android:id="@+id/card_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:padding="10dp"
+                    android:imageUrl="@{menu.icon}"/>
+
+            <TextView
+                    android:id="@+id/card_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="center"
+                    android:text="@{menu.menuName}"
+                    android:textColor="@android:color/black"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    tools:Text="Menu Name" />
+
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:foreground="@color/lineBlue" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

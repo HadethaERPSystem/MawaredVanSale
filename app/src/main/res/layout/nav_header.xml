@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="viewmodel"
+                type="com.mawared.mawaredvansale.controller.home.HomeViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="176dp"
+
+            android:background="@color/colorPrimary"
+            android:gravity="bottom">
+
+
+        <ImageView
+                android:id="@+id/userImageNavHeader"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="@string/nav_header_desc"
+                android:paddingTop="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/loginBtnNavHeader"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/profiledefault" />
+
+        <TextView
+                android:id="@+id/clientNameNavHeader"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:paddingTop="8dp"
+                android:text="@{viewmodel.clientName}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
+                app:layout_constraintTop_toTopOf="@+id/userImageNavHeader"
+                tools:text="@string/client_name" />
+
+        <TextView
+                android:id="@+id/userNameNavHeader"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:paddingTop="8dp"
+                android:text="@{viewmodel.userName}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
+                app:layout_constraintTop_toBottomOf="@+id/clientNameNavHeader"
+                tools:text="@string/user_name" />
+
+
+        <Button
+                android:id="@+id/loginBtnNavHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="8dp"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:onClick="logOutBtn"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/lbl_menu_logout"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

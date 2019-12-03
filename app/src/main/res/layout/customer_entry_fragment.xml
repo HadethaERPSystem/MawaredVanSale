@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+                name="viewmodel"
+                type="com.mawared.mawaredvansale.controller.md.customerentry.CustomerEntryViewModel" />
+    </data>
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".controller.md.customerentry.CustomerEntryFragment">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/addCustomer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.Group
+                android:id="@+id/group_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                app:constraint_referenced_ids="progressBar_loading,tv_loading"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+                android:id="@+id/progressBar_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:indeterminate="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+                android:id="@+id/tv_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/lbl_loading"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/progressBar_loading"
+                app:layout_constraintVertical_bias="0.0" />
+
+        <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardMaxElevation="6dp"
+                app:contentPadding="5dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_margin="5dp"
+                android:id="@+id/mcv_customer"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+
+                app:layout_constraintVertical_bias="0.0">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="?listPreferredItemHeightLarge"
+                    android:padding="2dp">
+
+                <!-- Customer Code -->
+                <EditText
+                        android:id="@+id/et_cu_code"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="center"
+                        android:enabled="false"
+                        android:hint="@string/lbl_cu_code"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_code}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Customer Barcode -->
+                <EditText
+                        android:id="@+id/et_cu_barcode"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:enabled="false"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="center"
+                        android:hint="@string/lbl_barcode"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_barcode}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Customer Payment Type -->
+                <AutoCompleteTextView
+                        android:id="@+id/atc_cpt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_customer_type"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelCpt"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_cu_code" />
+
+                <ImageButton
+                        android:id="@+id/btn_cancelCpt"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@null"
+                        android:contentDescription="@string/btn_add_item_caption"
+                        android:onClick="@{()-> viewmodel.clear(`cpt`)}"
+                        app:layout_constraintBottom_toBottomOf="@+id/atc_cpt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/atc_cpt"
+                        app:srcCompat="@drawable/ic_action_close" />
+                <!-- Customer Group -->
+                <AutoCompleteTextView
+                        android:id="@+id/atc_group"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_customer_group"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelGroup"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/atc_cpt" />
+
+                <ImageButton
+                        android:id="@+id/btn_cancelGroup"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@null"
+                        android:contentDescription="@string/btn_add_item_caption"
+                        android:onClick="@{()-> viewmodel.clear(`cg`)}"
+                        app:layout_constraintBottom_toBottomOf="@+id/atc_group"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/atc_group"
+                        app:srcCompat="@drawable/ic_action_close" />
+                <!-- Customer English Name -->
+                <EditText
+                        android:id="@+id/et_cu_name_en"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_customer_name"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_name}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/atc_group" />
+                <!-- Customer Arabic Name-->
+                <EditText
+                        android:id="@+id/et_cu_name_ar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_customer_name"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_name_ar}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_cu_name_en" />
+                <!-- Trade Name-->
+                <EditText
+                        android:id="@+id/et_trade_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_trade_name"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_trade_name}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_cu_name_ar" />
+                <!-- English Address-->
+                <EditText
+                        android:id="@+id/et_address_en"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_english_address"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_address}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_trade_name" />
+                <!-- English Address-->
+                <EditText
+                        android:id="@+id/et_address_ar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_arabic_address"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_address_ar}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_address_en" />
+                <!-- Mobile Number-->
+                <EditText
+                        android:id="@+id/et_mobile"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="2dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_mobile_number"
+                        android:inputType="phone"
+                        android:text="@={viewmodel.mcu_mobile}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_address_ar" />
+                <!-- Phone Number-->
+                <EditText
+                        android:id="@+id/et_phone"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_phone_number"
+                        android:inputType="phone"
+                        android:text="@={viewmodel.mcu_phone}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="@+id/et_mobile" />
+
+                <!-- Contact Name -->
+                <EditText
+                        android:id="@+id/et_contact_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_contact_name"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_contact_name}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_mobile" />
+
+                <!-- latitude-->
+                <EditText
+                        android:id="@+id/et_latitude"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_latitude"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_latitude}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toStartOf="@+id/currentlocation_btn"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_contact_name" />
+
+                <ImageButton
+                        android:id="@+id/currentlocation_btn"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@null"
+                        android:contentDescription="@string/lbl_open_google_map"
+                        android:scaleType="fitCenter"
+                        app:layout_constraintBottom_toBottomOf="@+id/et_latitude"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="@+id/et_latitude"
+                        app:srcCompat="@drawable/ic_location" />
+
+
+                <!-- longitude-->
+                <EditText
+                        android:id="@+id/et_longitude"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_longtude"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_longitude}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toStartOf="@+id/openMap_btn"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="@+id/et_latitude" />
+
+                <ImageButton
+                        android:id="@+id/openMap_btn"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@null"
+                        android:contentDescription="@string/lbl_open_google_map"
+                        android:scaleType="fitCenter"
+                        app:layout_constraintBottom_toBottomOf="@+id/et_longitude"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/et_longitude"
+                        app:srcCompat="@mipmap/marker" />
+
+                <!--Comment-->
+                <EditText
+                        android:id="@+id/edtxt_comment"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_comment"
+                        android:inputType="text"
+                        android:text="@={viewmodel.mcu_notes}"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/et_latitude" />
+
+                <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.50" />
+                <!-- Image button for add item -->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
+</layout>

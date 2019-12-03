@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph"
+            app:startDestination="@id/dashboardFragment">
+
+    <fragment
+            android:id="@+id/dashboardFragment"
+            android:name="com.mawared.mawaredvansale.controller.home.dashboard.DashboardFragment"
+            android:label="Dashboard"
+            tools:layout="@layout/dashboard_fragment" >
+        <action
+                android:id="@+id/action_dashboardFragment_to_invoicesFragment"
+                app:destination="@id/invoicesFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_ordersFragment"
+                app:destination="@id/ordersFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_receivableFragment"
+                app:destination="@id/receivableFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_payableFragment"
+                app:destination="@id/payableFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_saleReturnFragment"
+                app:destination="@id/saleReturnFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_customerFragment"
+                app:destination="@id/customerFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_settingsFragment"
+                app:destination="@id/settingsFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_deliveryFragment"
+                app:destination="@id/deliveryFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_PSOrdersFragment"
+                app:destination="@id/PSOrdersFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_surveyEntryFragment"
+                app:destination="@id/surveyEntryFragment" />
+        <action
+                android:id="@+id/action_dashboardFragment_to_transferFragment"
+                app:destination="@id/transferFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/invoicesFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.invoices.invoiceslist.InvoicesFragment"
+            android:label="InvoicesFragment" >
+        <action
+                android:id="@+id/action_invoicesFragment_to_addInvoiceFragment"
+                app:destination="@id/addInvoiceFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/ordersFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.order.orderslist.OrdersFragment"
+            android:label="OrdersFragment" >
+        <action
+                android:id="@+id/action_ordersFragment_to_addOrderFragment"
+                app:destination="@id/addOrderFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/addInvoiceFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.invoices.addinvoice.AddInvoiceFragment"
+            android:label="AddInvoiceFragment" >
+        <argument
+                android:name="saleId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Add" />
+    </fragment>
+    <fragment
+            android:id="@+id/addOrderFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.order.addorder.AddOrderFragment"
+            android:label="AddOrderFragment" >
+        <argument
+                android:name="orderId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Add" />
+    </fragment>
+    <fragment
+            android:id="@+id/receivableFragment"
+            android:name="com.mawared.mawaredvansale.controller.fms.receivables.receivablelist.ReceivableFragment"
+            android:label="ReceivableFragment" >
+        <action
+                android:id="@+id/action_receivableFragment_to_receivableEntryFragment"
+                app:destination="@id/receivableEntryFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/payableFragment"
+            android:name="com.mawared.mawaredvansale.controller.fms.payables.payablelist.PayableFragment"
+            android:label="PayableFragment" >
+        <action
+                android:id="@+id/action_payableFragment_to_payableEntryFragment"
+                app:destination="@id/payableEntryFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/receivableEntryFragment"
+            android:name="com.mawared.mawaredvansale.controller.fms.receivables.receivableentry.ReceivableEntryFragment"
+            android:label="ReceivableEntryFragment" >
+        <argument
+                android:name="rcvId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Add" />
+    </fragment>
+    <fragment
+            android:id="@+id/payableEntryFragment"
+            android:name="com.mawared.mawaredvansale.controller.fms.payables.payableentry.PayableEntryFragment"
+            android:label="PayableEntryFragment" >
+        <argument
+                android:name="pyId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Add" />
+    </fragment>
+    <fragment
+            android:id="@+id/saleReturnFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.salereturn.salereturnlist.SaleReturnFragment"
+            android:label="sale_return_fragment"
+            tools:layout="@layout/sale_return_fragment" >
+        <action
+                android:id="@+id/action_saleReturnFragment_to_saleReturnEntryFragment"
+                app:destination="@id/saleReturnEntryFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/saleReturnEntryFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.salereturn.salereturnentry.SaleReturnEntryFragment"
+            android:label="sale_return_entry_fragment"
+            tools:layout="@layout/sale_return_entry_fragment" >
+        <argument
+                android:name="returnId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Add" />
+    </fragment>
+    <fragment
+            android:id="@+id/customerFragment"
+            android:name="com.mawared.mawaredvansale.controller.md.customerlist.CustomerFragment"
+            android:label="CustomerFragment" >
+        <action
+                android:id="@+id/action_customerFragment_to_customerEntryFragment"
+                app:destination="@id/customerEntryFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/customerEntryFragment"
+            android:name="com.mawared.mawaredvansale.controller.md.customerentry.CustomerEntryFragment"
+            android:label="CustomerEntryFragment" >
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Add" />
+        <argument
+                android:name="customerId"
+                app:argType="integer"
+                android:defaultValue="0" />
+    </fragment>
+    <fragment
+            android:id="@+id/selectDeviceFragment"
+            android:name="com.mawared.mawaredvansale.controller.settings.SelectDeviceFragment"
+            android:label="fragment_select_device"
+            tools:layout="@layout/fragment_select_device" />
+    <fragment
+            android:id="@+id/settingsFragment"
+            android:name="com.mawared.mawaredvansale.controller.settings.SettingsFragment"
+            android:label="settings_fragment"
+            tools:layout="@layout/settings_fragment" />
+    <fragment
+            android:id="@+id/deliveryFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.delivery.deliverylist.DeliveryFragment"
+            android:label="DeliveryFragment" >
+        <action
+                android:id="@+id/action_deliveryFragment_to_deliveryEntryFragment"
+                app:destination="@id/deliveryEntryFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/deliveryEntryFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.delivery.deliveryentry.DeliveryEntryFragment"
+            android:label="DeliveryEntryFragment" >
+        <argument
+                android:name="deliveryId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Edit" />
+    </fragment>
+    <fragment
+            android:id="@+id/PSOrdersFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.psorder.psorderlist.PSOrdersFragment"
+            android:label="PSOrdersFragment" >
+        <action
+                android:id="@+id/action_PSOrdersFragment_to_PSOrderEntryFragment"
+                app:destination="@id/PSOrderEntryFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/PSOrderEntryFragment"
+            android:name="com.mawared.mawaredvansale.controller.sales.psorder.psorderentry.PSOrderEntryFragment"
+            android:label="PSOrderEntryFragment" >
+        <argument
+                android:name="orderId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Add" />
+    </fragment>
+    <fragment
+            android:id="@+id/surveyEntryFragment"
+            android:name="com.mawared.mawaredvansale.controller.surveyentry.SurveyEntryFragment"
+            android:label="SurveyEntryFragment" />
+    <fragment
+            android:id="@+id/transferFragment"
+            android:name="com.mawared.mawaredvansale.controller.transfer.transferlist.TransferFragment"
+            android:label="TransferFragment" >
+        <action
+                android:id="@+id/action_transferFragment_to_transferEntryFragment"
+                app:destination="@id/transferEntryFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/transferEntryFragment"
+            android:name="com.mawared.mawaredvansale.controller.transfer.transferentry.TransferEntryFragment"
+            android:label="transfer_entry_fragment"
+            tools:layout="@layout/transfer_entry_fragment" >
+        <argument
+                android:name="transferId"
+                app:argType="integer"
+                android:defaultValue="0" />
+        <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="Add" />
+    </fragment>
+</navigation>
