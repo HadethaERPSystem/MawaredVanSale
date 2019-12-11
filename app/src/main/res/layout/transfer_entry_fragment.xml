@@ -81,33 +81,6 @@
                         app:layout_constraintTop_toTopOf="@+id/etxt_date"
                         app:srcCompat="@drawable/ic_datepicker" />
 
-                <!-- Warehouse from Info -->
-                <AutoCompleteTextView
-                        android:id="@+id/atc_from_warehouse"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="2dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/lbl_from_warehouse"
-                        android:gravity="start"
-                        android:textSize="12sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelFromWarehouse"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tr_doc_no" />
-
-                <ImageButton
-                        android:id="@+id/btn_cancelFromWarehouse"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@null"
-                        android:contentDescription="@string/btn_add_item_caption"
-                        android:onClick="@{()-> viewmodel.clear(`from_wr`)}"
-                        app:layout_constraintBottom_toBottomOf="@+id/atc_from_warehouse"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/atc_from_warehouse"
-                        app:srcCompat="@drawable/ic_action_close" />
                 <!-- Warehouse to Info -->
                 <AutoCompleteTextView
                         android:id="@+id/atc_to_warehouse"
@@ -122,7 +95,7 @@
                         android:textSize="12sp"
                         app:layout_constraintEnd_toStartOf="@+id/btn_cancelToWarehouse"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/atc_from_warehouse" />
+                        app:layout_constraintTop_toBottomOf="@+id/etxt_date" />
 
                 <ImageButton
                         android:id="@+id/btn_cancelToWarehouse"

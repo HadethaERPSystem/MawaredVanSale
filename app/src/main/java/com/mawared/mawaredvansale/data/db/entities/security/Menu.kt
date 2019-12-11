@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Menu (
-    var Order:Int?,
-    var MenuName: String,
+    var order:Int?,
+    var menu_name: String,
     var menu_code: String,
     val icon: Int
 ){

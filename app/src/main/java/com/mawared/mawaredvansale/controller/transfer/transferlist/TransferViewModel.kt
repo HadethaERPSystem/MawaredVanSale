@@ -8,10 +8,11 @@ import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
 import com.mawared.mawaredvansale.controller.common.GenerateTicket
-import com.mawared.mawaredvansale.controller.common.TicketPrinting
+import com.mawared.mawaredvansale.controller.common.PdfTicket
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.interfaces.IPrintNavigator
 import com.mawared.mawaredvansale.services.repositories.transfer.ITransferRepository
 import java.util.*
 
@@ -21,7 +22,7 @@ class TransferViewModel(private val repository: ITransferRepository) : BaseViewM
     var ctx: Context? = null
     var navigator: IMainNavigator<Transfer>? = null
     var msgListener: IMessageListener? = null
-
+    var printListener: IPrintNavigator<Transfer>? = null
     val baseEoList by lazy {
         repository.getByUserId(_user_id)
     }
@@ -72,11 +73,10 @@ class TransferViewModel(private val repository: ITransferRepository) : BaseViewM
     }
 
     fun onPrintTicket(entityEo: Transfer){
-        val lang = Locale.getDefault().toString().toLowerCase()
-        val tickets = GenerateTicket(ctx!!, lang).Create(entityEo,
-            R.drawable.ic_logo_black, "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", null, null)
-
-        TicketPrinting(ctx!!, tickets).run()
+//        val lang = Locale.getDefault().toString().toLowerCase()
+//        val tickets = GenerateTicket(ctx!!, lang).createPdfTicket(entityEo,
+//            R.drawable.ic_logo_black, "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", null, null)
+        printListener?.doPrint(entityEo)
     }
 
     fun cancelJob(){

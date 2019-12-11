@@ -2,4 +2,25 @@
 <resources>
     <dimen name="default_label_text_size">12sp</dimen>
     <dimen name="default_input_text_size">12sp</dimen>
+    <color name="colorPrimary2">#FFC107</color>
+    <color name="colorPrimaryDark2">#FFA000</color>
+    <color name="backgroundcolor">#fcfcfc</color>
+    <color name="lightgray">#ededed</color>
+    <color name="deeppurple">#7c4dff</color>
+    <color name="yello">#ffb300</color>
+    <color name="green">#00bfa5</color>
+    <color name="colorAccent2">#FF4081</color>
+    <color name="darkblue">#23283a</color>
+    <color name="testcolorblue">#152b38</color>
+    <color name="pink">#fe104d</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="cardColor">#ffffff</color>
+    <color name="textcardColor">#3f3f3f</color>
+
+    <color name="startblue">#0FA1B8</color>
+    <color name="endblue">#2dc3e8</color>
+
+    <color name="lineBlue">#2196F3</color>
+    <color name="text_black">#000000</color>
 </resources>

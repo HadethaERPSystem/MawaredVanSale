@@ -48,7 +48,6 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
         get() = _items
 
 
-    var selectFromWarehouse: Warehouse? = null
     var selectToWarehouse: Warehouse? = null
     var selectedProduct: Product? = null
 
@@ -122,7 +121,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
 
 
                 val baseEo = Transfer(
-                    user?.cl_Id, user?.org_Id,0, "${docDate.value}", mVoucher.value!!.vo_Id,"${voucher?.vo_prefix}","",   selectFromWarehouse?.wr_Id,
+                    user?.cl_Id, user?.org_Id,0, "${docDate.value}", mVoucher.value!!.vo_Id,"${voucher?.vo_prefix}","",
                     selectToWarehouse?.wr_Id,null, false,"$strDate", "${user?.id}", "$strDate", "${user?.id}"
                 )
                 if(mode != "Add"){
@@ -145,9 +144,6 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
         var msg: String? = null
         if (docDate.value == null) {
             msg =  resources!!.getString(R.string.msg_error_invalid_date)
-        }
-        if (selectFromWarehouse == null) {
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_no_from_warehouse)
         }
 
         if (selectToWarehouse == null) {
@@ -173,7 +169,6 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
         docNo.value = "0"
         docDate.value = returnDateString(strDate.toString())
         selectedProduct = null
-        selectFromWarehouse = null
         selectToWarehouse = null
         searchBarcode.value = null
         searchQty.value = "1"
@@ -280,8 +275,6 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
 
     fun clear(code: String) {
         when(code) {
-            "from_wr"-> selectFromWarehouse = null
-
             "to_wr" -> selectToWarehouse = null
             "prod"-> selectedProduct = null
 

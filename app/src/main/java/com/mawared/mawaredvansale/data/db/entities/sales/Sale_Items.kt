@@ -26,6 +26,8 @@ data class Sale_Items (
     var sld_isPromotion: String?,   // Is Current Item Promotion Or Not : Y:Yes, N: No
     var sld_promotionId: Int?,      // Promotion Id
     var sld_warehouseId: Int?,   // Salesman Warehouse Identifier : Van
+    var sld_batch_no: String?,
+    var sld_expiry_date: String?,
     var created_at: String?,    // created datetime
     var created_by: String?,    // created user
     var updated_at: String?,    // Updated datetime

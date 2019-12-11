@@ -15,6 +15,7 @@ import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteProductAdapter
+import com.mawared.mawaredvansale.controller.adapters.atc_prod_expiry_Adapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.data.db.entities.md.Product
@@ -257,7 +258,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
 
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = AutoCompleteProductAdapter(context!!.applicationContext,
+        val adapter = atc_prod_expiry_Adapter(context!!.applicationContext,
             R.layout.support_simple_spinner_dropdown_item,
             products
         )

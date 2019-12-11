@@ -47,7 +47,7 @@
                     android:layout_marginBottom="15dp"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:gravity="center"
-                    android:text="@{menu.menuName}"
+                    android:text="@{menu.menu_name}"
                     android:textColor="@android:color/black"
                     android:textSize="16dp"
                     android:textStyle="bold"

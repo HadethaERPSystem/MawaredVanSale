@@ -16,7 +16,9 @@ data class Product (
     var pr_uom_Id: Int?,               //Unit of measurement
     var pr_image_name: String?,
     var pr_qty: Double?,
-    var pr_unit_price: Double?
+    var pr_unit_price: Double?,
+    var pr_batch_no: String?,
+    var pr_expiry_date: String?
 ){
     @PrimaryKey(autoGenerate = false)
     var pr_Id:  Int = 0

@@ -87,7 +87,7 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
 
     fun onPrintTicket(entityEo: Sale){
         val lang = Locale.getDefault().toString().toLowerCase()
-        val tickets = GenerateTicket(ctx!!, lang).Create(entityEo,
+        val tickets = GenerateTicket(ctx!!, lang).create(entityEo,
             R.drawable.ic_logo_black, "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", null, null)
 
         TicketPrinting(ctx!!, tickets).run()

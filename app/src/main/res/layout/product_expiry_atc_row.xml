@@ -93,6 +93,26 @@
                     tools:hint="@string/lbl_product_balance" />
 
 
+            <TextView
+                android:id="@+id/tv_expiry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@{product.pr_expiry_date}"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="13sp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/card_img"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/tv_qty"
+                tools:hint="Expiry Date" />
+
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline9"
                 android:layout_width="wrap_content"

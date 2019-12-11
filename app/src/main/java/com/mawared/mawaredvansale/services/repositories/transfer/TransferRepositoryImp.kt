@@ -54,10 +54,10 @@ class TransferRepositoryImp(private val api: ApiService): ITransferRepository, S
                                 job?.complete()
                             }
                         }catch (e: ApiException){
-                            Log.e("Connectivity", "No internat connection", e)
+                            Log.e("Connectivity", "No internet connection", e)
                             return@launch
                         }catch (e: java.lang.Exception){
-                            Log.e("Exception", "Error exception when call getSaleReturn", e)
+                            Log.e("Exception", "Error exception when call Transfer get by User Id", e)
                             return@launch
                         }
                     }
@@ -82,8 +82,8 @@ class TransferRepositoryImp(private val api: ApiService): ITransferRepository, S
                         }catch (e: ApiException){
                             Log.e("Connectivity", "No internat connection", e)
                             return@launch
-                        }catch (e: java.lang.Exception){
-                            Log.e("Exception", "Error exception when call getSaleReturn", e)
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call Transfer get by Id", e)
                             return@launch
                         }
                     }

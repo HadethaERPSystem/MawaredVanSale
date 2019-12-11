@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Print-Template>
+    <PageSetting>
+        <Paper>A4</Paper>
+        <Width>21</Width>
+        <Height>28</Height>
+    </PageSetting>
+
+    <PageHeader>
+        <Title align="center" font="Arial" fontSize="16" fontWeight="Bold">Report Title</Title>
+        <Table>
+            <thead>
+                <tr>
+                    <td width="5%">Ref#</td>
+                    <td width="70%" font="Arial" fontweight="bold">{tr_ref_no}</td>
+                    <td width="5%">Date:</td>
+                    <td width="10%" font="Arial" fontweight="bold">{tr_doc_date}</td>
+                </tr>
+                <tr>
+                    <td width="5%">From Warehouse:</td>
+                    <td width="70%" font="Arial" fontweight="bold">{tr_whs_from_name}</td>
+                    <td width="5%">To Warehouse:</td>
+                    <td width="10%" font="Arial" fontweight="bold">{tr_whs_to_name}</td>
+                </tr>
+            </thead>
+        </Table>
+        <Separater/>
+    </PageHeader>
+
+    <Body>
+        <Table>
+            <thead>
+                <tr>
+                    <td width="5%" >#</td>
+                    <td width="60%">Item Name</td>
+                    <td width="15%">Barcode</td>
+                    <td width="10%">Qty</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td width="5%" ></td>
+                    <td width="60%"  font="Arial" fontweight="bold"></td>
+                    <td width="15%"  font="Arial" fontweight="bold"></td>
+                    <td width="10%"></td>
+                </tr>
+            </tbody>
+        </Table>
+    </Body>
+
+    <GrandTotal>
+        <Table>
+            <tbody>
+                <tr>
+                    <td width="5%" ></td>
+                    <td width="60%"></td>
+                    <td width="15%">Total Item</td>
+                    <td width="10%">{SUM-Qty}</td>
+                </tr>
+            </tbody>
+        </Table>
+    </GrandTotal>
+
+    <PageFooter>
+        <Separater/>
+        <PageNumber align="left">###</PageNumber>
+    </PageFooter>
+</Print-Template>

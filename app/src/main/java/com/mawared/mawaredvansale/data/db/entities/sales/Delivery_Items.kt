@@ -19,6 +19,7 @@ data class Delivery_Items(
     var dld_isDeliverd: String?,
     var dld_qty: Double?,
     var dld_lotno: String?,     //Lot Number
+    var dld_batch_no: String?,
     var dld_expiry_date: String?,    // Expiry date
     var dld_uom_Id: Int?        //Unit Of Measurement
 ) {

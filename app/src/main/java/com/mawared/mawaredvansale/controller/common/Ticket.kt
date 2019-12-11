@@ -13,7 +13,7 @@ class Ticket(
 ): Serializable
 
 enum class LineType{
-    Text, Image, Barcode
+    Text, Image, Barcode, Column, LineSeparator, NewLine
 }
 
 enum class AlignText{

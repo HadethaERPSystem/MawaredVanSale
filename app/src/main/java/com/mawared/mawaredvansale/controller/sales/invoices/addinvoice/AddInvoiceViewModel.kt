@@ -276,7 +276,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 val item = Sale_Items(0, rowNo, null, selectedProduct!!.pr_Id,
                    selectedProduct!!.pr_uom_Id, qty, 1.00, qty,
                     unitPrice, lineTotal, 0.00, 0.00, netTotal, null, null, null,
-                    _wr_id,"$strDate", "${user?.id}", "$strDate", "${user?.id}"
+                    _wr_id,selectedProduct!!.pr_batch_no, selectedProduct!!.pr_expiry_date,"$strDate","${user?.id}", "$strDate", "${user?.id}"
                 )
                 item.sld_prod_name = selectedProduct!!.pr_description_ar
                 item.sld_barcode =  selectedProduct!!.pr_barcode

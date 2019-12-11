@@ -29,7 +29,15 @@ import kotlinx.android.synthetic.main.activity_home.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
+import org.w3c.dom.Element
+import org.w3c.dom.Node
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserException
+import org.xmlpull.v1.XmlPullParserFactory
+import java.io.IOException
+import java.lang.Exception
 import java.util.*
+import javax.xml.parsers.DocumentBuilderFactory
 
 class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigationItemSelectedListener{
 
@@ -64,8 +72,117 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         binding = NavHeaderBinding.bind(viewHeader) // DataBindingUtil.setContentView(this, R.layout.nav_header)
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
+
+//        xmlParses()
+//        val pullParserFactory: XmlPullParserFactory
+//        try {
+//            pullParserFactory = XmlPullParserFactory.newInstance()
+//            val parser = pullParserFactory.newPullParser()
+//            val inputStream = applicationContext.assets.open("templates/TransferTemplate.xml")
+//            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
+//            parser.setInput(inputStream, null)
+//            val m = parseXml(parser)
+//
+//
+//        }catch (e: XmlPullParserException){
+//            e.printStackTrace()
+//        }catch (e: IOException){
+//            e.printStackTrace()
+//        }
     }
 
+    @Throws(XmlPullParserException::class, IOException::class)
+    fun parseXml(parser: XmlPullParser){
+        var eventType = parser.eventType
+        while (eventType != XmlPullParser.END_DOCUMENT){
+            val name: String
+            when(eventType){
+                XmlPullParser.START_DOCUMENT -> {}
+                XmlPullParser.START_TAG -> {
+                    name = parser.name
+                    when(name){
+                        "PageSetting" ->{}
+                        "Paper" -> {val paper = parser.nextText()}
+                        "Width" -> {val width = parser.nextText() }
+                        "Height" -> {val height = parser.nextText()}
+                        "PageHeader" -> {}
+                        "Title" -> {}
+                        "Table" -> {}
+                        "thead" -> {}
+                        "tr" -> {}
+                        "td" -> {}
+                        "Separator" -> {}
+                        "Body" -> {}
+                        "GrandTotal" -> {}
+                        "PageFooter" -> {}
+                        "PageNumber" -> {}
+
+                    }
+                }
+                XmlPullParser.END_TAG -> {
+                    name = parser.name
+                    when(name){
+                        "PageSetting" -> {}
+                        "Paper" -> {}
+                        "Width" -> {}
+                        "Height" -> {}
+                        "PageHeader" -> {}
+                        "Title" -> {}
+                        "Table" -> {}
+                        "thead" -> {}
+                        "tr" -> {}
+                        "td" -> {}
+                        "Separator" -> {}
+                        "Body" -> {}
+                        "GrandTotal" -> {}
+                        "PageFooter" -> {}
+                        "PageNumber" -> {}
+                    }
+                }
+            }
+           eventType =  parser.next()
+        }
+    }
+
+    fun xmlParses(){
+        try {
+            val inputStream = assets.open("templates/TransferTemplate.xml")
+            val dbFactory = DocumentBuilderFactory.newInstance()
+            val dBuilder = dbFactory.newDocumentBuilder()
+            val doc = dBuilder.parse(inputStream)
+            val element = doc.documentElement
+            element.normalize()
+
+            val nList = doc.getElementsByTagName("PageHeader")
+            for (i in 0 until nList.length){
+                val node = nList.item(i)
+                if(node.nodeType === Node.ELEMENT_NODE){
+                    when(node.nodeName){
+
+                    }
+                    val element2 = node as Element
+                    val m = "Paper :" + getValue("Paper", element2)
+                    val w = "Width :" + getValue("Width", element2)
+                    val h = "Height :" + getValue("Height", element2)
+
+                }
+            }
+            val header = doc.getElementsByTagName("PageHeader")
+
+            val footer = doc.getElementsByTagName("PageFooter")
+            val body = doc.getElementsByTagName("Body")
+            val grandTotal = doc.getElementsByTagName("GrandTotal")
+
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+    }
+
+    private fun getValue(tag: String, element: Element): String{
+        val nodeList = element.getElementsByTagName(tag).item(0).childNodes
+        val node = nodeList.item(0)
+        return node.nodeValue
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         return NavigationUI.navigateUp(

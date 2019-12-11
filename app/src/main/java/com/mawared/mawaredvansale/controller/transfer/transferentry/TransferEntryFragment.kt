@@ -168,13 +168,9 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
                 viewModel.docNo.value = it.tr_ref_no
                 viewModel.docDate.value = viewModel.returnDateString(it.tr_doc_date!!)
 
-                viewModel.selectFromWarehouse?.wr_Id = it.tr_whs_from!!
-                viewModel.selectFromWarehouse?.wr_description = it.tr_whs_from_name
-                binding.atcFromWarehouse.setText("${it.tr_whs_from_name}", true)
-
-                viewModel.selectToWarehouse?.wr_Id = it.tr_whs_to!!
-                viewModel.selectToWarehouse?.wr_description = it.tr_whs_to_name
-                binding.atcToWarehouse.setText("${it.tr_whs_to_name}", true)
+                viewModel.selectToWarehouse?.wr_Id = it.tr_wr_Id!!
+                viewModel.selectToWarehouse?.wr_description = it.tr_wr_name
+                binding.atcToWarehouse.setText("${it.tr_wr_name}", true)
                 viewModel.setItems(it.items)
             }
         })
@@ -190,7 +186,6 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
         val whsList = viewModel.warEoList
         whsList.observe(this@TransferEntryFragment, Observer {
             if(it == null) return@Observer
-            initFromWhsAutocomplete(it)
             initToWhsAutocomplete(it)
 
         })
@@ -231,18 +226,6 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
     }
 
 
-    private fun initFromWhsAutocomplete(list: List<Warehouse>){
-        val adapter = atc_Whs_Adapter(context!!.applicationContext, R.layout.support_simple_spinner_dropdown_item, ArrayList<Warehouse>(list))
-        binding.atcFromWarehouse.threshold = 0
-        binding.atcFromWarehouse.setAdapter(adapter)
-        binding.atcFromWarehouse.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcFromWarehouse.showDropDown()
-        }
-        binding.atcFromWarehouse.setOnItemClickListener { _, _, position, _ ->
-            viewModel.selectFromWarehouse = adapter.getItem(position)
-        }
-    }
-
     private fun initToWhsAutocomplete(list: List<Warehouse>){
         val adapter = atc_Whs_Adapter(context!!.applicationContext, R.layout.support_simple_spinner_dropdown_item, ArrayList<Warehouse>(list))
         binding.atcToWarehouse.threshold = 0
@@ -275,7 +258,6 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
     // clear
     override fun clear(code: String) {
         when(code) {
-            "from_wr" -> binding.atcFromWarehouse.setText("", true)
             "to_wr" -> binding.atcToWarehouse.setText("", true)
             "prod" -> binding.atcProduct.setText("", true)
         }

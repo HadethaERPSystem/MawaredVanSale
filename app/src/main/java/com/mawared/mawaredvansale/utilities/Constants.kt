@@ -5,12 +5,12 @@ package com.mawared.mawaredvansale.utilities
  */
 
 //const val BASE_URL_API = "http://172.0.0.1:80/mderp.WebAPI/api/"
-//const val BASE_URL_API = "http://172.29.50.2:6615/api/"
+const val BASE_URL_API = "http://172.29.50.2:6615/api/"
 ////
-//const val BASE_URL = "http://172.29.50.2:6615/"
+const val BASE_URL = "http://172.29.50.2:6615/"
 
-const val BASE_URL_API = "http://10.200.0.10/mderp.WebAPI/api/"
-const val BASE_URL = "http://10.200.0.10/mderp.WebAPI/"
+//const val BASE_URL_API = "http://10.200.0.10/mderp.WebAPI/api/"
+//const val BASE_URL = "http://10.200.0.10/mderp.WebAPI/"
 
 //const val BASE_URL_API = "http://192.168.1.191/mderp.WebAPI/api/"
 //const val BASE_URL = "http://192.168.1.191/mderp.WebAPI/api/"

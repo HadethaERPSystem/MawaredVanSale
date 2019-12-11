@@ -104,7 +104,7 @@
                     android:fontFamily="@font/droid_kufi_regular"
                     android:paddingStart="2dp"
                     android:paddingEnd="2dp"
-                    android:text="@string/lbl_from_warehouse"
+                    android:text="@string/lbl_to_warehouse"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="@+id/guideline8"
                     app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +121,7 @@
                     android:gravity="start"
                     android:paddingStart="2dp"
                     android:paddingEnd="2dp"
-                    android:text="@{entityEo.tr_whs_from_name}"
+                    android:text="@{entityEo.tr_wr_name}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -131,40 +131,6 @@
                     tools:ignore="SmallSp" />
 
             <!-- Invoice region label and data-->
-            <TextView
-                    android:id="@+id/lbl_whs_to"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginEnd="2dp"
-                    android:fontFamily="@font/droid_kufi_regular"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="2dp"
-                    android:text="@string/lbl_to_warehouse"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/guideline8"
-                    app:layout_constraintTop_toTopOf="@+id/lbl_whs_from"
-                    tools:ignore="SmallSp" />
-
-            <TextView
-                    android:id="@+id/whs_to"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginEnd="2dp"
-                    android:fontFamily="@font/droid_kufi_regular"
-                    android:gravity="start"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="2dp"
-                    android:text="@{entityEo.tr_whs_to_name}"
-                    android:textColor="@android:color/black"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/guideline8"
-                    app:layout_constraintTop_toTopOf="@+id/whs_from"
-                    tools:ignore="SmallSp" />
 
             <!-- Buttons for view, edit & delete -->
             <View
@@ -173,7 +139,7 @@
                     android:layout_height="2dp"
                     android:layout_marginTop="8dp"
                     android:background="@color/colorPrimaryDark"
-                    app:layout_constraintTop_toBottomOf="@+id/whs_to"
+                    app:layout_constraintTop_toBottomOf="@+id/whs_from"
                     tools:layout_editor_absoluteX="0dp" />
 
             <ImageButton

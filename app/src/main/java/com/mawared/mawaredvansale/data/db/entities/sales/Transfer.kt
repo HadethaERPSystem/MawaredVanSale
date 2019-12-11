@@ -11,8 +11,7 @@ class Transfer(
     var tr_vo_Id: Int?,
     var tr_prefix: String?,
     var tr_ref_no: String?,
-    var tr_whs_from: Int?,
-    var tr_whs_to: Int?,
+    var tr_wr_Id: Int?,
     var tr_notes: String?,
     var tr_isDeleted: Boolean?,
     var created_at: String?,        // created datetime
@@ -25,8 +24,7 @@ class Transfer(
     var tr_org_name: String? = null
     var tr_vo_code: String? = null
     var tr_vo_name: String? = null
-    var tr_whs_from_name: String? = null
-    var tr_whs_to_name: String? = null
+    var tr_wr_name: String? = null
 
     @Ignore
     var items: ArrayList<Transfer_Items> = arrayListOf()

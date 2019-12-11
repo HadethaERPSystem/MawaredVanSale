@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mawared VAN Sale</string>
     <string name="client_name">شركة الخضيري</string>
@@ -107,7 +108,7 @@
     <string name="lbl_change_amount_lc">المبلغ المسترجع بالدينار</string>
     <string name="lbl_paid_amount">المبلغ المدفوع</string>
     <string name="lbl_change_amount">المبلغ المسترجع</string>
-    <string name="lbl_product_balance">رصيد المادة</string>
+    <string name="lbl_product_balance">الكمية</string>
     <string name="lbl_received_amount_usd">المبلغ المقبوض بالدولار</string>
     <string name="lbl_received_amount_iqd">المبلغ المقبوض بالدينار</string>
     <string name="lbl_order_no">رقم الامر</string>

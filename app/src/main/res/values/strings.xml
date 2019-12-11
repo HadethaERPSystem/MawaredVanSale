@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mawared VAN Sale</string>
+    <string name="app_name" translatable="false">Mawared VAN Sale</string>
     <string name="client_name">AL-NADER</string>
     <string name="user_name">User Name</string>
     <string name="password">Enter password</string>
@@ -106,7 +106,7 @@
     <string name="lbl_change_amount_lc">Amount Change IQD</string>
     <string name="lbl_paid_amount">Amount Paid</string>
     <string name="lbl_change_amount">Amount Change</string>
-    <string name="lbl_product_balance">Product Balance</string>
+    <string name="lbl_product_balance">Qty</string>
     <string name="lbl_received_amount_usd">Received Amount $</string>
     <string name="lbl_received_amount_iqd">Received Amount IQD</string>
     <string name="lbl_order_no">Order No</string>
