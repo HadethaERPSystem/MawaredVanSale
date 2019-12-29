@@ -303,9 +303,9 @@ class NetworkDataSourceImp(private val api: ApiService ): INetworkDataSource, Sa
     override val downloadOrders: LiveData<List<Sale_Order>>
         get() = _downloadOrders
 
-    override suspend fun ordersGetList(sm_Id: Int, customer_Id: Int?) {
+    override suspend fun ordersGetList(sm_Id: Int, customer_Id: Int?, vo_code: String) {
         try {
-            val response = apiRequest { api.getOrders(sm_Id, customer_Id) }
+            val response = apiRequest { api.getOrders(sm_Id, customer_Id, vo_code) }
             _downloadOrders.postValue(response.data)
 
         } catch (e: ApiException) {

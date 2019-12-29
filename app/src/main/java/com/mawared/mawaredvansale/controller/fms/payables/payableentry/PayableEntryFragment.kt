@@ -9,8 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
-import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
@@ -48,6 +47,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         binding = DataBindingUtil.inflate(inflater, R.layout.payable_entry_fragment, container, false)
 
         //viewModel.showDatePicker = this
+        viewModel.ctx = activity!!
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.doc_date.value = "${LocalDate.now()}"
@@ -88,6 +88,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
+                hideKeyboard()
                 showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
                     onStarted()
                     viewModel.location = getLocationData()
@@ -95,6 +96,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
                 }
             }
             R.id.close_btn -> {
+                hideKeyboard()
                 activity!!.onBackPressed()
             }
         }
@@ -104,7 +106,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
 
-        viewModel.savedEntity.observe(this@PayableEntryFragment, Observer {
+        viewModel._baseEo.observe(this@PayableEntryFragment, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -159,11 +161,12 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
         viewModel.setSaleCurrency("$")
         viewModel.setSecondCurrency("IQD")
+        group_loading.hide()
     }
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = AutoCompleteCustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )

@@ -18,6 +18,7 @@ import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.services.repositories.transfer.ITransferRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import java.util.*
@@ -34,11 +35,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
     // google map location GPS
     var location: Location? = null
 
-    private val _baseEo: MutableLiveData<Transfer> = MutableLiveData()
-    val savedEntity: LiveData<Transfer> = Transformations
-        .switchMap(_baseEo){
-            repository.saveOrUpdate(it)
-        }
+    val _baseEo: MutableLiveData<Transfer> = MutableLiveData()
 
     private var tmpItems: ArrayList<Transfer_Items> = arrayListOf()
     private var tmpDeletedItems: ArrayList<Transfer_Items> = arrayListOf()
@@ -132,7 +129,20 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
                 }
                 baseEo.items.addAll(tmpItems)
 
-                _baseEo.value = baseEo
+                Coroutines.main {
+                    try {
+                        val response = repository.upsert(baseEo)
+                        if(response.isSuccessful){
+                            _baseEo.value = response.data
+                        }
+                        else{
+                            msgListener?.onFailure("Error message when try to save request transfer. Error is ${response.message}")
+                        }
+                    }catch (e: Exception){
+                        msgListener?.onFailure("Error message when try to save request transfer. Error is ${e.message}")
+                    }
+                }
+
             }catch (e: Exception){
                 msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
             }

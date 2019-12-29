@@ -6,7 +6,9 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
+import com.mawared.mawaredvansale.services.netwrok.responses.SingleRecResponse
 import com.mawared.mawaredvansale.utilities.ApiException
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -42,6 +44,16 @@ class InvoiceRepositoryImp(private val api: ApiService): IInvoiceRepository, Saf
         }
     }
 
+    override suspend fun SaveOrUpdate(baseEo: Sale): SingleRecResponse<Sale> {
+        try {
+            val response = apiRequest { api.insertInvoice(baseEo) }
+            return response
+        }catch (e: NoConnectivityException){
+            throw e
+        }catch (e: ApiException){
+            throw e
+        }
+    }
     override fun getInvoices(sm_Id: Int, cu_Id: Int?): LiveData<List<Sale>> {
         job = Job()
         return object : LiveData<List<Sale>>() {

@@ -6,7 +6,9 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Transfer
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer_Items
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
+import com.mawared.mawaredvansale.services.netwrok.responses.SingleRecResponse
 import com.mawared.mawaredvansale.utilities.ApiException
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -40,6 +42,16 @@ class TransferRepositoryImp(private val api: ApiService): ITransferRepository, S
         }
     }
 
+    override suspend fun upsert(baseEo: Transfer): SingleRecResponse<Transfer> {
+        try {
+            val response = apiRequest { api.transfer_SaveOrUpdate(baseEo) }
+            return response
+        }catch (e: NoConnectivityException){
+            throw e
+        }catch (e: ApiException){
+            throw e
+        }
+    }
     override fun getByUserId(userId: Int): LiveData<List<Transfer>> {
         job = Job()
         return object : LiveData<List<Transfer>>() {

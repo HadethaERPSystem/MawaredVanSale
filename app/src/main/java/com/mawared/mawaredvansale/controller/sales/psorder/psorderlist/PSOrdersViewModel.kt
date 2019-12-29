@@ -11,7 +11,7 @@ import com.mawared.mawaredvansale.services.repositories.order.IOrderRepository
 
 class PSOrdersViewModel(private val orderRepository: IOrderRepository) : BaseViewModel() {
 
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     var navigator: IMainNavigator<Sale_Order>? = null
 
 
@@ -19,7 +19,7 @@ class PSOrdersViewModel(private val orderRepository: IOrderRepository) : BaseVie
 
     val orders: LiveData<List<Sale_Order>> = Transformations
         .switchMap(_cu_id){
-            orderRepository.getOrder(_sm_id, it)
+            orderRepository.getOrder(_sm_id, it, "PSOrder")
         }
 
     private val _so_Id_for_delete: MutableLiveData<Int> = MutableLiveData()

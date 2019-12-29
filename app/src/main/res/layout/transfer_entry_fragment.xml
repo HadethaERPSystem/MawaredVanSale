@@ -160,6 +160,7 @@
                         android:text="@={viewmodel.searchQty}"
                         android:textAlignment="center"
                         android:textSize="12sp"
+                        android:inputType="numberDecimal"
                         app:layout_constraintEnd_toStartOf="@+id/btn_AddItem"
                         app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
                 <!-- Image button for add item -->

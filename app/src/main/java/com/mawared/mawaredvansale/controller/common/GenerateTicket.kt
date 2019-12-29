@@ -158,22 +158,22 @@ class GenerateTicket(val ctx: Context, val lang: String){
 
         lines.add(PdfTicket("", null, LineType.LineSeparator))
 
-        var cols: HashMap<Int, Column> = HashMap()
-        val rows: ArrayList<HashMap<Int, Column>> = arrayListOf()
+        var cols: HashMap<Int, ReportColumn> = HashMap()
+        val rows: ArrayList<HashMap<Int, ReportColumn>> = arrayListOf()
 
         // Lines title
-        cols.put(0, Column("${res.getString(R.string.lbl_prod_name)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
-        cols.put(1, Column("${res.getString(R.string.lbl_barcode)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
-        cols.put(2, Column("${res.getString(R.string.lbl_qty)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
+        cols.put(0, ReportColumn("${res.getString(R.string.lbl_prod_name)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
+        cols.put(1, ReportColumn("${res.getString(R.string.lbl_barcode)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
+        cols.put(2, ReportColumn("${res.getString(R.string.lbl_qty)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
         rows.add(cols)
 
         for (d: Transfer_Items in baseEo.items){
             cols = HashMap()
             val prod = if(lang == "ar_iq") d.trd_prod_name_ar!! else d.trd_prod_name!!.trim()
 
-            cols.put(0, Column(prod, Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
-            cols.put(1, Column("${d.trd_barcode}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
-            cols.put(2, Column("${d.trd_unit_qty!!}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
+            cols.put(0, ReportColumn(prod, Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
+            cols.put(1, ReportColumn("${d.trd_barcode}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
+            cols.put(2, ReportColumn("${d.trd_unit_qty!!}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf"))
             rows.add(cols)
         }
 
@@ -207,48 +207,48 @@ class GenerateTicket(val ctx: Context, val lang: String){
         // number and date
 
         var template = Template()
-        var cells: HashMap<Int, Column> = HashMap()
+        var cells: HashMap<Int, ReportColumn> = HashMap()
 
-        cells.put(0, Column("${res.getString(R.string.lbl_no)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
-        cells.put(0, Column("${baseEo.tr_ref_no.toString()}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V"))
-
-        template.header!!.add(PdfHeader(cells))
-
-        cells = HashMap()
-        cells.put(0, Column("${res.getString(R.string.lbl_doc_date)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
-        cells.put(0, Column("${returnDateString(baseEo.tr_doc_date!!)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V"))
+        cells.put(0, ReportColumn("${res.getString(R.string.lbl_no)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+        cells.put(0, ReportColumn("${baseEo.tr_ref_no.toString()}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V"))
 
         template.header!!.add(PdfHeader(cells))
 
         cells = HashMap()
-        cells.put(0, Column("${res.getString(R.string.lbl_time)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
-        cells.put(0, Column("${LocalTime.now()}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V"))
+        cells.put(0, ReportColumn("${res.getString(R.string.lbl_doc_date)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+        cells.put(0, ReportColumn("${returnDateString(baseEo.tr_doc_date!!)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V"))
+
+        template.header!!.add(PdfHeader(cells))
+
+        cells = HashMap()
+        cells.put(0, ReportColumn("${res.getString(R.string.lbl_time)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+        cells.put(0, ReportColumn("${LocalTime.now()}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V"))
 
         template.header!!.add(PdfHeader(cells))
 
 
         cells = HashMap()
-        cells.put(0, Column("${res.getString(R.string.lbl_to_warehouse)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
-        cells.put(0, Column("${baseEo.tr_wr_name!!}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V"))
+        cells.put(0, ReportColumn("${res.getString(R.string.lbl_to_warehouse)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+        cells.put(0, ReportColumn("${baseEo.tr_wr_name!!}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V"))
 
         template.header!!.add(PdfHeader(cells))
 
-        var cols: HashMap<Int, Column> = HashMap()
-        val rows: ArrayList<HashMap<Int, Column>> = arrayListOf()
+        var cols: HashMap<Int, ReportColumn> = HashMap()
+        val rows: ArrayList<HashMap<Int, ReportColumn>> = arrayListOf()
 
         // Lines title
-        cols.put(0, Column("${res.getString(R.string.lbl_prod_name)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L", boderWidth = 1f))
-        cols.put(1, Column("${res.getString(R.string.lbl_barcode)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L", boderWidth = 1f))
-        cols.put(2, Column("${res.getString(R.string.lbl_qty)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L", boderWidth = 1f))
+        cols.put(0, ReportColumn("${res.getString(R.string.lbl_prod_name)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L", boderWidth = 1f))
+        cols.put(1, ReportColumn("${res.getString(R.string.lbl_barcode)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L", boderWidth = 1f))
+        cols.put(2, ReportColumn("${res.getString(R.string.lbl_qty)}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L", boderWidth = 1f))
         rows.add(cols)
 
         for (d: Transfer_Items in baseEo.items){
             cols = HashMap()
             val prod = if(lang == "ar_iq") d.trd_prod_name_ar!! else d.trd_prod_name!!.trim()
 
-            cols.put(0, Column(prod, Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V", boderWidth = 1f))
-            cols.put(1, Column("${d.trd_barcode}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V", boderWidth = 1f))
-            cols.put(2, Column("${d.trd_unit_qty!!}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V", boderWidth = 1f))
+            cols.put(0, ReportColumn(prod, Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V", boderWidth = 1f))
+            cols.put(1, ReportColumn("${d.trd_barcode}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V", boderWidth = 1f))
+            cols.put(2, ReportColumn("${d.trd_unit_qty!!}", Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "V", boderWidth = 1f))
             rows.add(cols)
         }
 
@@ -259,21 +259,21 @@ class GenerateTicket(val ctx: Context, val lang: String){
         if(!baseEo.tr_ref_no.isNullOrEmpty()){
 
             cells = HashMap()
-            cells.put(0, Column("",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
-            cells.put(0, Column("${res.getString(R.string.lbl_to_warehouse)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
-            cells.put(0, Column("",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+            cells.put(0, ReportColumn("",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+            cells.put(0, ReportColumn("${res.getString(R.string.lbl_to_warehouse)}",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+            cells.put(0, ReportColumn("",Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
             template.footer!!.add(PdfFooter(cells))
         }
 
         if(!cmsMessage.isNullOrEmpty()){
             cells = HashMap()
-            cells.put(0, Column(cmsMessage,Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+            cells.put(0, ReportColumn(cmsMessage,Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
             template.footer!!.add(PdfFooter(cells))
         }
 
         if(!systemInfo.isNullOrEmpty()){
             cells = HashMap()
-            cells.put(0, Column(systemInfo, Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
+            cells.put(0, ReportColumn(systemInfo, Element.ALIGN_LEFT, 30, "assets/fonts/brandon_medium.otf", styleType = "L"))
             template.footer!!.add(PdfFooter(cells))
         }
 

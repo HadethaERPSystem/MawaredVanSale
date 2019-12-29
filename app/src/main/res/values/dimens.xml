@@ -23,4 +23,5 @@
 
     <color name="lineBlue">#2196F3</color>
     <color name="text_black">#000000</color>
+    <color name="inputbackcolor">#83F8BCBC</color>
 </resources>

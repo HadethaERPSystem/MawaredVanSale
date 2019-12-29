@@ -11,7 +11,7 @@ import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.fms.IPayableRepository
 
 class PayableViewModel(private val repository: IPayableRepository) : BaseViewModel() {
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
 
     var navigator: IMainNavigator<Payable>? = null
     var msgListener: IMessageListener? = null

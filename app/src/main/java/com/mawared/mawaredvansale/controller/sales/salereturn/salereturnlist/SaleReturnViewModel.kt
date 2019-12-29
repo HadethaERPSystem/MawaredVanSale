@@ -10,7 +10,7 @@ import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.services.repositories.salereturn.ISaleReturnRepository
 
 class SaleReturnViewModel(private val repository: ISaleReturnRepository) : BaseViewModel() {
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     var navigator: IMainNavigator<Sale_Return>? = null
 
     private val _cu_id: MutableLiveData<Int> = MutableLiveData()

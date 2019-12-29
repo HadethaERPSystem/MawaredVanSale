@@ -22,9 +22,10 @@ data class Receivable(
     var rcv_lc_cr_Id: Int?,
     var rcv_rate: Double?,
     var rcv_comment: String?,
-    var rcv_isDeleted: String?,
+    var rcv_isDeleted: Boolean?,
     var rcv_latitude: Double?,
     var rcv_longitude: Double?,
+    var rcv_ref_Id: Int?,
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime

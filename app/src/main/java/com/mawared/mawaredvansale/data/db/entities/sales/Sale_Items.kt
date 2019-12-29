@@ -15,7 +15,7 @@ data class Sale_Items (
     var sld_pack_qty: Double?,      // Pack Quantity
     var sld_pack_size: Double?,     // Pack Size
     var sld_unit_qty: Double?,      // Unit Quantity
-
+    var sld_gift_qty: Double? = null,
     var sld_unit_price: Double?,    // Unit Price
     var sld_line_total: Double?,    // Line Total
     var sld_dis_per: Double?,      // Percentage Discount
@@ -28,6 +28,7 @@ data class Sale_Items (
     var sld_warehouseId: Int?,   // Salesman Warehouse Identifier : Van
     var sld_batch_no: String?,
     var sld_expiry_date: String?,
+    var sld_mfg_date: String?,
     var created_at: String?,    // created datetime
     var created_by: String?,    // created user
     var updated_at: String?,    // Updated datetime
@@ -41,4 +42,7 @@ data class Sale_Items (
     var sld_prod_name_ar: String? = null
     var sld_prod_name: String? = null
     var sld_barcode: String? = null
+    var sld_unit_weight: Double? = null
+    var sld_total_weight: Double? = null
+
 }

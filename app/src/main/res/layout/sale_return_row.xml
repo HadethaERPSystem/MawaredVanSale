@@ -53,7 +53,7 @@
                     android:layout_marginEnd="2dp"
                     android:padding="2dp"
                     android:gravity="start"
-                    android:text="@{`` + entityEo.sr_doc_no}"
+                    android:text="@{`` + entityEo.sr_refno}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"

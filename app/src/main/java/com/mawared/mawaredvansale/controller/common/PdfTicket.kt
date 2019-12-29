@@ -8,7 +8,7 @@ import java.io.Serializable
 
 class PdfTicket(
     var text: String? = null,
-    var rows: ArrayList<HashMap<Int, Column>>? = null,
+    var rows: ArrayList<HashMap<Int, ReportColumn>>? = null,
     var type: LineType = LineType.Text,
     var align: Int = Element.ALIGN_CENTER,
     var fontName: String? = "assets/fonts/brandon_medium.otf",
@@ -21,15 +21,15 @@ class PdfTicket(
 ): Serializable
 
 class PdfHeader(
-    var header: HashMap<Int, Column>? = null
+    var header: HashMap<Int, ReportColumn>? = null
 ): Serializable
 
 class PdfFooter(
-    var header: HashMap<Int, Column>? = null
+    var header: HashMap<Int, ReportColumn>? = null
 ): Serializable
 
 class PdfBody(
-    var rows: ArrayList<HashMap<Int, Column>>? = null
+    var rows: ArrayList<HashMap<Int, ReportColumn>>? = null
 ): Serializable
 
 class Template(): Serializable{

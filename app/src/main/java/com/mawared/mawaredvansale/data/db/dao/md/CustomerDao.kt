@@ -36,4 +36,5 @@ interface CustomerDao : BaseDao<Customer>{
     @Query("DELETE FROM Customer")
     fun deleteAll()
 
+
 }

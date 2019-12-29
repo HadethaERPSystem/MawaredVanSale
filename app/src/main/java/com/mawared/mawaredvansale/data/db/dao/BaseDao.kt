@@ -31,7 +31,7 @@ interface BaseDao<T> {
      * @param baseEo the objects to be inserted.
      */
     @Insert
-    suspend fun insert(vararg baseEo: T)
+    suspend fun insert(baseEo: List<T>)
 
     /**
      * Update an object from the database.

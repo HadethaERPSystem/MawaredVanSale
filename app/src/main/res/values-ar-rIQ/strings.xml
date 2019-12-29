@@ -17,8 +17,11 @@
     <string name="layout_invoice_list_title">فواتير البيع</string>
     <string name="layout_invoice_entry_title">فاتورة بيع</string>
 
-    <string name="layout_order_list_title">اوامر القطع</string>
-    <string name="layout_order_entry_title">امر قطع</string>
+    <string name="layout_order_list_title">اوامر البيع</string>
+    <string name="layout_order_entry_title">امر بيع</string>
+
+    <string name="layout_psorder_list_title">اوامر القطع</string>
+    <string name="layout_psorder_entry_title">امر قطع</string>
 
     <string name="layout_salereturn_list_title">مردود البيع</string>
     <string name="layout_salereturn_entry_title">مردود البيع</string>
@@ -73,6 +76,7 @@
     <string name="lbl_barcode">الباركود</string>
     <string name="lbl_prod_name">المادة</string>
     <string name="lbl_qty">الكمية</string>
+    <string name="lbl_gift_qty">مجانية</string>
     <string name="lbl_unit_price">سعر الوحدة</string>
     <string name="hint_unit_price">5.95</string>
     <string name="lbl_usd_cr_symbol">$</string>
@@ -154,6 +158,8 @@
     <string name="msg_notify_bluetooth_disabled">تم تعطيل البلوتوث</string>
     <string name="msg_notify_bluetooth_enabling_canceled">تم إلغاء تمكين البلوتوث</string>
     <string name="msg_notify_bluetooth_error">The device does not connect</string>
+    <string name="msg_error_no_selected_salesman">يجب اختيار مندوب مبيعات لهذا الجهاز</string>
+    <string name="msg_error_no_selected_warehouse">يجب اختيار مخزن لهذا الجهاز</string>
     <string name="connecting">اتصال...</string>
 
     <string name="activity_devicelist_title_paired_devices">Paired devices</string>
@@ -219,9 +225,34 @@
     <string name="finish_btn">اغلاق</string>
     <string name="lbl_to_warehouse">الى مخزن</string>
     <string name="lbl_from_warehouse">من مخزن</string>
-    <string name="lbl_transfer_no">Transfer No.</string>
-    <string name="lbl_warehouse_name">Warehouse Name</string>
+    <string name="lbl_transfer_no">رقم المناقلة</string>
+    <string name="lbl_warehouse_name">المخزن</string>
 
+    <!--Report part string name -->
+    <string name="rpt_invoice_no">رقم الفاتورة:</string>
+    <string name="rpt_invoice_date">التاريخ:</string>
+    <string name="rpt_customer">الزبون:</string>
+    <string name="rpt_barcode">الباركود</string>
+    <string name="rpt_prod_name">المادة</string>
+    <string name="rpt_qty">الكمية</string>
+    <string name="rpt_gift">الهدايا المجانية</string>
+    <string name="rpt_unit_price">سعر المفرد</string>
+    <string name="rpt_dis_value">الخصم</string>
+    <string name="rpt_net_total">المجموع</string>
+    <string name="rpt_notes">الملاحظات</string>
+    <string name="rpt_total_qty">محموع الكميات</string>
+    <string name="rpt_total_weight">الوزن</string>
+    <string name="rpt_total_amount">الجموع</string>
+    <string name="rpt_total_discount">مجموع الخصومات</string>
+    <string name="rpt_net_amount">الصافي للدفع</string>
+    <string name="rpt_person_reciever_sig">اسم وتوقيع المستلم</string>
+    <string name="rpt_storekeeper_sig">اسم وتوقيع مدير المخازن</string>
+    <string name="rpt_sales_manager_sig">اسم وتوقيع مدير المبيعات</string>
+    <string name="rpt_user_name">اسم المستخدم</string>
+    <string name="rpt_list_name">قائمة</string>
+    <string name="rpt_contact_name">اسم صاحب المحل</string>
+    <string name="rpt_customer_phone">هاتف</string>
+    <string name="rpt_cr_name">العملة</string>
     <string-array name="codepage">
         <item>"Default"</item>
         <item>"Chinese Simplified"</item>

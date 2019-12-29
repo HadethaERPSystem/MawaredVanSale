@@ -25,6 +25,6 @@ interface UserDao : BaseDao<User> {
     @Query("SELECT * FROM User WHERE user_name = :userName AND password = :password")
     fun userLogin(userName: String, password: String) : LiveData<User>
 
-    @Query("SELECT * FROM user WHERE id = 1")
+    @Query("SELECT * FROM user  WHERE uid = 0")
     fun getUser(): LiveData<User>
 }

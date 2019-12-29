@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.mawared.mawaredvansale.data.db.entities.security.User
 import com.google.gson.Gson
 import com.mawared.mawaredvansale.data.db.entities.md.Salesman
+import com.mawared.mawaredvansale.data.db.entities.md.Warehouse
 
 
 /*
@@ -22,6 +23,7 @@ class SharedPrefs(context: Context) {
     val KEY_SAVED_USER = "key_saved_user"
     val KEY_SAVED_VAN_CODE = "key_saved_van_code"
     val KEY_SAVED_SALESMAN = "key_saved_salesman"
+    val KEY_SAVED_WAREHOUSE = "key_saved_warehouse"
     val KEY_SYSTEM_LANG = "system_mawared_language"
     val LOGO_NAME = "client_logo_name"
     val KEY_BLUETOOTH_PRINTER_PORT = "bluetooth_printer_port"
@@ -60,6 +62,10 @@ class SharedPrefs(context: Context) {
     var savedSalesman: Salesman?
         get() = gson.fromJson(prefs.getString(KEY_SAVED_SALESMAN, null), Salesman::class.java)
         set(value) = prefs.edit().putString(KEY_SAVED_SALESMAN, gson.toJson(value)).apply()
+
+    var savedWarehouse: Warehouse?
+        get() = gson.fromJson(prefs.getString(KEY_SAVED_WAREHOUSE, null), Warehouse::class.java)
+        set(value) = prefs.edit().putString(KEY_SAVED_WAREHOUSE, gson.toJson(value)).apply()
 
     var systemLanguage: String?
         get() = prefs.getString(KEY_SYSTEM_LANG, "")

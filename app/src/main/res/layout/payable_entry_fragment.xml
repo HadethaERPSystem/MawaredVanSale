@@ -85,7 +85,8 @@
                         android:fontFamily="@font/droid_kufi_regular"
                         android:gravity="center"
                         android:hint="@string/lbl_doc_no"
-                        android:inputType="number"
+                        android:enabled="false"
+                        android:inputType="text"
                         android:text="@={viewmodel.doc_no}"
                         android:textSize="14sp"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
@@ -121,30 +122,30 @@
                         app:srcCompat="@drawable/ic_datepicker" />
 
                 <AutoCompleteTextView
-                        android:id="@+id/atc_customer"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/lbl_customer_name"
-                        android:textAlignment="textStart"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/etxt_doc_no" />
+                    android:id="@+id/atc_customer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_customer_name"
+                    android:textAlignment="textStart"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etxt_doc_no" />
 
                 <ImageButton
-                        android:id="@+id/btn_cancelCustomer"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:layout_marginBottom="5dp"
-                        android:background="@null"
-                        android:contentDescription="@string/btn_add_item_caption"
-                        android:onClick="@{()-> viewmodel.clear(`cu`)}"
-                        app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
-                        app:layout_constraintEnd_toEndOf="@+id/atc_customer"
-                        app:layout_constraintTop_toTopOf="@+id/atc_customer"
-                        app:srcCompat="@drawable/ic_action_close" />
+                    android:id="@+id/btn_cancelCustomer"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.clear(`cu`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/atc_customer"
+                    app:srcCompat="@drawable/ic_action_close" />
                 <!-- Amount USD -->
                 <EditText
                         android:id="@+id/edtxt_amount_usd"
@@ -153,7 +154,7 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:hint="@string/lbl_paid_amount"
-                        android:inputType="text"
+                        android:inputType="numberDecimal"
                         android:text="@={viewmodel.bc_amount}"
                         android:textSize="12sp"
 
@@ -181,6 +182,7 @@
                         android:fontFamily="@font/droid_kufi_regular"
                         android:gravity="start"
                         android:hint="@string/lbl_paid_amount"
+                        android:inputType="numberDecimal"
                         android:text="@={viewmodel.lc_amount}"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toStartOf="@+id/lbl_iqd"
@@ -206,7 +208,7 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:hint="@string/lbl_change_amount"
-                        android:inputType="text"
+                        android:inputType="numberDecimal"
                         android:text="@={viewmodel.bc_change}"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toStartOf="@+id/lbl_usd1"
@@ -234,6 +236,7 @@
                         android:hint="@string/lbl_change_amount"
                         android:text="@={viewmodel.lc_change}"
                         android:textSize="12sp"
+                        android:inputType="numberDecimal"
                         app:layout_constraintEnd_toStartOf="@+id/lbl_iqd1"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
                         app:layout_constraintTop_toTopOf="@+id/lbl_usd1" />

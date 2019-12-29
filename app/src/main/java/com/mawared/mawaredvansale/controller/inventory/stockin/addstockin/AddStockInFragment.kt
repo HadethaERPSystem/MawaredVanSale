@@ -11,8 +11,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import org.kodein.di.generic.instance
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteProductAdapter
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
 import com.mawared.mawaredvansale.data.db.entities.inventory.Stockin_Items
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.data.db.entities.md.Product
@@ -20,7 +20,6 @@ import com.mawared.mawaredvansale.databinding.AddStockInFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IDatePicker
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.interfaces.IResetNavigator
-import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.add_stock_in_fragment.*
@@ -159,7 +158,7 @@ class AddStockInFragment : Fragment(), KodeinAware, IDatePicker, IResetNavigator
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = AutoCompleteCustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(context!!.applicationContext,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )

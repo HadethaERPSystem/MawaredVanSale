@@ -136,12 +136,14 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
+                hideKeyboard()
                 showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
                     onStarted()
                     viewModel.onSave()
                 }
             }
             R.id.close_btn -> {
+                hideKeyboard()
                 activity!!.onBackPressed()
             }
         }
@@ -152,7 +154,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Main) {
 
-        viewModel.savedEntity.observe(this@TransferEntryFragment, Observer {
+        viewModel._baseEo.observe(this@TransferEntryFragment, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()

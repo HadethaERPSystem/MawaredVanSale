@@ -8,17 +8,21 @@ import com.mawared.mawaredvansale.data.db.entities.inventory.Stockin_Items
 import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout
 import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout_Items
 import com.mawared.mawaredvansale.data.db.entities.md.*
+import com.mawared.mawaredvansale.data.db.entities.md.Currency
 import com.mawared.mawaredvansale.data.db.entities.sales.*
+import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.data.db.entities.security.User
 import com.mawared.mawaredvansale.services.netwrok.responses.AuthResponse
 import com.mawared.mawaredvansale.services.netwrok.responses.ListRecsResponse
 import com.mawared.mawaredvansale.services.netwrok.responses.SingleRecResponse
 import com.mawared.mawaredvansale.utilities.*
 import okhttp3.OkHttpClient
+import org.threeten.bp.LocalDate
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import java.util.*
 
 interface ApiService {
     @FormUrlEncoded
@@ -31,11 +35,21 @@ interface ApiService {
     @POST(URL_LOGIN)
     suspend fun login(@Body user: User) : Response<AuthResponse>
 
+    @GET(URL_USER_MENU)
+    suspend fun menu_getByUser(@Query("UserId") UserId: Int, @Query("lang") lang: String): Response<ListRecsResponse<Menu>>
+
     @GET(URL_ALL_PRODUCTS)
     suspend fun products_GetByTerm(@Query("Term") term: String,
                                    @Query("WarehouseId") warehouseId: Int?,
                                    @Query("PriceCode") priceCode: String) : Response<ListRecsResponse<Product>>
-
+    //products_GetByUser
+    @GET(URL_PRODUCTS_BY_USER)
+    suspend fun products_GetByUser(@Query("Term") term: String,
+                                   @Query("UserId") userId: Int?,
+                                   @Query("PriceCode") priceCode: String) : Response<ListRecsResponse<Product>>
+    @GET(URL_PRODUCTS_BY_SEARCH)
+    suspend fun products_GetBySearch(@Query("Term") term: String,
+                                   @Query("PriceCode") priceCode: String) : Response<ListRecsResponse<Product>>
     @GET(URL_ALL_PRODUCTS)
     suspend fun product_GetByBarcode(@Query("Barcode") barcode: String,
                                @Query("WarehouseId") warehouseId: Int?,
@@ -50,7 +64,8 @@ interface ApiService {
 
     @GET(URL_ALL_CUSTOMERS)
     suspend fun getAllCustomers(@Query("sm_Id") sm_Id: Int): Response<ListRecsResponse<Customer>>
-
+    @GET(URL_CUSTOMERS_BY_ORG)
+    suspend fun customer_GetByOrg(@Query("sm_Id") sm_Id: Int, @Query("org_Id") org_Id: Int?): Response<ListRecsResponse<Customer>>
     @GET(URL_CUSTOMER_BY_Id)
     suspend fun getCustomer_ById(@Query("cu_Id") cu_Id: Int): Response<SingleRecResponse<Customer>>
 
@@ -91,6 +106,10 @@ interface ApiService {
 
     @GET(URL_ALL_SALESMAN_BY_CODE)
     suspend fun salesmanGetByCode(@Query("pda_code") pda_code: String): Response<SingleRecResponse<Salesman>>
+    @GET(URL_GET_SALESMAN_BY_USER)
+    suspend fun salesmanGetByUser(@Query("UserId") userId: Int): Response<SingleRecResponse<Salesman>>
+    @GET(URL_ALL_SALESMAN)
+    suspend fun salesmanGetAll(): Response<ListRecsResponse<Salesman>>
 
     @GET(URL_ALL_SALESMAN_CUSTOMERS)
     suspend fun getAllSalesmanCustomers(): Response<ListRecsResponse<Salesman_Customer>>
@@ -99,9 +118,14 @@ interface ApiService {
     @GET(URL_VOUCHER_BY_CODE)
     suspend fun getVoucherByCode(@Query("vo_code") vo_code: String): Response<SingleRecResponse<Voucher>>
 
+    @GET(URL_DISCOUNT_BY_PRODUCT)
+    suspend fun getDiscountByProduct(@Query("pr_Id") pr_Id: Int, @Query("CurrentDate") currentDate: LocalDate, @Query("org_Id") org_Id: Int?): Response<SingleRecResponse<Discount>>
+
     @GET(URL_WAREHOUSE_GET_ALL)
     suspend fun warehouse_GetAll() : Response<ListRecsResponse<Warehouse>>
 
+    @GET(URL_WAREHOUSE_GET_BY_SALESMAN)
+    suspend fun warehouse_GetSalesman(@Query("sm_Id") sm_Id: Int) : Response<ListRecsResponse<Warehouse>>
     // for delivery
     @GET(URL_ALL_DELIVERY_BY_SALESMANID)
     suspend fun getDelivery_BySalesmandId(@Query("sm_Id") sm_Id: Int, @Query("cu_Id") cu_Id: Int?): Response<ListRecsResponse<Delivery>>
@@ -193,7 +217,7 @@ interface ApiService {
     suspend fun getOrderByCustomerId(@Query("cu_Id") cu_Id: Int) : Response<ListRecsResponse<Sale_Order>>
 
     @GET(URL_ORDER_BY_SALESMAN)
-    suspend fun getOrders(@Query("sm_Id") sm_Id: Int, @Query("cu_Id") cu_Id: Int?) : Response<ListRecsResponse<Sale_Order>>
+    suspend fun getOrders(@Query("sm_Id") sm_Id: Int, @Query("cu_Id") cu_Id: Int?, @Query("vo_code") vo_code: String) : Response<ListRecsResponse<Sale_Order>>
 
     @GET(URL_ORDER_DELETE)
     suspend fun deleteOrder(@Query("so_Id") so_Id: Int) : Response<SingleRecResponse<String>>

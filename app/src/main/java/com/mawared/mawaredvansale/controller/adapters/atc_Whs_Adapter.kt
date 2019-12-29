@@ -15,7 +15,7 @@ import com.mawared.mawaredvansale.databinding.AutocompleteWarehouseRowBinding
 import java.util.*
 import kotlin.collections.ArrayList
 
-class atc_Whs_Adapter(context: Context, @LayoutRes private val layoutResource: Int, private val baseEoList: ArrayList<Warehouse>):
+class atc_Whs_Adapter(context: Context, @LayoutRes private val layoutResource: Int, private val baseEoList: List<Warehouse>):
     ArrayAdapter<Warehouse>(context, layoutResource, baseEoList), Filterable {
 
     var warehouses: ArrayList<Warehouse>
@@ -23,7 +23,7 @@ class atc_Whs_Adapter(context: Context, @LayoutRes private val layoutResource: I
     var suggestions: ArrayList<Warehouse>
 
     init {
-        warehouses = baseEoList
+        warehouses = ArrayList<Warehouse>(baseEoList)
         tempWarehouse = ArrayList<Warehouse>(baseEoList)
         suggestions = ArrayList<Warehouse>(baseEoList)
     }

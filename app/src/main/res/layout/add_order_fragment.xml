@@ -128,6 +128,8 @@
                         android:hint="@string/lbl_customer_name"
                         android:gravity="start"
                         android:textSize="12sp"
+                        android:imeOptions="actionSearch"
+                        android:inputType="textAutoComplete|textAutoCorrect"
                         app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
@@ -195,6 +197,7 @@
                         android:text="@={viewmodel.searchQty}"
                         android:textAlignment="center"
                         android:textSize="12sp"
+                        android:inputType="numberDecimal"
                         app:layout_constraintEnd_toStartOf="@+id/btn_AddItem"
                         app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
                 <!-- Image button for add item -->
@@ -213,13 +216,97 @@
         </com.google.android.material.card.MaterialCardView>
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcv_order_items"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialCardView"
-                tools:listitem="@layout/order_item_row" />
+            android:id="@+id/rcv_order_items"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/total_discount_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView"
+            tools:listitem="@layout/order_item_row" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.35" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.65" />
+
+        <TextView
+            android:id="@+id/total_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/inputbackcolor"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:gravity="start"
+            android:text="@{String.valueOf(viewmodel.totalAmount)}"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rcv_order_items"
+            tools:ignore="SmallSp"
+            tools:text="" />
+
+        <TextView
+            android:id="@+id/total_discount_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/inputbackcolor"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:gravity="start"
+            android:text="@{String.valueOf(viewmodel.totalDiscount)}"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline21"
+            app:layout_constraintStart_toStartOf="@+id/guideline20"
+            app:layout_constraintTop_toBottomOf="@+id/rcv_order_items"
+            tools:ignore="SmallSp"
+            tools:text="" />
+
+        <TextView
+            android:id="@+id/net_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/inputbackcolor"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:gravity="start"
+            android:text="@{String.valueOf(viewmodel.netTotal)}"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.4"
+            app:layout_constraintStart_toStartOf="@+id/guideline21"
+            app:layout_constraintTop_toBottomOf="@+id/rcv_order_items"
+            tools:ignore="SmallSp"
+            tools:text="" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

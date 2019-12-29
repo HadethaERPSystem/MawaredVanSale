@@ -18,6 +18,10 @@ data class Sale_Order_Items(
     var sod_discount: Double?,      // Percentage Discount
     var sod_disvalue: Double?,      // Fixed Amount Discount
     var sod_net_total: Double?,
+    var sod_wr_Id: Int?,
+    var sod_batch_no: String?,
+    var sod_expiry_date: String?,
+    var sod_mfg_date:String?,
     var sod_lotno: String?,         // Lot Number
     var sod_isPromotion: String?,   // Is Current Item Promotion Or Not : Y:Yes, N: No
     var sod_promotionId: Int?,      // Promotion Id
@@ -34,4 +38,5 @@ data class Sale_Order_Items(
     var sod_barcode: String? = null
     @Ignore
     var sod_uom_name: String? = null
+    var sod_wr_name: String? = null
 }

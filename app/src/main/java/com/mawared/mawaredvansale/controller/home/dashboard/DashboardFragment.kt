@@ -118,10 +118,10 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
             "Transfer" -> {
                 navController.navigate(R.id.action_dashboardFragment_to_transferFragment)
             }
-            "Receivable"->{
+            "Receipt"->{
                 navController.navigate(R.id.action_dashboardFragment_to_receivableFragment)
             }
-            "Payable"->{
+            "Payment"->{
                 navController.navigate(R.id.action_dashboardFragment_to_payableFragment)
             }
             "Delivery" -> {

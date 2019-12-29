@@ -5,7 +5,9 @@ import androidx.lifecycle.LiveData
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
+import com.mawared.mawaredvansale.services.netwrok.responses.SingleRecResponse
 import com.mawared.mawaredvansale.utilities.ApiException
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -37,6 +39,17 @@ class PayableRepositoryImp(private val api: ApiService): IPayableRepository, Saf
                     }
                 }
             }
+        }
+    }
+
+    override suspend fun SaveOrUpdate(baseEo: Payable): SingleRecResponse<Payable> {
+        try {
+            val response = apiRequest { api.insertPayable(baseEo) }
+            return response
+        }catch (e: NoConnectivityException){
+            throw e
+        }catch (e: ApiException){
+            throw e
         }
     }
 

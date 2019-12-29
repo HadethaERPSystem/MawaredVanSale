@@ -21,7 +21,7 @@ class DownloadRepository(
         return apiRequest { api.products_GetByTerm(term, warehouseId, priceCode) }
     }
 
-    private suspend fun insertProduct(baseEoList: List<Product>) = db.getProductDao().insert(*baseEoList.toTypedArray())
+    private suspend fun insertProduct(baseEoList: List<Product>) = db.getProductDao().insert(baseEoList)
 
     suspend fun downloadProduct(term: String, warehouseId: Int?, priceCode: String){
         withContext(Dispatchers.IO){
@@ -39,7 +39,7 @@ class DownloadRepository(
         return apiRequest { api.getAllBrand() }
     }
 
-    private suspend fun insertBrand(baseEoList: List<Product_Brand>) = db.getProductBrandDao().insert(*baseEoList.toTypedArray())
+    private suspend fun insertBrand(baseEoList: List<Product_Brand>) = db.getProductBrandDao().insert(baseEoList)
 
     suspend fun downloadProductBrand(){
         withContext(Dispatchers.IO){
@@ -58,7 +58,7 @@ class DownloadRepository(
         return apiRequest { api.getAllCategories() }
     }
 
-    private suspend fun insertCategory(baseEoList: List<Product_Category>) = db.getProductCategoryDao().insert(*baseEoList.toTypedArray())
+    private suspend fun insertCategory(baseEoList: List<Product_Category>) = db.getProductCategoryDao().insert(baseEoList)
 
     suspend fun downloadProductCategory(){
         withContext(Dispatchers.IO){
@@ -76,7 +76,7 @@ class DownloadRepository(
         return apiRequest { api.getProductPriceList() }
     }
 
-    private suspend fun insertProductPrice(baseEoList: List<Product_Price_List>) = db.getProductPriceList().insert(*baseEoList.toTypedArray())
+    private suspend fun insertProductPrice(baseEoList: List<Product_Price_List>) = db.getProductPriceList().insert(baseEoList)
 
     suspend fun downloadProductPriceList(){
         withContext(Dispatchers.IO){
@@ -93,7 +93,7 @@ class DownloadRepository(
         return apiRequest { api.getAllCustomers(sm_Id) }
     }
 
-    private suspend fun insertCustomers(baseEoList: List<Customer>) = db.getCustomerDao().insert(*baseEoList.toTypedArray())
+    private suspend fun insertCustomers(baseEoList: List<Customer>) = db.getCustomerDao().insert(baseEoList)
 
     suspend fun downloadCustomers(sm_Id: Int){
         withContext(Dispatchers.IO){
@@ -111,7 +111,7 @@ class DownloadRepository(
        return apiRequest { api.getAllCurrencies() }
     }
 
-    private suspend fun insertCurrencies(baseEoList: List<Currency>) = db.getCurrencyDao().insert(*baseEoList.toTypedArray())
+    private suspend fun insertCurrencies(baseEoList: List<Currency>) = db.getCurrencyDao().insert(baseEoList)
 
     suspend fun downloadCurrency(){
         withContext(Dispatchers.IO){
@@ -130,7 +130,7 @@ class DownloadRepository(
         return apiRequest { api.getCurrencyRate() }
     }
 
-    private suspend fun insertCurrencyRate(baseEoList: List<Currency_Rate>) = db.getCurrencyRateDao().insert(*baseEoList.toTypedArray())
+    private suspend fun insertCurrencyRate(baseEoList: List<Currency_Rate>) = db.getCurrencyRateDao().insert(baseEoList)
 
     suspend fun downloadCurrencyRate(){
         withContext(Dispatchers.IO){
@@ -149,7 +149,7 @@ class DownloadRepository(
         return apiRequest { api.getAllRegions() }
     }
 
-    private suspend fun insertRegions(baseEoList: List<Region>) = db.getRegionDao().insert(*baseEoList.toTypedArray())
+    private suspend fun insertRegions(baseEoList: List<Region>) = db.getRegionDao().insert(baseEoList)
 
     suspend fun downloadRegions(){
         withContext(Dispatchers.IO){

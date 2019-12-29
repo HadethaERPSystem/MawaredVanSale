@@ -13,65 +13,60 @@ import com.mawared.mawaredvansale.data.db.entities.md.Product
 import com.mawared.mawaredvansale.databinding.ProductAutocompleteRowBinding
 import java.util.*
 
-class AutoCompleteProductAdapter(context: Context, @LayoutRes private val layoutResource: Int, private val productList: List<Product>):
-   ArrayAdapter<Product>(context, layoutResource, productList) {
-    var productListFull: List<Product>
+class AutoCompleteProductAdapter(context: Context, @LayoutRes private val layoutResource: Int, private val allProducts: List<Product>):
+   ArrayAdapter<Product>(context, layoutResource, allProducts) {
+    var mProducts: List<Product> = allProducts
     var lang: String = Locale.getDefault().toString().toLowerCase()
-    init {
-        productListFull = productList.map {
-            return@map it
-        }
-    }
+
 
     override fun getCount(): Int {
-        return productListFull.count()
+        return mProducts.count()
     }
 
     override fun getItem(position: Int): Product? {
-        return productListFull.get(position)
+        return mProducts.get(position)
     }
 
     override fun getItemId(position: Int): Long {
-        return position.toLong()
+        return mProducts.get(position).pr_Id.toLong()
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding: ProductAutocompleteRowBinding = DataBindingUtil.inflate(layoutInflater, R.layout.product_autocomplete_row, parent, false)
-        binding.setProduct(getItem(position))
+        binding.product = getItem(position)
         return binding.root
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun getFilter(): Filter {
-        return object : Filter() {
-            override fun publishResults(charSequence: CharSequence?, filterResults: FilterResults) {
-                clear()
-                addAll(filterResults.values as List<Product>)
+        return object : Filter(){
+            override fun publishResults(constraint: CharSequence?, filterResults: FilterResults?) {
+                mProducts = filterResults?.values as List<Product>
                 notifyDataSetChanged()
             }
 
-            override fun performFiltering(charSequence: CharSequence?): FilterResults {
-                val queryString = charSequence?.toString()?.toLowerCase(Locale.ENGLISH)
-                val filterResults = FilterResults()
-                filterResults.values = if (queryString==null || queryString.isEmpty())
-                    productListFull
-                else
-                    productList.filter {
-                        if(lang == "en_us"){
-                            it.pr_description!!.toLowerCase(Locale.ENGLISH).contains(queryString)
-                        }else{
-                            it.pr_description_ar!!.toLowerCase(Locale.ENGLISH).contains(queryString)
-                        }
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val queryString = constraint?.toString()
 
+                val filterResult = Filter.FilterResults()
+                filterResult.values = if(queryString == null || queryString.isEmpty())
+                    allProducts
+                else
+                    allProducts.filter {
+//                        if(lang == "en_us" && it.pr_description != null)
+//                            it.pr_description!!.contains(queryString)
+//                        else
+                            it.pr_description_ar!!.contains(queryString)
                     }
-                return filterResults
+                return filterResult
             }
 
             override fun convertResultToString(resultValue: Any?): CharSequence {
-                val prod = if(lang == "en_us") (resultValue as Product).pr_description else (resultValue as Product).pr_description_ar
-                return prod as CharSequence
+                val item = resultValue as Product
+                val name = item.pr_description_ar // if(lang == "en_us" && item.pr_description != null) item.pr_description else item.pr_description_ar
+                return name as CharSequence
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale.controller.sales.invoices.invoiceslist
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -55,20 +56,38 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         viewModel.navigator = this
         viewModel.msgListener = this
         viewModel.ctx = activity!!
+        viewModel.activity = activity as AppCompatActivity
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
         (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_invoice_list_title)
         (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
-
+        removeObservers()
         bindUI()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        removeObservers()
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
 
+    }
+
+    override fun onResume() {
+        removeObservers()
+        super.onResume()
+    }
+
+    override fun onStop() {
+        removeObservers()
+        super.onStop()
+    }
+
+    private fun removeObservers(){
+        viewModel.baseEo.removeObservers(this@InvoicesFragment)
+        viewModel.sales.removeObservers(this@InvoicesFragment)
+        viewModel.deleteRecord.removeObservers(this@InvoicesFragment)
     }
 
     // enable options menu in this fragment
@@ -100,7 +119,7 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         viewModel.sales.observe(this@InvoicesFragment, Observer { sl ->
             group_loading_invs.hide()
             if(sl == null) return@Observer
-            initRecyclerView(sl.toInvoiceRow())
+            initRecyclerView(sl.sortedByDescending { it.sl_doc_date }.toInvoiceRow())
         })
 
         viewModel.deleteRecord.observe(this@InvoicesFragment, Observer {
@@ -113,14 +132,12 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
                 onFailure(getString(R.string.msg_failure_delete))
             }
         })
+
         viewModel.baseEo.observe(this@InvoicesFragment, Observer {
-            if(it != null) {
-                //mPrint(it)
+            if(it != null && viewModel.isPrint) {
                 viewModel.onPrintTicket(it)
             }
-            else{
-                onFailure("Failure not loaded data from server for print it")
-            }
+
         })
         viewModel.setCustomer(null)
     }
@@ -172,6 +189,7 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     override fun onItemViewClick(baseEo: Sale) {
+
         val action = InvoicesFragmentDirections.actionInvoicesFragmentToAddInvoiceFragment()
         action.saleId = baseEo.sl_Id
         action.mode = "View"
@@ -201,6 +219,4 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         super.onDestroy()
         viewModel.cancelJob()
     }
-
-
 }

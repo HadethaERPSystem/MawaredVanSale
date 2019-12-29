@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale.controller.sales.invoices.addinvoice
 
+import android.content.Context
 import android.content.res.Resources
 import android.location.Location
 import android.view.View
@@ -17,30 +18,29 @@ import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.invoices.IInvoiceRepository
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 import java.util.*
 
 class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                           private val masterDataRepository: IMDataRepository) : BaseViewModel() {
 
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     private val _wr_id: Int = if(App.prefs.savedSalesman?.sm_warehouse_id != null)  App.prefs.savedSalesman!!.sm_warehouse_id!! else 0
     var mode: String = "Add"
     var msgListener: IMessageListener? = null
 
     var addNavigator: IAddNavigator<Sale_Items>? = null
-    var resources: Resources? = null
+    var ctx: Context? = null
 
     // google map location GPS
     var location: Location? = null
 
-    private val _baseEo: MutableLiveData<Sale> = MutableLiveData()
-    val savedEntity: LiveData<Sale> = Transformations
-        .switchMap(_baseEo){
-            saleRepository.insert(it)
-        }
+    var _baseEo: MutableLiveData<Sale> = MutableLiveData()
+    var allowed_discount: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private var tmpInvoiceItems: ArrayList<Sale_Items> = arrayListOf()
     private var tmpDeletedItems: ArrayList<Sale_Items> = arrayListOf()
@@ -55,9 +55,14 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     private var rowNo: Int = 0
     var docNo = MutableLiveData<String>()
     var docDate = MutableLiveData<String>()
+    var totalAmount : MutableLiveData<Double> = MutableLiveData()
+    var netTotal: MutableLiveData<Double> = MutableLiveData()
+    var totalDiscount: MutableLiveData<Double> = MutableLiveData()
 
     var searchQty: MutableLiveData<String> = MutableLiveData("1")
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
+    var giftQty: MutableLiveData<String> = MutableLiveData("")
+    var disPer: MutableLiveData<String> = MutableLiveData("")
 
     var _entityEo: Sale? = null
     private val sl_id : MutableLiveData<Int> = MutableLiveData()
@@ -66,9 +71,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
             saleRepository.getInvoice(it)
         }
 
-    val customerList by lazyDeferred {
-        masterDataRepository.getCustomers(_sm_id)
-    }
+    val customerList by lazyDeferred { masterDataRepository.getCustomer()  }
 
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
@@ -97,6 +100,11 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
             masterDataRepository.getProductPrice(it)
         }
 
+    var discount: Discount? = null
+    val mDiscount: LiveData<Discount> = Transformations
+        .switchMap(_prod_Id){
+            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id)
+        }
     var bcCurrency: Currency? = null
     private val _sale_cr_symbole: MutableLiveData<String> = MutableLiveData()
     val saleCurrency: LiveData<Currency> = Transformations
@@ -175,11 +183,12 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 val user = App.prefs.saveUser
                 val strDate = LocalDateTime.now()
                 val totalAmount: Double = tmpInvoiceItems.sumByDouble { it.sld_line_total!! }
-                val netAmount: Double = tmpInvoiceItems.sumByDouble { it.sld_line_total!! }
-
+                val totalDiscount: Double = tmpInvoiceItems.sumByDouble { if(it.sld_dis_value == null) 0.00 else it.sld_dis_value!! }
+                val netAmount: Double = tmpInvoiceItems.sumByDouble { it.sld_net_total!! }
+                val dtFull = docDate.value + " " + LocalTime.now()
                 val baseEo = Sale(
-                    0, "${docDate.value}", "${voucher?.vo_prefix}","", user?.cl_Id, user?.org_Id, mVoucher.value!!.vo_Id,  selectedCustomer?.cu_Id,
-                    _sm_id, null, totalAmount, 0.00, netAmount, bcCurrency?.cr_id, lcCurrency?.cr_id, rate,false,
+                    0, dtFull, "${voucher?.vo_prefix}","", user?.cl_Id, user?.org_Id, mVoucher.value!!.vo_Id,  selectedCustomer?.cu_Id,
+                    _sm_id, null, totalAmount, totalDiscount, netAmount, bcCurrency?.cr_id, lcCurrency?.cr_id, rate,false,
                     location?.latitude, location?.longitude,"$strDate", "${user?.id}", "$strDate", "${user?.id}"
                 )
                 if(mode != "Add"){
@@ -190,29 +199,47 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 }
                 baseEo.items.addAll(tmpInvoiceItems)
 
-                _baseEo.value = baseEo
+                Coroutines.main {
+                    try {
+                        val response = saleRepository.SaveOrUpdate(baseEo)
+                        if(response.isSuccessful){
+                            _baseEo.value = response.data
+                        }
+                        else{
+                            msgListener?.onFailure("Error message when try to save sale invoice. Error is ${response.message}")
+                        }
+                    }catch (e: Exception){
+                        msgListener?.onFailure("Error message when try to save sale invoice. Error is ${e.message}")
+                    }
+                }
             }catch (e: Exception){
-                msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
+                msgListener?.onFailure("${ctx!!.resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
             }
         }
     }
 
+    fun setTotals(){
+        totalAmount.postValue(invoiceItems.value!!.sumByDouble{ it.sld_line_total ?: 0.00 } )
+        totalDiscount.postValue(invoiceItems.value!!.sumByDouble { it.sld_dis_value  ?: 0.00 })
+        netTotal.postValue(invoiceItems.value!!.sumByDouble { it.sld_net_total ?: 0.00 })
+    }
+
     private fun isValid(): Boolean {
         var isSuccess = true
-        var msg: String? = null
+        var msg: String? = ""
         if (docDate.value == null) {
-            msg =  resources!!.getString(R.string.msg_error_invalid_date)
+            msg =  ctx!!.resources!!.getString(R.string.msg_error_invalid_date)
         }
         if (selectedCustomer == null) {
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_no_customer)
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_customer)
         }
 
         if (tmpInvoiceItems.count() == 0) {
-            msg += "\n\r" +resources!!.getString(R.string.msg_error_no_items)
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_items)
         }
 
         if (App.prefs.saveUser == null) {
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_no_currency)
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_currency)
         }
 
         if (!msg.isNullOrEmpty()) {
@@ -253,11 +280,11 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
                         clear("prod")
                     }else{
-                        msgListener?.onFailure(resources!!.getString(R.string.msg_error_fail_add_item))
+                        msgListener?.onFailure(ctx!!.resources!!.getString(R.string.msg_error_fail_add_item))
                     }
                 }
             }catch (e: Exception){
-                msgListener?.onFailure("${resources!!.getString(R.string.msg_error_add_item)} : ${e.message}")
+                msgListener?.onFailure("${ctx!!.resources!!.getString(R.string.msg_error_add_item)} : ${e.message}")
             }
         }
     }
@@ -267,18 +294,41 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
             rowNo++
             val strDate = LocalDateTime.now()
             val qty = searchQty.value!!.toDouble()
+            var gQty: Double = 0.00
+            if(giftQty.value!!.length > 0){
+                gQty = giftQty.value!!.toDouble()
+            }
             val lineTotal = unitPrice * qty
-            val netTotal = lineTotal
+            var disValue = 0.00
+            var lDisPer: Double = 0.00
+            if(disPer.value!!.length > 0){
+                lDisPer = disPer.value!!.toDouble()
+                disValue = (lDisPer / 100) * lineTotal
+            }
+            if(discount != null){
+                if(discount!!.pr_dis_type == "P"){
+                    lDisPer = discount!!.pr_dis_value!!
+                    disValue = (lDisPer / 100) * lineTotal
+                }else{
+                    lDisPer = (discount!!.pr_dis_value!! / lineTotal) * 100
+                    disValue = discount!!.pr_dis_value!! * qty
+                }
+            }
+
+
+            val netTotal = (lineTotal - disValue)
             val user = App.prefs.saveUser
             val mItem = tmpInvoiceItems.find { it.sld_prod_Id == selectedProduct!!.pr_Id }
 
             if (mItem == null) {
                 val item = Sale_Items(0, rowNo, null, selectedProduct!!.pr_Id,
-                   selectedProduct!!.pr_uom_Id, qty, 1.00, qty,
-                    unitPrice, lineTotal, 0.00, 0.00, netTotal, null, null, null,
-                    _wr_id,selectedProduct!!.pr_batch_no, selectedProduct!!.pr_expiry_date,"$strDate","${user?.id}", "$strDate", "${user?.id}"
+                   selectedProduct!!.pr_uom_Id, qty, 1.00, qty, gQty,
+                    unitPrice, lineTotal, lDisPer, disValue, netTotal, null, null, null,
+                    _wr_id,selectedProduct!!.pr_batch_no, selectedProduct!!.pr_expiry_date,  selectedProduct!!.pr_mfg_date,
+                    "$strDate","${user?.id}", "$strDate", "${user?.id}"
                 )
-                item.sld_prod_name = selectedProduct!!.pr_description_ar
+                item.sld_prod_name = selectedProduct!!.pr_description
+                item.sld_prod_name_ar = selectedProduct!!.pr_description_ar
                 item.sld_barcode =  selectedProduct!!.pr_barcode
 
                 tmpInvoiceItems.add(item)
@@ -292,25 +342,25 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
         }catch (e: Exception){
             complete(false)
-            msgListener?.onFailure("${resources!!.getString(R.string.msg_error_add_item)} : ${e.message}")
+            msgListener?.onFailure("${ctx!!.resources!!.getString(R.string.msg_error_add_item)} : ${e.message}")
         }
     }
 
     private fun isValidRow(): Boolean {
         var isSuccessful = true
-        var msg: String? = null
+        var msg: String? = ""
         val qty = searchQty.value?.toDouble()
         if (selectedProduct == null && searchBarcode.value != "") {
-            msg = resources!!.getString(R.string.msg_error_invalid_product)
+            msg = ctx!!.resources!!.getString(R.string.msg_error_invalid_product)
 
         }
         if (qty == null || qty <= 0.00) {
-            msg = "\n\r" + resources!!.getString(R.string.msg_error_invalid_qty)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_invalid_qty)
 
         }
 
         if (unitPrice == 0.00) {
-            msg = "\n\r" + resources!!.getString(R.string.msg_error_invalid_price)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_invalid_price)
         }
 
         if (!msg.isNullOrEmpty()) {

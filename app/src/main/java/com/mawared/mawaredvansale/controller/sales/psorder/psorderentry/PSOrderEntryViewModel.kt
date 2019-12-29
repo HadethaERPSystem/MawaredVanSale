@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale.controller.sales.psorder.psorderentry
 
+import android.content.Context
 import android.content.res.Resources
 import android.location.Location
 import android.view.View
@@ -16,16 +17,18 @@ import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.services.repositories.order.IOrderRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 
 class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
                             private val masterDataRepository: IMDataRepository) : BaseViewModel() {
 
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     var mode: String = "Add"
-    var resources: Resources? = null
+    var ctx: Context? = null
 
     // listener
     var msgListener: IMessageListener? = null
@@ -37,8 +40,9 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     var rowNo: Int = 0
     var docNo: MutableLiveData<String> = MutableLiveData()
     var docDate = MutableLiveData<String>()
-    var totalAmount: Double = 0.00
-    var netTotal: Double = 0.00
+    var totalAmount : MutableLiveData<Double> = MutableLiveData()
+    var netTotal: MutableLiveData<Double> = MutableLiveData()
+    var totalDiscount: MutableLiveData<Double> = MutableLiveData()
 
     var searchQty: MutableLiveData<String> = MutableLiveData("1")
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
@@ -48,11 +52,11 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
     //////////////////////////////////////////////////
     // for save header and detail to database
-    private val _baseEo: MutableLiveData<Sale_Order> = MutableLiveData()
-    val savedEntity: LiveData<Sale_Order> = Transformations
-        .switchMap(_baseEo){
-            orderRepository.insert(it)
-        }
+    val _baseEo: MutableLiveData<Sale_Order> = MutableLiveData()
+//    val savedEntity: LiveData<Sale_Order> = Transformations
+//        .switchMap(_baseEo){
+//            orderRepository.insert(it)
+//        }
 
     // for load order for edit or view
     var _entityEo: Sale_Order? = null
@@ -70,14 +74,12 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         get() = _soItems
 
     // for customer
-    val customerList by lazyDeferred {
-        masterDataRepository.getCustomers(_sm_id)
-    }
+    val customerList by lazyDeferred { masterDataRepository.getCustomer()  }
 
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
-            masterDataRepository.getProducts(it, App.prefs.savedSalesman?.sm_warehouse_id, "POS")
+            masterDataRepository.getProductsBySearch(it, "POS")
         }
 
     var rate : Double = 0.00
@@ -166,10 +168,11 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
                 val totalAmount: Double = tmpSOItems.sumByDouble { it.sod_line_total!! }
                 val netAmount: Double = tmpSOItems.sumByDouble { it.sod_line_total!! }
                 val strDate= LocalDateTime.now()
+                val dtFull = docDate.value + " " + LocalTime.now()
 
-                val baseEo = Sale_Order( user?.cl_Id, user?.org_Id,0, docDate.value,
+                val baseEo = Sale_Order( user?.cl_Id, user?.org_Id,0, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, selectedCustomer!!.cu_Id, null, totalAmount, netAmount, bcCurrency!!.cr_id, rate,
+                    _sm_id, selectedCustomer!!.cu_Id, null, totalAmount, 0.00, netAmount, bcCurrency!!.cr_id, rate,
                     false, location?.latitude, location?.longitude, "$strDate",
                     "${user?.id}", "$strDate", "${user?.id}"
                 )
@@ -183,31 +186,43 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
                 baseEo.items.addAll(tmpSOItems)
 
-                _baseEo.value = baseEo
+                Coroutines.main {
+                    try {
+                        val response = orderRepository.SaveOrUpdate(baseEo)
+                        if(response.isSuccessful){
+                            _baseEo.value = response.data
+                        }
+                        else{
+                            msgListener?.onFailure("Error message when try to save pre-sale order. Error is ${response.message}")
+                        }
+                    }catch (e: Exception){
+                        msgListener?.onFailure("Error message when try to save pre-sale order. Error is ${e.message}")
+                    }
+                }
 
             }catch (e: Exception){
-                msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
+                msgListener?.onFailure("${ctx!!.resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
             }
         }
     }
 
     private fun isValid(): Boolean{
         var isSuccessful = true
-        var msg: String? = null
+        var msg: String? = ""
 
         if (docDate.value == null) {
-            msg =  resources!!.getString(R.string.msg_error_invalid_date)
+            msg =  ctx!!.resources!!.getString(R.string.msg_error_invalid_date)
         }
         if (selectedCustomer == null) {
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_no_customer)
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_customer)
         }
 
         if (tmpSOItems.count() == 0) {
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_no_items)
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_items)
         }
 
         if (App.prefs.saveUser == null) {
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_no_currency)
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_currency)
         }
 
         if (!msg.isNullOrEmpty()) {
@@ -221,8 +236,9 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         val strDate: LocalDate = LocalDate.now()
         docNo.value = ""
         docDate.value = returnDateString(strDate.toString())
-        totalAmount = 0.00
-        netTotal = 0.00
+        totalAmount.value = 0.00
+        netTotal.value = 0.00
+        totalDiscount.value = 0.00
         clear("cu")
         clear("prod")
     }
@@ -237,11 +253,11 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
                         searchQty.value = "1"
                         clear("prod")
                     }else{
-                        msgListener?.onFailure(resources!!.getString(R.string.msg_error_fail_add_item))
+                        msgListener?.onFailure(ctx!!.resources!!.getString(R.string.msg_error_fail_add_item))
                     }
                 }
             }catch (e: Exception){
-                msgListener?.onFailure("${resources!!.getString(R.string.msg_error_add_item)} : ${e.message}")
+                msgListener?.onFailure("${ctx!!.resources!!.getString(R.string.msg_error_add_item)} : ${e.message}")
             }
         }
     }
@@ -258,7 +274,8 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
             if(mItem == null){
                 val itemEo = Sale_Order_Items(rowNo, 0, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, qty, 1.00, qty, unitPrice,
-                    lineTotal, null, null, netTotal, null, null, null,"${strDate}",
+                    lineTotal, null, null, netTotal, null, null, null,null,
+                    null, null, null,"${strDate}",
                     "${user?.id}", "${strDate}", "${user?.id}")
                 itemEo.sod_prod_name = selectedProduct!!.pr_description_ar
                 itemEo.sod_barcode = selectedProduct!!.pr_barcode
@@ -281,18 +298,18 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
     private fun isValidRow(): Boolean{
         var isSuccessful = true
-        var msg: String? = null
+        var msg: String? = ""
         val qty = searchQty.value?.toDouble()
         if(qty === null || qty == 0.00){
-            msg = resources!!.getString(R.string.msg_error_invalid_qty)
+            msg = ctx!!.resources!!.getString(R.string.msg_error_invalid_qty)
         }
 
         if (selectedProduct == null && searchBarcode.value != "") {
-            msg = "\n\r" + resources!!.getString(R.string.msg_error_invalid_product)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_invalid_product)
         }
 
         if (unitPrice == 0.00) {
-            msg = "\n\r" + resources!!.getString(R.string.msg_error_invalid_price)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_invalid_price)
         }
 
         if(!msg.isNullOrEmpty()){
@@ -303,6 +320,12 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         return isSuccessful
     }
 
+
+    fun setTotals(){
+        totalAmount.postValue(soItems.value!!.sumByDouble{ it.sod_line_total ?: 0.00 } )
+        totalDiscount.postValue(soItems.value!!.sumByDouble { it.sod_disvalue  ?: 0.00 })
+        netTotal.postValue(soItems.value!!.sumByDouble { it.sod_net_total ?: 0.00 })
+    }
 
     fun onItemDelete(orderItem: Sale_Order_Items) {
         addNavigator?.onDelete(orderItem)

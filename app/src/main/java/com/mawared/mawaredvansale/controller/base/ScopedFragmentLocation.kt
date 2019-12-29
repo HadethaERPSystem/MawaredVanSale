@@ -12,6 +12,7 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -351,5 +352,13 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
         }
     }
 
+    fun hideKeyboard(){
+
+        val inputManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        if(inputManager.isAcceptingText){
+            inputManager.hideSoftInputFromWindow(view!!.windowToken, 0)
+        }
+    }
 
 }

@@ -7,7 +7,9 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order_Items
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
+import com.mawared.mawaredvansale.services.netwrok.responses.SingleRecResponse
 import com.mawared.mawaredvansale.utilities.ApiException
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -43,7 +45,17 @@ class OrderRepositoryImp(private val api: ApiService): IOrderRepository, SafeApi
         }
     }
 
-    override fun getOrder(sm_Id: Int, cu_Id: Int?): LiveData<List<Sale_Order>> {
+    override suspend fun SaveOrUpdate(baseEo: Sale_Order): SingleRecResponse<Sale_Order> {
+        try {
+            val response = apiRequest { api.insertOrder(baseEo) }
+            return response
+        }catch (e: NoConnectivityException){
+            throw e
+        }catch (e: ApiException){
+            throw e
+        }
+    }
+    override fun getOrder(sm_Id: Int, cu_Id: Int?, vo_code: String): LiveData<List<Sale_Order>> {
         job = Job()
         return object : LiveData<List<Sale_Order>>(){
             override fun onActive() {
@@ -51,7 +63,7 @@ class OrderRepositoryImp(private val api: ApiService): IOrderRepository, SafeApi
                 job?.let {
                     CoroutineScope(IO).launch {
                         try {
-                            val response = apiRequest { api.getOrders(sm_Id, cu_Id) }
+                            val response = apiRequest { api.getOrders(sm_Id, cu_Id, vo_code) }
                             withContext(Main) {
                                 value = response.data
                                 job?.complete()

@@ -22,9 +22,10 @@ data class Payable(
     var py_lc_cr_Id: Int?,
     var py_rate: Double?,
     var py_comment: String?,
-    var py_isDeleted: String?,
+    var py_isDeleted: Boolean?,
     var py_latitude: Double?,
     var py_longitude: Double?,
+    var py_ref_Id: Int?,
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime

@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteProductAdapter
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.data.db.entities.md.Product
@@ -50,6 +50,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.psorder_entry_fragment, container, false)
 
+        viewModel.ctx = activity!!
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.docDate.value = "${LocalDate.now()}"
@@ -63,7 +64,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_order_entry_title)
+        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_psorder_entry_title)
         (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
         if(arguments != null){
             val args = PSOrderEntryFragmentArgs.fromBundle(arguments!!)
@@ -89,6 +90,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
+                hideKeyboard()
                 showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
                     onStarted()
                     viewModel.location = getLocationData()
@@ -96,6 +98,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
                 }
             }
             R.id.close_btn -> {
+                hideKeyboard()
                 activity!!.onBackPressed()
             }
         }
@@ -104,7 +107,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
 
     fun bindUI() = GlobalScope.launch(Main){
 
-        viewModel.savedEntity.observe(this@PSOrderEntryFragment, Observer {
+        viewModel._baseEo.observe(this@PSOrderEntryFragment, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -130,7 +133,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
             group_loading_order_entry.hide()
             if(it == null) return@Observer
             initRecyclerView(it.toOrderItemRow())
-
+            viewModel.setTotals()
         })
 
         // bind customer to autocomplete
@@ -191,7 +194,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = AutoCompleteCustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
@@ -209,7 +212,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
 
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = AutoCompleteProductAdapter(context!!.applicationContext,
+        val adapter = AutoCompleteProductAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             products
         )

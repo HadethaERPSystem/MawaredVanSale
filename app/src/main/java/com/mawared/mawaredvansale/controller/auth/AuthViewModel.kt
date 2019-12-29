@@ -38,16 +38,22 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
         Coroutines.main{
             try {
                 val authResponse = repository.login(ur)
+
                 authResponse.user?.let {
+                    it.uid = 0
                     authListener?.onSuccess(it)
-                    repository.saveUser(it)
+
                     App.prefs.saveUser = authResponse.user
                     App.prefs.isLoggedIn = true
-                    App.prefs.savedVanCode = "VAN-00001"
-                    val salesman = repository.salesmanGet("VAN-00001")
+
+                    val salesman = repository.salesmanByUser(App.prefs.saveUser!!.id)
                     if(salesman != null){
                         App.prefs.savedSalesman = salesman
+                        App.prefs.savedVanCode = salesman.sm_van_code
+                    }else{
+                        App.prefs.savedSalesman = null
                     }
+                    repository.saveUser(it)
                     return@main
                 }
                 authListener?.onFailure(authResponse.message!!)

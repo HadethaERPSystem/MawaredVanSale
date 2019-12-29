@@ -25,6 +25,7 @@ data class Sale_Order (
     var so_customerId: Int?,       // Customer Id
     var so_regionId: Int?,         // region Id
     var so_total_amount: Double?,  // total sale amount
+    var so_total_discount: Double?,
     var so_net_amount: Double?,    // net sale amount
     var so_currencyId: Int?,       // currency code
     var so_rate: Double?,          // Exchange Rate

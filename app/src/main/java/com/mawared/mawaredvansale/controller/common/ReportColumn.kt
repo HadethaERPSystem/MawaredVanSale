@@ -1,10 +1,9 @@
 package com.mawared.mawaredvansale.controller.common
 
-import com.itextpdf.text.BaseColor
 import com.itextpdf.text.Font
 import java.io.Serializable
 
-class Column(
+class ReportColumn(
     val text: String?,
     val align: Int?,
     val width: Int?,
@@ -15,3 +14,4 @@ class Column(
     var styleType: String? = "L",  // T means Label , V means Value
    var boderWidth: Float = 0f
 ): Serializable
+

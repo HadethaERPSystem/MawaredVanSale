@@ -10,17 +10,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.mawared.mawaredvansale.App
 
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.adapters.atc_Whs_Adapter
+import com.mawared.mawaredvansale.controller.adapters.atc_sm_Adapter
 import com.mawared.mawaredvansale.controller.common.getLanguageEncode
+import com.mawared.mawaredvansale.data.db.entities.md.Salesman
+import com.mawared.mawaredvansale.data.db.entities.md.Warehouse
+import com.mawared.mawaredvansale.databinding.SettingsFragmentBinding
 import com.tbruyelle.rxpermissions.RxPermissions
-import kotlinx.android.synthetic.main.settings_fragment.*
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 import print.Print
 import print.PublicFunction
-import java.util.HashMap
 import rx.functions.Action1
 
 class SettingsFragment : Fragment() {
@@ -37,11 +44,14 @@ class SettingsFragment : Fragment() {
     private lateinit var spnAr: Spinner
 
     private lateinit var viewModel: SettingsViewModel
+    lateinit var binding: SettingsFragmentBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
+        binding = DataBindingUtil.inflate(inflater, R.layout.settings_fragment, container, false)
         val view = inflater.inflate(R.layout.settings_fragment, container, false)
+
         spnLatin = view.findViewById(R.id.spnCodepageLatin)
         spnAr = view.findViewById(R.id.spnCodepageAr)
         et_PrinterPort = view.findViewById(R.id.et_printer_port)
@@ -76,8 +86,9 @@ class SettingsFragment : Fragment() {
         ctx = activity!!.applicationContext
 
         iniSetting()
+        bindUI()
 
-        return view
+        return binding.root
     }
 
     private fun saveSettings() {
@@ -174,4 +185,52 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    fun bindUI()= GlobalScope.launch(Main){
+        // bind products to autocomplete
+        viewModel.salesmanList.observe(this@SettingsFragment, Observer {
+            if(it == null) return@Observer
+            initSalesmanAutocomplete(it)
+        })
+
+        viewModel.warEoList.observe(this@SettingsFragment, Observer {
+            if(it == null) return@Observer
+            initWarehouseAutocomplete(it)
+        })
+    }
+
+    // init salesman autocomplete view
+    private fun initSalesmanAutocomplete(list: List<Salesman>){
+        val adapter = atc_sm_Adapter(context!!.applicationContext,
+            R.layout.support_simple_spinner_dropdown_item,
+            list
+        )
+        binding.atcSalesman.threshold = 0
+        binding.atcSalesman.dropDownWidth = resources.displayMetrics.widthPixels
+        binding.atcSalesman.setAdapter(adapter)
+        binding.atcSalesman.setOnFocusChangeListener { _, b ->
+            if(b) binding.atcSalesman.showDropDown()
+        }
+        binding.atcSalesman.setOnItemClickListener { _, _, position, _ ->
+            viewModel.selectedSalesman = adapter.getItem(position)
+            if(viewModel.selectedSalesman != null){
+                viewModel.setWhsId(viewModel.selectedSalesman!!.sm_id)
+            }
+        }
+
+    }
+
+    // init salesman autocomplete view
+    private fun initWarehouseAutocomplete(list: List<Warehouse>){
+        val adapter = atc_Whs_Adapter(context!!.applicationContext,
+            R.layout.support_simple_spinner_dropdown_item,
+            list
+        )
+        binding.atcVansale.dropDownWidth = resources.displayMetrics.widthPixels
+        binding.atcVansale.setAdapter(adapter)
+
+        binding.atcVansale.setOnItemClickListener { _, _, position, _ ->
+            viewModel.selectedWarehouse = adapter.getItem(position)
+        }
+
+    }
 }

@@ -86,7 +86,7 @@ class App : Application(), KodeinAware {
 
         bind() from singleton { DownloadRepository(instance(), instance()) }
 
-        bind<IMDataRepository>() with singleton { MDataRepositoryImp(instance()) }
+        bind<IMDataRepository>() with singleton { MDataRepositoryImp(instance(), instance()) }
 
         bind<IInvoiceRepository>() with singleton { InvoiceRepositoryImp(instance()) }
 

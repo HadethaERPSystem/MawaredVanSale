@@ -67,7 +67,7 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_order_list_title)
+        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_psorder_list_title)
         (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
     }
 

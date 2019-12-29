@@ -18,8 +18,11 @@ data class Product (
     var pr_qty: Double?,
     var pr_unit_price: Double?,
     var pr_batch_no: String?,
-    var pr_expiry_date: String?
+    var pr_expiry_date: String?,
+    var pr_mfg_date: String?,
+    var pr_wr_Id: Int?
 ){
     @PrimaryKey(autoGenerate = false)
     var pr_Id:  Int = 0
+    var pr_wr_name: String? = null
 }

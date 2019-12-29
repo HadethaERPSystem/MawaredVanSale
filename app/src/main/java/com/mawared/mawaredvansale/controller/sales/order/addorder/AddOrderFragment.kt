@@ -10,9 +10,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteProductAdapter
-import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
+import com.mawared.mawaredvansale.controller.adapters.atc_prod_expiry_Adapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.data.db.entities.md.Product
@@ -50,7 +49,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.add_order_fragment, container, false)
-
+        viewModel.ctx = activity!!
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.docDate.value = "${LocalDate.now()}"
@@ -90,6 +89,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
+                hideKeyboard()
                 showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
                     onStarted()
                     viewModel.location = getLocationData()
@@ -97,6 +97,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
                 }
             }
             R.id.close_btn -> {
+                hideKeyboard()
                 activity!!.onBackPressed()
             }
         }
@@ -105,7 +106,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
     fun bindUI() = GlobalScope.launch(Main){
 
-        viewModel.savedEntity.observe(this@AddOrderFragment, Observer {
+        viewModel._baseEo.observe(this@AddOrderFragment, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -131,7 +132,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
             group_loading_order_entry.hide()
             if(it == null) return@Observer
             initRecyclerView(it.toOrderItemRow())
-
+            viewModel.setTotals()
         })
 
         // bind customer to autocomplete
@@ -164,7 +165,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
             viewModel.bcCurrency = it
         })
         viewModel.setTerm("")
-        viewModel.setVoucherCode("PSOrder")
+        viewModel.setVoucherCode("SaleOrder")
         viewModel.setSaleCurrency("$")
         viewModel.setCurrencyId(App.prefs.saveUser!!.cr_Id!!)
         viewModel.setItems(null)
@@ -192,7 +193,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = AutoCompleteCustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
@@ -210,7 +211,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = AutoCompleteProductAdapter(context!!.applicationContext,
+        val adapter = atc_prod_expiry_Adapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             products
         )

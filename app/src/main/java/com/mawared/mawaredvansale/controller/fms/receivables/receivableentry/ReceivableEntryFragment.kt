@@ -9,8 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
-import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
@@ -46,9 +45,11 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.receivable_entry_fragment, container, false)
 
+        viewModel.ctx = activity!!
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.doc_date.value = "${LocalDate.now()}"
+        viewModel.ctx = activity!!
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
@@ -85,6 +86,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
+                hideKeyboard()
                 showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
                     onStarted()
                     viewModel.location = getLocationData()
@@ -92,15 +94,31 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
                 }
             }
             R.id.close_btn -> {
+                hideKeyboard()
                 activity!!.onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onResume() {
+        removeObservers()
+        super.onResume()
+    }
+
+    override fun onStop() {
+        removeObservers()
+        super.onStop()
+    }
+
+    private fun removeObservers() {
+        viewModel._baseEo.removeObservers(this)
+        viewModel.entityEo.removeObservers(this)
+
+    }
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
-        viewModel.savedEntity.observe(this@ReceivableEntryFragment, Observer {
+        viewModel._baseEo.observe(this@ReceivableEntryFragment, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -151,15 +169,16 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
             viewModel.lcCurrency = it
         })
 
-        viewModel.setVoucherCode("Receivable")
+        viewModel.setVoucherCode("Recievable")
         viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
         viewModel.setSaleCurrency("$")
         viewModel.setSecondCurrency("IQD")
+        group_loading.hide()
     }
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = AutoCompleteCustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
@@ -200,17 +219,18 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
     }
 
     override fun onStarted() {
-       group_loading.show()
+        group_loading.show()
     }
 
     override fun onSuccess(message: String) {
+
         group_loading.hide()
-        mcv_receivable.snackbar(message)
+        addReceivable_layout.snackbar(message)
     }
 
     override fun onFailure(message: String) {
         group_loading.hide()
-        mcv_receivable.snackbar(message)
+        addReceivable_layout.snackbar(message)
     }
 
     override fun onDestroy() {

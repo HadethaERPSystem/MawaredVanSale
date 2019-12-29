@@ -11,6 +11,8 @@ object Common {
                     + File.separator
                     + context.resources.getString(R.string.app_name)
                     + File.separator
+//                    + "assets"
+//                    + File.separator
         )
 
         if (!dir.exists()) {

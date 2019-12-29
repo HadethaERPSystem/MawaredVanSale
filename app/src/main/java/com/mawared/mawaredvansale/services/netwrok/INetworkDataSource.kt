@@ -66,7 +66,7 @@ interface INetworkDataSource {
     suspend fun invoiceInsert(baseEo: Sale)
     // Sale Order
     val downloadOrders: LiveData<List<Sale_Order>>
-    suspend fun ordersGetList(sm_Id: Int, customer_Id: Int?)
+    suspend fun ordersGetList(sm_Id: Int, customer_Id: Int?, vo_code: String)
 
     val downloadOrderItems: LiveData<List<Sale_Order_Items>>
     suspend fun orderItemsGetByOrderId(so_Id: Int)

@@ -54,7 +54,7 @@
                     android:layout_marginEnd="2dp"
                     android:gravity="start"
                     android:padding="5dp"
-                    android:text="@{String.valueOf(entityEo.rcv_doc_no)}"
+                    android:text="@{String.valueOf(entityEo.rcv_ref_no)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"

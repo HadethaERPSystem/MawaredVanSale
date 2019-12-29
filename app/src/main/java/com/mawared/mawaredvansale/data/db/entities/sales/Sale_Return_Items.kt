@@ -23,6 +23,9 @@ data class Sale_Return_Items(
     var srd_promotionId: Int?,      // Promotion Id
     var srd_warehouseId: Int?,       // Salesman Warehouse Id
     var srd_ref_rowNo: Int?,
+    var srd_batch_no: String?,
+    var srd_expiry_date: String?,
+    var srd_mfg_date: String?,
     var created_at: String?,    // created datetime
     var created_by: String?,    // created user
     var updated_at: String?,    // Updated datetime

@@ -35,13 +35,17 @@ data class Sale(
     @PrimaryKey(autoGenerate = true)
     var sl_Id:  Int = 0
     var sl_org_name: String? = null
+    var sl_org_phone: String? = null
     var sl_customer_name: String? = null
     var sl_salesman_name: String? = null
     var sl_region_name: String? = null
     var sl_cr_symbol: String? = null
+    var sl_cr_name: String? = null
     var sl_lcr_symbol: String? = null
     var sl_vo_name: String? = null
     var sl_vo_code: String? = null
+    var sl_contact_name: String? = null
+    var sl_customer_phone: String? = null
     @Ignore
     var items: ArrayList<Sale_Items> = arrayListOf()
     @Ignore

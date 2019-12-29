@@ -35,6 +35,20 @@ class UserRepository(
             return null
         }
     }
+
+    suspend fun salesmanByUser(userId: Int): Salesman?{
+        try {
+            val response = apiRequest { api.salesmanGetByUser(userId) }
+            if(response.isSuccessful) {
+                return response.data
+            }
+            return null
+        }catch (e: NoConnectivityException){
+            Log.e("Connectivity", "No internat connection", e)
+            return null
+        }
+    }
+
     suspend fun saveUser(user: User) = db.getUserDao().upsert(user)
 
     suspend fun updateUser(user: User) = db.getUserDao().update(user)
