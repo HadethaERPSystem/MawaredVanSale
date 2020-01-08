@@ -1,6 +1,5 @@
 package com.mawared.mawaredvansale.controller.sales.invoices.invoiceslist
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -16,8 +15,6 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.databinding.FragmentInvoicesBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -49,7 +46,7 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        loadLocale()
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_invoices, container, false)
 
@@ -116,14 +113,14 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Main) {
-        viewModel.sales.observe(this@InvoicesFragment, Observer { sl ->
-            group_loading_invs.hide()
+        viewModel.sales.observe(viewLifecycleOwner, Observer { sl ->
+            llProgressBar.visibility = View.GONE
             if(sl == null) return@Observer
             initRecyclerView(sl.sortedByDescending { it.sl_doc_date }.toInvoiceRow())
         })
 
-        viewModel.deleteRecord.observe(this@InvoicesFragment, Observer {
-            group_loading_invs.hide()
+        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
+            llProgressBar.visibility = View.GONE
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))
                 viewModel.setCustomer(null)
@@ -133,7 +130,7 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
             }
         })
 
-        viewModel.baseEo.observe(this@InvoicesFragment, Observer {
+        viewModel.baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null && viewModel.isPrint) {
                 viewModel.onPrintTicket(it)
             }
@@ -161,16 +158,16 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     override fun onStarted() {
-        group_loading_invs.show()
+        llProgressBar.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading_invs.hide()
+        llProgressBar.visibility = View.GONE
         inv_list_lc.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading_invs.hide()
+        llProgressBar.visibility = View.GONE
         inv_list_lc.snackbar(message)
     }
 

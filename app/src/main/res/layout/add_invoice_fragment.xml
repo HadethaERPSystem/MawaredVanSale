@@ -13,60 +13,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.Group
-                android:id="@+id/group_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                app:constraint_referenced_ids="progressBar_loading,tv_loading"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        <ProgressBar
-                android:id="@+id/progressBar_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:visibility="invisible"
-                android:indeterminate="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-                android:id="@+id/tv_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/lbl_loading"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressBar_loading"
-                app:layout_constraintVertical_bias="0.0" />
-
         <!--    <include layout="@layout/sale_header"/>-->
         <com.google.android.material.card.MaterialCardView
-                android:id="@+id/mcv_invoices"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp"
-                app:cardMaxElevation="6dp"
-                app:contentPadding="5dp"
-                app:cardBackgroundColor="@android:color/white"
-                android:layout_margin="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/mcv_invoices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="1dp"
+            app:cardMaxElevation="1dp"
+            app:contentPadding="5dp"
+            app:cardBackgroundColor="@android:color/white"
+            android:layout_margin="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -149,6 +109,7 @@
                     android:fontFamily="@font/droid_kufi_regular"
                     android:hint="@string/lbl_prod_name"
                     android:textSize="12sp"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
                     app:layout_constraintEnd_toEndOf="@+id/atc_customer"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
@@ -176,6 +137,7 @@
                     android:inputType="text"
                     android:text="@={viewmodel.searchBarcode}"
                     android:textSize="12sp"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/atc_product" />
@@ -191,6 +153,7 @@
                     android:text="@={viewmodel.searchQty}"
                     android:textAlignment="center"
                     android:textSize="12sp"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
                     app:layout_constraintEnd_toStartOf="@+id/btn_AddItem"
                     app:layout_constraintTop_toBottomOf="@+id/edtxt_barcode" />
                 <!--Gift-->
@@ -204,6 +167,7 @@
                     android:text="@={viewmodel.giftQty}"
                     android:textAlignment="center"
                     android:textSize="12sp"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
                     app:layout_constraintEnd_toStartOf="@+id/edtxt_Qty"
                     app:layout_constraintTop_toTopOf="@+id/edtxt_Qty" />
                 <!--DisPer-->
@@ -228,6 +192,7 @@
                     android:layout_height="50dp"
                     android:contentDescription="@string/btn_add_item_caption"
                     android:onClick="@{()-> viewmodel.onAddItem()}"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
                     app:layout_constraintBottom_toBottomOf="@+id/edtxt_Qty"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/edtxt_Qty"
@@ -329,6 +294,12 @@
             app:layout_constraintTop_toBottomOf="@+id/rcv_order_items"
             tools:ignore="SmallSp"
             tools:text="" />
+
+        <include
+            android:id="@+id/llProgressBar"
+            android:visibility="visible"
+            layout="@layout/layout_progress_bar_with_text"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

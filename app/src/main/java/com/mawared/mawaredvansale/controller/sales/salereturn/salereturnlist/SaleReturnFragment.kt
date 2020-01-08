@@ -85,12 +85,12 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
 
     private fun bindUI() = GlobalScope.launch(Main) {
 
-        viewModel.saleReturns.observe(this@SaleReturnFragment, Observer {
+        viewModel.saleReturns.observe(viewLifecycleOwner, Observer {
             group_loading.hide()
-            initRecyclerView(it.toSaleReturnRow())
+            initRecyclerView(it.sortedByDescending { it.sr_doc_date }.toSaleReturnRow())
         })
 
-        viewModel.deleteRecord.observe(this@SaleReturnFragment, Observer {
+        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
             group_loading.hide()
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))

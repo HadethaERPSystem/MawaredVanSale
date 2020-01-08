@@ -6,13 +6,15 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Delivery
 import com.mawared.mawaredvansale.data.db.entities.sales.Delivery_Items
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
+import com.mawared.mawaredvansale.services.netwrok.responses.SingleRecResponse
 import com.mawared.mawaredvansale.utilities.ApiException
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import kotlinx.coroutines.*
 import java.lang.Exception
 
 class DeliveryRepositoryImp(private val api: ApiService): IDeliveryRepository, SafeApiRequest() {
     var job: CompletableJob? = null
-    override fun update(baseEo: Delivery): LiveData<Delivery> {
+    override fun update1(baseEo: Delivery): LiveData<Delivery> {
         job = Job()
         return object : LiveData<Delivery>() {
             override fun onActive() {
@@ -35,6 +37,17 @@ class DeliveryRepositoryImp(private val api: ApiService): IDeliveryRepository, S
                     }
                 }
             }
+        }
+    }
+
+    override suspend fun update(baseEo: Delivery): SingleRecResponse<Delivery> {
+        try {
+            val response = apiRequest { api.updateDelivery(baseEo) }
+            return response
+        }catch (e: NoConnectivityException){
+            throw e
+        }catch (e: ApiException){
+            throw e
         }
     }
 

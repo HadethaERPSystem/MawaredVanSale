@@ -32,6 +32,7 @@ data class Sale_Order (
     var so_isDeleted: Boolean?,
     var so_latitude: Double?,
     var so_longitude: Double?,
+    var so_price_cat_Id: Int?,
     var created_at: String?,       // created datetime
     var created_by: String?,       // created user
     var updated_at: String?,       // Updated datetime
@@ -51,6 +52,7 @@ data class Sale_Order (
     var so_vo_name: String? = null
     @Ignore
     var so_region_name: String? = null
+    var so_price_cat_code: String? = null
     @Ignore
     var items: ArrayList<Sale_Order_Items> = arrayListOf()
 

@@ -20,7 +20,8 @@ data class Product (
     var pr_batch_no: String?,
     var pr_expiry_date: String?,
     var pr_mfg_date: String?,
-    var pr_wr_Id: Int?
+    var pr_wr_Id: Int?,
+    var pr_prc_cat_Id: Int?
 ){
     @PrimaryKey(autoGenerate = false)
     var pr_Id:  Int = 0

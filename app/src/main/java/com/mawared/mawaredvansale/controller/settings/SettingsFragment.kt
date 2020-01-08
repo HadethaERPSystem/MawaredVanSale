@@ -187,12 +187,12 @@ class SettingsFragment : Fragment() {
 
     fun bindUI()= GlobalScope.launch(Main){
         // bind products to autocomplete
-        viewModel.salesmanList.observe(this@SettingsFragment, Observer {
+        viewModel.salesmanList.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
             initSalesmanAutocomplete(it)
         })
 
-        viewModel.warEoList.observe(this@SettingsFragment, Observer {
+        viewModel.warEoList.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
             initWarehouseAutocomplete(it)
         })

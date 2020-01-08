@@ -146,6 +146,7 @@
                         android:fontFamily="@font/droid_kufi_regular"
                         android:hint="@string/lbl_prod_name"
                         android:textSize="12sp"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         app:layout_constraintEnd_toStartOf="@+id/btn_cancelProduct"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
@@ -169,6 +170,7 @@
                         android:layout_marginStart="10dp"
                         android:inputType="text"
                         android:hint="@string/lbl_barcode"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         android:text="@={viewmodel.searchBarcode}"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toStartOf="@+id/edtxt_Qty"
@@ -186,6 +188,7 @@
                         android:textAlignment="center"
                         android:textSize="12sp"
                         android:inputType="numberDecimal"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         app:layout_constraintEnd_toStartOf="@+id/btn_AddItem"
                         app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
                 <!-- Image button for add item -->
@@ -195,6 +198,7 @@
                         android:layout_height="50dp"
                         android:contentDescription="@string/btn_add_item_caption"
                         android:onClick="@{()-> viewmodel.onAddItem()}"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         app:layout_constraintBottom_toBottomOf="@+id/edtxt_Qty"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/edtxt_Qty"

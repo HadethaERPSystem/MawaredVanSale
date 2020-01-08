@@ -72,7 +72,8 @@
                     android:fontFamily="@font/droid_kufi_regular"
                     android:text="@string/lbl_is_delivered"
                     android:textSize="10sp"
-                    android:checked="@{viewmodel.isDelivered}"
+                    android:checked="@={entityEo.dld_isDeliverd}"
+                    android:enabled="false"
                     app:layout_constraintEnd_toStartOf="@+id/prod_name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/lbl_prod_name" />

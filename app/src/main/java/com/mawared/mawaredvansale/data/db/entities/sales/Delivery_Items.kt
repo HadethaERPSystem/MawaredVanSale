@@ -9,6 +9,7 @@ data class Delivery_Items(
     var dld_dl_Id: Int?,        //Transfer or delivery header Id
     var dld_prod_Id: Int?,        //Product Id
     var dld_pack_qty: Double?,  //Pack Quantity
+    var dld_pack_size: Double?,
     var dld_unit_qty: Double?,  //Unit Quantity
     var dld_unit_price: Double?,//Unit Price
     var dld_pack_price: Double?,//Pack Price
@@ -16,7 +17,7 @@ data class Delivery_Items(
     var dld_dis_per: Double?,  // Discount Percentage
     var dld_dis_value: Double?,  // Discount Value
     var dld_net_total: Double?,
-    var dld_isDeliverd: String?,
+    var dld_isDeliverd: Boolean?,
     var dld_qty: Double?,
     var dld_lotno: String?,     //Lot Number
     var dld_batch_no: String?,
@@ -26,5 +27,7 @@ data class Delivery_Items(
     @PrimaryKey(autoGenerate = false)
     var dld_Id:  Int = 0
     var dld_prod_name: String? = null
+    var dld_barcode: String? = null
+    var dld_part_no: String? = null
     var dld_uom_name: String? = null
 }

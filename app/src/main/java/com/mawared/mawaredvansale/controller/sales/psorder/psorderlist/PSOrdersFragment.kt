@@ -91,12 +91,12 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     }
 
     private fun bindUI() = GlobalScope.launch(Main) {
-        viewModel.orders.observe(this@PSOrdersFragment, Observer {
+        viewModel.orders.observe(viewLifecycleOwner, Observer {
             group_loading.hide()
-            initRecyclerView(it.toOrderRow())
+            initRecyclerView(it.sortedByDescending { it.so_date }.toOrderRow())
         })
 
-        viewModel.deleteRecord.observe(this@PSOrdersFragment, Observer {
+        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
             group_loading.hide()
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))

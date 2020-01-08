@@ -86,13 +86,13 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
 
     // binding recycler view
     private fun bindUI() {
-        viewModel.baseEoList.observe(this, Observer {
-            group_loading.hide()
+        viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
+            group_loading?.hide()
             if(it == null) return@Observer
-            initRecyclerView(it.toPayableRow())
+            initRecyclerView(it.sortedByDescending { it.py_doc_date }.toPayableRow())
         })
 
-        viewModel.deleteRecord.observe(this@PayableFragment, Observer {
+        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
             group_loading.hide()
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))
@@ -150,16 +150,16 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
     }
 
     override fun onStarted() {
-        group_loading.show()
+        group_loading?.show()
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        payable_list_cl.snackbar(message)
+        group_loading?.hide()
+        payable_list_cl?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        payable_list_cl.snackbar(message)
+        group_loading?.hide()
+        payable_list_cl?.snackbar(message)
     }
 }

@@ -8,65 +8,29 @@
                 name="viewmodel"
                 type="com.mawared.mawaredvansale.controller.md.customerentry.CustomerEntryViewModel" />
     </data>
-    <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".controller.md.customerentry.CustomerEntryFragment">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
             android:id="@+id/addCustomer_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-        <androidx.constraintlayout.widget.Group
-                android:id="@+id/group_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                app:constraint_referenced_ids="progressBar_loading,tv_loading"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        <ProgressBar
-                android:id="@+id/progressBar_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:indeterminate="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-                android:id="@+id/tv_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/lbl_loading"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressBar_loading"
-                app:layout_constraintVertical_bias="0.0" />
-
+        <include
+            android:id="@+id/llProgressBar"
+            android:visibility="gone"
+            layout="@layout/layout_progress_bar_with_text"
+            />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".controller.md.customerentry.CustomerEntryFragment">
         <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp"
-                app:cardMaxElevation="6dp"
-                app:contentPadding="5dp"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="2dp"
+                app:cardMaxElevation="2dp"
+                app:contentPadding="2dp"
                 app:cardBackgroundColor="@android:color/white"
-                android:layout_margin="5dp"
+                android:layout_margin="2dp"
                 android:id="@+id/mcv_customer"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -100,49 +64,74 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                 <!-- Customer Barcode -->
-                <EditText
-                        android:id="@+id/et_cu_barcode"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginEnd="2dp"
-                        android:enabled="false"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:gravity="center"
-                        android:hint="@string/lbl_barcode"
-                        android:inputType="text"
-                        android:text="@={viewmodel.mcu_barcode}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toTopOf="parent" />
 
                 <!-- Customer Payment Type -->
+                <EditText
+                    android:id="@+id/et_cu_barcode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:enabled="false"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="center"
+                    android:hint="@string/lbl_barcode"
+                    android:inputType="text"
+                    android:text="@={viewmodel.mcu_barcode}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/guideline"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <AutoCompleteTextView
-                        android:id="@+id/atc_cpt"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:gravity="start"
-                        android:hint="@string/lbl_customer_type"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelCpt"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/et_cu_code" />
+                    android:id="@+id/atc_cpt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_customer_type"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelCpt"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/et_cu_code" />
 
                 <ImageButton
-                        android:id="@+id/btn_cancelCpt"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:layout_marginBottom="5dp"
-                        android:background="@null"
-                        android:contentDescription="@string/btn_add_item_caption"
-                        android:onClick="@{()-> viewmodel.clear(`cpt`)}"
-                        app:layout_constraintBottom_toBottomOf="@+id/atc_cpt"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/atc_cpt"
-                        app:srcCompat="@drawable/ic_action_close" />
+                    android:id="@+id/btn_cancelCpt"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.clear(`cpt`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_cpt"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline"
+                    app:layout_constraintTop_toTopOf="@+id/atc_cpt"
+                    app:srcCompat="@drawable/ic_action_close" />
+                <!--Price Category-->
+                <AutoCompleteTextView
+                    android:id="@+id/atcPriceCategory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_price_category"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelPrice"
+                    app:layout_constraintTop_toTopOf="@+id/atc_cpt" />
+
+                <ImageButton
+                    android:id="@+id/btn_cancelPrice"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.clear(`prcode`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atcPriceCategory"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/atcPriceCategory"
+                    app:srcCompat="@drawable/ic_action_close" />
                 <!-- Customer Group -->
                 <AutoCompleteTextView
                         android:id="@+id/atc_group"
@@ -169,6 +158,32 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/atc_group"
                         app:srcCompat="@drawable/ic_action_close" />
+                <!-- Customer Category -->
+                <AutoCompleteTextView
+                    android:id="@+id/atc_category"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_customer_cat_name"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelCategory"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_group" />
+
+                <ImageButton
+                    android:id="@+id/btn_cancelCategory"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.clear(`cat`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_category"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/atc_category"
+                    app:srcCompat="@drawable/ic_action_close" />
                 <!-- Customer English Name -->
                 <EditText
                         android:id="@+id/et_cu_name_en"
@@ -183,7 +198,7 @@
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/atc_group" />
+                        app:layout_constraintTop_toBottomOf="@+id/atc_category" />
                 <!-- Customer Arabic Name-->
                 <EditText
                         android:id="@+id/et_cu_name_ar"
@@ -383,6 +398,9 @@
 
 
         </com.google.android.material.card.MaterialCardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+
+        </ScrollView>
+
+    </LinearLayout>
+
 </layout>

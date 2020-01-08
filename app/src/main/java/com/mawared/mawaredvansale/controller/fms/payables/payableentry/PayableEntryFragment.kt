@@ -106,7 +106,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
 
-        viewModel._baseEo.observe(this@PayableEntryFragment, Observer {
+        viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -115,12 +115,12 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
             }
         })
 
-        viewModel.entityEo.observe(this@PayableEntryFragment, Observer {
+        viewModel.entityEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 viewModel._entityEo = it
                 viewModel.doc_no.value = it.py_doc_no?.toString()
                 viewModel.doc_date.value = viewModel.returnDateString(it.py_doc_date!!)
-                viewModel.selectedCustomer?.cu_Id = it.py_cu_Id!!
+                viewModel.selectedCustomer?.cu_ref_Id = it.py_cu_Id!!
                 viewModel.selectedCustomer?.cu_name = it.py_cu_name
                 viewModel.bc_amount.value = it.py_amount.toString()
                 viewModel.lc_amount.value = it.py_lc_amount.toString()
@@ -135,25 +135,25 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
 
         // bind customer to autocomplete
         val customerList = viewModel.customerList.await()
-        customerList.observe(this@PayableEntryFragment, Observer { cu ->
+        customerList.observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCustomerAutocomplete(cu)
 
         })
 
-        viewModel.mVoucher.observe(this@PayableEntryFragment, Observer {
+        viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
 
-        viewModel.currencyRate.observe(this@PayableEntryFragment, Observer {
+        viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
             viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.00
         })
 
-        viewModel.saleCurrency.observe(this@PayableEntryFragment, Observer {
+        viewModel.saleCurrency.observe(viewLifecycleOwner, Observer {
             viewModel.bcCurrency = it
         })
 
-        viewModel.ndCurrency.observe(this@PayableEntryFragment, Observer {
+        viewModel.ndCurrency.observe(viewLifecycleOwner, Observer {
             viewModel.lcCurrency = it
         })
 
@@ -161,7 +161,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
         viewModel.setSaleCurrency("$")
         viewModel.setSecondCurrency("IQD")
-        group_loading.hide()
+        group_loading?.hide()
     }
 
     // init customer autocomplete view
@@ -204,16 +204,16 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     }
 
     override fun onStarted() {
-        group_loading.show()
+        group_loading?.show()
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        addPayable_layout.snackbar(message)
+        group_loading?.hide()
+        addPayable_layout?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        addPayable_layout.snackbar(message)
+        group_loading?.hide()
+        addPayable_layout?.snackbar(message)
     }
 }

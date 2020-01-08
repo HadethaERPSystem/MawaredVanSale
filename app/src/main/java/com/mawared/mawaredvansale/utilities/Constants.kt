@@ -3,8 +3,8 @@ package com.mawared.mawaredvansale.utilities
 /*
  * Created by alibawi on 2019-07-02
  */
-//const val BASE_URL_API = "http://185.80.42.68:6615/api/"
-//const val BASE_URL = "http://185.80.42.68:6615/"
+const val BASE_URL_API = "http://185.80.42.68:6615/api/"
+const val BASE_URL = "http://185.80.42.68:6615/"
 
 //const val BASE_URL_API = "http://172.0.0.1:80/mderp.WebAPI/api/"
 
@@ -12,11 +12,8 @@ package com.mawared.mawaredvansale.utilities
 //const val BASE_URL = "http://172.29.50.2:6615/"
 
 
-const val BASE_URL_API = "http://10.200.0.10/mderp.WebAPI/api/"
-const val BASE_URL = "http://10.200.0.10/mderp.WebAPI/"
-
-//const val BASE_URL_API = "http://192.168.1.191/mderp.WebAPI/api/"
-//const val BASE_URL = "http://192.168.1.191/mderp.WebAPI/api/"
+//const val BASE_URL_API = "http://10.200.0.10/mderp.WebAPI/api/"
+//const val BASE_URL = "http://10.200.0.10/mderp.WebAPI/"
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 
@@ -24,6 +21,7 @@ const val URL_USER_MENU = "${BASE_URL_API}PDAMenus/Menus_GetByUser"
 //Master Data Url
 // Get All Product Url
 const val URL_ALL_PRODUCTS = "${BASE_URL_API}PDAMasterData/ProductGetByTerm"
+const val URL_ALL_PRODUCTS_PRICE_CAT = "${BASE_URL_API}PDAMasterData/ProductGetByPriceTerm"
 const val URL_PRODUCTS_BY_USER = "${BASE_URL_API}PDAMasterData/ProductGetByUser"
 const val URL_PRODUCTS_BY_SEARCH = "${BASE_URL_API}PDAMasterData/ProductGetBySearch"
 // Get All Product Url
@@ -36,13 +34,17 @@ const val URL_ALL_PRODUCTS_CATEGORY = "${BASE_URL_API}PDAMasterData/Product_Cate
 
 // Get all products price list URL
 const val URL_PRODUCT_PRICE = "${BASE_URL_API}PDAMasterData/Product_Price_ListGetByProductId"
+const val URL_PRODUCT_LAST_PRICE = "${BASE_URL_API}PDAMasterData/Product_Price_ListGetLastProductPrice"
 // Get all products price list URL
 const val URL_ALL_PRODUCTS_PRICE_LIST = "${BASE_URL_API}PDAMasterData/Product_Price_ListGetAll"
 
 // Voucher By Code
 const val URL_VOUCHER_BY_CODE = "${BASE_URL_API}PDAMasterData/Voucher_GetByCode"
+// Price Category
+const val URL_PRICE_CAT_BY_All = "${BASE_URL_API}PDAMasterData/PriceCat_GetAll"
+const val URL_PRICE_CAT_BY_ID = "${BASE_URL_API}PDAMasterData/PriceCat_GetById"
 //Discount
-const val URL_DISCOUNT_BY_PRODUCT = "${BASE_URL_API}PDAMasterData/Discount_GetByProduct"
+const val URL_DISCOUNT_BY_PRODUCT = "${BASE_URL_API}PDAMasterData/Discount_GetCurrent"
 // Get all regions for specific salesman URL
 const val URL_ALL_REGION = "${BASE_URL_API}PDAMasterData/RegionGetByTerm"
 
@@ -56,11 +58,13 @@ const val URL_CURRENT_CURRENCY_RATE = "${BASE_URL_API}PDAMasterData/Currency_Rat
 
 // Get all customers for specific salesman URL
 const val URL_ALL_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_BySalesmanId"
+const val URL_SCHEDULE_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_Schedule"
 const val URL_CUSTOMERS_BY_ORG = "${BASE_URL_API}PDAMasterData/Customers_GetByOrg"
 const val URL_CUSTOMER_BY_Id = "${BASE_URL_API}PDAMasterData/Customer_GetById"
 const val URL_INSERT_CUSTOMER = "${BASE_URL_API}PDAMasterData/Customer_SaveOrUpdate"
 
 const val URL_ALL_CUSTOMER_GROUP = "${BASE_URL_API}PDAMasterData/CG_GetByTerm"
+const val URL_ALL_CUSTOMER_CATEGORY = "${BASE_URL_API}PDAMasterData/CustomerCategory_GetByTerm"
 const val URL_ALL_CPT = "${BASE_URL_API}PDAMasterData/CPT_GetByTerm"
 
 // Get salesman for this PDA URL

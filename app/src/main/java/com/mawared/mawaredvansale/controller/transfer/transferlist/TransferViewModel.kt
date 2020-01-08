@@ -23,6 +23,7 @@ class TransferViewModel(private val repository: ITransferRepository) : BaseViewM
     var navigator: IMainNavigator<Transfer>? = null
     var msgListener: IMessageListener? = null
     var printListener: IPrintNavigator<Transfer>? = null
+    var isPrint = false
     val baseEoList by lazy {
         repository.getByUserId(_user_id)
     }
@@ -64,12 +65,13 @@ class TransferViewModel(private val repository: ITransferRepository) : BaseViewM
     }
 
     fun onPrint(tr_Id: Int){
-        msgListener?.onStarted()
-        if(tr_Id != _tr_Id.value){
-            find(tr_Id)
-            return
-        }
-        onPrintTicket(baseEo.value!!)
+//        isPrint = true
+//        msgListener?.onStarted()
+//        if(tr_Id != _tr_Id.value){
+//            find(tr_Id)
+//            return
+//        }
+       // onPrintTicket(baseEo.value!!)
     }
 
     fun onPrintTicket(entityEo: Transfer){
@@ -77,6 +79,7 @@ class TransferViewModel(private val repository: ITransferRepository) : BaseViewM
 //        val tickets = GenerateTicket(ctx!!, lang).createPdfTicket(entityEo,
 //            R.drawable.ic_logo_black, "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", null, null)
         printListener?.doPrint(entityEo)
+        isPrint = false
     }
 
     fun cancelJob(){

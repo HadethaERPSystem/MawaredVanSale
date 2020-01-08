@@ -12,8 +12,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.zxing.integration.android.IntentIntegrator
+import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteProductAdapter
+import com.mawared.mawaredvansale.controller.adapters.ProductSearchAdapter
 import com.mawared.mawaredvansale.controller.adapters.atc_Whs_Adapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.md.Product
@@ -154,7 +156,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Main) {
 
-        viewModel._baseEo.observe(this@TransferEntryFragment, Observer {
+        viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -164,7 +166,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
 
         })
 
-        viewModel.entityEo.observe(this@TransferEntryFragment, Observer {
+        viewModel.entityEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 viewModel._entityEo = it
                 viewModel.docNo.value = it.tr_ref_no
@@ -177,7 +179,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
             }
         })
 
-        viewModel.items.observe(this@TransferEntryFragment, Observer {
+        viewModel.items.observe(viewLifecycleOwner, Observer {
             pb_transfer.visibility = View.GONE
             if(it == null) return@Observer
             initRecyclerView(it.toRow())
@@ -186,25 +188,26 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
 
         // bind customer to autocomplete
         val whsList = viewModel.warEoList
-        whsList.observe(this@TransferEntryFragment, Observer {
+        whsList.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
             initToWhsAutocomplete(it)
 
         })
 
         // bind products to autocomplete
-        viewModel.productList.observe(this@TransferEntryFragment, Observer {
+        viewModel.productList.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
             initProductAutocomplete(it)
         })
 
-        viewModel.mVoucher.observe(this@TransferEntryFragment, Observer {
+        viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
 
         viewModel.setTerm("")
         viewModel.setVoucherCode("Transfer")
         viewModel.setItems(null)
+
     }
 
     // init invoices items
@@ -238,10 +241,20 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
         binding.atcToWarehouse.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectToWarehouse = adapter.getItem(position)
         }
+
+        val war = list.find { it.wr_Id == App.prefs.savedSalesman!!.sm_warehouse_id }
+        if(war != null){
+            if(App.prefs.savedSalesman!!.sm_warehouse_id != null){
+                viewModel.selectToWarehouse = Warehouse(war.wr_description, war.wr_description_ar, war.wr_code)
+                viewModel.selectToWarehouse?.wr_Id = App.prefs.savedSalesman!!.sm_warehouse_id!!
+                viewModel.selectToWarehouse?.wr_description = App.prefs.savedSalesman!!.sm_warehouse_name
+                binding.atcToWarehouse.setText("${App.prefs.savedSalesman!!.sm_warehouse_name}", true)
+            }
+        }
     }
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = AutoCompleteProductAdapter(context!!.applicationContext,
+        val adapter = ProductSearchAdapter(activity!!,
             R.layout.support_simple_spinner_dropdown_item,
             products
         )
@@ -260,7 +273,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
     // clear
     override fun clear(code: String) {
         when(code) {
-            "to_wr" -> binding.atcToWarehouse.setText("", true)
+           // "to_wr" -> binding.atcToWarehouse.setText("", true)
             "prod" -> binding.atcProduct.setText("", true)
         }
 

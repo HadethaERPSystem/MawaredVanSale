@@ -13,9 +13,10 @@ import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.md.Currency
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
+import com.mawared.mawaredvansale.services.netwrok.responses.SingleRecResponse
 import com.mawared.mawaredvansale.utilities.ApiException
 import com.mawared.mawaredvansale.utilities.Coroutines
-import com.mawared.mawaredvansale.utilities.SharedPrefs
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import com.mawared.mawaredvansale.utilities.URL_IMAGE
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -25,7 +26,6 @@ import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneOffset
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.ChronoUnit
-import java.util.*
 
 private val MINIMUM_INTERVAL = 6
 
@@ -99,6 +99,31 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override fun customers_getSchedule(sm_Id: Int): LiveData<List<Customer>> {
+        job = Job()
+        return object : LiveData<List<Customer>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.customers_getSchedule(sm_Id) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call customers schedule", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
     override fun getCustomersByOrg(sm_Id: Int, org_Id: Int?): LiveData<List<Customer>> {
         job = Job()
         return object : LiveData<List<Customer>>() {
@@ -142,7 +167,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                             Log.e("Connectivity", "No internet connection", e)
                             return@launch
                         }catch (e: Exception){
-                            Log.e("Exception", "Error exception when call getCustomerByTerm", e)
+                            Log.e("Exception", "Error exception when call get by item", e)
                             return@launch
                         }
                     }
@@ -178,6 +203,16 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override suspend fun customerSaveOrUpdate(baseEo: Customer): SingleRecResponse<Customer> {
+        try {
+            val response = apiRequest { api.insertCustomer(baseEo) }
+            return response
+        }catch (e: NoConnectivityException){
+            throw e
+        }catch (e: ApiException){
+            throw e
+        }
+    }
     /// Function Name: Customer Payment Type Get All
     override fun getCptAll(term: String): LiveData<List<Customer_Payment_Type>> {
         job = Job()
@@ -233,6 +268,32 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override fun customersCategory_GetByTerm(term: String): LiveData<List<Customer_Category>> {
+        job = Job()
+        return object : LiveData<List<Customer_Category>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response =
+                                apiRequest { api.customerCat_GetByTerm(term) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call customersCategory_GetByTerm", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
     // Function Name: Products Get for specific condition
     override fun getProducts(term: String,
                              warehouseId: Int?,
@@ -263,6 +324,32 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override fun getProductsByPriceTerm(term: String, priceCode: String): LiveData<List<Product>> {
+        job = Job()
+        return object : LiveData<List<Product>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response =
+                                apiRequest { api.products_GetByPriceTerm(term, priceCode) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call getProductsByPriceTerm", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
     override fun getProductsByUserWarehouse(term: String, userId: Int?, priceCode: String): LiveData<List<Product>> {
         job = Job()
         return object : LiveData<List<Product>>() {
@@ -290,7 +377,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
-    override fun getProductsBySearch(term: String, priceCode: String): LiveData<List<Product>> {
+    override fun getProductsBySearch(term: String): LiveData<List<Product>> {
         job = Job()
         return object : LiveData<List<Product>>() {
             override fun onActive() {
@@ -299,7 +386,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                     CoroutineScope(IO).launch {
                         try {
                             val response =
-                                apiRequest { api.products_GetBySearch(term, priceCode) }
+                                apiRequest { api.products_GetBySearch(term) }
                             withContext(Main) {
                                 value = response.data
                                 job?.complete()
@@ -381,6 +468,31 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override fun product_getLastPrice(prod_Id: Int, PriceCode: String): LiveData<Product_Price_List> {
+        job = Job()
+        return object : LiveData<Product_Price_List>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.product_getLastPrice(prod_Id, PriceCode) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call get last price", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
     override fun getCurrency(cl_Id: Int): LiveData<Currency> {
         job = Job()
         return object : LiveData<Currency>() {
@@ -536,6 +648,58 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override fun priceCat_GetAll(): LiveData<List<PriceCategory>> {
+        job = Job()
+        return object : LiveData<List<PriceCategory>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.getPriceCatAll() }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call price category get all", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun priceCat_GetById(prc_Id: Int): LiveData<PriceCategory> {
+        job = Job()
+        return object : LiveData<PriceCategory>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.getPriceCategoryById(prc_Id) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call price category get by id", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun getDiscountItem(pr_Id: Int, currentDate: LocalDate, org_Id: Int?): LiveData<Discount>  {
         job = Job()
         return object : LiveData<Discount>() {
@@ -544,7 +708,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                 job?.let {
                     CoroutineScope(IO).launch {
                         try {
-                            val response = apiRequest { api.getDiscountByProduct(pr_Id, currentDate, org_Id) }
+                            val response = apiRequest { api.discount_GetCurrent(pr_Id, currentDate, org_Id) }
                             withContext(Main) {
                                 value = response.data
                                 job?.complete()

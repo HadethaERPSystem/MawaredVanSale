@@ -157,9 +157,9 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
             for (i in 0 until nList.length){
                 val node = nList.item(i)
                 if(node.nodeType === Node.ELEMENT_NODE){
-                    when(node.nodeName){
-
-                    }
+//                    when(node.nodeName){
+//
+//                    }
                     val element2 = node as Element
                     val m = "Paper :" + getValue("Paper", element2)
                     val w = "Width :" + getValue("Width", element2)

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -21,11 +22,13 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.BuildConfig
 import com.mawared.mawaredvansale.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
@@ -361,4 +364,19 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
         }
     }
 
+    private fun setLocale(lang: String){
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        activity!!.resources.updateConfiguration(config, activity!!.resources.displayMetrics)
+
+        App.prefs.systemLanguage = lang
+
+    }
+
+    fun loadLocale(){
+        val lang = Locale.getDefault().toString()
+        setLocale(lang)
+    }
 }

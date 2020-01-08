@@ -30,7 +30,7 @@ object BitmapUtils {
                     baos.close()
                 }
                 catch (e:IOException) {
-                    Log.e(BitmapUtils::class.java!!.getSimpleName(), "ByteArrayOutputStream was not closed")
+                    Log.e(BitmapUtils::class.java.getSimpleName(), "ByteArrayOutputStream was not closed")
                 }
             }
         }

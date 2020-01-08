@@ -41,7 +41,7 @@ class atc_sm_Adapter(context: Context, @LayoutRes private val layoutResource: In
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
-        val layoutInflater = LayoutInflater.from(parent?.context)
+        val layoutInflater = LayoutInflater.from(parent.context)
         val binding: AutocompleteSmRowBinding = DataBindingUtil.inflate(layoutInflater, R.layout.autocomplete_sm_row, parent, false)
         binding.entityEo = getItem(position)
         return binding.root

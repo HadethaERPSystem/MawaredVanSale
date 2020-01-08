@@ -158,7 +158,10 @@
     <string name="msg_notify_bluetooth_error">The device does not connect</string>
     <string name="msg_error_no_selected_salesman">Should selected salesman for this PDA</string>
     <string name="msg_error_no_selected_warehouse">Should selected warehouse related with this PDA</string>
-
+    <string name="msg_error_price_category">Should select price category</string>
+    <string name="msg_error_not_available_product_qty">Not available quantity for this item</string>
+    <string name="msg_error_not_required_qty_less_product_qty">Required quantity greater than for available quantity</string>
+    <string name="msg_error_not_selected_to_delivered">You should press delivery button to select all items to be delivered</string>
     <string name="connecting">Connecting...</string>
 
     <string name="activity_devicelist_title_paired_devices">Paired devices</string>
@@ -182,7 +185,7 @@
     <string name="lbl_phone_number">Phone Number</string>
     <string name="lbl_contact_name">Contact Name</string>
     <string name="lbl_code">Code</string>
-
+    <string name="lbl_customer_cat_name">Customer Category</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="refresh">Refresh</string>
     <string name="btn_on">On</string>
@@ -229,11 +232,11 @@
     <string name="lbl_from_warehouse">From Warehouse</string>
     <string name="lbl_transfer_no">Transfer No.</string>
     <string name="lbl_warehouse_name">Warehouse Name</string>
-
+    <string name="lbl_price_category">Price Category Name</string>
     <!--Report part string name -->
-    <string name="rpt_invoice_no">Inv.#:</string>
-    <string name="rpt_invoice_date">Date:</string>
-    <string name="rpt_customer">Customer:</string>
+    <string name="rpt_invoice_no">No.</string>
+    <string name="rpt_invoice_date">Date</string>
+    <string name="rpt_customer">Customer</string>
     <string name="rpt_barcode">Barcode</string>
     <string name="rpt_prod_name">Product</string>
     <string name="rpt_qty">Qty</string>
@@ -247,6 +250,7 @@
     <string name="rpt_total_amount">Total Amount</string>
     <string name="rpt_total_discount">Total Discount</string>
     <string name="rpt_net_amount">Net Amount For Pay</string>
+    <string name="rpt_cu_balance">Balance</string>
     <string name="rpt_person_reciever_sig">اسم وتوقيع المستلم</string>
     <string name="rpt_storekeeper_sig">اسم وتوقيع مدير المخازن</string>
     <string name="rpt_sales_manager_sig">اسم وتوقيع مدير المبيعات</string>
@@ -254,7 +258,7 @@
     <string name="rpt_list_name">Invoice</string>
     <string name="rpt_contact_name">Contact Name </string>
     <string name="rpt_customer_phone">Phone</string>
-    <string name="rpt_cr_name">Currency:</string>
+    <string name="rpt_cr_name">Currency</string>
     <string-array name="codepage">
         <item>"Default"</item>
         <item>"Chinese Simplified"</item>

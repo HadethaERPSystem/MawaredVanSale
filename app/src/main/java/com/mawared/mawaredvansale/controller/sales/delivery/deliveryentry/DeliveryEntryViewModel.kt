@@ -15,7 +15,7 @@ import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.delivery.IDeliveryRepository
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
-import com.mawared.mawaredvansale.utilities.lazyDeferred
+import com.mawared.mawaredvansale.utilities.Coroutines
 import org.threeten.bp.LocalDateTime
 
 class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
@@ -31,11 +31,16 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
     // google map location GPS
     var location: Location? = null
 
-    private val _baseEo: MutableLiveData<Delivery> = MutableLiveData()
-    val savedEntity: LiveData<Delivery> = Transformations
-        .switchMap(_baseEo){
-            repository.update(it)
-        }
+    var dl_doc_date: MutableLiveData<String> = MutableLiveData()
+    var dl_refNo: MutableLiveData<String> = MutableLiveData()
+    var dl_customer_name: MutableLiveData<String> = MutableLiveData()
+    var isDelivered: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val _baseEo: MutableLiveData<Delivery> = MutableLiveData()
+//    val savedEntity: LiveData<Delivery> = Transformations
+//        .switchMap(_baseEo){
+//            repository.update(it)
+//        }
 
 
     private val _items = MutableLiveData<List<Delivery_Items>>()
@@ -44,8 +49,6 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
 
     var selectedCustomer: Customer? = null
     var selectedProduct: Product? = null
-
-    var isDelivered = MutableLiveData<Boolean>()
 
     var searchQty: MutableLiveData<String> = MutableLiveData("1")
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
@@ -57,6 +60,12 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
             repository.getById(it)
         }
 
+    fun setItems(items: List<Delivery_Items>?){
+        if(items != null && _items == items){
+            return
+        }
+        _items.value = items
+    }
     //---------------------
     //---- button function
     fun onSave() {
@@ -65,17 +74,29 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
                 val user = App.prefs.saveUser
                 val strDate = LocalDateTime.now()
 
-                val tQty = _baseEo.value!!.items.sumByDouble { it.dld_pack_qty!! }
-                val dlQty = _baseEo.value!!.items.sumByDouble { it.dld_qty!! }
+                val tQty = items.value?.sumByDouble { it.dld_pack_qty!! }
+                val dlQty = items.value?.sumByDouble { it.dld_qty!! }
 
-                entityEo.value!!.dl_latitude = location?.latitude
-                entityEo.value!!.dl_longitude = location?.longitude
-                entityEo.value!!.dl_isDelivered = if(tQty == dlQty) "Y" else if(dlQty > 0) "P" else "N"
-                entityEo.value!!.dl_Id = _entityEo!!.dl_Id
-                entityEo.value!!.updated_at = strDate.toString()
-                entityEo.value!!.created_by = user?.id.toString()
+                _entityEo!!.dl_latitude = location?.latitude
+                _entityEo!!.dl_longitude = location?.longitude
+               _entityEo!!.dl_isDelivered = if(tQty == dlQty) "Y" else if(dlQty != null) "P" else "N"
+               _entityEo!!.dl_Id = _entityEo!!.dl_Id
+               _entityEo!!.updated_at = strDate.toString()
+               _entityEo!!.updated_by = user?.id.toString()
 
-                _baseEo.value = entityEo.value
+                Coroutines.main {
+                    try {
+                        val response = repository.update(_entityEo!!)
+                        if(response.isSuccessful){
+                            _baseEo.value = response.data
+                        }
+                        else{
+                            msgListener?.onFailure("Error message when try to save delivered invoice. Error is ${response.message}")
+                        }
+                    }catch (e: Exception){
+                        msgListener?.onFailure("Error message when try to save delivered invoice. Error is ${e.message}")
+                    }
+                }
             }catch (e: Exception){
                 msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
             }
@@ -85,21 +106,9 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
     private fun isValid(): Boolean {
         var isSuccess = true
         var msg: String? = null
-        if (entityEo.value == null) {
-            msg =  resources!!.getString(R.string.msg_error_invalid_date)
-        }else if(entityEo.value?.dl_isDelivered == null){
-            msg += "\n\r" + "You should check delivered"
+        if (isDelivered.value == null || isDelivered.value == false) {
+            msg =  resources!!.getString(R.string.msg_error_not_selected_to_delivered)
         }
-
-        if (entityEo.value?.items?.count() == 0) {
-            msg += "\n\r" +resources!!.getString(R.string.msg_error_no_items)
-        }else {
-            val rc1 = entityEo.value?.items?.count { it.dld_isDeliverd == "Y" || it.dld_isDeliverd == "P" }
-            if(rc1 == 0){
-                msg += "\n\r" + "Not delivered any item"
-            }
-        }
-
 
         if (!msg.isNullOrEmpty()) {
             isSuccess = false
@@ -108,6 +117,18 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
         return isSuccess
     }
 
+    fun onClickDelivered(){
+        val tmpItems : ArrayList<Delivery_Items> = arrayListOf()
+        for(d in items.value!!){
+            d.dld_isDeliverd = true
+            d.dld_qty = d.dld_unit_qty
+            tmpItems.add(d)
+
+        }
+        isDelivered.value = true
+        setItems(null)
+        setItems(tmpItems as List<Delivery_Items>)
+    }
     //-------------------------------------------
     //---- row function
 //    fun onAddItem() {

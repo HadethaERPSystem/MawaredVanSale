@@ -88,9 +88,9 @@ class AddStockInViewModel(private val repository: IStockInRepository,private val
     }
 
     fun onItemDelete(entityEo: Stockin_Items) {
-        if(entityEo.sin_Id != 0){
-
-        }
+//        if(entityEo.sin_Id != 0){
+//
+//        }
     }
 
     fun clear(code: String) {

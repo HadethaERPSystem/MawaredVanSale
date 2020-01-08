@@ -2,13 +2,16 @@ package com.mawared.mawaredvansale.controller.base
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.mawared.mawaredvansale.App
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import java.util.*
 
 import kotlin.coroutines.CoroutineContext
 
@@ -45,14 +48,27 @@ abstract class ScopedFragment : Fragment(), CoroutineScope {
     }
 
     fun hideKeyboard(){
-//        val imm =
-//            activity!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-//        imm.hideSoftInputFromWindow(view!!.windowToken, 0)
 
         val inputManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         if(inputManager.isAcceptingText){
             inputManager.hideSoftInputFromWindow(view!!.windowToken, 0)
         }
+    }
+
+    private fun setLocale(lang: String){
+        val locale = Locale(lang)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        activity!!.resources.updateConfiguration(config, activity!!.resources.displayMetrics)
+
+        App.prefs.systemLanguage = lang
+
+    }
+
+    fun loadLocale(){
+        val lang = Locale.getDefault().toString()
+        setLocale(lang)
     }
 }

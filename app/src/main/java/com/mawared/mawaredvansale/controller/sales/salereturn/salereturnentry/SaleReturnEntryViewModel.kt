@@ -19,6 +19,8 @@ import com.mawared.mawaredvansale.services.repositories.salereturn.ISaleReturnRe
 import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 
 class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, private val masterdataRepository: IMDataRepository) : BaseViewModel() {
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
@@ -26,7 +28,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     var mode: String = "Add"
     var msgListener: IMessageListener? = null
     var addNavigator: IAddNavigator<Sale_Return_Items>? = null
-
+    var allowed_select_prod: MutableLiveData<Boolean> = MutableLiveData(false)
     // google map location GPS
     var location: Location? = null
     var resources: Resources? = null
@@ -39,6 +41,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     var totalAmount : MutableLiveData<Double> = MutableLiveData()
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
 
      var tmpSRItems: ArrayList<Sale_Return_Items> = arrayListOf()
     var tmpDeletedItems: ArrayList<Sale_Return_Items> = arrayListOf()
@@ -64,14 +67,14 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
 
     // customer observable data
     var selectedCustomer: Customer? = null
-    val customerList by lazyDeferred { masterdataRepository.getCustomer()  }
+    val customerList by lazyDeferred { masterdataRepository.getCustomers(_sm_id)  }
 
     // product observable data
     var selectedProduct: Product? = null
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
-            masterdataRepository.getProducts(it, App.prefs.savedSalesman?.sm_warehouse_id, "POS")
+            masterdataRepository.getProducts(it, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
         }
 
 
@@ -90,18 +93,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         }
 
     var unitPrice : Double = 0.00
-    private val _prod_Id: MutableLiveData<Int> = MutableLiveData()
-    val mProductPrice: LiveData<Product_Price_List> = Transformations
-        .switchMap(_prod_Id){
-            masterdataRepository.getProductPrice(it)
-        }
-
-    var bcCurrency: Currency? = null
-    private val _sale_cr_symbole: MutableLiveData<String> = MutableLiveData()
-    val saleCurrency: LiveData<Currency> = Transformations
-        .switchMap(_sale_cr_symbole){
-            masterdataRepository.getCurrencyByCode(it)
-        }
+    var price_cat_code = "POS"
 
     // function to set value
     fun setId(id: Int){
@@ -132,18 +124,8 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         _cr_Id.value = cr_id
     }
 
-    fun setProductId(prod_Id: Int){
-        if(_prod_Id.value == prod_Id){
-            return
-        }
-        _prod_Id.value = prod_Id
-    }
-
-    fun setSaleCurrency(cr_code: String){
-        if(_sale_cr_symbole.value == cr_code){
-            return
-        }
-        _sale_cr_symbole.value = cr_code
+    fun setPriceCategory(){
+        price_cat_code = if(selectedCustomer != null && selectedCustomer?.cu_price_cat_code != null) selectedCustomer!!.cu_price_cat_code!! else "POS"
     }
 
     fun setItems(items: List<Sale_Return_Items>?){
@@ -159,16 +141,16 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 val user = App.prefs.saveUser
                 val totalAmount: Double = tmpSRItems.sumByDouble { it.srd_line_total!! }
                 val netAmount: Double = tmpSRItems.sumByDouble { it.srd_line_total!! }
-                val strDate: LocalDate = LocalDate.now()
-
+                val strDate = LocalDateTime.now()
+                val dtFull = doc_date.value + " " + LocalTime.now()
                 val baseEo = Sale_Return(
-                    user?.cl_Id, user?.org_Id,0, doc_date.value,
+                    user?.cl_Id, user?.org_Id,0, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, selectedCustomer!!.cu_Id, null, totalAmount, netAmount, bcCurrency!!.cr_id, rate,
-                    null, false,0, location?.latitude, location?.longitude,"$strDate",
+                    _sm_id, selectedCustomer!!.cu_ref_Id, null, totalAmount, netAmount, user?.sl_cr_Id, user?.cr_Id, rate,
+                    null, false,0, location?.latitude, location?.longitude, selectedCustomer!!.cu_price_cat_Id,"$strDate",
                     "${user?.id}", "$strDate", "${user?.id}"
                 )
-
+                baseEo.sr_price_cat_code = price_cat_code
                 if(mode != "Add"){
                     baseEo.sr_Id = _entityEo!!.sr_Id
                     baseEo.created_at = _entityEo!!.created_at
@@ -230,6 +212,8 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         rowNo = 0
         searchBarcode.value = null
         searchQty.value = "1"
+        unitPrice = 0.00
+        price_cat_code = "POS"
         clear("cu")
         clear("prod")
     }
@@ -243,6 +227,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                         selectedProduct = null
                         searchBarcode.value = ""
                         searchQty.value = ""
+                        unitPrice = 0.00
                         clear("prod")
                     }else{
                         msgListener?.onFailure(resources!!.getString(R.string.msg_error_fail_add_item))
@@ -259,10 +244,10 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         try {
             rowNo++
             val strDate = LocalDate.now()
-            val qty = searchQty.value!!.toDouble()
+            val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id }
+            val qty = searchQty.value!!.toDouble() + (if(mItem?.srd_pack_qty != null)   mItem.srd_pack_qty!! else 0.00)
             val lineTotal = unitPrice * qty
             val netTotal = lineTotal
-            val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id }
             val user = App.prefs.saveUser
 
             if(mItem == null){
@@ -277,9 +262,10 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 tmpSRItems.add(itemEo)
             }
             else{
-                mItem.srd_pack_qty = mItem.srd_pack_qty!! + qty
-                mItem.srd_unit_qty = mItem.srd_pack_qty!! + mItem.srd_pack_size!!
-                mItem.srd_line_total = mItem.srd_pack_qty!! * mItem.srd_unit_price!!
+                mItem.srd_pack_qty = qty
+                mItem.srd_unit_qty = qty
+                mItem.srd_line_total = lineTotal
+                mItem.srd_net_total = netTotal
             }
             _srItems.postValue(tmpSRItems)
 
@@ -293,8 +279,10 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     private fun isValidRow(): Boolean{
         var isSuccessful = true
         var msg: String? = ""
-        val qty = searchQty.value?.toDouble()
-        if(qty === null || qty == 0.00){
+
+        if(searchQty.value.isNullOrEmpty()){
+            msg = resources!!.getString(R.string.msg_error_invalid_qty)
+        }else if(!(searchQty.value!!matches("-?\\d+(\\.\\d+)?".toRegex()))){
             msg = resources!!.getString(R.string.msg_error_invalid_qty)
         }
 

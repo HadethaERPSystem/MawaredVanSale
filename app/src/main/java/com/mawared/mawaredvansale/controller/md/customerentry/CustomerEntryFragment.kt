@@ -10,17 +10,15 @@ import androidx.lifecycle.ViewModelProviders
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerGroupAdapter
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerTypeAdapter
+import com.mawared.mawaredvansale.controller.adapters.CustomerCategoryAdapter
+import com.mawared.mawaredvansale.controller.adapters.PriceCategoryAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.controller.map.MapsActivity
-import com.mawared.mawaredvansale.data.db.entities.md.Customer
-import com.mawared.mawaredvansale.data.db.entities.md.Customer_Group
-import com.mawared.mawaredvansale.data.db.entities.md.Customer_Payment_Type
+import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.databinding.CustomerEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.utilities.EXTRA_CURRENT_LOCATION
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.customer_entry_fragment.*
 import kotlinx.coroutines.Dispatchers
@@ -120,17 +118,16 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
 
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
-        viewModel.savedEntity.observe(this@CustomerEntryFragment, Observer {
+        viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
-                viewModel.onNew()
                 activity!!.onBackPressed()
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }
         })
 
-        viewModel.entityEo.observe(this@CustomerEntryFragment, Observer {
+        viewModel.entityEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 viewModel._entityEo = it
                 viewModel.mcu_code.value = it.cu_code
@@ -147,24 +144,38 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
                 viewModel.mcu_balance.value = it.cu_balance.toString()
                 viewModel.mcu_credit_limit.value = it.cu_credit_limit.toString()
                 viewModel.mcu_payment_terms.value = it.cu_payment_terms
-                viewModel.mcu_longitude.value = "${it.cu_longitude}"
-                viewModel.mcu_latitude.value = "${it.cu_latitude}"
-
-                binding.atcCpt.setText("${it.cu_payment_Id}", true)
-                binding.atcGroup.setText("${it.cu_cg_Id}", true)
-
+                viewModel.mcu_longitude.value = if(it.cu_longitude != null) it.cu_longitude.toString() else ""
+                viewModel.mcu_latitude.value = if(it.cu_latitude != null) it.cu_latitude.toString() else ""
+                val payment_name = it.cu_payment_name ?: ""
+                val group_name = it.cu_cg_name ?: ""
+                val cat_name = it.cu_cat_name ?: ""
+                val price_cat = it.cu_price_cat_name
+                binding.atcCpt.setText(payment_name, true)
+                binding.atcGroup.setText(group_name, true)
+                binding.atcCategory.setText(cat_name, true)
+                binding.atcPriceCategory.setText(price_cat, true)
             }
         })
 
         // bind customer type to autocomplete
-        viewModel.cpt_List.await().observe(this@CustomerEntryFragment, Observer { cu ->
+        viewModel.cpt_List.await().observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCptAutocomplete(cu)
         })
         // bind customer gropu to autocomplete
-        viewModel.CG_List.await().observe(this@CustomerEntryFragment, Observer {
+        viewModel.CG_List.await().observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
             initAutocompleteCustomerGroup(it)
+        })
+
+        viewModel.Category_List.await().observe(viewLifecycleOwner, Observer {
+            if(it == null) return@Observer
+            initCategory(it)
+        })
+
+        viewModel.priceCatList.await().observe(viewLifecycleOwner, Observer {
+            if(it != null)
+                initAtcPriceCategory(it)
         })
     }
 
@@ -175,7 +186,6 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
             customers
         )
         binding.atcCpt.threshold = 0
-        //binding.atcCpt.dropDownWidth = resources.displayMetrics.widthPixels - 20
         binding.atcCpt.setAdapter(adapter)
         binding.atcCpt.setOnFocusChangeListener { _, b ->
             if(b) binding.atcCpt.showDropDown()
@@ -191,7 +201,6 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
             groups
         )
         binding.atcGroup.threshold = 0
-        //binding.atcGroup.dropDownWidth = resources.displayMetrics.widthPixels - 20
         binding.atcGroup.setAdapter(adapter)
         binding.atcGroup.setOnFocusChangeListener { _, b ->
             if(b) binding.atcGroup.showDropDown()
@@ -201,10 +210,39 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         }
     }
 
+    private fun initCategory(list: List<Customer_Category>){
+        val adapter = CustomerCategoryAdapter(activity!!,
+            R.layout.support_simple_spinner_dropdown_item,
+            list
+        )
+        binding.atcCategory.threshold = 0
+        binding.atcCategory.setAdapter(adapter)
+        binding.atcCategory.setOnFocusChangeListener { _, b ->
+            if(b) binding.atcCategory.showDropDown()
+        }
+        binding.atcCategory.setOnItemClickListener { _, _, position, _ ->
+            viewModel.selectedCustomerCat = adapter.getItem(position)
+        }
+    }
+
+    private fun initAtcPriceCategory(prclist: List<PriceCategory>){
+        val adapter = PriceCategoryAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, prclist)
+        binding.atcPriceCategory.threshold = 0
+        binding.atcPriceCategory.setAdapter(adapter)
+        binding.atcPriceCategory.setOnFocusChangeListener { _, b ->
+            if(b) binding.atcPriceCategory.showDropDown()
+        }
+        binding.atcPriceCategory.setOnItemClickListener { _, _, position, _ ->
+            viewModel.selectedPriceCategory = adapter.getItem(position)
+        }
+    }
+
     override fun clear(code: String) {
         when(code){
             "cpt" -> binding.atcCpt.setText("", true)
             "cg" -> binding.atcGroup.setText("", true)
+            "cat" -> binding.atcCategory.setText("", true)
+            "prcode" -> binding.atcPriceCategory.setText("", true)
         }
     }
 
@@ -217,17 +255,17 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
     }
 
     override fun onStarted() {
-        group_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        mcv_customer.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        mcv_customer?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        mcv_customer.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        mcv_customer?.snackbar(message)
     }
 
     override fun onDestroy() {

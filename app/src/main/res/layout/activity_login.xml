@@ -17,7 +17,6 @@
             android:background="#E2E2E2"
             tools:context=".controller.auth.LoginActivity">
 
-
         <RelativeLayout
                 android:padding="16dp"
                 android:layout_width="match_parent"
@@ -150,47 +149,11 @@
 
         </RelativeLayout>
 
-        <androidx.constraintlayout.widget.Group
-                android:id="@+id/group_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:visibility="invisible"
-                app:constraint_referenced_ids="progressBar_loading,textView_loading"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-        <ProgressBar
-                android:id="@+id/progressBar_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:indeterminate="true"
-                android:backgroundTint="@color/colorPrimaryDark"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-        />
-
-        <TextView
-                android:id="@+id/textView_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Loading ..."
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/progressBar_loading"
-                app:layout_constraintVertical_bias="0.0"
-        />
+        <include
+            android:id="@+id/llProgressBar"
+            android:visibility="gone"
+            layout="@layout/layout_progress_bar_with_text"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

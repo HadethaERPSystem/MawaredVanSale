@@ -42,14 +42,16 @@ interface ApiService {
     suspend fun products_GetByTerm(@Query("Term") term: String,
                                    @Query("WarehouseId") warehouseId: Int?,
                                    @Query("PriceCode") priceCode: String) : Response<ListRecsResponse<Product>>
+    @GET(URL_ALL_PRODUCTS_PRICE_CAT)
+    suspend fun products_GetByPriceTerm(@Query("Term") term: String,
+                                   @Query("PriceCode") priceCode: String) : Response<ListRecsResponse<Product>>
     //products_GetByUser
     @GET(URL_PRODUCTS_BY_USER)
     suspend fun products_GetByUser(@Query("Term") term: String,
                                    @Query("UserId") userId: Int?,
                                    @Query("PriceCode") priceCode: String) : Response<ListRecsResponse<Product>>
     @GET(URL_PRODUCTS_BY_SEARCH)
-    suspend fun products_GetBySearch(@Query("Term") term: String,
-                                   @Query("PriceCode") priceCode: String) : Response<ListRecsResponse<Product>>
+    suspend fun products_GetBySearch(@Query("Term") term: String) : Response<ListRecsResponse<Product>>
     @GET(URL_ALL_PRODUCTS)
     suspend fun product_GetByBarcode(@Query("Barcode") barcode: String,
                                @Query("WarehouseId") warehouseId: Int?,
@@ -61,9 +63,13 @@ interface ApiService {
 
     @GET(URL_PRODUCT_PRICE)
     suspend fun getProductPrice(@Query("prod_Id") prod_Id: Int): Response<SingleRecResponse<Product_Price_List>>
+    @GET(URL_PRODUCT_LAST_PRICE)
+    suspend fun product_getLastPrice(@Query("prod_id") prod_Id: Int, @Query("PriceCode") priceCode: String): Response<SingleRecResponse<Product_Price_List>>
 
     @GET(URL_ALL_CUSTOMERS)
     suspend fun getAllCustomers(@Query("sm_Id") sm_Id: Int): Response<ListRecsResponse<Customer>>
+    @GET(URL_SCHEDULE_CUSTOMERS)
+    suspend fun customers_getSchedule(@Query("sm_Id") sm_Id: Int): Response<ListRecsResponse<Customer>>
     @GET(URL_CUSTOMERS_BY_ORG)
     suspend fun customer_GetByOrg(@Query("sm_Id") sm_Id: Int, @Query("org_Id") org_Id: Int?): Response<ListRecsResponse<Customer>>
     @GET(URL_CUSTOMER_BY_Id)
@@ -75,7 +81,8 @@ interface ApiService {
     //////// Customer Group
     @GET(URL_ALL_CUSTOMER_GROUP)
     suspend fun getCustomerGroups(@Query("term") term: String): Response<ListRecsResponse<Customer_Group>>
-
+    @GET(URL_ALL_CUSTOMER_CATEGORY)
+    suspend fun customerCat_GetByTerm(@Query("term") term: String): Response<ListRecsResponse<Customer_Category>>
     ////////CUSTOMER PAYMENT TYPE
     @GET(URL_ALL_CPT)
     suspend fun getCPT_ById(@Query("term") term: String): Response<ListRecsResponse<Customer_Payment_Type>>
@@ -118,8 +125,15 @@ interface ApiService {
     @GET(URL_VOUCHER_BY_CODE)
     suspend fun getVoucherByCode(@Query("vo_code") vo_code: String): Response<SingleRecResponse<Voucher>>
 
+    // Price category
+    @GET(URL_PRICE_CAT_BY_All)
+    suspend fun getPriceCatAll(): Response<ListRecsResponse<PriceCategory>>
+    @GET(URL_PRICE_CAT_BY_ID)
+    suspend fun getPriceCategoryById(@Query("prc_Id") prc_Id: Int): Response<SingleRecResponse<PriceCategory>>
+
+    // Discount
     @GET(URL_DISCOUNT_BY_PRODUCT)
-    suspend fun getDiscountByProduct(@Query("pr_Id") pr_Id: Int, @Query("CurrentDate") currentDate: LocalDate, @Query("org_Id") org_Id: Int?): Response<SingleRecResponse<Discount>>
+    suspend fun discount_GetCurrent(@Query("pr_Id") pr_Id: Int, @Query("CurrentDate") currentDate: LocalDate, @Query("org_Id") org_Id: Int?): Response<SingleRecResponse<Discount>>
 
     @GET(URL_WAREHOUSE_GET_ALL)
     suspend fun warehouse_GetAll() : Response<ListRecsResponse<Warehouse>>
@@ -133,7 +147,7 @@ interface ApiService {
     @GET(URL_DELIVERY_BY_ID)
     suspend fun getDeliveryById(@Query("dl_Id") dl_Id: Int?): Response<SingleRecResponse<Delivery>>
 
-    @GET(URL_DELIVERY_UPDATE)
+    @POST(URL_DELIVERY_UPDATE)
     suspend fun updateDelivery(@Body baseEo: Delivery): Response<SingleRecResponse<Delivery>>
 
     @GET(URL_ALL_DELIVERY_DETAILS)

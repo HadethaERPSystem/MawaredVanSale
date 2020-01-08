@@ -107,7 +107,7 @@ class AddStockInFragment : Fragment(), KodeinAware, IDatePicker, IResetNavigator
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
 
-        viewModel.items.observe(this@AddStockInFragment, Observer {
+        viewModel.items.observe(viewLifecycleOwner, Observer {
 //            if(it == null) return@Observer
 //            initRecyclerView(it.toInvoiceItemRow())
 
@@ -115,20 +115,20 @@ class AddStockInFragment : Fragment(), KodeinAware, IDatePicker, IResetNavigator
 
         // bind customer to autocomplete
         val customerList = viewModel.customerList.await()
-        customerList.observe(this@AddStockInFragment, Observer { cu ->
+        customerList.observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCustomerAutocomplete(cu)
 
         })
 
         // bind products to autocomplete
-        viewModel.productList.observe(this@AddStockInFragment, Observer {
+        viewModel.productList.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
             initProductAutocomplete(it)
         })
 
 
-        viewModel.mVoucher.observe(this@AddStockInFragment, Observer {
+        viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
 

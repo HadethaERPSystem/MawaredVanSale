@@ -19,15 +19,17 @@ data class Customer(
     var cu_phone: String?,          // Customer Phone
     var cu_mobile: String?,         // Customer Mobile
     var cu_contact_name: String?,    // Contact Name
+    var cu_cat_Id: Int?,             // Region Id
     var cu_rg_Id: Int?,             // Region Id
     var cu_cr_Id: Int?,             // Currency Id
     var cu_notes: String?,          // Any Extra Data
-    var cu_refId: Int?,             // ERP customer Id
+    var cu_ref_Id: Int?,             // ERP customer Id
     var cu_balance: Double?,        // Customer Balance
     var cu_credit_limit: Double?,   // Customer Credit Limit
     var cu_payment_terms: String?,   // Payment method : CO: Cash only, CK: Cash And Check, CC: Credit
     var cu_latitude: Double?,
     var cu_longitude: Double?,
+    var cu_price_cat_Id: Int?,
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime
@@ -37,5 +39,8 @@ data class Customer(
     var cu_Id:  Int = 0
     var cu_cg_name: String? = null
     var cu_payment_name: String? = null
+    var cu_cat_name: String? = null
     var cu_rg_name: String? = null
+    var cu_price_cat_code: String? = null
+    var cu_price_cat_name: String? = null
 }

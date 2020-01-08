@@ -52,7 +52,7 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
 
     private var SPLASH_DISPLAY_LENGTH = 3000
 
-    private var TAG = SurveyEntryFragment::class.java!!.getSimpleName()
+    private var TAG = SurveyEntryFragment::class.java.getSimpleName()
 
     private var allSurveyQuestions: List<Survey_Detail>? = null
 
@@ -227,7 +227,7 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
     private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
 
         val items = viewModel.questions.await()
-        items.observe(this@SurveyEntryFragment, Observer {
+        items.observe(viewLifecycleOwner, Observer {
             //group_loading.hide()
             if(it == null) return@Observer
             viewModel.qnEoList = it.sortedBy {
@@ -240,14 +240,14 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
 
         // bind customer to autocomplete
         val customerList = viewModel.customerList.await()
-        customerList.observe(this@SurveyEntryFragment, Observer { cu ->
+        customerList.observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCustomerAutocomplete(cu)
 
         })
 
 
-        viewModel.mVoucher.observe(this@SurveyEntryFragment, Observer {
+        viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
 

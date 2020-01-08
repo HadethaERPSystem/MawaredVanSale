@@ -160,6 +160,10 @@
     <string name="msg_notify_bluetooth_error">The device does not connect</string>
     <string name="msg_error_no_selected_salesman">يجب اختيار مندوب مبيعات لهذا الجهاز</string>
     <string name="msg_error_no_selected_warehouse">يجب اختيار مخزن لهذا الجهاز</string>
+    <string name="msg_error_price_category">يجب اختيار فئة سعر البيع</string>
+    <string name="msg_error_not_available_product_qty">لاتتوفر كمية لهذه المادة لغرض البيع</string>
+    <string name="msg_error_not_required_qty_less_product_qty">الكمية المطلوبة اكبر من الكمية المتوفرة</string>
+    <string name="msg_error_not_selected_to_delivered">يجب اختيار تجهيز المواد</string>
     <string name="connecting">اتصال...</string>
 
     <string name="activity_devicelist_title_paired_devices">Paired devices</string>
@@ -182,6 +186,7 @@
     <string name="lbl_phone_number">رقم الهاتف</string>
     <string name="lbl_contact_name">Contact Name</string>
     <string name="lbl_code">الرمز</string>
+    <string name="lbl_customer_cat_name">صنف الزبون</string>
 
     <string name="refresh">تحديث</string>
     <string name="btn_on">تشغيل</string>
@@ -227,7 +232,7 @@
     <string name="lbl_from_warehouse">من مخزن</string>
     <string name="lbl_transfer_no">رقم المناقلة</string>
     <string name="lbl_warehouse_name">المخزن</string>
-
+    <string name="lbl_price_category">فئة السعر</string>
     <!--Report part string name -->
     <string name="rpt_invoice_no">رقم الفاتورة:</string>
     <string name="rpt_invoice_date">التاريخ:</string>
@@ -245,6 +250,7 @@
     <string name="rpt_total_amount">الجموع</string>
     <string name="rpt_total_discount">مجموع الخصومات</string>
     <string name="rpt_net_amount">الصافي للدفع</string>
+    <string name="rpt_cu_balance">الرصيد</string>
     <string name="rpt_person_reciever_sig">اسم وتوقيع المستلم</string>
     <string name="rpt_storekeeper_sig">اسم وتوقيع مدير المخازن</string>
     <string name="rpt_sales_manager_sig">اسم وتوقيع مدير المبيعات</string>

@@ -9,9 +9,9 @@ class AddStockOutViewModel(private val repository: IStockOutRepository, mdReposi
 
 
     fun onItemDelete(entityEo: Stockout_Items) {
-        if(entityEo.soti_Id != 0){
-
-        }
+//        if(entityEo.soti_Id != 0){
+//
+//        }
     }
 
 }

@@ -12,6 +12,7 @@ data class Salesman (
     var sm_login: String?,
     var sm_password: String?,
     var sm_warehouse_code: String?,
+    var sm_warehouse_name: String?,
     var sm_warehouse_id: Int?,
     var sm_credit_limit: Double?,
     var sm_balance: Double?,

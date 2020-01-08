@@ -16,8 +16,6 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Delivery_Items
 import com.mawared.mawaredvansale.databinding.DeliveryEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -51,6 +49,7 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
 
         viewModel.addNavigator = this
         viewModel.msgListener = this
+        viewModel.resources = resources
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
@@ -96,7 +95,7 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
             val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
             if(result != null){
                 if(result.contents == null){
-                    addInvoice_layout.snackbar("")
+                    lst_layout?.snackbar("")
                 }else{
                     // get barcode
                     val barcode = result.contents
@@ -134,7 +133,7 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Main) {
 
-        viewModel.savedEntity.observe(this@DeliveryEntryFragment, Observer {
+        viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -144,15 +143,18 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
 
         })
 
-        viewModel.entityEo.observe(this@DeliveryEntryFragment, Observer {
+        viewModel.entityEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 viewModel._entityEo = it
-                //viewModel.setItems(it.items)
+                viewModel.dl_doc_date.value = viewModel.returnDateString(it.dl_doc_date!!)
+                viewModel.dl_refNo.value = it.dl_doc_no.toString()
+                viewModel.dl_customer_name.value = it.dl_customer_name
+                viewModel.setItems(it.items)
             }
         })
 
-        viewModel.items.observe(this@DeliveryEntryFragment, Observer {
-            group_loading.hide()
+        viewModel.items.observe(viewLifecycleOwner, Observer {
+            llProgressBar?.visibility = View.GONE
             if(it == null) return@Observer
             initRecyclerView(it.toRow())
         })
@@ -191,17 +193,17 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
     }
 
     override fun onStarted() {
-        group_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        addInvoice_layout.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        lst_layout?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        addInvoice_layout.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        lst_layout?.snackbar(message)
     }
 
     override fun onDestroy() {

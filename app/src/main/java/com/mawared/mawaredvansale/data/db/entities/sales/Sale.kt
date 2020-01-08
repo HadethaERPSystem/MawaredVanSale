@@ -25,6 +25,7 @@ data class Sale(
     var sl_isDeleted: Boolean?,
     var sl_latitude: Double?,
     var sl_longitude: Double?,
+    var sl_price_cat_Id: Int?,
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime
@@ -42,10 +43,13 @@ data class Sale(
     var sl_cr_symbol: String? = null
     var sl_cr_name: String? = null
     var sl_lcr_symbol: String? = null
+    var sl_lcr_name: String? = null
     var sl_vo_name: String? = null
     var sl_vo_code: String? = null
     var sl_contact_name: String? = null
     var sl_customer_phone: String? = null
+    var sl_customer_balance: Double? = null
+    var sl_price_cat_code: String? = null
     @Ignore
     var items: ArrayList<Sale_Items> = arrayListOf()
     @Ignore

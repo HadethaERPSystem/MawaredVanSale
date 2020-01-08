@@ -100,7 +100,7 @@ class StockOutFragment : Fragment(), KodeinAware, IMainNavigator<Stockout> {
     // binding recycler view
     private fun bindUI() =  GlobalScope.launch(Main) {
         val list =  viewModel.baseEoList.await()
-        list.observe(this@StockOutFragment, Observer { sl ->
+        list.observe(viewLifecycleOwner, Observer { sl ->
             if(sl == null) return@Observer
             initRecyclerView(sl.toStockoutRow())
         })

@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.fonts.FontStyle
 import com.itextpdf.text.*
 import com.mawared.mawaredvansale.controller.common.LineType
-import com.mawared.mawaredvansale.controller.common.ReportColumn
 
 class PageSetting {
     val marginRight = 0.5f
@@ -26,7 +25,7 @@ class RowHeader(
     val beginOfBody: Float = 0f,
     val align: Int = Element.ALIGN_CENTER,
     val fontWeight: Int = Font.NORMAL,
-    val fontName: String = "assets/fonts/brandon_medium.otf"
+    val fontName: String = "assets/fonts/arial.ttf"
 )
 
 class ReportFont(
@@ -57,7 +56,7 @@ class HeaderFooterRow(
     val text: String? = null,
     val fontSize: Float = 12F,
     val align: Int = Element.ALIGN_CENTER,
-    val fontWeight: Int = Font.BOLD,
+    val fontWeight: Int = Font.NORMAL,
     val fontName: String = "assets/fonts/arial.ttf",
     val cellsWidth: ArrayList<Int>? = null,
     val fontColor: BaseColor = BaseColor.BLACK,

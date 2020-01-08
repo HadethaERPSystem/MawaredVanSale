@@ -1,7 +1,6 @@
 package com.mawared.mawaredvansale.controller.sales.psorder.psorderentry
 
 import android.content.Context
-import android.content.res.Resources
 import android.location.Location
 import android.view.View
 import androidx.lifecycle.LiveData
@@ -10,7 +9,10 @@ import androidx.lifecycle.Transformations
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
-import com.mawared.mawaredvansale.data.db.entities.md.*
+import com.mawared.mawaredvansale.data.db.entities.md.Currency_Rate
+import com.mawared.mawaredvansale.data.db.entities.md.Customer
+import com.mawared.mawaredvansale.data.db.entities.md.Product
+import com.mawared.mawaredvansale.data.db.entities.md.Voucher
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order_Items
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
@@ -33,6 +35,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     // listener
     var msgListener: IMessageListener? = null
     var addNavigator: IAddNavigator<Sale_Order_Items>? = null
+    var allowed_select_prod: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // google map location GPS
     var location: Location? = null
@@ -43,6 +46,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     var totalAmount : MutableLiveData<Double> = MutableLiveData()
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
 
     var searchQty: MutableLiveData<String> = MutableLiveData("1")
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
@@ -53,10 +57,6 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     //////////////////////////////////////////////////
     // for save header and detail to database
     val _baseEo: MutableLiveData<Sale_Order> = MutableLiveData()
-//    val savedEntity: LiveData<Sale_Order> = Transformations
-//        .switchMap(_baseEo){
-//            orderRepository.insert(it)
-//        }
 
     // for load order for edit or view
     var _entityEo: Sale_Order? = null
@@ -74,12 +74,12 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         get() = _soItems
 
     // for customer
-    val customerList by lazyDeferred { masterDataRepository.getCustomer()  }
+    val customerList by lazyDeferred { masterDataRepository.getCustomers(_sm_id) }
 
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
-            masterDataRepository.getProductsBySearch(it, "POS")
+            masterDataRepository.getProductsByPriceTerm(it, price_cat_code)
         }
 
     var rate : Double = 0.00
@@ -97,18 +97,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         }
 
     var unitPrice : Double = 0.00
-    private val _prod_Id: MutableLiveData<Int> = MutableLiveData()
-    val mProductPrice: LiveData<Product_Price_List> = Transformations
-        .switchMap(_prod_Id){
-            masterDataRepository.getProductPrice(it)
-        }
-
-    var bcCurrency: Currency? = null
-    private val _sale_cr_symbole: MutableLiveData<String> = MutableLiveData()
-    val saleCurrency: LiveData<Currency> = Transformations
-        .switchMap(_sale_cr_symbole){
-            masterDataRepository.getCurrencyByCode(it)
-        }
+    var price_cat_code = "POS"
 
     // set function
     fun setOrderId(id: Int){
@@ -139,18 +128,8 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         _cr_Id.value = cr_id
     }
 
-    fun setProductId(prod_Id: Int){
-        if(_prod_Id.value == prod_Id){
-            return
-        }
-        _prod_Id.value = prod_Id
-    }
-
-    fun setSaleCurrency(cr_code: String){
-        if(_sale_cr_symbole.value == cr_code){
-            return
-        }
-        _sale_cr_symbole.value = cr_code
+    fun setPriceCategory(){
+        price_cat_code = if(selectedCustomer != null && selectedCustomer?.cu_price_cat_code != null) selectedCustomer!!.cu_price_cat_code!! else "POS"
     }
 
     fun setItems(items: List<Sale_Order_Items>?){
@@ -172,11 +151,11 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
                 val baseEo = Sale_Order( user?.cl_Id, user?.org_Id,0, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, selectedCustomer!!.cu_Id, null, totalAmount, 0.00, netAmount, bcCurrency!!.cr_id, rate,
-                    false, location?.latitude, location?.longitude, "$strDate",
+                    _sm_id, selectedCustomer!!.cu_ref_Id, null, totalAmount, 0.00, netAmount, user?.sl_cr_Id, rate,
+                    false, location?.latitude, location?.longitude, selectedCustomer!!.cu_price_cat_Id,"$strDate",
                     "${user?.id}", "$strDate", "${user?.id}"
                 )
-
+                baseEo.so_price_cat_code = price_cat_code
                 if(mode != "Add"){
                     baseEo.so_id = _entityEo!!.so_id
                     baseEo.created_at = _entityEo!!.created_at
@@ -239,6 +218,8 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         totalAmount.value = 0.00
         netTotal.value = 0.00
         totalDiscount.value = 0.00
+        unitPrice = 0.00
+        price_cat_code = "POS"
         clear("cu")
         clear("prod")
     }
@@ -251,6 +232,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
                     if(complete){
                         searchBarcode.value = ""
                         searchQty.value = "1"
+                        unitPrice = 0.00
                         clear("prod")
                     }else{
                         msgListener?.onFailure(ctx!!.resources!!.getString(R.string.msg_error_fail_add_item))
@@ -266,10 +248,10 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         try {
             rowNo++
             val strDate = LocalDateTime.now()
-            val qty = searchQty.value!!.toDouble()
+            val mItem = tmpSOItems.find { it.sod_prod_Id == selectedProduct!!.pr_Id }
+            val qty = searchQty.value!!.toDouble() + (if(mItem?.sod_pack_qty != null)   mItem.sod_pack_qty!! else 0.00)
             val lineTotal = unitPrice * qty
             val netTotal = lineTotal
-            val mItem = tmpSOItems.find { it.sod_prod_Id == selectedProduct!!.pr_Id }
             val user = App.prefs.saveUser
 
             if(mItem == null){
@@ -283,9 +265,10 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
                 tmpSOItems.add(itemEo)
             }
             else{
-                mItem.sod_pack_qty = mItem.sod_pack_qty!! + qty
-                mItem.sod_unit_qty = mItem.sod_pack_qty!! + mItem.sod_pack_size!!
-                mItem.sod_line_total = mItem.sod_pack_qty!! * mItem.sod_unit_price!!
+                mItem.sod_pack_qty = qty
+                mItem.sod_unit_qty = qty
+                mItem.sod_line_total = lineTotal
+                mItem.sod_net_total = netTotal
             }
             _soItems.postValue(tmpSOItems)
 
@@ -299,8 +282,8 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     private fun isValidRow(): Boolean{
         var isSuccessful = true
         var msg: String? = ""
-        val qty = searchQty.value?.toDouble()
-        if(qty === null || qty == 0.00){
+
+        if(searchQty.value.isNullOrEmpty()){
             msg = ctx!!.resources!!.getString(R.string.msg_error_invalid_qty)
         }
 

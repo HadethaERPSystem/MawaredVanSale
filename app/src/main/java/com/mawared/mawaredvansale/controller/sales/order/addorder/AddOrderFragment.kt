@@ -106,7 +106,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
     fun bindUI() = GlobalScope.launch(Main){
 
-        viewModel._baseEo.observe(this@AddOrderFragment, Observer {
+        viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -116,20 +116,20 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
         })
 
-        viewModel.entityEo.observe(this@AddOrderFragment, Observer {
+        viewModel.entityEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 viewModel._entityEo = it
                 viewModel.docNo.value = it.so_no?.toString()
                 viewModel.docDate.value = viewModel.returnDateString(it.so_date!!)
-                viewModel.selectedCustomer?.cu_Id = it.so_customerId!!
+                viewModel.selectedCustomer?.cu_ref_Id = it.so_customerId!!
                 viewModel.selectedCustomer?.cu_name = it.so_customer_name
                 binding.atcCustomer.setText("${it.so_customer_name}", true)
                 viewModel.setItems(it.items)
             }
         })
 
-        viewModel.soItems.observe(this@AddOrderFragment, Observer {
-            group_loading_order_entry.hide()
+        viewModel.soItems.observe(viewLifecycleOwner, Observer {
+            group_loading_order_entry?.hide()
             if(it == null) return@Observer
             initRecyclerView(it.toOrderItemRow())
             viewModel.setTotals()
@@ -137,37 +137,32 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
         // bind customer to autocomplete
         val customerList = viewModel.customerList.await()
-        customerList.observe(this@AddOrderFragment, Observer { cu ->
+        customerList.observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCustomerAutocomplete(cu)
 
         })
 
         // bind products to autocomplete
-        viewModel.productList.observe(this@AddOrderFragment, Observer {
+        viewModel.productList.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
             initProductAutocomplete(it)
         })
 
-        viewModel.mProductPrice.observe(this@AddOrderFragment, Observer {
+        viewModel.mProductPrice.observe(viewLifecycleOwner, Observer {
             viewModel.unitPrice = if(it.pl_unitPirce == null) 0.00 else it.pl_unitPirce!!
         })
 
-        viewModel.mVoucher.observe(this@AddOrderFragment, Observer {
+        viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
 
-        viewModel.currencyRate.observe(this@AddOrderFragment, Observer {
+        viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
             viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.00
         })
 
-        viewModel.saleCurrency.observe(this@AddOrderFragment, Observer {
-            viewModel.bcCurrency = it
-        })
-        viewModel.setTerm("")
         viewModel.setVoucherCode("SaleOrder")
-        viewModel.setSaleCurrency("$")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.cr_Id!!)
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
         viewModel.setItems(null)
     }
 
@@ -203,10 +198,13 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         binding.atcCustomer.setOnFocusChangeListener { _, b ->
             if(b) binding.atcCustomer.showDropDown()
         }
-        binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
-            viewModel.selectedCustomer = adapter.getItem(position)
-        }
 
+        binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
+            viewModel.allowed_select_prod.value = true
+            viewModel.selectedCustomer = adapter.getItem(position)
+            viewModel.setPriceCategory()
+            viewModel.setTerm("")
+        }
     }
 
     // init product autocomplete view
@@ -223,7 +221,8 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         }
         binding.atcProduct.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedProduct = adapter.getItem(position)
-            viewModel.setProductId(viewModel.selectedProduct!!.pr_Id)
+            viewModel.unitPrice = viewModel.selectedProduct!!.pr_unit_price ?: 0.00
+            //viewModel.setProductId(viewModel.selectedProduct!!.pr_Id)
         }
     }
 
@@ -251,6 +250,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
     override fun clear(code: String) {
         when(code) {
             "cu"-> {
+                viewModel.allowed_select_prod.value = false
                 binding.atcCustomer.setText("", true)
             }
             "prod"-> {
@@ -261,17 +261,17 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
     }
 
     override fun onStarted() {
-       group_loading_order_entry.show()
+       group_loading_order_entry?.show()
     }
 
     override fun onSuccess(message: String) {
-        add_order_layout.snackbar(message)
-        group_loading_order_entry.hide()
+        add_order_layout?.snackbar(message)
+        group_loading_order_entry?.hide()
     }
 
     override fun onFailure(message: String) {
-        add_order_layout.snackbar(message)
-        group_loading_order_entry.hide()
+        add_order_layout?.snackbar(message)
+        group_loading_order_entry?.hide()
     }
 
     override fun onDestroy() {

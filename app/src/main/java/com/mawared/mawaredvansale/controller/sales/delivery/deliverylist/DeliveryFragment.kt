@@ -93,13 +93,13 @@ class DeliveryFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Dispatchers.Main) {
-        viewModel.entityEoList.observe(this@DeliveryFragment, Observer { dl ->
+        viewModel.entityEoList.observe(viewLifecycleOwner, Observer { dl ->
             gp_loading_dl.hide()
             if(dl == null) return@Observer
             initRecyclerView(dl.toRow())
         })
 
-        viewModel.baseEo.observe(this@DeliveryFragment, Observer {
+        viewModel.baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 mPrint(it)
             }

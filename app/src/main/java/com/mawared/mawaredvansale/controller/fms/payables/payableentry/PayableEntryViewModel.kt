@@ -1,7 +1,6 @@
 package com.mawared.mawaredvansale.controller.fms.payables.payableentry
 
 import android.content.Context
-import android.content.res.Resources
 import android.location.Location
 import android.view.View
 import androidx.lifecycle.LiveData
@@ -22,6 +21,7 @@ import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataReposit
 import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 
 class PayableEntryViewModel(private val repository: IPayableRepository,
@@ -126,7 +126,7 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
         if(isValid()){
             try {
                 val user = App.prefs.saveUser
-                val strDate: LocalDate = LocalDate.now()
+                val strDate = LocalDateTime.now()
                 val amount_usd: Double = if(bc_amount.value != null)  bc_amount.value!!.toDouble() else 0.00
                 val amount_iqd: Double = if(lc_amount.value != null)  lc_amount.value!!.toDouble() else 0.00
                 val change_usd: Double = if(bc_change.value != null)  bc_change.value!!.toDouble() else 0.00
@@ -134,7 +134,7 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
                 val dtFull = doc_date.value + " " + LocalTime.now()
                 val baseEo = Payable(
                     user?.cl_Id, user?.org_Id, 0, dtFull, mVoucher.value!!.vo_Id, "${mVoucher.value!!.vo_prefix}", null,
-                    _sm_id, selectedCustomer!!.cu_Id, 0.00,
+                    _sm_id, selectedCustomer!!.cu_ref_Id!!, 0.00,
                     amount_usd, change_usd, amount_iqd, change_iqd,
                     bcCurrency?.cr_id, lcCurrency?.cr_id, rate, comment.value, false, location?.latitude, location?.longitude, null,
                     "$strDate", "${user?.id}", "$strDate", "${user?.id}"

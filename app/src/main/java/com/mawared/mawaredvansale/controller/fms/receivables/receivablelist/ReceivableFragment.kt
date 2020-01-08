@@ -46,6 +46,7 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
 
         viewModel.navigator = this
         viewModel.msgListener = this
+        viewModel.activity = activity as AppCompatActivity
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
@@ -86,13 +87,13 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
 
     // binding recycler view
     private fun bindUI() {
-        viewModel.baseEoList.observe(this, Observer {
-            group_loading.hide()
+        viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
+            group_loading?.hide()
             if(it == null) return@Observer
-            initRecyclerView(it.toReceivableRow())
+            initRecyclerView(it.sortedByDescending { it.rcv_doc_date }.toReceivableRow())
         })
 
-        viewModel.deleteRecord.observe(this@ReceivableFragment, Observer {
+        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
             group_loading.hide()
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))
@@ -101,6 +102,13 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
             else{
                 onFailure(getString(R.string.msg_failure_delete))
             }
+        })
+
+        viewModel.baseEo.observe(viewLifecycleOwner, Observer {
+            if(it != null && viewModel.isPrint) {
+                viewModel.onPrintTicket(it)
+            }
+
         })
 
         viewModel.setCustomer(null)
@@ -151,16 +159,16 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
     }
 
     override fun onStarted() {
-        group_loading.show()
+        group_loading?.show()
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
+        group_loading?.hide()
         receivable_list_cl.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        receivable_list_cl.snackbar(message)
+        group_loading?.hide()
+        receivable_list_cl?.snackbar(message)
     }
 }

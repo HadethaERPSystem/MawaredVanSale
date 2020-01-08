@@ -69,7 +69,7 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
 
     private fun bindUI() = Coroutines.main {
         //progress_bar.show()
-        viewModel.menus.await().observe(this, Observer {
+        viewModel.menus.await().observe(viewLifecycleOwner, Observer {
             //progress_bar.hide()
             initRecyclerView(it.toMenuItem())
         })

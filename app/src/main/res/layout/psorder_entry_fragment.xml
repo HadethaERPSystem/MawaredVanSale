@@ -155,6 +155,7 @@
                         android:hint="@string/lbl_prod_name"
                         android:textSize="12sp"
                         android:gravity="start"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         app:layout_constraintEnd_toStartOf="@+id/btn_cancelProduct"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
@@ -166,6 +167,7 @@
                         android:background="@null"
                         android:contentDescription="@string/btn_add_item_caption"
                         android:onClick="@{()-> viewmodel.clear(`prod`)}"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         app:layout_constraintBottom_toBottomOf="@+id/atc_product"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/atc_product"
@@ -181,6 +183,7 @@
                         android:inputType="text"
                         android:text="@={viewmodel.searchBarcode}"
                         android:textSize="12sp"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         app:layout_constraintEnd_toStartOf="@+id/edtxt_Qty"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/atc_product" />
@@ -195,6 +198,7 @@
                         android:text="@={viewmodel.searchQty}"
                         android:textAlignment="center"
                         android:textSize="12sp"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         android:inputType="numberDecimal"
                         app:layout_constraintEnd_toStartOf="@+id/btn_AddItem"
                         app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
@@ -205,6 +209,7 @@
                         android:layout_height="50dp"
                         android:contentDescription="@string/btn_add_item_caption"
                         android:onClick="@{()-> viewmodel.onAddItem()}"
+                        android:enabled="@{viewmodel.allowed_select_prod}"
                         app:layout_constraintBottom_toBottomOf="@+id/edtxt_Qty"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/edtxt_Qty"

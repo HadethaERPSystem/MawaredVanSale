@@ -18,6 +18,7 @@ import com.mawared.mawaredvansale.utilities.hide
 import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.order_row.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
@@ -35,8 +36,8 @@ class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
         val binding : ActivityLoginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         val viewModel = ViewModelProviders.of(this, factory).get(AuthViewModel::class.java)
         binding.viewmodel = viewModel
-
-        group_loading.hide();
+        viewModel.activity = this
+        llProgressBar?.visibility = View.GONE
 
         //viewModel.saveUser(user)
         viewModel.authListener = this
@@ -59,11 +60,7 @@ class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
         }
     }
 
-    override fun onCreateView(
-        parent: View?,
-        name: String,
-        context: Context,
-        attrs: AttributeSet
+    override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet
     ): View? {
 //        val packageName = getPackageName();
 //        val resId: Int = getResources().getIdentifier("login_page_title", "string", packageName)
@@ -72,16 +69,16 @@ class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
         return super.onCreateView(parent, name, context, attrs)
     }
     override fun onStarted() {
-        progressBar_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(user: User) {
-        progressBar_loading.hide()
+        llProgressBar?.visibility = View.GONE
     }
 
     override fun onFailure(message: String) {
 
-        progressBar_loading.hide()
-        root_layout.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        root_layout?.snackbar(message)
     }
 }

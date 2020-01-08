@@ -241,8 +241,8 @@ class DeviceListActivity: Activity() {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED == action) {
                 setProgressBarIndeterminateVisibility(false)
                 setTitle(R.string.activity_devicelist_select_device)
-                if (mNewDevicesArrayAdapter!!.getCount() == 0) {
-                }
+//                if (mNewDevicesArrayAdapter!!.getCount() == 0) {
+//                }
             }
         }
     }

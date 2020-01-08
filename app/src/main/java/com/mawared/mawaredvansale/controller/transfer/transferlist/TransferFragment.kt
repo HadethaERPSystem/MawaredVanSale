@@ -104,16 +104,16 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Main) {
-        viewModel.baseEoList.observe(this@TransferFragment, Observer {
+        viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
             group_loading.hide()
             if(it == null) return@Observer
-            initRecyclerView(it.toRow())
+            initRecyclerView(it.sortedByDescending { it.tr_doc_date }.toRow())
         })
 
-        viewModel.baseEo.observe(this@TransferFragment, Observer {
-            if(it != null) {
+        viewModel.baseEo.observe(viewLifecycleOwner, Observer {
+            if(it != null && viewModel.isPrint) {
                 //mPrint(it)
-                viewModel.onPrintTicket(it)
+                //viewModel.onPrintTicket(it)
             }
             else{
                 onFailure("Failure not loaded data from server for print it")
@@ -189,6 +189,7 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         intent.putExtras(bundle)
         //intent.putExtraJson(lines)
         startActivity(intent)
+        viewModel.isPrint = false
     }
 
     override fun onDestroy() {

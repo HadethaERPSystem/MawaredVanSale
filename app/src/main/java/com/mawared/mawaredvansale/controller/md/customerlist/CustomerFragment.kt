@@ -94,13 +94,13 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Dispatchers.Main) {
-        viewModel.baseEoList.observe(this@CustomerFragment, Observer {
-            group_loading.hide()
+        viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
+            group_loading?.hide()
             if(it == null) return@Observer
-            initRecyclerView(it.toRow())
+            initRecyclerView(it.sortedByDescending { it.cu_ref_Id }.toRow())
         })
 
-        viewModel.setSalesmanId(App.prefs.savedSalesman!!.sm_id)
+        viewModel.setSalesmanId(App.prefs.savedSalesman!!.sm_user_id!!)
     }
 
     private fun initRecyclerView(saleItem: List<CustomerRow>){
@@ -122,17 +122,17 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     override fun onStarted() {
-        group_loading.show()
+        group_loading?.show()
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        customer_list_lc.snackbar(message)
+        group_loading?.hide()
+        customer_list_lc?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        customer_list_lc.snackbar(message)
+        group_loading?.hide()
+        customer_list_lc?.snackbar(message)
     }
 
     override fun onItemDeleteClick(baseEo: Customer) {

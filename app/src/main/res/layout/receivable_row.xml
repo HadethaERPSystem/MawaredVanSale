@@ -306,6 +306,18 @@
                     app:srcCompat="@drawable/ic_view"
                     android:contentDescription="@string/btn_view_caption"/>
 
+            <ImageButton
+                android:id="@+id/btn_print"
+                android:onClick="@{()-> viewmodel.onPrint(entityEo.rcv_Id)}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                app:layout_constraintEnd_toStartOf="@+id/btn_view"
+                app:layout_constraintTop_toTopOf="@+id/btn_view"
+                app:srcCompat="@drawable/ic_print"
+                android:contentDescription="@string/btn_view_caption"/>
+
             <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline14"
                     android:layout_width="wrap_content"

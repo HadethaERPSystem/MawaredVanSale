@@ -46,4 +46,5 @@ data class Payable(
     @Ignore
     var py_cr_symbol: String? = null
     var py_lc_cr_symbol: String? = null
+    var py_cu_balance: Double? = null
 }

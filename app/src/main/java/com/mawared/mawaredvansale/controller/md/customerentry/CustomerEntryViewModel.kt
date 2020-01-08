@@ -9,14 +9,14 @@ import androidx.lifecycle.Transformations
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
-import com.mawared.mawaredvansale.data.db.entities.md.Customer
-import com.mawared.mawaredvansale.data.db.entities.md.Customer_Group
-import com.mawared.mawaredvansale.data.db.entities.md.Customer_Payment_Type
+import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseViewModel() {
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
@@ -57,13 +57,22 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
          repository.getCustomersGroups("")
     }
 
+    var selectedCustomerCat: Customer_Category? = null
+    val Category_List by lazyDeferred {
+        repository.customersCategory_GetByTerm("")
+    }
+
+    var selectedPriceCategory: PriceCategory? = null
+    val priceCatList by lazyDeferred {
+        repository.priceCat_GetAll()
+    }
     ///////////////////////////////////////
     /// For insert or update current customer
-    private val _baseEo: MutableLiveData<Customer> = MutableLiveData()
-    val savedEntity: LiveData<Customer> = Transformations
-        .switchMap(_baseEo){
-            repository.insertCustomer(it)
-        }
+    var _baseEo: MutableLiveData<Customer> = MutableLiveData()
+//    val savedEntity: LiveData<Customer> = Transformations
+//        .switchMap(_baseEo){
+//            repository.insertCustomer(it)
+//        }
 
     // for load order for edit or view
     var _entityEo: Customer? = null
@@ -88,17 +97,29 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
         if(isValid()){
             try {
                 val user = App.prefs.saveUser
-                val strDate: LocalDate = LocalDate.now()
+                val strDate = LocalDateTime.now()
                 val balance: Double? = mcu_balance.value?.toDouble()
                 val limit: Double? = mcu_credit_limit.value?.toDouble()
-                val baseEo = Customer(mcu_code.value, selectedCustomerGroup!!.cg_Id, selectedCPT!!.cpt_Id, null, null,
+                val baseEo = Customer(mcu_code.value, selectedCustomerGroup!!.cg_Id, selectedCPT!!.cpt_Id, user?.cl_Id, user?.org_Id,
                     mcu_barcode.value, mcu_name_ar.value, mcu_name.value, mcu_trade_name.value, mcu_address_ar.value, mcu_address.value,
-                    mcu_phone.value, mcu_mobile.value, mcu_contact_name.value, null, null,mcu_notes.value, null,
-                    balance, limit, mcu_payment_terms.value, mcu_latitude.value?.toDouble(), mcu_longitude.value?.toDouble(),
+                    mcu_phone.value, mcu_mobile.value, mcu_contact_name.value,  selectedCustomerCat!!.cat_Id,null, null,mcu_notes.value, null,
+                    balance, limit, mcu_payment_terms.value, mcu_latitude.value?.toDouble(), mcu_longitude.value?.toDouble(), selectedPriceCategory!!.prc_Id,
                     "$strDate", "${user?.id}", "$strDate","${user?.id}"
                 )
 
-                _baseEo.value = baseEo
+                Coroutines.main {
+                    try {
+                        val response = repository.customerSaveOrUpdate(baseEo)
+                        if(response.isSuccessful){
+                            _baseEo.value = response.data
+                        }
+                        else{
+                            msgListener?.onFailure("Error message when try to save customer. Error is ${response.message}")
+                        }
+                    }catch (e: Exception){
+                        msgListener?.onFailure("Error message when try to save customer. Error is ${e.message}")
+                    }
+                }
             }
             catch (e: Exception){
                 msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
@@ -109,33 +130,37 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
 
     private fun isValid(): Boolean{
         var isSuccessful = true
-        var msg: String? = null
+        var msg: String? = ""
 
         if(mcu_name.value.isNullOrEmpty()|| mcu_name_ar.value.isNullOrEmpty()){
             msg = resources!!.getString(R.string.msg_error_cu_name)
         }
 
         if(mcu_trade_name.value.isNullOrEmpty()){
-            msg = "\n\r" + resources!!.getString(R.string.msg_error_cu_trade_name)
+            msg = (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_cu_trade_name)
         }
 
         if(selectedCPT == null){
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_cu_payment_type)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_cu_payment_type)
         }
         if(selectedCustomerGroup == null){
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_cu_group)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_cu_group)
+        }
+
+        if(selectedPriceCategory == null){
+            msg += (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_price_category)
         }
 
         if(mcu_longitude.value.isNullOrEmpty() && mcu_latitude.value.isNullOrEmpty()) {
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_logtude_latitude)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_logtude_latitude)
         }
 
         if(mcu_address_ar.value.isNullOrEmpty()){
-            msg = "\n\r" + resources!!.getString(R.string.msg_error_address)
+            msg = (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_address)
         }
 
         if(mcu_mobile.value.isNullOrEmpty() && mcu_phone.value.isNullOrEmpty()){
-            msg = "\n\r" + resources!!.getString(R.string.msg_error_mobile)
+            msg = (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_mobile)
         }
 
         if(!msg.isNullOrEmpty()){
@@ -160,6 +185,9 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
         mcu_balance.value = ""
         mcu_credit_limit.value = ""
         mcu_payment_terms.value = ""
+        selectedPriceCategory = null
+        selectedCPT = null
+        selectedCustomerGroup = null
         mcu_longitude.value = "${location?.latitude}"
         mcu_latitude.value = "${location?.longitude}"
 
@@ -173,11 +201,15 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
             "cpt"-> {
                 selectedCPT = null
             }
+            "cat" -> selectedCustomerCat = null
             "cg"-> {
                 selectedCustomerGroup = null
             }
+            "prcode" -> {
+                selectedPriceCategory = null
+            }
         }
-       // addNavigator?.clear(code)
+        addNavigator?.clear(code)
     }
 
     fun displayLocation(){
