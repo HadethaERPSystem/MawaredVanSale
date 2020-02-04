@@ -78,7 +78,7 @@ class atc_Whs_Adapter(context: Context, @LayoutRes private val layoutResource: I
         @Suppress("UNCHECKED_CAST")
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             val whs : ArrayList<Warehouse> = results?.values as ArrayList<Warehouse>
-            if(results != null && results.count > 0){
+            if(results.count > 0){
                 clear()
                 for (w in whs){
                     add(w)

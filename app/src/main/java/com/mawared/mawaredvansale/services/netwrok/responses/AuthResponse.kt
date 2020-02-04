@@ -10,13 +10,14 @@ data class AuthResponse (
 )
 
 
-data class ListRecsResponse<T> (
+data class ResponseList<T> (
     val isSuccessful : Boolean, // isSuccessful
     val message : String?, //message
-    val data : List<T>?
+    val data : List<T>?,
+    val totalPages: Int
 )
 
-data class SingleRecResponse<T> (
+data class ResponseSingle<T> (
     val isSuccessful : Boolean, // isSuccessful
     val message : String?, //message
     val data : T?

@@ -18,6 +18,7 @@ import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.services.repositories.transfer.ITransferRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import java.util.*
@@ -30,15 +31,11 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
 
     var addNavigator: IAddNavigator<Transfer_Items>? = null
     var resources: Resources? = null
-
+    var isRunning: Boolean = false
     // google map location GPS
     var location: Location? = null
 
-    private val _baseEo: MutableLiveData<Transfer> = MutableLiveData()
-    val savedEntity: LiveData<Transfer> = Transformations
-        .switchMap(_baseEo){
-            repository.saveOrUpdate(it)
-        }
+    val _baseEo: MutableLiveData<Transfer> = MutableLiveData()
 
     private var tmpItems: ArrayList<Transfer_Items> = arrayListOf()
     private var tmpDeletedItems: ArrayList<Transfer_Items> = arrayListOf()
@@ -68,7 +65,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
-            masterDataRepository.getProducts(it, App.prefs.savedSalesman?.sm_warehouse_id, "POS")
+            masterDataRepository.getProductsBySearch(it)
         }
 
     val warEoList by lazy {
@@ -116,13 +113,14 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
     fun onSave() {
         if (isValid()) {
             try {
+                isRunning = true
                 val user = App.prefs.saveUser
                 val strDate = LocalDateTime.now()
 
 
                 val baseEo = Transfer(
                     user?.cl_Id, user?.org_Id,0, "${docDate.value}", mVoucher.value!!.vo_Id,"${voucher?.vo_prefix}","",
-                    selectToWarehouse?.wr_Id,null, false,"$strDate", "${user?.id}", "$strDate", "${user?.id}"
+                    App.prefs.savedSalesman?.sm_warehouse_id,null, false,"$strDate", "${user?.id}", "$strDate", "${user?.id}"
                 )
                 if(mode != "Add"){
                     baseEo.tr_Id = _entityEo!!.tr_Id
@@ -132,9 +130,26 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
                 }
                 baseEo.items.addAll(tmpItems)
 
-                _baseEo.value = baseEo
+                Coroutines.main {
+                    try {
+                        val response = repository.upsert(baseEo)
+                        if(response.isSuccessful){
+                            _baseEo.value = response.data
+                            isRunning = false
+                        }
+                        else{
+                            msgListener?.onFailure("Error message when try to save request transfer. Error is ${response.message}")
+                            isRunning = false
+                        }
+                    }catch (e: Exception){
+                        msgListener?.onFailure("Error message when try to save request transfer. Error is ${e.message}")
+                        isRunning = false
+                    }
+                }
+
             }catch (e: Exception){
                 msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
+                isRunning = false
             }
         }
     }
@@ -207,23 +222,24 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
         try {
             rowNo++
             val strDate = LocalDateTime.now()
-            val qty = searchQty.value!!.toDouble()
+            val mItem = tmpItems.find { it.trd_prod_Id == selectedProduct!!.pr_Id }
+            val qty = searchQty.value!!.toDouble() + (if(mItem?.trd_pack_qty != null)   mItem.trd_pack_qty!! else 0.00)
 
             val user = App.prefs.saveUser
-            val mItem = tmpItems.find { it.trd_prod_Id == selectedProduct!!.pr_Id }
 
             if (mItem == null) {
                 val item = Transfer_Items(0, rowNo, selectedProduct!!.pr_Id,
                     selectedProduct!!.pr_uom_Id, qty, 1.00, qty,
                      "$strDate", "${user?.id}", "$strDate", "${user?.id}"
                 )
-                item.trd_prod_name = selectedProduct!!.pr_description_ar
+                item.trd_prod_name = selectedProduct!!.pr_description
+                item.trd_prod_name_ar = selectedProduct!!.pr_description_ar
                 item.trd_barcode =  selectedProduct!!.pr_barcode
 
                 tmpItems.add(item)
             } else {
-                mItem.trd_pack_qty = mItem.trd_pack_qty!! + qty
-                mItem.trd_unit_qty = mItem.trd_pack_qty!! + mItem.trd_pack_size!!
+                mItem.trd_pack_qty = qty
+                mItem.trd_unit_qty = qty
             }
             _items.postValue(tmpItems)
             complete(true)
@@ -237,12 +253,11 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
     private fun isValidRow(): Boolean {
         var isSuccessful = true
         var msg: String? = null
-        val qty = searchQty.value?.toDouble()
         if (selectedProduct == null && searchBarcode.value != "") {
             msg = resources!!.getString(R.string.msg_error_invalid_product)
 
         }
-        if (qty == null || qty <= 0.00) {
+        if (searchQty.value.isNullOrEmpty()) {
             msg = "\n\r" + resources!!.getString(R.string.msg_error_invalid_qty)
 
         }
@@ -275,7 +290,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
 
     fun clear(code: String) {
         when(code) {
-            "to_wr" -> selectToWarehouse = null
+            //"to_wr" -> selectToWarehouse = null
             "prod"-> selectedProduct = null
 
         }

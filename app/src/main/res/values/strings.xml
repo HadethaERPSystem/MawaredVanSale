@@ -1,12 +1,15 @@
 <resources>
     <string name="app_name" translatable="false">Mawared VAN Sale</string>
-    <string name="client_name">AL-NADER</string>
+    <string name="client_name">Compnay Name</string>
+    <string name="branch_name">Branch Name</string>
     <string name="user_name">User Name</string>
     <string name="password">Enter password</string>
     <string name="forget_password">Forget password?</string>
     <string name="sign_in">Login</string>
     <string name="do_you_have_account">SinUp</string>
     <string name="nav_header_desc">Navigation header</string>
+    <string name="system_name">Mawared App.</string>
+    <string name="system_version">Ver.0101</string>
 
     <!-- all layout title string -->
     <string name="home_page_title">Dashboard</string>
@@ -17,6 +20,9 @@
 
     <string name="layout_order_list_title">Orders</string>
     <string name="layout_order_entry_title">Order</string>
+
+    <string name="layout_psorder_list_title">Pre-sale Orders</string>
+    <string name="layout_psorder_entry_title">Pre-sale Order</string>
 
     <string name="layout_salereturn_list_title">Sales Return</string>
     <string name="layout_salereturn_entry_title">Sale Return</string>
@@ -70,6 +76,7 @@
     <string name="lbl_barcode">Barcode</string>
     <string name="lbl_prod_name">Product Name</string>
     <string name="lbl_qty">Qty</string>
+    <string name="lbl_gift_qty">Gift Qty</string>
     <string name="lbl_unit_price">Unit Price</string>
     <string name="hint_unit_price">5.95</string>
     <string name="lbl_usd_cr_symbol">$</string>
@@ -100,6 +107,7 @@
     <string name="lbl_menu_settings">Settings</string>
     <string name="change_language">Change Language</string>
     <string name="lbl_loading">Please wait ...</string>
+
     <string name="lbl_paid_amount_usd">Amount Paid $</string>
     <string name="lbl_paid_amount_lc">Amount Paid IQD</string>
     <string name="lbl_change_amount_usd">Amount Change $</string>
@@ -115,6 +123,8 @@
     <string name="msg_confirm_delete">Are you sure to delete current record?</string>
     <string name="msg_success_delete">Successfully deleted current selected record </string>
     <string name="msg_failure_delete">Failure deleted current selected record</string>
+    <string name="msg_user_not_authorize">You donnt have permission to view this activity. This customer dosnt set him as Salesman </string>
+    <string name="msg_user_not_hve_warehouse">You dont have sale warehouse for sales. Contact system administrator </string>
     <!-- error messages -->
     <string name="msg_exception">There is error happen when try to save</string>
     <string name="saved_successfully">Saved Successfully</string>
@@ -133,6 +143,8 @@
     <string name="msg_error_invalid_price">Product dose not have price</string>
 
     <string name="msg_error_invalid_received_Amount">Should enter received amount</string>
+    <string name="msg_error_invalid_usd_amount_change">Error not valid USD amount equal to USD change amount</string>
+    <string name="msg_error_invalid_iqd_amount_change">Error not valid IQD amount equal to IQD change amount</string>
     <string name="msg_error_invalid_paid_Amount">Should enter paid amount</string>
     <string name="msg_error_cu_name">Should enter customer name</string>
     <string name="msg_error_cu_trade_name">Should enter customer trade name</string>
@@ -152,6 +164,13 @@
     <string name="msg_notify_bluetooth_disabled">Bluetooth has been disabled</string>
     <string name="msg_notify_bluetooth_enabling_canceled">Bluetooth enabling has been canceled</string>
     <string name="msg_notify_bluetooth_error">The device does not connect</string>
+    <string name="msg_error_no_selected_salesman">Should selected salesman for this PDA</string>
+    <string name="msg_error_no_selected_warehouse">Should selected warehouse related with this PDA</string>
+    <string name="msg_error_price_category">Should select price category</string>
+    <string name="msg_error_not_available_product_qty">Not available quantity for this item</string>
+    <string name="msg_error_not_required_qty_less_product_qty">Required quantity greater than for available quantity</string>
+    <string name="msg_error_not_selected_to_delivered">You should press delivery button to select all items to be delivered</string>
+    <string name="lbl_error">Connection Problem!!</string>
     <string name="connecting">Connecting...</string>
 
     <string name="activity_devicelist_title_paired_devices">Paired devices</string>
@@ -175,7 +194,7 @@
     <string name="lbl_phone_number">Phone Number</string>
     <string name="lbl_contact_name">Contact Name</string>
     <string name="lbl_code">Code</string>
-
+    <string name="lbl_customer_cat_name">Customer Category</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="refresh">Refresh</string>
     <string name="btn_on">On</string>
@@ -222,6 +241,40 @@
     <string name="lbl_from_warehouse">From Warehouse</string>
     <string name="lbl_transfer_no">Transfer No.</string>
     <string name="lbl_warehouse_name">Warehouse Name</string>
+    <string name="lbl_price_category">Price Category Name</string>
+    <!--Report part string name -->
+    <string name="rpt_invoice_no">No.</string>
+    <string name="rpt_invoice_date">Date</string>
+    <string name="rpt_customer">Customer</string>
+    <string name="rpt_barcode">Barcode</string>
+    <string name="rpt_prod_name">Product</string>
+    <string name="rpt_qty">Qty</string>
+    <string name="rpt_gift">Gift Qty</string>
+    <string name="rpt_unit_price">Unit Price</string>
+    <string name="rpt_dis_value">Discount</string>
+    <string name="rpt_net_total">Net Total</string>
+    <string name="rpt_notes">Notes</string>
+    <string name="rpt_total_qty">Total Qty</string>
+    <string name="rpt_total_weight">Total Weight</string>
+    <string name="rpt_total_amount">Total Amount</string>
+    <string name="rpt_total_discount">Total Discount</string>
+    <string name="rpt_net_amount">Net Amount For Pay</string>
+    <string name="rpt_cu_balance">Balance</string>
+    <string name="rpt_person_reciever_sig">اسم وتوقيع المستلم</string>
+    <string name="rpt_storekeeper_sig">اسم وتوقيع مدير المخازن</string>
+    <string name="rpt_sales_manager_sig">اسم وتوقيع مدير المبيعات</string>
+    <string name="rpt_user_name">User Name </string>
+    <string name="rpt_list_name">Invoice</string>
+    <string name="rpt_contact_name">Contact Name </string>
+    <string name="rpt_customer_phone">Phone</string>
+    <string name="rpt_cr_name">Currency</string>
+
+    <!-- Network state string -->
+    <string name="ns_success">Success</string>
+    <string name="ns_running">Running</string>
+    <string name="ns_went_error">Something went wrong</string>
+    <string name="ns_end_list">You have reached the end</string>
+    <string name="ns_no_data">No data available</string>
 
     <string-array name="codepage">
         <item>"Default"</item>

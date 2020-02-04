@@ -25,4 +25,5 @@ data class User (
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
     var client_name: String? = null
+    var org_name: String? = null
 }

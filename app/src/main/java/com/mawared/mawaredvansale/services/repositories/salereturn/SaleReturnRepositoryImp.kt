@@ -6,7 +6,9 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return_Items
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
+import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
 import com.mawared.mawaredvansale.utilities.ApiException
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -41,6 +43,16 @@ class SaleReturnRepositoryImp(private val api: ApiService): ISaleReturnRepositor
         }
     }
 
+    override suspend fun SaveOrUpdate(baseEo: Sale_Return): ResponseSingle<Sale_Return> {
+        try {
+            val response = apiRequest { api.insertReturn(baseEo) }
+            return response
+        }catch (e: NoConnectivityException){
+            throw e
+        }catch (e: ApiException){
+            throw e
+        }
+    }
     override fun getSaleReturn(sm_Id: Int, cu_Id: Int?): LiveData<List<Sale_Return>> {
         job = Job()
         return object : LiveData<List<Sale_Return>>() {

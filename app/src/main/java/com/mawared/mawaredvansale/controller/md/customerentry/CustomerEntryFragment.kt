@@ -52,6 +52,7 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
 
         viewModel.addNavigator = this
         viewModel.msgListener = this
+        viewModel.resources = resources
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 

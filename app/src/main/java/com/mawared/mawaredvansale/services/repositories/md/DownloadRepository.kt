@@ -5,8 +5,8 @@ import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.sales.*
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
-import com.mawared.mawaredvansale.services.netwrok.responses.ListRecsResponse
-import com.mawared.mawaredvansale.services.netwrok.responses.SingleRecResponse
+import com.mawared.mawaredvansale.services.netwrok.responses.ResponseList
+import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -17,7 +17,7 @@ class DownloadRepository(
 
     // Products
     //=====================================================================================
-    private suspend fun getAllProducts(term: String, warehouseId: Int?, priceCode: String) : ListRecsResponse<Product>{
+    private suspend fun getAllProducts(term: String, warehouseId: Int?, priceCode: String) : ResponseList<Product>{
         return apiRequest { api.products_GetByTerm(term, warehouseId, priceCode) }
     }
 
@@ -35,7 +35,7 @@ class DownloadRepository(
 
     // Product Brand
     //===========================================================
-    private suspend fun getAllBrand(): ListRecsResponse<Product_Brand>{
+    private suspend fun getAllBrand(): ResponseList<Product_Brand>{
         return apiRequest { api.getAllBrand() }
     }
 
@@ -54,7 +54,7 @@ class DownloadRepository(
 
     // Product Category
     //===========================================================
-    private suspend fun getAllCategories(): ListRecsResponse<Product_Category>{
+    private suspend fun getAllCategories(): ResponseList<Product_Category>{
         return apiRequest { api.getAllCategories() }
     }
 
@@ -72,7 +72,7 @@ class DownloadRepository(
     }
     // Product price list
     //====================================================================================
-    private suspend fun getProductPriceList() : ListRecsResponse<Product_Price_List>{
+    private suspend fun getProductPriceList() : ResponseList<Product_Price_List>{
         return apiRequest { api.getProductPriceList() }
     }
 
@@ -89,7 +89,7 @@ class DownloadRepository(
 
     // Customer
     //========================================================================================
-    private suspend fun getCustomers(sm_Id: Int): ListRecsResponse<Customer>{
+    private suspend fun getCustomers(sm_Id: Int): ResponseList<Customer>{
         return apiRequest { api.getAllCustomers(sm_Id) }
     }
 
@@ -107,7 +107,7 @@ class DownloadRepository(
     }
 
     // Currency
-    private suspend fun getAllCurrencies(): ListRecsResponse<Currency>{
+    private suspend fun getAllCurrencies(): ResponseList<Currency>{
        return apiRequest { api.getAllCurrencies() }
     }
 
@@ -126,7 +126,7 @@ class DownloadRepository(
 
     // Currency Rate
     // =============================================================
-    private suspend fun getCurrencyRate(): ListRecsResponse<Currency_Rate>{
+    private suspend fun getCurrencyRate(): ResponseList<Currency_Rate>{
         return apiRequest { api.getCurrencyRate() }
     }
 
@@ -145,7 +145,7 @@ class DownloadRepository(
 
     // Regions
     //===========================================================
-    private suspend fun getAllRegions(): ListRecsResponse<Region>{
+    private suspend fun getAllRegions(): ResponseList<Region>{
         return apiRequest { api.getAllRegions() }
     }
 
@@ -163,7 +163,7 @@ class DownloadRepository(
     }
     // Salesmand
     //===========================================================
-    private suspend fun getAllSalesman(pda_code: String): SingleRecResponse<Salesman>{
+    private suspend fun getAllSalesman(pda_code: String): ResponseSingle<Salesman>{
         return apiRequest { api.salesmanGetByCode(pda_code) }
     }
 
@@ -182,20 +182,20 @@ class DownloadRepository(
 
     // Salesman Customers
     //===========================================================
-    suspend fun getAllSalesmanCustomers(): ListRecsResponse<Salesman_Customer>{
+    suspend fun getAllSalesmanCustomers(): ResponseList<Salesman_Customer>{
         return apiRequest { api.getAllSalesmanCustomers() }
     }
 
     // Sales Management api
-    suspend fun insertSale(sale: Sale): SingleRecResponse<Sale>{
+    suspend fun insertSale(sale: Sale): ResponseSingle<Sale>{
         return apiRequest { api.insertInvoice(sale) }
     }
 
-    suspend fun updateSale(sale: Sale): SingleRecResponse<Sale>{
+    suspend fun updateSale(sale: Sale): ResponseSingle<Sale>{
         return apiRequest { api.insertInvoice(sale) }
     }
 
-    suspend fun getSaleById(sl_Id: Int) : SingleRecResponse<Sale>{
+    suspend fun getSaleById(sl_Id: Int) : ResponseSingle<Sale>{
         return apiRequest { api.getInvoiceById(sl_Id) }
     }
 
@@ -203,28 +203,28 @@ class DownloadRepository(
 //        return apiRequest { api.getInvoiceByCustomerId(cu_Id) }
 //    }
 
-    suspend fun getSaleItemsByMasterId(sl_Id: Int): ListRecsResponse<Sale_Items>{
+    suspend fun getSaleItemsByMasterId(sl_Id: Int): ResponseList<Sale_Items>{
         return apiRequest { api.getInvoiceItemsByInvoiceId(sl_Id) }
     }
 
     // Sales Order Management api
-    suspend fun insertOrder(order: Sale_Order): SingleRecResponse<Sale_Order>{
+    suspend fun insertOrder(order: Sale_Order): ResponseSingle<Sale_Order>{
         return apiRequest { api.insertOrder(order) }
     }
 
-    suspend fun updateOrder(order: Sale_Order): SingleRecResponse<Sale_Order>{
+    suspend fun updateOrder(order: Sale_Order): ResponseSingle<Sale_Order>{
         return apiRequest { api.updateOder(order) }
     }
 
-    suspend fun getOrderById(so_Id: Int) : SingleRecResponse<Sale_Order>{
+    suspend fun getOrderById(so_Id: Int) : ResponseSingle<Sale_Order>{
         return apiRequest { api.getOrderById(so_Id) }
     }
 
-    suspend fun getOrderByCustomerId(cu_Id: Int): ListRecsResponse<Sale_Order>{
+    suspend fun getOrderByCustomerId(cu_Id: Int): ResponseList<Sale_Order>{
         return apiRequest { api.getOrderByCustomerId(cu_Id) }
     }
 
-    suspend fun getOrderItemsByMasterId(so_Id: Int): ListRecsResponse<Sale_Order_Items>{
+    suspend fun getOrderItemsByMasterId(so_Id: Int): ResponseList<Sale_Order_Items>{
         return apiRequest { api.getOrderItemsByOrderId(so_Id) }
     }
 }

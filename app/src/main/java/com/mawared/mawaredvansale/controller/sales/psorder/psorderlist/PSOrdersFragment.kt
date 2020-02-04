@@ -13,12 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
-import com.mawared.mawaredvansale.databinding.OrdersFragmentBinding
 import com.mawared.mawaredvansale.databinding.PsordersFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -67,7 +64,7 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_order_list_title)
+        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_psorder_list_title)
         (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
     }
 
@@ -91,13 +88,13 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     }
 
     private fun bindUI() = GlobalScope.launch(Main) {
-        viewModel.orders.observe(this@PSOrdersFragment, Observer {
-            group_loading.hide()
-            initRecyclerView(it.toOrderRow())
+        viewModel.orders.observe(viewLifecycleOwner, Observer {
+            //llProgressBar?.visibility = View.GONE
+            initRecyclerView(it.sortedByDescending { it.so_date }.toOrderRow())
         })
 
-        viewModel.deleteRecord.observe(this@PSOrdersFragment, Observer {
-            group_loading.hide()
+        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
+            //llProgressBar?.visibility = View.GONE
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))
                 viewModel.setCustomer(null)
@@ -155,16 +152,16 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     }
 
     override fun onStarted() {
-        group_loading.show()
+        //llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
+        //llProgressBar?.visibility = View.GONE
         order_list_cl.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
+        //llProgressBar?.visibility = View.GONE
         order_list_cl.snackbar(message)
     }
 

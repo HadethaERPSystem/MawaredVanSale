@@ -1,11 +1,9 @@
 package com.mawared.mawaredvansale.controller.transfer.transferlist
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -16,21 +14,15 @@ import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.controller.common.GenerateTicket
 import com.mawared.mawaredvansale.controller.common.PdfActivity
-import com.mawared.mawaredvansale.controller.common.PdfTicket
-import com.mawared.mawaredvansale.controller.common.putExtraJson
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer
 import com.mawared.mawaredvansale.databinding.TransferFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.interfaces.IPrintNavigator
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.transfer_fragment.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -39,6 +31,7 @@ import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 import java.io.Serializable
 import java.util.*
+
 
 class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainNavigator<Transfer>, IPrintNavigator<Transfer> {
 
@@ -109,16 +102,16 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Main) {
-        viewModel.baseEoList.observe(this@TransferFragment, Observer {
-            group_loading.hide()
+        viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
+            llProgressBar?.visibility = View.GONE
             if(it == null) return@Observer
-            initRecyclerView(it.toRow())
+            initRecyclerView(it.sortedByDescending { it.tr_doc_date }.toRow())
         })
 
-        viewModel.baseEo.observe(this@TransferFragment, Observer {
-            if(it != null) {
+        viewModel.baseEo.observe(viewLifecycleOwner, Observer {
+            if(it != null && viewModel.isPrint) {
                 //mPrint(it)
-                viewModel.onPrintTicket(it)
+                //viewModel.onPrintTicket(it)
             }
             else{
                 onFailure("Failure not loaded data from server for print it")
@@ -146,16 +139,16 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     override fun onStarted() {
-        group_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
+        llProgressBar?.visibility = View.GONE
         transfer_list_lc.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
+        llProgressBar?.visibility = View.GONE
         transfer_list_lc.snackbar(message)
     }
 
@@ -194,10 +187,12 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         intent.putExtras(bundle)
         //intent.putExtraJson(lines)
         startActivity(intent)
+        viewModel.isPrint = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.cancelJob()
     }
+
 }

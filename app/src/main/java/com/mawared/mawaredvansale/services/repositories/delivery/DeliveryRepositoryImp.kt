@@ -6,13 +6,15 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Delivery
 import com.mawared.mawaredvansale.data.db.entities.sales.Delivery_Items
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
+import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
 import com.mawared.mawaredvansale.utilities.ApiException
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import kotlinx.coroutines.*
 import java.lang.Exception
 
 class DeliveryRepositoryImp(private val api: ApiService): IDeliveryRepository, SafeApiRequest() {
     var job: CompletableJob? = null
-    override fun update(baseEo: Delivery): LiveData<Delivery> {
+    override fun update1(baseEo: Delivery): LiveData<Delivery> {
         job = Job()
         return object : LiveData<Delivery>() {
             override fun onActive() {
@@ -38,6 +40,17 @@ class DeliveryRepositoryImp(private val api: ApiService): IDeliveryRepository, S
         }
     }
 
+    override suspend fun update(baseEo: Delivery): ResponseSingle<Delivery> {
+        try {
+            val response = apiRequest { api.updateDelivery(baseEo) }
+            return response
+        }catch (e: NoConnectivityException){
+            throw e
+        }catch (e: ApiException){
+            throw e
+        }
+    }
+
     override fun getSalesmanId(sm_Id: Int, cu_Id: Int?): LiveData<List<Delivery>> {
         job = Job()
         return object : LiveData<List<Delivery>>() {
@@ -46,7 +59,7 @@ class DeliveryRepositoryImp(private val api: ApiService): IDeliveryRepository, S
                 job?.let {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            val response = apiRequest { api.getDelivery_BySalesmandId(sm_Id, cu_Id) }
+                            val response = apiRequest { api.getDelivery_BySalesmanId(sm_Id, cu_Id) }
                             withContext(Dispatchers.Main) {
                                 value = response.data
                                 job?.complete()

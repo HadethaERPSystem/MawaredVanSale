@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteProductAdapter
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.data.db.entities.md.Product
@@ -19,8 +19,6 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return_Items
 import com.mawared.mawaredvansale.databinding.SaleReturnEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -92,13 +90,17 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
-                showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
-                    onStarted()
-                    viewModel.location = getLocationData()
-                    viewModel.onSave()
+                if(!viewModel.isRunning){
+                    hideKeyboard()
+                    showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
+                        onStarted()
+                        viewModel.location = getLocationData()
+                        viewModel.onSave()
+                    }
                 }
             }
             R.id.close_btn -> {
+                hideKeyboard()
                 activity!!.onBackPressed()
             }
         }
@@ -107,7 +109,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
 
     fun bindUI() = GlobalScope.launch(Main){
 
-        viewModel.savedEntity.observe(this@SaleReturnEntryFragment, Observer {
+        viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -116,59 +118,49 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
             }
         })
 
-        viewModel.entityEo.observe(this@SaleReturnEntryFragment, Observer {
+        viewModel.entityEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 viewModel._entityEo = it
                 viewModel.doc_no.value = it.sr_doc_no?.toString()
                 viewModel.doc_date.value = viewModel.returnDateString(it.sr_doc_date!!)
-                viewModel.selectedCustomer?.cu_Id = it.sr_customerId!!
+                viewModel.selectedCustomer?.cu_ref_Id = it.sr_customerId!!
                 viewModel.selectedCustomer?.cu_name = it.sr_customer_name
                 binding.atcCustomer.setText("${it.sr_customer_name}", true)
                 viewModel.setItems(it.items)
             }
         })
 
-        viewModel.srItems.observe(this@SaleReturnEntryFragment, Observer {
-            group_loading.hide()
+        viewModel.srItems.observe(viewLifecycleOwner, Observer {
+            llProgressBar?.visibility = View.GONE
             if(it == null) return@Observer
             initRecyclerView(it.toSRItemRow())
-
+            viewModel.setTotals()
         })
 
         // bind customer to autocomplete
         val customerList = viewModel.customerList.await()
-        customerList.observe(this@SaleReturnEntryFragment, Observer { cu ->
+        customerList.observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCustomerAutocomplete(cu)
 
         })
 
         // bind products to autocomplete
-        viewModel.productList.observe(this@SaleReturnEntryFragment, Observer {
+        viewModel.productList.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
             initProductAutocomplete(it)
         })
 
-        viewModel.mProductPrice.observe(this@SaleReturnEntryFragment, Observer {
-            viewModel.unitPrice = if(it.pl_unitPirce == null) 0.00 else it.pl_unitPirce!!
-        })
-
-        viewModel.mVoucher.observe(this@SaleReturnEntryFragment, Observer {
+        viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
 
-        viewModel.currencyRate.observe(this@SaleReturnEntryFragment, Observer {
+        viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
             viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.00
         })
 
-        viewModel.saleCurrency.observe(this@SaleReturnEntryFragment, Observer {
-            viewModel.bcCurrency = it
-        })
-
-        viewModel.setTerm("")
         viewModel.setVoucherCode("SaleReturn")
-        viewModel.setSaleCurrency("$")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.cr_Id!!)
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
         viewModel.setItems(null)
     }
 
@@ -194,7 +186,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = AutoCompleteCustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
@@ -205,14 +197,20 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
             if(b) binding.atcCustomer.showDropDown()
         }
         binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
+            viewModel.allowed_select_prod.value = true
             viewModel.selectedCustomer = adapter.getItem(position)
+            if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_Id){
+                viewModel.clearItems()
+            }
+            viewModel.setPriceCategory()
+            viewModel.setTerm("")
         }
 
     }
 
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = AutoCompleteProductAdapter(context!!.applicationContext,
+        val adapter = AutoCompleteProductAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             products
         )
@@ -224,7 +222,8 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
         }
         binding.atcProduct.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedProduct = adapter.getItem(position)
-            viewModel.setProductId(viewModel.selectedProduct!!.pr_Id)
+            viewModel.unitPrice = viewModel.selectedProduct!!.pr_unit_price ?: 0.00
+            //viewModel.setProductId(viewModel.selectedProduct!!.pr_Id)
         }
     }
 
@@ -249,22 +248,24 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
     }
 
     override fun onStarted() {
-        group_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        sale_return_entry_layout.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        sale_return_entry_layout?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        sale_return_entry_layout.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        sale_return_entry_layout?.snackbar(message)
     }
 
     override fun clear(code: String) {
         when(code) {
             "cu"-> {
+                viewModel.oCu_Id = viewModel.selectedCustomer?.cu_Id
+                viewModel.allowed_select_prod.value = false
                 binding.atcCustomer.setText("", true)
             }
             "prod"-> {

@@ -23,7 +23,6 @@ import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.customer_fragment.*
-import kotlinx.android.synthetic.main.payable_fragment.group_loading
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -157,5 +156,4 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         super.onDestroy()
         viewModel.cancelJob()
     }
-
 }

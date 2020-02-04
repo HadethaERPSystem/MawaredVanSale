@@ -1,24 +1,28 @@
 package com.mawared.mawaredvansale.controller.fms.receivables.receivableentry
 
 import android.app.DatePickerDialog
+import android.content.res.AssetManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.*
+import android.view.View.OnTouchListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.itextpdf.text.Element
+import com.itextpdf.text.Font
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
-import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
+import com.mawared.mawaredvansale.controller.common.printing.*
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.databinding.ReceivableEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.receivable_entry_fragment.*
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +32,10 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 import org.threeten.bp.LocalDate
+import java.io.IOException
+import java.io.InputStream
 import java.util.*
+
 
 class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<Receivable>,
     IMessageListener {
@@ -49,6 +56,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.doc_date.value = "${LocalDate.now()}"
+        viewModel.ctx = activity!!
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
@@ -85,36 +93,56 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
-                showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
-                    onStarted()
-                    viewModel.location = getLocationData()
-                    viewModel.onSave()
+                if(!viewModel.isRunning){
+                    hideKeyboard()
+                    showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
+                        onStarted()
+                        viewModel.location = getLocationData()
+                        viewModel.onSave()
+                    }
                 }
             }
             R.id.close_btn -> {
+                hideKeyboard()
                 activity!!.onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onResume() {
+        removeObservers()
+        super.onResume()
+    }
+
+    override fun onStop() {
+        removeObservers()
+        super.onStop()
+    }
+
+    private fun removeObservers() {
+        viewModel._baseEo.removeObservers(this)
+        viewModel.entityEo.removeObservers(this)
+
+    }
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
-        viewModel.savedEntity.observe(this@ReceivableEntryFragment, Observer {
+        viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
+                doPrint(it)
                 activity!!.onBackPressed()
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }
         })
 
-        viewModel.entityEo.observe(this@ReceivableEntryFragment, Observer {
+        viewModel.entityEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 viewModel._entityEo = it
                 viewModel.doc_no.value = it.rcv_doc_no?.toString()
                 viewModel.doc_date.value = viewModel.returnDateString(it.rcv_doc_date!!)
-                viewModel.selectedCustomer?.cu_Id = it.rcv_cu_Id!!
+                viewModel.selectedCustomer?.cu_ref_Id = it.rcv_cu_Id!!
                 viewModel.selectedCustomer?.cu_name = it.rcv_cu_name
                 viewModel.bc_amount.value = it.rcv_amount.toString()
                 viewModel.lc_amount.value = it.rcv_lc_amount.toString()
@@ -129,46 +157,42 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
 
         // bind customer to autocomplete
         val customerList = viewModel.customerList.await()
-        customerList.observe(this@ReceivableEntryFragment, Observer { cu ->
+        customerList.observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCustomerAutocomplete(cu)
 
         })
 
-        viewModel.mVoucher.observe(this@ReceivableEntryFragment, Observer {
+        viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
 
-        viewModel.currencyRate.observe(this@ReceivableEntryFragment, Observer {
+        viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
             viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.00
         })
 
-        viewModel.saleCurrency.observe(this@ReceivableEntryFragment, Observer {
-            viewModel.bcCurrency = it
-        })
-
-        viewModel.ndCurrency.observe(this@ReceivableEntryFragment, Observer {
-            viewModel.lcCurrency = it
-        })
-
-        viewModel.setVoucherCode("Receivable")
+        viewModel.setVoucherCode("Recievable")
         viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
-        viewModel.setSaleCurrency("$")
-        viewModel.setSecondCurrency("IQD")
+        llProgressBar?.visibility = View.GONE
     }
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = AutoCompleteCustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
         binding.atcCustomer.threshold = 0
-        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels
+        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 50
         binding.atcCustomer.setAdapter(adapter)
         binding.atcCustomer.setOnFocusChangeListener { _, b ->
             if(b) binding.atcCustomer.showDropDown()
         }
+
+        binding.atcCustomer.setOnTouchListener(OnTouchListener { v, event ->
+            binding.atcCustomer.showDropDown()
+            false
+        })
         binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedCustomer = adapter.getItem(position)
         }
@@ -200,21 +224,67 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
     }
 
     override fun onStarted() {
-       group_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        mcv_receivable.snackbar(message)
+
+        llProgressBar?.visibility = View.GONE
+        addReceivable_layout?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        mcv_receivable.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        addReceivable_layout?.snackbar(message)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         viewModel.cancelJob()
+    }
+
+    private fun doPrint(_baseEo: Receivable){
+        val config = activity!!.resources.configuration
+        val isRTL = if(config.layoutDirection == View.LAYOUT_DIRECTION_LTR) false else true
+        var bmp: Bitmap? = null
+
+        val mngr: AssetManager = activity!!.getAssets()
+        var `is`: InputStream? = null
+        try {
+            `is` = mngr.open("images/co_logo.bmp")
+            bmp = BitmapFactory.decodeStream(`is`)
+        } catch (e1: IOException) {
+            e1.printStackTrace()
+        }
+        val fontNameEn = "assets/fonts/arial.ttf"
+        val fontNameAr = "assets/fonts/arial.ttf"
+        val fontNameAr1 = "assets/fonts/droid_kufi_regular.ttf"
+        try {
+
+            val imgLogo = RepLogo(bmp, 10F, 800F)
+            val header: ArrayList<HeaderFooterRow> = arrayListOf()
+            var tbl: HashMap<Int, TCell> = hashMapOf()
+            var rws: ArrayList<CTable> = arrayListOf()
+            val phones = if(_baseEo.rcv_org_phone != null) _baseEo.rcv_org_phone!! else ""
+
+            header.add(HeaderFooterRow(0, null, "شركة النادر التجارية", 14F, Element.ALIGN_CENTER, Font.BOLD, fontNameAr1 ))
+            header.add(HeaderFooterRow(1, null, "Al-Nadir Trading Company",  14F, Element.ALIGN_CENTER, Font.BOLD, fontNameEn))
+            header.add(HeaderFooterRow(2, null, "${_baseEo.rcv_org_name}", 14F, Element.ALIGN_CENTER, Font.BOLD, fontNameEn))
+            header.add(HeaderFooterRow(3, null, phones, 12F, Element.ALIGN_CENTER, Font.BOLD, fontNameEn))
+
+            val footer: ArrayList<HeaderFooterRow> = arrayListOf()
+            footer.add(HeaderFooterRow(0,null,"موارد" + " - " + "الشركة الحديثة للبرامجيات الاتمتة المحدودة",fontSize = 9F,align = Element.ALIGN_LEFT,fontName = fontNameAr))
+            footer.add(HeaderFooterRow(2,null,activity!!.resources!!.getString(R.string.rpt_user_name) + ": ${App.prefs.saveUser!!.name}",fontSize = 9F, align = Element.ALIGN_LEFT, fontName = fontNameAr))
+            _baseEo.created_by = activity!!.resources!!.getString(R.string.rpt_user_name) + ": ${App.prefs.saveUser!!.name}"
+
+            val act = activity!!
+            GeneratePdf().createPdf(activity!!,imgLogo, _baseEo, header, footer,isRTL) { _, path ->
+                onSuccess("Pdf Created Successfully")
+                GeneratePdf().printPDF(act, path)
+            }
+        } catch (e: Exception) {
+            onFailure("Error Exception ${e.message}")
+            e.printStackTrace()
+        }
     }
 }

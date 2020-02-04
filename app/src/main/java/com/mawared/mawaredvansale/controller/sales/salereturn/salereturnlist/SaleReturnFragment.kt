@@ -15,8 +15,6 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
 import com.mawared.mawaredvansale.databinding.SaleReturnFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -85,13 +83,13 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
 
     private fun bindUI() = GlobalScope.launch(Main) {
 
-        viewModel.saleReturns.observe(this@SaleReturnFragment, Observer {
-            group_loading.hide()
-            initRecyclerView(it.toSaleReturnRow())
+        viewModel.saleReturns.observe(viewLifecycleOwner, Observer {
+            llProgressBar?.visibility = View.GONE
+            initRecyclerView(it.sortedByDescending { it.sr_doc_date }.toSaleReturnRow())
         })
 
-        viewModel.deleteRecord.observe(this@SaleReturnFragment, Observer {
-            group_loading.hide()
+        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
+            llProgressBar?.visibility = View.GONE
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))
                 viewModel.setCustomer(null)
@@ -146,16 +144,16 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
 
     // message listener
     override fun onStarted() {
-        group_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
+        llProgressBar?.visibility = View.GONE
         sale_return_list_cl.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
+        llProgressBar?.visibility = View.GONE
         sale_return_list_cl.snackbar(message)
     }
 
@@ -164,5 +162,4 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
         super.onDestroy()
         viewModel.cancelJob()
     }
-
 }

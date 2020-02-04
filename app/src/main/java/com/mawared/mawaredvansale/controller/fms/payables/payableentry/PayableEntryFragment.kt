@@ -9,19 +9,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerAdapter
-import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.databinding.PayableEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.payable_entry_fragment.*
-import kotlinx.android.synthetic.main.payable_fragment.group_loading
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -48,6 +44,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         binding = DataBindingUtil.inflate(inflater, R.layout.payable_entry_fragment, container, false)
 
         //viewModel.showDatePicker = this
+        viewModel.ctx = activity!!
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.doc_date.value = "${LocalDate.now()}"
@@ -88,13 +85,17 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
-                showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
-                    onStarted()
-                    viewModel.location = getLocationData()
-                    viewModel.onSave()
+                if(!viewModel.isRunning){
+                    hideKeyboard()
+                    showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
+                        onStarted()
+                        viewModel.location = getLocationData()
+                        viewModel.onSave()
+                    }
                 }
             }
             R.id.close_btn -> {
+                hideKeyboard()
                 activity!!.onBackPressed()
             }
         }
@@ -104,7 +105,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     // bind recycler view and autocomplete
     private fun bindUI() = GlobalScope.launch(Dispatchers.Main) {
 
-        viewModel.savedEntity.observe(this@PayableEntryFragment, Observer {
+        viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 activity!!.onBackPressed()
@@ -113,12 +114,12 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
             }
         })
 
-        viewModel.entityEo.observe(this@PayableEntryFragment, Observer {
+        viewModel.entityEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 viewModel._entityEo = it
                 viewModel.doc_no.value = it.py_doc_no?.toString()
                 viewModel.doc_date.value = viewModel.returnDateString(it.py_doc_date!!)
-                viewModel.selectedCustomer?.cu_Id = it.py_cu_Id!!
+                viewModel.selectedCustomer?.cu_ref_Id = it.py_cu_Id!!
                 viewModel.selectedCustomer?.cu_name = it.py_cu_name
                 viewModel.bc_amount.value = it.py_amount.toString()
                 viewModel.lc_amount.value = it.py_lc_amount.toString()
@@ -133,37 +134,28 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
 
         // bind customer to autocomplete
         val customerList = viewModel.customerList.await()
-        customerList.observe(this@PayableEntryFragment, Observer { cu ->
+        customerList.observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCustomerAutocomplete(cu)
 
         })
 
-        viewModel.mVoucher.observe(this@PayableEntryFragment, Observer {
+        viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
 
-        viewModel.currencyRate.observe(this@PayableEntryFragment, Observer {
+        viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
             viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.00
-        })
-
-        viewModel.saleCurrency.observe(this@PayableEntryFragment, Observer {
-            viewModel.bcCurrency = it
-        })
-
-        viewModel.ndCurrency.observe(this@PayableEntryFragment, Observer {
-            viewModel.lcCurrency = it
         })
 
         viewModel.setVoucherCode("Payable")
         viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
-        viewModel.setSaleCurrency("$")
-        viewModel.setSecondCurrency("IQD")
+        llProgressBar?.visibility = View.GONE
     }
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = AutoCompleteCustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(context!!,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
@@ -201,16 +193,16 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     }
 
     override fun onStarted() {
-        group_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        addPayable_layout.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        addPayable_layout?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        addPayable_layout.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        addPayable_layout?.snackbar(message)
     }
 }

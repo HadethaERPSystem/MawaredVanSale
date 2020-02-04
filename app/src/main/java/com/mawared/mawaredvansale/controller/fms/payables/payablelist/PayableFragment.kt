@@ -16,7 +16,6 @@ import com.mawared.mawaredvansale.databinding.PayableFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -86,14 +85,14 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
 
     // binding recycler view
     private fun bindUI() {
-        viewModel.baseEoList.observe(this, Observer {
-            group_loading.hide()
+        viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
+            llProgressBar?.visibility = View.GONE
             if(it == null) return@Observer
-            initRecyclerView(it.toPayableRow())
+            initRecyclerView(it.sortedByDescending { it.py_doc_date }.toPayableRow())
         })
 
-        viewModel.deleteRecord.observe(this@PayableFragment, Observer {
-            group_loading.hide()
+        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
+            llProgressBar?.visibility = View.GONE
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))
                 viewModel.setCustomer(null)
@@ -150,16 +149,16 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
     }
 
     override fun onStarted() {
-        group_loading.show()
+        llProgressBar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading.hide()
-        payable_list_cl.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        payable_list_cl?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading.hide()
-        payable_list_cl.snackbar(message)
+        llProgressBar?.visibility = View.GONE
+        payable_list_cl?.snackbar(message)
     }
 }

@@ -1,6 +1,6 @@
 package com.mawared.mawaredvansale.controller.fms.payables.payableentry
 
-import android.content.res.Resources
+import android.content.Context
 import android.location.Location
 import android.view.View
 import androidx.lifecycle.LiveData
@@ -18,16 +18,19 @@ import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.fms.IPayableRepository
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 
 class PayableEntryViewModel(private val repository: IPayableRepository,
                             private val masterDataRepository: IMDataRepository) : BaseViewModel() {
 
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     var mode: String = "Add"
-    var resources: Resources? = null
-
+    var ctx: Context? = null
+    var isRunning: Boolean = false
     var msgListener: IMessageListener? = null
     var addNavigator: IAddNavigator<Payable>? = null
 
@@ -42,11 +45,7 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
     var lc_change: MutableLiveData<String> = MutableLiveData()
     var comment: MutableLiveData<String> = MutableLiveData()
 
-    private val _baseEo: MutableLiveData<Payable> = MutableLiveData()
-    val savedEntity: LiveData<Payable> = Transformations
-        .switchMap(_baseEo){
-            repository.insert(it)
-        }
+    val _baseEo: MutableLiveData<Payable> = MutableLiveData()
 
     // for load order for edit or view
     var _entityEo: Payable? = null
@@ -57,9 +56,7 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
         }
 
     var selectedCustomer: Customer? = null
-    val customerList by lazyDeferred {
-        masterDataRepository.getCustomers(_sm_id)
-    }
+    val customerList by lazyDeferred { masterDataRepository.getCustomersByOrg(App.prefs.saveUser!!.org_Id)  }
 
     var rate : Double = 0.00
     private val _cr_Id: MutableLiveData<Int> = MutableLiveData()
@@ -73,20 +70,6 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
     val mVoucher: LiveData<Voucher> = Transformations
         .switchMap(_vo_code){
             masterDataRepository.getVoucherByCode(it)
-        }
-
-    var bcCurrency: Currency? = null
-    private val _sale_cr_symbole: MutableLiveData<String> = MutableLiveData()
-    val saleCurrency: LiveData<Currency> = Transformations
-        .switchMap(_sale_cr_symbole){
-            masterDataRepository.getCurrencyByCode(it)
-        }
-
-    var lcCurrency: Currency? = null
-    private val _nd_cr_symbol: MutableLiveData<String> = MutableLiveData()
-    val ndCurrency: LiveData<Currency> = Transformations
-        .switchMap(_nd_cr_symbol){
-            masterDataRepository.getCurrencyByCode(it)
         }
 
     // set function
@@ -111,55 +94,62 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
         _cr_Id.value = cr_id
     }
 
-    fun setSaleCurrency(cr_code: String){
-        if(_sale_cr_symbole.value == cr_code){
-            return
-        }
-        _sale_cr_symbole.value = cr_code
-    }
-
-    fun setSecondCurrency(cr_code: String){
-        if(_nd_cr_symbol.value == cr_code){
-            return
-        }
-        _nd_cr_symbol.value = cr_code
-    }
     // operation method
     fun onSave(){
         if(isValid()){
             try {
-                val user = App.prefs.saveUser
-                val strDate: LocalDate = LocalDate.now()
+                isRunning = true
+                val user = App.prefs.saveUser!!
+                val strDate = LocalDateTime.now()
                 val amount_usd: Double = if(bc_amount.value != null)  bc_amount.value!!.toDouble() else 0.00
                 val amount_iqd: Double = if(lc_amount.value != null)  lc_amount.value!!.toDouble() else 0.00
                 val change_usd: Double = if(bc_change.value != null)  bc_change.value!!.toDouble() else 0.00
                 val change_iqd: Double = if(lc_change.value != null)  lc_change.value!!.toDouble() else 0.00
+                val dtFull = doc_date.value + " " + LocalTime.now()
                 val baseEo = Payable(
-                    user?.cl_Id, user?.org_Id, 0, doc_date.value, mVoucher.value!!.vo_Id, "${mVoucher.value!!.vo_prefix}", null, _sm_id, bcCurrency?.cr_id, 0.00,
-                    amount_usd, amount_iqd, change_usd, change_iqd,
-                    bcCurrency?.cr_id, lcCurrency?.cr_id, rate, comment.value, "N", location?.latitude, location?.longitude,
-                    "$strDate", "${user?.id}", "$strDate", "${user?.id}"
+                    user.cl_Id, user.org_Id, 0, dtFull, mVoucher.value!!.vo_Id, "${mVoucher.value!!.vo_prefix}", null,
+                    _sm_id, selectedCustomer!!.cu_ref_Id!!, 0.00,
+                    amount_usd, change_usd, amount_iqd, change_iqd,
+                    user.cr_Id, user.sl_cr_Id, rate, comment.value, false, location?.latitude, location?.longitude, null,
+                    "$strDate", "${user.id}", "$strDate", "${user.id}"
                 )
-                _baseEo.value = baseEo
+
+                Coroutines.main {
+                    try {
+                        val response = repository.SaveOrUpdate(baseEo)
+                        if(response.isSuccessful){
+                            _baseEo.value = response.data
+                            isRunning = false
+                        }
+                        else{
+                            msgListener?.onFailure("${response.message}")
+                            isRunning = false
+                        }
+                    }catch (e: Exception){
+                        msgListener?.onFailure("Error message when try to save payment invoice. Error is ${e.message}")
+                        isRunning = false
+                    }
+                }
             }
             catch (e: Exception){
-                msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
+                msgListener?.onFailure("${ctx!!.resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
+                isRunning = false
             }
         }
     }
 
     private fun isValid(): Boolean{
         var isSuccessful = true
-        var msg: String? = null
+        var msg: String? = ""
 
         if(doc_date.value.isNullOrEmpty()){
-            msg = resources!!.getString(R.string.msg_error_invalid_date)
+            msg = ctx!!.resources!!.getString(R.string.msg_error_invalid_date)
         }
         if(bc_amount.value.isNullOrEmpty() && lc_amount.value.isNullOrEmpty()){
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_invalid_paid_Amount)
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_paid_Amount)
         }
         if(selectedCustomer == null){
-            msg += "\n\r" + resources!!.getString(R.string.msg_error_no_customer)
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_customer)
         }
 
         if(!msg.isNullOrEmpty()){

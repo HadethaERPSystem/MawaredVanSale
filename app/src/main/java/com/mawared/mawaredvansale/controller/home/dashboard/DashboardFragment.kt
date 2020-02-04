@@ -12,10 +12,13 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
+import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.databinding.DashboardFragmentBinding
 import com.mawared.mawaredvansale.utilities.Coroutines
+import com.mawared.mawaredvansale.utilities.snackbar
+import com.mawared.update.AppUtils
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.dashboard_fragment.*
@@ -45,6 +48,8 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
 
         viewModel.res = resources
         viewModel.ctx = context
+        viewModel.system_version = AppUtils.getVersionName(context) //AppUtils.getVersionCode(this)
+        var s =  AppUtils.getVersionCode(context)
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
         bindUI()
@@ -104,7 +109,15 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
 
         when (menu.menu_code){
             "Invoice" -> {
-                navController.navigate(R.id.action_dashboardFragment_to_invoicesFragment)
+                if(App.prefs.savedSalesman != null){
+                    if(App.prefs.savedSalesman!!.sm_warehouse_id != null){
+                        navController.navigate(R.id.action_dashboardFragment_to_invoicesFragment)
+                    }else{
+                        root_layout?.snackbar(resources.getString(R.string.msg_user_not_hve_warehouse))
+                    }
+                }else {
+                    root_layout?.snackbar(resources.getString(R.string.msg_user_not_authorize))
+                }
             }
             "PSOrder"->{
                navController.navigate(R.id.action_dashboardFragment_to_PSOrdersFragment)
@@ -113,10 +126,26 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
                 navController.navigate(R.id.action_dashboardFragment_to_ordersFragment)
             }
             "SaleReturn"->{
-                navController.navigate(R.id.action_dashboardFragment_to_saleReturnFragment)
+                if(App.prefs.savedSalesman != null){
+                    if(App.prefs.savedSalesman!!.sm_warehouse_id != null){
+                        navController.navigate(R.id.action_dashboardFragment_to_saleReturnFragment)
+                    }else{
+                        root_layout?.snackbar(resources.getString(R.string.msg_user_not_hve_warehouse))
+                    }
+                }else {
+                    root_layout?.snackbar(resources.getString(R.string.msg_user_not_authorize))
+                }
             }
             "Transfer" -> {
-                navController.navigate(R.id.action_dashboardFragment_to_transferFragment)
+                if(App.prefs.savedSalesman != null){
+                    if(App.prefs.savedSalesman!!.sm_warehouse_id != null){
+                        navController.navigate(R.id.action_dashboardFragment_to_transferFragment)
+                    }else{
+                        root_layout?.snackbar(resources.getString(R.string.msg_user_not_hve_warehouse))
+                    }
+                }else {
+                    root_layout?.snackbar(resources.getString(R.string.msg_user_not_authorize))
+                }
             }
             "Receivable"->{
                 navController.navigate(R.id.action_dashboardFragment_to_receivableFragment)

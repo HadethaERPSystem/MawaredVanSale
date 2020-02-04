@@ -4,7 +4,7 @@ import com.mawared.mawaredvansale.data.db.AppDatabase
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
-import com.mawared.mawaredvansale.services.netwrok.responses.ListRecsResponse
+import com.mawared.mawaredvansale.services.netwrok.responses.ResponseList
 
 class CustomerRepository(
     private val api: ApiService,
@@ -16,7 +16,7 @@ class CustomerRepository(
     suspend fun update(customer: Customer) = db.getCustomerDao().update(customer)
     suspend fun deleteAll() = db.getCustomerDao().deleteAll()
 
-    suspend fun getBySalesman(sm_Id: Int) : ListRecsResponse<Customer> {
+    suspend fun getBySalesman(sm_Id: Int) : ResponseList<Customer> {
         return apiRequest { api.getAllCustomers(sm_Id) }
     }
 }

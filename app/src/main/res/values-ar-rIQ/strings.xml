@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Mawared VAN Sale</string>
-    <string name="client_name">شركة الخضيري</string>
+    <string name="client_name">اسم الشركة</string>
+    <string name="branch_name">اسم الفرع</string>
     <string name="user_name">اسم المستخدم</string>
     <string name="password">ادخل كلمة المرور</string>
     <string name="forget_password">نسيت كلمة المرور?</string>
     <string name="sign_in">تسجيل الدخول</string>
-    <string name="do_you_have_account">SinUp</string>
+    <string name="do_you_have_account">SignUp</string>
     <string name="nav_header_desc">Navigation header</string>
-
+    <string name="system_name">Mawared App.</string>
+    <string name="system_version">Ver.0101</string>
     <!-- all layout title string -->
 
     <string name="login_page_title">تسجيل الدخول</string>
@@ -17,8 +19,11 @@
     <string name="layout_invoice_list_title">فواتير البيع</string>
     <string name="layout_invoice_entry_title">فاتورة بيع</string>
 
-    <string name="layout_order_list_title">اوامر القطع</string>
-    <string name="layout_order_entry_title">امر قطع</string>
+    <string name="layout_order_list_title">اوامر البيع</string>
+    <string name="layout_order_entry_title">امر بيع</string>
+
+    <string name="layout_psorder_list_title">اوامر القطع</string>
+    <string name="layout_psorder_entry_title">امر قطع</string>
 
     <string name="layout_salereturn_list_title">مردود البيع</string>
     <string name="layout_salereturn_entry_title">مردود البيع</string>
@@ -73,6 +78,7 @@
     <string name="lbl_barcode">الباركود</string>
     <string name="lbl_prod_name">المادة</string>
     <string name="lbl_qty">الكمية</string>
+    <string name="lbl_gift_qty">مجانية</string>
     <string name="lbl_unit_price">سعر الوحدة</string>
     <string name="hint_unit_price">5.95</string>
     <string name="lbl_usd_cr_symbol">$</string>
@@ -117,7 +123,8 @@
     <string name="msg_confirm_delete">هل انت متاكد من الغاء القيد الحالي؟</string>
     <string name="msg_success_delete">تم الغاء القيد الحالي بنجاح </string>
     <string name="msg_failure_delete">فشل في عملية الغاء القيد الحالي</string>
-
+    <string name="msg_user_not_authorize">ليس لديك صلاحية للدخول لهذه الواجهة.\n\r لم يتم تسجيل المستخدم الحالي من ضمن مندوبي المبيعات</string>
+    <string name="msg_user_not_hve_warehouse">ليس لديك مخزن مبيعات لغرض البيع. اتصل بمدير النظام</string>
     <!-- error messages -->
     <string name="msg_exception">حدث خطأ خلال عملية حفظ البيانات</string>
     <string name="saved_successfully">تم حفظ البيانات بنجاح</string>
@@ -138,6 +145,9 @@
     <string name="msg_error_invalid_received_Amount">يجب ادخال المبلغ المستلم</string>
     <string name="msg_error_invalid_paid_Amount">يجب ادخال المبلغ المدفوع</string>
 
+    <string name="msg_error_invalid_usd_amount_change">لايجوز ادخال مبلغ الدولار مساويا لمبلغ مسترجع الدولار</string>
+    <string name="msg_error_invalid_iqd_amount_change">لايجوز ادخال مبلغ الدينار مساويا لمبلغ مسترجع الدينار</string>
+
     <string name="msg_error_cu_name">يجب ادخال اسم الزبون</string>
     <string name="msg_error_cu_trade_name">يجب ادخال الاسم التجاري</string>
     <string name="msg_error_cu_payment_type">يجب اختيار نوع الزبون</string>
@@ -154,6 +164,13 @@
     <string name="msg_notify_bluetooth_disabled">تم تعطيل البلوتوث</string>
     <string name="msg_notify_bluetooth_enabling_canceled">تم إلغاء تمكين البلوتوث</string>
     <string name="msg_notify_bluetooth_error">The device does not connect</string>
+    <string name="msg_error_no_selected_salesman">يجب اختيار مندوب مبيعات لهذا الجهاز</string>
+    <string name="msg_error_no_selected_warehouse">يجب اختيار مخزن لهذا الجهاز</string>
+    <string name="msg_error_price_category">يجب اختيار فئة سعر البيع</string>
+    <string name="msg_error_not_available_product_qty">لاتتوفر كمية لهذه المادة لغرض البيع</string>
+    <string name="msg_error_not_required_qty_less_product_qty">الكمية المطلوبة اكبر من الكمية المتوفرة</string>
+    <string name="msg_error_not_selected_to_delivered">يجب اختيار تجهيز المواد</string>
+    <string name="lbl_error">مشكلة في الاتصال!!</string>
     <string name="connecting">اتصال...</string>
 
     <string name="activity_devicelist_title_paired_devices">Paired devices</string>
@@ -176,6 +193,7 @@
     <string name="lbl_phone_number">رقم الهاتف</string>
     <string name="lbl_contact_name">Contact Name</string>
     <string name="lbl_code">الرمز</string>
+    <string name="lbl_customer_cat_name">صنف الزبون</string>
 
     <string name="refresh">تحديث</string>
     <string name="btn_on">تشغيل</string>
@@ -219,8 +237,42 @@
     <string name="finish_btn">اغلاق</string>
     <string name="lbl_to_warehouse">الى مخزن</string>
     <string name="lbl_from_warehouse">من مخزن</string>
-    <string name="lbl_transfer_no">Transfer No.</string>
-    <string name="lbl_warehouse_name">Warehouse Name</string>
+    <string name="lbl_transfer_no">رقم المناقلة</string>
+    <string name="lbl_warehouse_name">المخزن</string>
+    <string name="lbl_price_category">فئة السعر</string>
+    <!--Report part string name -->
+    <string name="rpt_invoice_no">رقم الفاتورة:</string>
+    <string name="rpt_invoice_date">التاريخ:</string>
+    <string name="rpt_customer">الزبون:</string>
+    <string name="rpt_barcode">الباركود</string>
+    <string name="rpt_prod_name">المادة</string>
+    <string name="rpt_qty">الكمية</string>
+    <string name="rpt_gift">الهدايا المجانية</string>
+    <string name="rpt_unit_price">سعر المفرد</string>
+    <string name="rpt_dis_value">الخصم</string>
+    <string name="rpt_net_total">المجموع</string>
+    <string name="rpt_notes">الملاحظات</string>
+    <string name="rpt_total_qty">محموع الكميات</string>
+    <string name="rpt_total_weight">الوزن</string>
+    <string name="rpt_total_amount">الجموع</string>
+    <string name="rpt_total_discount">مجموع الخصومات</string>
+    <string name="rpt_net_amount">الصافي للدفع</string>
+    <string name="rpt_cu_balance">الرصيد</string>
+    <string name="rpt_person_reciever_sig">اسم وتوقيع المستلم</string>
+    <string name="rpt_storekeeper_sig">اسم وتوقيع مدير المخازن</string>
+    <string name="rpt_sales_manager_sig">اسم وتوقيع مدير المبيعات</string>
+    <string name="rpt_user_name">اسم المستخدم</string>
+    <string name="rpt_list_name">قائمة</string>
+    <string name="rpt_contact_name">اسم صاحب المحل</string>
+    <string name="rpt_customer_phone">هاتف</string>
+    <string name="rpt_cr_name">العملة</string>
+
+    <!-- Network state string -->
+    <string name="ns_success">تمت العملية بنجاح</string>
+    <string name="ns_running">جاري التحميل</string>
+    <string name="ns_went_error">حدث خطأ خلال عملية تحميل البيانات</string>
+    <string name="ns_end_list">وصلت الى نهاية القائمة</string>
+    <string name="ns_no_data">لا تتوفر بيانات</string>
 
     <string-array name="codepage">
         <item>"Default"</item>

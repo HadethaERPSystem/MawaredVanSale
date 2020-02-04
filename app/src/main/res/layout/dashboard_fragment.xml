@@ -10,7 +10,7 @@
     </data>
 
     <LinearLayout
-
+            android:id="@+id/root_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -22,43 +22,133 @@
                     android:gravity="center"
                     android:background="@color/colorPrimary">
 
-                <ImageView
-                        android:id="@+id/app_logo"
-                        android:layout_width="71dp"
-                        android:layout_height="71dp"
-                        android:layout_marginStart="26dp"
-                        android:layout_marginTop="0dp"
-                        android:contentDescription="@string/client_name"
-                        android:src="@mipmap/ic_logo_white" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                <TextView
-                        android:layout_marginEnd="20dp"
-                        android:layout_alignParentEnd="true"
-                        android:textSize="20sp"
-                        android:text="@{viewmodel.clientName}"
-                        android:hint="@string/client_name"
+                    <ImageView
+                        android:id="@+id/app_logo"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:contentDescription="@string/client_name"
+                        android:src="@drawable/co_logo"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline19"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
                         android:id="@+id/client_name"
-                        android:textColor="#ffffff"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="4dp"
                         android:fontFamily="@font/droid_kufi_bold"
-                        android:layout_marginStart="18dp"
+                        android:hint="@string/client_name"
+                        android:textColorHint="#FFFFFF"
+                        android:text="@{viewmodel.clientName}"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:textSize="15sp"
+                        app:layout_constraintBottom_toTopOf="@+id/branch_name"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/branch_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="@font/droid_kufi_bold"
+                        android:textColorHint="#FFFFFF"
+                        android:hint="@string/branch_name"
+                        android:text="@{viewmodel.branchName}"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:textSize="13sp"
+                        app:layout_constraintBottom_toTopOf="@+id/user_id"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22" />
+
+                    <TextView
+                        android:id="@+id/user_id"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/client_name"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:fontFamily="@font/droid_kufi_bold"
+                        android:hint="@string/user_name"
+                        android:textColorHint="#FFFFFF"
+                        android:text="@{viewmodel.userName}"
+                        android:textAlignment="center"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline22" />
+
+                    <TextView
+                        android:id="@+id/System_Name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/droid_kufi_bold"
+                        android:hint="@string/system_name"
+                        android:text="@{viewmodel.system_name}"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/System_Version"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                        app:layout_constraintStart_toStartOf="@+id/guideline19" />
+
+                    <TextView
+                        android:id="@+id/System_Version"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="@font/droid_kufi_bold"
+                        android:hint="@string/system_version"
+                        android:text="@{viewmodel.system_version}"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:textColor="#ffce55"
+                        android:textColorHint="#ffce55"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline22"
+                        app:layout_constraintStart_toStartOf="@+id/guideline19" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline19"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="0dp" />
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.30" />
 
-                <TextView
-                        android:layout_marginEnd="20dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_below="@id/client_name"
-                        android:textSize="14sp"
-                        android:text="@{viewmodel.userName}"
-                        android:hint="@string/user_name"
-                        android:id="@+id/user_id"
-                        android:fontFamily="@font/droid_kufi_bold"
-                        android:textColor="#ffffff"
-                        android:layout_marginStart="18dp"
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline22"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.65" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </RelativeLayout>
 
         <androidx.recyclerview.widget.RecyclerView

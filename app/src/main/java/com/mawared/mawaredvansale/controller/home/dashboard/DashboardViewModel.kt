@@ -15,9 +15,14 @@ class DashboardViewModel(repository: MenuRepository) : ViewModel() {
     var res: Resources? = null
     var ctx: Context? = null
     var userName: String? = App.prefs.saveUser?.user_name
-    var clientName: String? = App.prefs.saveUser?.client_name ?: "AL-NADER Co."
+    val lang =  App.prefs.systemLanguage!!.substring(0,2)
+    var clientName: String? = App.prefs.saveUser?.client_name ?: "AL-Nadir Trading Company"
+    var branchName: String? = App.prefs.saveUser?.org_name ?: ""
+    var system_name: String? = "Mawared App."
+    var system_version: String? = ""
+
     val menus by lazyDeferred {
-        repository.getLocalMenu(res!!)
+        repository.getByUserId(App.prefs.saveUser!!.id, lang)
     }
 
     fun setNavigator(navigator: IMainNavigator<Menu>)
