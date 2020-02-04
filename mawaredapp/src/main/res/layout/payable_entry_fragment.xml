@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+                name="viewmodel"
+                type="com.mawared.mawaredvansale.controller.fms.payables.payableentry.PayableEntryViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/addPayable_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mcv_payable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardMaxElevation="6dp"
+                app:contentPadding="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="?listPreferredItemHeightLarge"
+                    android:padding="2dp">
+
+                <!-- Invoice no label and data-->
+
+                <!-- Invoice date label and data-->
+                <EditText
+                        android:id="@+id/etxt_doc_no"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="center"
+                        android:hint="@string/lbl_doc_no"
+                        android:enabled="false"
+                        android:inputType="text"
+                        android:text="@={viewmodel.doc_no}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                        android:id="@+id/etxt_date"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="center"
+                        android:hint="@string/lbl_doc_date"
+                        android:inputType="date"
+                        android:text="@={viewmodel.doc_date}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Customer Info -->
+                <ImageButton
+                        android:id="@+id/btn_date"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/btn_delete_caption"
+                        android:onClick="@{viewmodel::onDatePicker}"
+                        app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
+                        app:layout_constraintEnd_toEndOf="@+id/etxt_date"
+                        app:layout_constraintTop_toTopOf="@+id/etxt_date"
+                        app:srcCompat="@drawable/ic_datepicker" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/atc_customer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_customer_name"
+                    android:textAlignment="textStart"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etxt_doc_no" />
+
+                <ImageButton
+                    android:id="@+id/btn_cancelCustomer"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.clear(`cu`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/atc_customer"
+                    app:srcCompat="@drawable/ic_action_close" />
+                <!-- Amount USD -->
+                <EditText
+                        android:id="@+id/edtxt_amount_usd"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:hint="@string/lbl_paid_amount"
+                        android:inputType="numberDecimal"
+                        android:text="@={viewmodel.bc_amount}"
+                        android:textSize="12sp"
+
+                        app:layout_constraintEnd_toStartOf="@+id/lbl_usd"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+                <!-- Amount IQD -->
+
+                <TextView
+                        android:id="@+id/lbl_usd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:padding="4dp"
+                        android:text="@string/lbl_usd_symbol"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_amount_usd"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_amount_usd" />
+
+                <EditText
+                        android:id="@+id/edtxt_amount_iqd"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_paid_amount"
+                        android:inputType="numberDecimal"
+                        android:text="@={viewmodel.lc_amount}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toStartOf="@+id/lbl_iqd"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_amount_usd" />
+
+                <TextView
+                        android:id="@+id/lbl_iqd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:padding="4dp"
+                        android:text="@string/lbl_iqd_cr_symbol"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_amount_iqd"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_amount_iqd" />
+
+                <EditText
+                        android:id="@+id/edtxt_change_usd"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:hint="@string/lbl_change_amount"
+                        android:inputType="numberDecimal"
+                        android:text="@={viewmodel.bc_change}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toStartOf="@+id/lbl_usd1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/edtxt_amount_usd" />
+
+                <!-- Amount IQD -->
+
+                <TextView
+                        android:id="@+id/lbl_usd1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:padding="4dp"
+                        android:text="@string/lbl_usd_symbol"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_change_usd" />
+
+                <EditText
+                        android:id="@+id/edtxt_change_iqd"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_change_amount"
+                        android:text="@={viewmodel.lc_change}"
+                        android:textSize="12sp"
+                        android:inputType="numberDecimal"
+                        app:layout_constraintEnd_toStartOf="@+id/lbl_iqd1"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="@+id/lbl_usd1" />
+
+                <TextView
+                        android:id="@+id/lbl_iqd1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:padding="4dp"
+                        android:text="@string/lbl_iqd_cr_symbol"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_change_iqd"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_change_iqd" />
+                <!--Comment-->
+                <EditText
+                        android:id="@+id/edtxt_comment"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:hint="@string/lbl_comment"
+                        android:text="@={viewmodel.comment}"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/edtxt_change_usd" />
+
+                <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.5" />
+                <!-- Image button for add item -->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <include
+            android:id="@+id/llProgressBar"
+            android:visibility="visible"
+            layout="@layout/layout_progress_bar_with_text"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

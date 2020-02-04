@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+                name="viewmodel"
+                type="com.mawared.mawaredvansale.controller.sales.delivery.deliveryentry.DeliveryEntryViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/lst_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <!--    <include layout="@layout/sale_header"/>-->
+        <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mcv_invoices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp"
+                app:cardMaxElevation="6dp"
+                app:contentPadding="5dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_margin="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="?listPreferredItemHeightLarge"
+                    android:padding="2dp">
+
+                <!-- Invoice no label and data-->
+                <TextView
+                        android:id="@+id/sale_doc_no"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:gravity="center"
+                        android:hint="@string/lbl_doc_no"
+                        android:padding="8dp"
+                        android:text="@={viewmodel.dl_refNo}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toStartOf="@+id/etxt_date"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Invoice date label and data-->
+                <TextView
+                        android:id="@+id/etxt_date"
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:hint="@string/lbl_doc_date"
+                        android:text="@{viewmodel.dl_doc_date}"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Customer Info -->
+                <TextView
+                        android:id="@+id/atc_customer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="start"
+                        android:padding="8dp"
+                        android:hint="@string/lbl_customer_name"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
+                <!-- Image button for add item -->
+                <Button
+                    android:id="@+id/btn_delivered"
+                    android:layout_width="140dp"
+                    android:layout_height="50dp"
+                    android:text="Delivery"
+                    android:textAllCaps="false"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.onClickDelivered()}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mcv_invoices"
+                tools:listitem="@layout/delivery_item_row"
+                android:id="@+id/rcv_delivery_items"/>
+        <include
+            android:id="@+id/llProgressBar"
+            android:visibility="visible"
+            layout="@layout/layout_progress_bar_with_text"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
