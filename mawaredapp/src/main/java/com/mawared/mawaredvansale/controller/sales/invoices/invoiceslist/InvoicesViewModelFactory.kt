@@ -7,8 +7,6 @@ import com.mawared.mawaredvansale.services.repositories.invoices.IInvoiceReposit
 @Suppress("UNCHECKED_CAST")
 class InvoicesViewModelFactory(private val repository: IInvoiceRepository) : ViewModelProvider.NewInstanceFactory() {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return InvoicesViewModel(
-            repository
-        ) as T
+        return InvoicesViewModel(repository) as T
     }
 }

@@ -1,17 +1,32 @@
 package com.mawared.mawaredvansale.services.repositories.masterdata
 
 import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
 import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.md.Currency
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import org.threeten.bp.LocalDate
 
 interface IMDataRepository {
+    val networkState: LiveData<NetworkState>
+
+    fun fetchCustomerOnPages(sm_Id: Int?, org_Id: Int?): LiveData<PagedList<Customer>>
+    fun getCustomerNetworkState(): LiveData<NetworkState>
+    fun fetchScheduledCustomerOnPages(sm_Id: Int): LiveData<PagedList<Customer>>
+    fun getScheduleCustomerNetworkState(): LiveData<NetworkState>
+    // Items
+    fun fetchItemsOnPages(term: String, priceCode: String): LiveData<PagedList<Product>>
+    fun getItemNetworkState(): LiveData<NetworkState>
+    fun fetchItemsByUserOnPages(term: String, userId: Int, priceCode: String): LiveData<PagedList<Product>>
+    fun getItemUserNetworkState(): LiveData<NetworkState>
+    fun fetchItemsByWarehouseOnPages(term: String, wr_Id: Int, priceCode: String): LiveData<PagedList<Product>>
+    fun getItemWareNetworkState(): LiveData<NetworkState>
     // Customer method
     //suspend fun getCustomer(): LiveData<List<Customer>>
-    fun getCustomers(sm_Id: Int): LiveData<List<Customer>>
-    fun customers_getSchedule(sm_Id: Int): LiveData<List<Customer>>
-    fun getCustomersByOrg(org_Id: Int?): LiveData<List<Customer>>
+    fun getCustomers(sm_Id: Int, term: String): LiveData<List<Customer>>
+    fun customers_getSchedule(sm_Id: Int, term: String): LiveData<List<Customer>>
+    fun getCustomersByOrg(org_Id: Int?, term: String): LiveData<List<Customer>>
     fun getCustomerById(cu_Id: Int): LiveData<Customer>
     fun insertCustomer(baseEo: Customer): LiveData<Customer>
     suspend fun customerSaveOrUpdate(baseEo: Customer): ResponseSingle<Customer>

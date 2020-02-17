@@ -1,8 +1,6 @@
 package com.mawared.mawaredvansale.controller.sales.order.orderslist
 
-import android.opengl.Visibility
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -11,9 +9,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.OrderPagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.OrderPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
 import com.mawared.mawaredvansale.databinding.OrdersFragmentBinding
@@ -21,8 +18,6 @@ import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.orders_fragment.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -42,10 +37,7 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
 
     private lateinit var navController: NavController
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         viewModel = ViewModelProviders.of(this, factory).get(OrdersViewModel::class.java)
 
@@ -91,28 +83,43 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onResume() {
+        removeObservers()
+        super.onResume()
+    }
+
+    override fun onStop() {
+        removeObservers()
+        super.onStop()
+    }
+
+    private fun removeObservers(){
+        viewModel.orders.removeObservers(this)
+        viewModel.deleteRecord.removeObservers(this)
+        viewModel.networkStateRV.removeObservers(this)
+    }
+
     private fun bindUI() = GlobalScope.launch(Main) {
 
-        val orderAdapter = OrderPagedListAdapter(viewModel, activity!!)
+        val pagedAdapter = OrderPagedListAdapter(viewModel, activity!!)
         val gridLayoutManager = GridLayoutManager(activity!!, 1)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
             override fun getSpanSize(position: Int): Int {
-                val viewType = orderAdapter.getItemViewType(position)
-                if(viewType == orderAdapter.ORDER_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
+                val viewType = pagedAdapter.getItemViewType(position)
+                if(viewType == pagedAdapter.ORDER_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
                 else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
             }
         }
         rcv_orders.apply {
             layoutManager = gridLayoutManager// LinearLayoutManager(this@OrdersFragment.context)
             setHasFixedSize(true)
-            adapter = orderAdapter// groupAdapter
+            adapter = pagedAdapter// groupAdapter
         }
 
         viewModel.orders.observe(viewLifecycleOwner, Observer {
-
-            //initRecyclerView(it.sortedByDescending { it.so_date }.toOrderRow())
-            it.sortByDescending { it.so_date }
-            orderAdapter.submitList(it)
+            if(it != null){
+                pagedAdapter.submitList(it)
+            }
         })
         viewModel.setCustomer(null)
 
@@ -127,38 +134,38 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
             }
         })
 
-        viewModel.networkState.observe(viewLifecycleOwner, Observer {
+        viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
             progress_bar_order.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
             txt_error_order.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
 
             if(!viewModel.listIsEmpty()){
-                orderAdapter.setNetworkState(it)
+                pagedAdapter.setNetworkState(it)
             }
         })
 
     }
 
-    private fun initRecyclerView(saleItem: List<OrderRow>){
-       try {
-           val groupAdapter = GroupAdapter<ViewHolder>().apply {
-               addAll(saleItem)
-           }
-
-           rcv_orders.apply {
-               layoutManager = LinearLayoutManager(this@OrdersFragment.context)
-               setHasFixedSize(true)
-               adapter = groupAdapter
-           }
-       }catch (e: Exception){
-           Log.e("ErrorOF", "Error ${e.message}")
-       }
-    }
-
-    private fun List<Sale_Order>.toOrderRow(): List<OrderRow>{
-        return this.map {
-            OrderRow(it, viewModel)
-        }
-    }
+//    private fun initRecyclerView(saleItem: List<OrderRow>){
+//       try {
+//           val groupAdapter = GroupAdapter<ViewHolder>().apply {
+//               addAll(saleItem)
+//           }
+//
+//           rcv_orders.apply {
+//               layoutManager = LinearLayoutManager(this@OrdersFragment.context)
+//               setHasFixedSize(true)
+//               adapter = groupAdapter
+//           }
+//       }catch (e: Exception){
+//           Log.e("ErrorOF", "Error ${e.message}")
+//       }
+//    }
+//
+//    private fun List<Sale_Order>.toOrderRow(): List<OrderRow>{
+//        return this.map {
+//            OrderRow(it, viewModel)
+//        }
+//    }
 
 
     override fun onItemDeleteClick(baseEo: Sale_Order) {

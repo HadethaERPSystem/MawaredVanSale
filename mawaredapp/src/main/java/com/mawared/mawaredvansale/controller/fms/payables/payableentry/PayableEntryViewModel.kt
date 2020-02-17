@@ -55,8 +55,10 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
             repository.getById(it)
         }
 
+    var term : MutableLiveData<String> = MutableLiveData()
     var selectedCustomer: Customer? = null
-    val customerList by lazyDeferred { masterDataRepository.getCustomersByOrg(App.prefs.saveUser!!.org_Id)  }
+    val customerList :LiveData<List<Customer>> = Transformations.switchMap(term) {
+        masterDataRepository.getCustomersByOrg(App.prefs.saveUser!!.org_Id, it)  }
 
     var rate : Double = 0.00
     private val _cr_Id: MutableLiveData<Int> = MutableLiveData()

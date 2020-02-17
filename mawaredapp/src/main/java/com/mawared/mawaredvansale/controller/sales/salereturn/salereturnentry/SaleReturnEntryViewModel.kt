@@ -69,8 +69,10 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     // customer observable data
     var selectedCustomer: Customer? = null
     var oCu_Id: Int? = null
-    val customerList by lazyDeferred { masterdataRepository.getCustomers(_sm_id)  }
+    var term: MutableLiveData<String> = MutableLiveData()
+    val customerList : LiveData<List<Customer>> = Transformations.switchMap(term) { masterdataRepository.getCustomers(_sm_id, it)  }
 
+    val networkState by lazy { repository.networkState }
     // product observable data
     var selectedProduct: Product? = null
     private val _term: MutableLiveData<String> = MutableLiveData()

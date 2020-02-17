@@ -41,7 +41,7 @@ class AddStockInViewModel(private val repository: IStockInRepository,private val
     var selectedCustomer: Customer? = null
 
     val customerList by lazyDeferred {
-        masterDataRepository.getCustomers(0)
+        masterDataRepository.getCustomers(0, "")
     }
     // if search on item and select one from list store in this variable
     var selectedProduct: Product? = null

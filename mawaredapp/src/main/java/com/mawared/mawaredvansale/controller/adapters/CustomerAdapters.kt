@@ -18,6 +18,7 @@ class CustomerAdapter(context: Context, @LayoutRes private val layoutResource: I
 
     private var mCustomers: List<Customer> = allCustomers
 
+
     override fun getCount(): Int {
         return mCustomers.size
     }

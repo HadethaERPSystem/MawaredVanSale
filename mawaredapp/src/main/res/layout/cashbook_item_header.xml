@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="entityEo"
+            type="com.mawared.mawaredvansale.data.db.entities.reports.fms.ReportRowHeader"/>
+        <variable
+            name="viewmodel"
+            type="com.mawared.mawaredvansale.controller.reports.fms.CashbookStatementViewModel" />
+    </data>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:text="@{entityEo.colHeader1}"
+            android:background="@drawable/table_content_cell_bg"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:text="@{entityEo.colHeader2}"
+            android:background="@drawable/table_content_cell_bg"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:text="@{entityEo.colHeader3}"
+            android:background="@drawable/table_content_cell_bg"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:text="@{entityEo.colHeader4}"
+            android:background="@drawable/table_content_cell_bg"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:text="@{entityEo.colHeader5}"
+            android:background="@drawable/table_content_cell_bg"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+</layout>

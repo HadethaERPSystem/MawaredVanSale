@@ -14,4 +14,8 @@ class OrderDataSourceFactory(private val api: ApiService, private val sm_Id: Int
         orderLiveDataSource.postValue(orderDataSource)
         return orderDataSource
     }
+
+    fun getMutableLiveData(): MutableLiveData<OrderDataSource>{
+        return orderLiveDataSource
+    }
 }

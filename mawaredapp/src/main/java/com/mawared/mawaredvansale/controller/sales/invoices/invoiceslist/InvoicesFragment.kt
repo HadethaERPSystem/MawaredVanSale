@@ -1,6 +1,7 @@
 package com.mawared.mawaredvansale.controller.sales.invoices.invoiceslist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -8,16 +9,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.SalesPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.databinding.FragmentInvoicesBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_invoices.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -46,7 +47,7 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        loadLocale()
+        //loadLocale()
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_invoices, container, false)
 
@@ -82,11 +83,16 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     private fun removeObservers(){
-        viewModel.baseEo.removeObservers(this@InvoicesFragment)
-        viewModel.sales.removeObservers(this@InvoicesFragment)
-        viewModel.deleteRecord.removeObservers(this@InvoicesFragment)
+        viewModel.baseEo.removeObservers(this)
+        viewModel.sales.removeObservers(this)
+        viewModel.deleteRecord.removeObservers(this)
     }
 
+    override fun onDestroyView() {
+        removeObservers()
+        onDestroy()
+        super.onDestroyView()
+    }
     // enable options menu in this fragment
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
@@ -113,61 +119,77 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Main) {
-        viewModel.sales.observe(viewLifecycleOwner, Observer { sl ->
-            llProgressBar.visibility = View.GONE
-            if(sl == null) return@Observer
-            initRecyclerView(sl.sortedByDescending { it.sl_doc_date }.toInvoiceRow())
-        })
-
-        viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
-            llProgressBar.visibility = View.GONE
-            if(it == "Successful"){
-                onSuccess(getString(R.string.msg_success_delete))
-                viewModel.setCustomer(null)
+        try {
+            val pagedAdapter = SalesPagedListAdapter(viewModel, activity!!)
+            val gridLayoutManager = GridLayoutManager(activity!!, 1)
+            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    val viewType = pagedAdapter.getItemViewType(position)
+                    if (viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
+                    else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
+                }
             }
-            else{
-                onFailure(getString(R.string.msg_failure_delete))
-            }
-        })
-
-        viewModel.baseEo.observe(viewLifecycleOwner, Observer {
-            if(it != null && viewModel.isPrint) {
-                viewModel.onPrintTicket(it)
+            rcv_invoices.apply {
+                layoutManager = gridLayoutManager
+                setHasFixedSize(true)
+                adapter = pagedAdapter
             }
 
-        })
-        viewModel.setCustomer(null)
-    }
+            viewModel.sales.observe(viewLifecycleOwner, Observer {
+                if (it != null) {
+                    pagedAdapter.submitList(it)
+                }
+            })
+            viewModel.setCustomer(null)
 
-    private fun initRecyclerView(saleItem: List<InvoiceRow>){
-        val groupAdapter = GroupAdapter<ViewHolder>().apply {
-            addAll(saleItem)
+            viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
+                progress_bar_sale.visibility =
+                    if (viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+                txt_error_sale.visibility =
+                    if (viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+
+                if (!viewModel.listIsEmpty()) {
+                    pagedAdapter.setNetworkState(it)
+                }
+            })
+
+            viewModel.networkState.observe(viewLifecycleOwner, Observer {
+                progress_bar_sale.visibility =
+                    if (viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+            })
+
+            viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
+                if (it == "Successful") {
+                    onSuccess(getString(R.string.msg_success_delete))
+                    viewModel.setCustomer(null)
+                } else {
+                    onFailure(getString(R.string.msg_failure_delete))
+                }
+            })
+
+            viewModel.baseEo.observe(viewLifecycleOwner, Observer {
+                if (it != null && viewModel.isPrint) {
+                    viewModel.onPrintTicket(it)
+                }
+
+            })
+        } catch (e: Exception) {
+            Log.i("Exc", "Error is ${e.message}")
         }
 
-        rcv_invoices.apply {
-            layoutManager = LinearLayoutManager(this@InvoicesFragment.context)
-            setHasFixedSize(true)
-            adapter = groupAdapter
-        }
-    }
-
-    private fun List<Sale>.toInvoiceRow(): List<InvoiceRow>{
-        return this.map {
-            InvoiceRow( it, viewModel )
-        }
     }
 
     override fun onStarted() {
-        llProgressBar.visibility = View.VISIBLE
+        progress_bar_sale.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        llProgressBar.visibility = View.GONE
+        progress_bar_sale.visibility = View.GONE
         inv_list_lc.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        llProgressBar.visibility = View.GONE
+        progress_bar_sale.visibility = View.GONE
         inv_list_lc.snackbar(message)
     }
 

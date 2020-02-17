@@ -15,17 +15,27 @@
             android:layout_height="match_parent"
             tools:context=".controller.sales.order.orderslist.OrdersFragment">
 
+        <include
+            android:id="@+id/progress_bar_psorder"
+            android:visibility="gone"
+            layout="@layout/layout_progress_bar_with_text"
+            />
+
+        <TextView
+            android:id="@+id/txt_error_psorder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="@string/lbl_error"
+            android:visibility="gone"/>
+
         <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:listitem="@layout/order_row"
                 android:id="@+id/rcv_orders"/>
 
-        <include
-            android:id="@+id/llProgressBar"
-            android:visibility="visible"
-            layout="@layout/layout_progress_bar_with_text"
-            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

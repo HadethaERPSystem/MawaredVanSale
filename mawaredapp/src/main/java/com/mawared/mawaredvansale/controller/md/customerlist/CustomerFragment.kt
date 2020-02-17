@@ -1,27 +1,23 @@
 package com.mawared.mawaredvansale.controller.md.customerlist
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.mawared.mawaredvansale.App
-
+import androidx.recyclerview.widget.GridLayoutManager
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.CustomerPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.databinding.CustomerFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.customer_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -43,10 +39,7 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     private lateinit var navController: NavController
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.customer_fragment, container, false)
 
@@ -93,26 +86,39 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Dispatchers.Main) {
+        val pagedAdapter = CustomerPagedListAdapter(viewModel, activity!!)
+        val gridLayoutManager = GridLayoutManager(activity!!, 1)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
+            override fun getSpanSize(position: Int): Int {
+                val viewType = pagedAdapter.getItemViewType(position)
+                if(viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
+                else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
+            }
+        }
+        rcv_customers.apply {
+            layoutManager = gridLayoutManager// LinearLayoutManager(this@OrdersFragment.context)
+            setHasFixedSize(true)
+            adapter = pagedAdapter// groupAdapter
+        }
+
         viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
-            group_loading?.hide()
-            if(it == null) return@Observer
-            initRecyclerView(it.sortedByDescending { it.cu_ref_Id }.toRow())
+            it.sortByDescending { it.created_at }
+            pagedAdapter.submitList(it)
         })
 
-        viewModel.setSalesmanId(App.prefs.savedSalesman!!.sm_user_id!!)
+        viewModel._cu_Id.value = null
+
+        viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
+            progress_bar_customer.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+            txt_error_customer.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+
+            if(!viewModel.listIsEmpty()){
+                pagedAdapter.setNetworkState(it)
+            }
+        })
+
     }
 
-    private fun initRecyclerView(saleItem: List<CustomerRow>){
-        val groupAdapter = GroupAdapter<ViewHolder>().apply {
-            addAll(saleItem)
-        }
-
-        rcv_customers.apply {
-            layoutManager = LinearLayoutManager(this@CustomerFragment.context)
-            setHasFixedSize(true)
-            adapter = groupAdapter
-        }
-    }
 
     private fun List<Customer>.toRow(): List<CustomerRow>{
         return this.map {
@@ -121,16 +127,16 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     override fun onStarted() {
-        group_loading?.show()
+        progress_bar_customer?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        group_loading?.hide()
+        progress_bar_customer?.visibility = View.GONE
         customer_list_lc?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        group_loading?.hide()
+        progress_bar_customer?.visibility = View.GONE
         customer_list_lc?.snackbar(message)
     }
 

@@ -22,8 +22,14 @@ class MenuRepository(
     private val db: AppDatabase
 ) : SafeApiRequest() {
     var job: CompletableJob? = null
+
+    private val _networkState = MutableLiveData<NetworkState>()
+    val networkState: LiveData<NetworkState>
+        get() = _networkState
+
     fun getByUserId(userId: Int, lang: String): LiveData<List<Menu>> {
         job = Job()
+        _networkState.postValue(NetworkState.LOADING)
         return object : LiveData<List<Menu>>() {
             override fun onActive() {
                 super.onActive()
@@ -33,13 +39,16 @@ class MenuRepository(
                             val response = apiRequest { api.menu_getByUser(userId, lang) }
                             withContext(Dispatchers.Main) {
                                 value = response.data
+                                _networkState.postValue(NetworkState.LOADED)
                                 job?.complete()
                             }
                         }catch (e: ApiException){
                             Log.e("Connectivity", "No internet connection", e)
+                            _networkState.postValue(NetworkState.ERROR)
                             return@launch
-                        }catch (e: java.lang.Exception){
+                        }catch (e: Exception){
                             Log.e("Exception", "Error exception when call menu get by User Id", e)
+                            _networkState.postValue(NetworkState.ERROR)
                             return@launch
                         }
                     }
@@ -72,6 +81,19 @@ class MenuRepository(
             Menu(11, res.getString(R.string.menu_reports),"Reports",    "ic_report1"),
             Menu(12, res.getString(R.string.menu_notification), "Alart",  "ic_alart"),
             Menu(13, res.getString(R.string.menu_settings), "Settings",  "ic_settings1")
+        )
+        menuList.postValue(mList)
+        return  menuList
+    }
+
+    fun getReportLocalMenu(ctx: Context): MutableLiveData<List<Menu>>{
+        val res = ctx.resources
+        //var id = res.getIdentifier("ic_so", null, ctx.packageName)
+
+        val mList = listOf(
+            Menu(1, res.getString(R.string.menu_cashbook_statement),  "CashbookStatement", "ic_cashbook"),
+            Menu(2, res.getString(R.string.menu_sales_statement),  "SalesStatement",   "ic_sales"),
+            Menu(3, res.getString(R.string.menu_stock_statement), "StockStatement", "ic_stock")
         )
         menuList.postValue(mList)
         return  menuList

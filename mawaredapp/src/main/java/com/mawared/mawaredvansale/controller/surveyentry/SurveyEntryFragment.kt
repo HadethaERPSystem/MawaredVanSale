@@ -239,13 +239,11 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
         })
 
         // bind customer to autocomplete
-        val customerList = viewModel.customerList.await()
-        customerList.observe(viewLifecycleOwner, Observer { cu ->
+        viewModel.customerList.observe(viewLifecycleOwner, Observer { cu ->
             if(cu == null) return@Observer
             initCustomerAutocomplete(cu)
 
         })
-
 
         viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it

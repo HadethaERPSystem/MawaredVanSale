@@ -19,7 +19,7 @@ android {
         versionName "V1.11.01"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-    signingConfigs{
+    signingConfigs {
 
         debug {
             storeFile file("../extras/mawaredKeyStore.jks")
@@ -35,7 +35,7 @@ android {
             keyPassword 'M@w@r3d#2020$Jun'
         }
     }
-    
+
     buildTypes {
         debug {
             debuggable true
@@ -69,6 +69,8 @@ android {
     compileOptions {
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
+        'sourceCompatibility JavaVersion.VERSION_1_7'
+        'targetCompatibility JavaVersion.VERSION_1_7'
     }
     androidExtensions {
         experimental = true

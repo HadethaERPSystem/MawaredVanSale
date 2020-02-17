@@ -49,8 +49,9 @@ class SurveyEntryViewModel(private val repositoryImp: SurveyRepositoryImp, priva
 
     var selectedCustomer: Customer? = null
 
-    val customerList by lazyDeferred {
-        masterDataRepository.getCustomers(_sm_id)
+    var term: MutableLiveData<String> = MutableLiveData()
+    val customerList: LiveData<List<Customer>> = Transformations.switchMap(term) {
+        masterDataRepository.getCustomers(_sm_id, it)
     }
 
     var voucher: Voucher? = null

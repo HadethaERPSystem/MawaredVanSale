@@ -16,16 +16,25 @@
             android:layout_height="match_parent"
             tools:context=".controller.sales.invoices.invoiceslist.InvoicesFragment">
 
+        <include
+            android:id="@+id/progress_bar_sale"
+            android:visibility="gone"
+            layout="@layout/layout_progress_bar_with_text"
+            />
+
+        <TextView
+            android:id="@+id/txt_error_sale"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="@string/lbl_error"
+            android:visibility="gone"/>
+
         <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/rcv_invoices"/>
-
-        <include
-            android:id="@+id/llProgressBar"
-            android:visibility="visible"
-            layout="@layout/layout_progress_bar_with_text"
-            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

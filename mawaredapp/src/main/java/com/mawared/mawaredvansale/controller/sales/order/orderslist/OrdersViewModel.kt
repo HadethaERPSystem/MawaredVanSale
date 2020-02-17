@@ -19,16 +19,11 @@ class OrdersViewModel(private val orderRepository: IOrderRepository) : BaseViewM
 
     private val _cu_id: MutableLiveData<Int?> = MutableLiveData()
 
-//    val orders: LiveData<PagedList<Sale_Order>> = Transformations
-//        .switchMap(_cu_id){
-//            orderRepository.fetchLiveOrdersPagedList(_sm_id, it, "SaleOrder")
-//        }
-
     val orders: LiveData<PagedList<Sale_Order>> by lazy {
         orderRepository.fetchLiveOrdersPagedList(_sm_id, null, "SaleOrder")
     }
 
-    val networkState: LiveData<NetworkState> by lazy {
+    val networkStateRV: LiveData<NetworkState> by lazy {
         orderRepository.getOrderNetworkState()
     }
 

@@ -3,10 +3,12 @@ package com.mawared.mawaredvansale.controller.sales.psorder.psorderlist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.paging.PagedList
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.order.IOrderRepository
 
 class PSOrdersViewModel(private val orderRepository: IOrderRepository) : BaseViewModel() {
@@ -17,10 +19,17 @@ class PSOrdersViewModel(private val orderRepository: IOrderRepository) : BaseVie
 
     private val _cu_id: MutableLiveData<Int> = MutableLiveData()
 
-    val orders: LiveData<List<Sale_Order>> = Transformations
-        .switchMap(_cu_id){
-            orderRepository.getOrder(_sm_id, it, "PSOrder")
-        }
+    val orders: LiveData<PagedList<Sale_Order>> by lazy {
+        orderRepository.fetchLiveOrdersPagedList(_sm_id, null, "PSOrder")
+    }
+
+    val networkStateRV: LiveData<NetworkState> by lazy {
+        orderRepository.getOrderNetworkState()
+    }
+
+    fun listIsEmpty():Boolean{
+        return orders.value?.isEmpty() ?: true
+    }
 
     private val _so_Id_for_delete: MutableLiveData<Int> = MutableLiveData()
     val deleteRecord: LiveData<String> = Transformations

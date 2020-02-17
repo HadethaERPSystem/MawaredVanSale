@@ -4,17 +4,15 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.paging.PagedList
 import com.mawared.mawaredvansale.App
-import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
-import com.mawared.mawaredvansale.controller.common.GenerateTicket
-import com.mawared.mawaredvansale.controller.common.PdfTicket
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.interfaces.IPrintNavigator
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.transfer.ITransferRepository
-import java.util.*
 
 class TransferViewModel(private val repository: ITransferRepository) : BaseViewModel() {
 
@@ -24,8 +22,16 @@ class TransferViewModel(private val repository: ITransferRepository) : BaseViewM
     var msgListener: IMessageListener? = null
     var printListener: IPrintNavigator<Transfer>? = null
     var isPrint = false
-    val baseEoList by lazy {
-        repository.getByUserId(_user_id)
+    val baseEoList: LiveData<PagedList<Transfer>> by lazy {
+        repository.fetchLivePagedList(_user_id)
+    }
+
+    val networkStateRV: LiveData<NetworkState> by lazy {
+        repository.getPagedNetworkState()
+    }
+
+    fun listIsEmpty():Boolean{
+        return baseEoList.value?.isEmpty() ?: true
     }
 
     private val _tr_Id: MutableLiveData<Int> = MutableLiveData()

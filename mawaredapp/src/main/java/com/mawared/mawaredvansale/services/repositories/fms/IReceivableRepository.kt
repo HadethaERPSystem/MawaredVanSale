@@ -1,10 +1,17 @@
 package com.mawared.mawaredvansale.services.repositories.fms
 
 import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 
 interface IReceivableRepository {
+    val networkState: LiveData<NetworkState>
+
+    fun getRecNetworkState(): LiveData<NetworkState>
+    fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Receivable>>
+
     fun insert(baseEo: Receivable) : LiveData<Receivable>
     suspend fun SaveOrUpdate(baseEo: Receivable) : ResponseSingle<Receivable>
     fun getReceivable(sm_Id: Int, cu_Id: Int?) : LiveData<List<Receivable>>

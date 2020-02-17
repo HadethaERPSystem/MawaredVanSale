@@ -75,7 +75,10 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         get() = _soItems
 
     // for customer
-    val customerList by lazyDeferred { masterDataRepository.getCustomers(_sm_id) }
+    val term: MutableLiveData<String> = MutableLiveData()
+    val customerList : LiveData<List<Customer>> = Transformations.switchMap(term) { masterDataRepository.getCustomers(_sm_id, it)  }
+
+    val networkState by lazy { orderRepository.networkState }
 
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations

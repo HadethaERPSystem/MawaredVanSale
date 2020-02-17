@@ -8,13 +8,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.ReturnPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
 import com.mawared.mawaredvansale.databinding.SaleReturnFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -83,13 +86,37 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
 
     private fun bindUI() = GlobalScope.launch(Main) {
 
+        val pagedAdapter = ReturnPagedListAdapter(viewModel, activity!!)
+        val gridLayoutManager = GridLayoutManager(activity!!, 1)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
+            override fun getSpanSize(position: Int): Int {
+                val viewType = pagedAdapter.getItemViewType(position)
+                if(viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
+                else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
+            }
+        }
+        rcv_sale_return.apply {
+            layoutManager = gridLayoutManager// LinearLayoutManager(this@OrdersFragment.context)
+            setHasFixedSize(true)
+            adapter = pagedAdapter// groupAdapter
+        }
+
         viewModel.saleReturns.observe(viewLifecycleOwner, Observer {
-            llProgressBar?.visibility = View.GONE
-            initRecyclerView(it.sortedByDescending { it.sr_doc_date }.toSaleReturnRow())
+           it.sortByDescending { it.sr_doc_date }
+            pagedAdapter.submitList(it)
+        })
+        viewModel.setCustomer(null)
+
+        viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
+            progress_bar_return.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+            txt_error_return.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+
+            if(!viewModel.listIsEmpty()){
+                pagedAdapter.setNetworkState(it)
+            }
         })
 
         viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
-            llProgressBar?.visibility = View.GONE
             if(it == "Successful"){
                 onSuccess(getString(R.string.msg_success_delete))
                 viewModel.setCustomer(null)
@@ -144,16 +171,16 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
 
     // message listener
     override fun onStarted() {
-        llProgressBar?.visibility = View.VISIBLE
+        progress_bar_return?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        llProgressBar?.visibility = View.GONE
+        progress_bar_return?.visibility = View.GONE
         sale_return_list_cl.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        llProgressBar?.visibility = View.GONE
+        progress_bar_return?.visibility = View.GONE
         sale_return_list_cl.snackbar(message)
     }
 

@@ -1,10 +1,17 @@
 package com.mawared.mawaredvansale.services.repositories.fms
 
 import androidx.lifecycle.LiveData
+import androidx.paging.PagedList
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 
 interface IPayableRepository {
+    val networkState: LiveData<NetworkState>
+
+    fun getPayableNetworkState(): LiveData<NetworkState>
+    fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Payable>>
+
     fun insert(baseEo: Payable) : LiveData<Payable>
     suspend fun SaveOrUpdate(baseEo: Payable) : ResponseSingle<Payable>
     fun getPayable(sm_Id: Int, cu_Id: Int?) : LiveData<List<Payable>>

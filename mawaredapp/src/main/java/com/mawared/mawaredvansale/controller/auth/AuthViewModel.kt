@@ -35,36 +35,31 @@ class AuthViewModel(private val repository: UserRepository) : BaseViewModel() {
         }
         val ur : User = User(0, "","", userName, password, "", null, null,
             null, null, null, null, "", "", "")
-        var msg = ""
         //success
         Coroutines.main{
             try {
-                val authResponse = repository.login(ur)
-
-                authResponse.user?.let {
+                val user = repository.login(ur)
+               if(user == null){
+                   authListener?.onFailure("Login Failed")
+                   return@main
+               }
+                user.let {
                     it.uid = 0
                     val salesman = repository.salesmanByUser(it.id)
                     if(salesman != null){
                         App.prefs.savedSalesman = salesman
                         App.prefs.savedVanCode = salesman.sm_van_code
                     }
-//                    else{
-//                        msg = "You can't login by this user because this user dos'nt related with any salesman."
-//                        return@let
-//                    }
+
                     authListener?.onSuccess(it)
 
-                    App.prefs.saveUser = authResponse.user
+                    App.prefs.saveUser = user
                     App.prefs.isLoggedIn = true
 
                     repository.saveUser(it)
                     return@main
                 }
-                if(!msg.isEmpty()){
-                    authListener?.onFailure(msg)
-                }else{
-                    authListener?.onFailure(authResponse.message!!)
-                }
+
             }catch (e: ApiException){
                 authListener?.onFailure(e.message!!)
             }catch (e: NoConnectivityException){

@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.itextpdf.text.BaseColor
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
@@ -21,7 +23,11 @@ import com.mawared.mawaredvansale.controller.common.printing.*
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.services.netwrok.ApiService
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.invoices.IInvoiceRepository
+import com.mawared.mawaredvansale.services.repositories.invoices.InvoiceDataSource
+import com.mawared.mawaredvansale.services.repositories.invoices.InvoiceDataSourceFactory
 import java.io.IOException
 import java.io.InputStream
 import java.text.DecimalFormat
@@ -41,10 +47,22 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
     var isPrint = false
     private val _cu_id: MutableLiveData<Int> = MutableLiveData()
 
-    val sales: LiveData<List<Sale>> = Transformations
+    val sales: LiveData<PagedList<Sale>> = Transformations
         .switchMap(_cu_id) {
-            repository.getInvoices(_sm_id, it)
+            repository.fetchLivePagedList(_sm_id, it)
         }
+
+    val networkStateRV: LiveData<NetworkState> by lazy {
+        repository.getSaleNetworkState()
+    }
+
+    val networkState: LiveData<NetworkState> by lazy {
+        repository.networkState
+    }
+
+    fun listIsEmpty():Boolean{
+        return sales.value?.isEmpty() ?: true
+    }
 
     private val _sl_Id: MutableLiveData<Int> = MutableLiveData()
     val baseEo: LiveData<Sale> = Transformations

@@ -9,8 +9,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.TransferPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.controller.common.GenerateTicket
 import com.mawared.mawaredvansale.controller.common.PdfActivity
@@ -19,6 +21,7 @@ import com.mawared.mawaredvansale.databinding.TransferFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.interfaces.IPrintNavigator
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -48,10 +51,7 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     private lateinit var navController: NavController
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.transfer_fragment, container, false)
 
@@ -102,10 +102,34 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Main) {
+
+        val pagedAdapter = TransferPagedListAdapter(viewModel, activity!!)
+        val gridLayoutManager = GridLayoutManager(activity!!, 1)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
+            override fun getSpanSize(position: Int): Int {
+                val viewType = pagedAdapter.getItemViewType(position)
+                if(viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
+                else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
+            }
+        }
+        rcv_transfer.apply {
+            layoutManager = gridLayoutManager// LinearLayoutManager(this@OrdersFragment.context)
+            setHasFixedSize(true)
+            adapter = pagedAdapter// groupAdapter
+        }
+
         viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
-            llProgressBar?.visibility = View.GONE
-            if(it == null) return@Observer
-            initRecyclerView(it.sortedByDescending { it.tr_doc_date }.toRow())
+            it.sortByDescending { it.tr_doc_date }
+            pagedAdapter.submitList(it)
+        })
+
+        viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
+            progress_bar_transfer.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+            txt_error_transfer.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+
+            if(!viewModel.listIsEmpty()){
+                pagedAdapter.setNetworkState(it)
+            }
         })
 
         viewModel.baseEo.observe(viewLifecycleOwner, Observer {
@@ -139,16 +163,16 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     override fun onStarted() {
-        llProgressBar?.visibility = View.VISIBLE
+        progress_bar_transfer?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        llProgressBar?.visibility = View.GONE
+        progress_bar_transfer?.visibility = View.GONE
         transfer_list_lc.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        llProgressBar?.visibility = View.GONE
+        progress_bar_transfer?.visibility = View.GONE
         transfer_list_lc.snackbar(message)
     }
 

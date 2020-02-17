@@ -13,6 +13,7 @@
 
     <!-- all layout title string -->
     <string name="home_page_title">Dashboard</string>
+    <string name="reports_page_title">Reports</string>
     <string name="login_page_title">Login</string>
 
     <string name="layout_invoice_list_title">Invoices</string>
@@ -46,6 +47,10 @@
 
     <string name="layout_transfer_list_title">Transfer</string>
     <string name="layout_transfer_entry_title">Transfer</string>
+
+    <string name="layout_cashbook_statement_title">Cashbook Statement</string>
+    <string name="layout_sales_statement_title">Sales Statement</string>
+    <string name="layout_stock_statement_title">Stock Statement</string>
     <!--sub title for all layout-->
     <string name="layout_entry_sub_title">Add/Edit</string>
 
@@ -63,7 +68,10 @@
     <string name="menu_reports">Reports</string>
     <string name="menu_notification">Alert</string>
     <string name="menu_settings">Settings</string>
-
+    <!-- Reports Menu Items-->
+    <string name="menu_cashbook_statement">Cashbook Statement</string>
+    <string name="menu_sales_statement">Sales Statement</string>
+    <string name="menu_stock_statement">Stock Statement</string>
     <!-- labels caption -->
     <string name="lbl_doc_no">Invoice No</string>
     <string name="lbl_doc_date">Date</string>
@@ -92,6 +100,7 @@
 
     <string name="tag_search">Search</string>
     <string name="add_invoice_button_tag">Add Invoice</string>
+    <string name="tag_print">Print</string>
 
     <string name="btn_add_item_caption">add item</string>
     <string name="save_invoice">Save Invoice</string>
@@ -272,9 +281,12 @@
     <!-- Network state string -->
     <string name="ns_success">Success</string>
     <string name="ns_running">Running</string>
-    <string name="ns_went_error">Something went wrong</string>
+    <string name="ns_went_wrong">Something went wrong</string>
     <string name="ns_end_list">You have reached the end</string>
     <string name="ns_no_data">No data available</string>
+    <string name="ns_problem_connection">Connection Problem</string>
+    <string name="to_date">To Date</string>
+    <string name="from_date">From Date</string>
 
     <string-array name="codepage">
         <item>"Default"</item>

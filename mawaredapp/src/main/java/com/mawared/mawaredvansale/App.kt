@@ -9,8 +9,11 @@ import com.mawared.mawaredvansale.controller.fms.receivables.receivableentry.Rec
 import com.mawared.mawaredvansale.controller.fms.receivables.receivablelist.ReceivableViewModelFactory
 import com.mawared.mawaredvansale.controller.home.HomeViewModelFactory
 import com.mawared.mawaredvansale.controller.home.dashboard.DashboardViewModelFactory
+import com.mawared.mawaredvansale.controller.home.reportsdashboard.ReportViewModelFactory
+import com.mawared.mawaredvansale.controller.home.reportsdashboard.ReportsViewModel
 import com.mawared.mawaredvansale.controller.md.customerentry.CustomerEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.md.customerlist.CustomerViewModelFactory
+import com.mawared.mawaredvansale.controller.reports.fms.CashbookStatementViewModelFactory
 import com.mawared.mawaredvansale.controller.sales.delivery.deliveryentry.DeliveryEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.sales.delivery.deliverylist.DeliveryViewModelFactory
 import com.mawared.mawaredvansale.controller.sales.invoices.addinvoice.AddInvoiceViewModelFactory
@@ -46,6 +49,8 @@ import com.mawared.mawaredvansale.services.repositories.md.DownloadRepository
 import com.mawared.mawaredvansale.services.repositories.md.MasterDataRepository
 import com.mawared.mawaredvansale.services.repositories.order.IOrderRepository
 import com.mawared.mawaredvansale.services.repositories.order.OrderRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.reports.fms.CashbookRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.reports.fms.ICashbookRepository
 import com.mawared.mawaredvansale.services.repositories.salereturn.ISaleReturnRepository
 import com.mawared.mawaredvansale.services.repositories.salereturn.SaleReturnRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.srv.SurveyRepositoryImp
@@ -102,12 +107,14 @@ class App : Application(), KodeinAware {
 
         bind<ITransferRepository>() with singleton { TransferRepositoryImp(instance())}
 
+        bind<ICashbookRepository>() with singleton { CashbookRepositoryImp(instance()) }
+
         bind() from singleton { SurveyRepositoryImp(instance()) }
         // no singleton for below because we need more than one instance for view model
         bind() from provider { AuthViewModelFactory(instance()) }
         bind() from provider { HomeViewModelFactory(instance()) }
         bind() from provider { DashboardViewModelFactory(instance()) }
-
+        bind() from provider { ReportViewModelFactory(instance()) }
         // invoice view model factory
         bind() from provider { InvoicesViewModelFactory(instance()) }
         bind() from provider { AddInvoiceViewModelFactory(instance(), instance()) }
@@ -147,6 +154,9 @@ class App : Application(), KodeinAware {
         // Transfer
         bind() from provider { TransferViewModelFactory(instance())}
         bind() from provider { TransferEntryViewModelFactory(instance(), instance()) }
+
+        // Cashbook statement report
+        bind() from provider { CashbookStatementViewModelFactory(instance()) }
     }
 
     companion object{

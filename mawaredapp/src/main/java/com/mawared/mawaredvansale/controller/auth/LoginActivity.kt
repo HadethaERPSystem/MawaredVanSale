@@ -2,10 +2,10 @@ package com.mawared.mawaredvansale.controller.auth
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -14,11 +14,8 @@ import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.home.HomeActivity
 import com.mawared.mawaredvansale.data.db.entities.security.User
 import com.mawared.mawaredvansale.databinding.ActivityLoginBinding
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.order_row.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance

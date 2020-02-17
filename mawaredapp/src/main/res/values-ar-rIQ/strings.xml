@@ -14,6 +14,7 @@
     <!-- all layout title string -->
 
     <string name="login_page_title">تسجيل الدخول</string>
+    <string name="reports_page_title">التقارير</string>
     <string name="home_page_title">لوحة القيادة</string>
 
     <string name="layout_invoice_list_title">فواتير البيع</string>
@@ -48,6 +49,10 @@
     <string name="layout_transfer_list_title">طلبيات المناقلات</string>
     <string name="layout_transfer_entry_title">مناقلة</string>
 
+    <string name="layout_cashbook_statement_title">كشف الصندوق</string>
+    <string name="layout_sales_statement_title">كشف المبيعات</string>
+    <string name="layout_stock_statement_title">كشف المخزون</string>
+
     <!--sub title for all layout-->
     <string name="layout_entry_sub_title">اضافة / تعديل</string>
 
@@ -65,6 +70,11 @@
     <string name="menu_reports">التقارير</string>
     <string name="menu_notification">التنبيهات</string>
     <string name="menu_settings">الاعدادات</string>
+
+    <!-- Reports Menu Items-->
+    <string name="menu_cashbook_statement">كشف الصندوق</string>
+    <string name="menu_sales_statement">كشف المبيعات</string>
+    <string name="menu_stock_statement">كشف المخزون</string>
 
     <!-- lables caption -->
     <string name="lbl_doc_no">رقم المستند</string>
@@ -94,7 +104,7 @@
 
     <string name="tag_search">بحث</string>
     <string name="add_invoice_button_tag">جديد</string>
-
+    <string name="tag_print">طباعة</string>
     <string name="btn_add_item_caption">اضافة مادة</string>
     <string name="save_invoice">حفظ</string>
     <string name="btn_close_caption">اغلاق</string>
@@ -270,9 +280,12 @@
     <!-- Network state string -->
     <string name="ns_success">تمت العملية بنجاح</string>
     <string name="ns_running">جاري التحميل</string>
-    <string name="ns_went_error">حدث خطأ خلال عملية تحميل البيانات</string>
+    <string name="ns_went_wrong">حدث خطأ خلال عملية تحميل البيانات</string>
     <string name="ns_end_list">وصلت الى نهاية القائمة</string>
     <string name="ns_no_data">لا تتوفر بيانات</string>
+    <string name="ns_problem_connection">مشكلة في الاتصال</string>
+    <string name="to_date">To Date</string>
+    <string name="from_date">From Date</string>
 
     <string-array name="codepage">
         <item>"Default"</item>

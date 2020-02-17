@@ -120,7 +120,7 @@ class NetworkDataSourceImp(private val api: ApiService ): INetworkDataSource, Sa
 
     override suspend fun customersGetBySalesmanId(sm_Id: Int) {
         try {
-            val response = apiRequest { api.getAllCustomers(sm_Id) }
+            val response = apiRequest { api.getAllCustomers(sm_Id, "") }
             _downloadCustomers.postValue(response.data)
 
         } catch (e: ApiException) {

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.paging.PagedList
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
 import com.mawared.mawaredvansale.App
@@ -17,6 +18,7 @@ import com.mawared.mawaredvansale.controller.common.printing.*
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.fms.IReceivableRepository
 import java.io.IOException
 import java.io.InputStream
@@ -31,10 +33,21 @@ class ReceivableViewModel(private val repository: IReceivableRepository) : BaseV
     var isPrint = false
     private val _cu_id: MutableLiveData<Int> = MutableLiveData()
 
-    val baseEoList: LiveData<List<Receivable>> = Transformations
-        .switchMap(_cu_id){
-            repository.getReceivable(_sm_id, it)
-        }
+    val baseEoList: LiveData<PagedList<Receivable>> = Transformations.switchMap(_cu_id) {
+        repository.fetchLivePagedList(_sm_id, it)
+    }
+
+    val networkStateRV: LiveData<NetworkState> by lazy {
+        repository.getRecNetworkState()
+    }
+
+    fun listIsEmpty():Boolean{
+        return baseEoList.value?.isEmpty() ?: true
+    }
+
+    val networkState by lazy {
+        repository.networkState
+    }
 
     private val _rcv_Id_for_delete: MutableLiveData<Int> = MutableLiveData()
     val deleteRecord: LiveData<String> = Transformations

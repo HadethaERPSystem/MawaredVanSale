@@ -11,6 +11,7 @@ const val API_KEY = ""
 //const val BASE_URL = "http://185.80.42.68:6633/"
 
 //const val BASE_URL_API = "http://172.0.0.1:80/mderp.WebAPI/api/"
+//const val BASE_URL = "http://172.0.0.1:80/mderp.WebAPI/"
 
 //const val BASE_URL_API = "http://172.29.50.2:6615/api/"
 //const val BASE_URL = "http://172.29.50.2:6615/"
@@ -18,6 +19,9 @@ const val API_KEY = ""
 
 const val BASE_URL_API = "http://10.200.0.10/mderp.WebAPI/api/"
 const val BASE_URL = "http://10.200.0.10/mderp.WebAPI/"
+
+//const val BASE_URL_API = "http://192.168.1.160/mderp.WebAPI/api/"
+//const val BASE_URL = "http://192.168.1.160/mderp.WebAPI/"
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 
@@ -66,9 +70,9 @@ const val URL_ALL_CURRENCIES_RATE = "${BASE_URL_API}PDAMasterData/Currency_RateG
 const val URL_CURRENT_CURRENCY_RATE = "${BASE_URL_API}PDAMasterData/Currency_RateLatest"
 
 // Get all customers for specific salesman URL
-const val URL_ALL_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_BySalesmanId"
-const val URL_SCHEDULE_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_Schedule"
-const val URL_CUSTOMERS_BY_ORG = "${BASE_URL_API}PDAMasterData/Customers_GetByOrg"
+const val URL_ALL_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_BySalesmanTerm"
+const val URL_SCHEDULE_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_ScheduleTerm"
+const val URL_CUSTOMERS_BY_ORG = "${BASE_URL_API}PDAMasterData/Customers_GetByOrgTerm"
 const val URL_CUSTOMERS_ON_PAGES = "${BASE_URL_API}PDAMasterData/Customers_GetOnPages"
 const val URL_SCHEDULE_CUSTOMERS_ON_PAGES = "${BASE_URL_API}PDAMasterData/Customers_ScheduleOnPages"
 const val URL_CUSTOMER_BY_Id = "${BASE_URL_API}PDAMasterData/Customer_GetById"
@@ -161,6 +165,11 @@ const val URL_TRANSFER_GET_BY_User = "${BASE_URL_API}Transfer/transfer_getByUser
 const val URL_TRANSFER_GET_ON_PAGES = "${BASE_URL_API}Transfer/transfer_OnPages"
 const val URL_TRANSFER_GET_BY_ID = "${BASE_URL_API}Transfer/transfer_getById"
 const val URL_TRANSFER_GET_BY_MASTER_ID = "${BASE_URL_API}Transfer/transfer_GetItemsByMasterId"
+
+// FOR REPORTS
+const val URL_CASHBOOK_STATEMENT_ON_PAGES = "${BASE_URL_API}Reports/Cashbook_Statement"
+const val URL_SALES_STATEMENT_ON_PAGES = "${BASE_URL_API}Reports/Sales_Statement"
+const val URL_INVENTORY_STATEMENT_ON_PAGES = "${BASE_URL_API}Reports/Stock_Statement"
 
 // Voucher get by code
 const val URL_ADD_VOUCHER_BYCODE = "${BASE_URL_API}PDAMasterData/Voucher_GetByCode"

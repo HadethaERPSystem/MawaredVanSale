@@ -1,6 +1,7 @@
 package com.mawared.mawaredvansale.services.repositories.order
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
@@ -93,5 +94,9 @@ class OrderDataSource(private val api: ApiService, private val sm_Id: Int, priva
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Sale_Order>) {
 
+    }
+
+    fun getNetworkState(): LiveData<NetworkState> {
+        return networkState
     }
 }

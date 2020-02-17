@@ -2,7 +2,6 @@ package com.mawared.mawaredvansale.controller.adapters
 
 import android.app.Activity
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -11,7 +10,7 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.entities.md.Product
-import com.mawared.mawaredvansale.databinding.ProductExpiryAtcRowBindingImpl
+import com.mawared.mawaredvansale.databinding.ProductExpiryAtcRowBinding
 import java.util.*
 
 class atc_prod_expiry_Adapter(context: Context, @LayoutRes private val layoutResource: Int, private val allProducts: List<Product>):
@@ -34,7 +33,7 @@ class atc_prod_expiry_Adapter(context: Context, @LayoutRes private val layoutRes
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
         val layoutInflater = (context as Activity).layoutInflater
-        val binding: ProductExpiryAtcRowBindingImpl = DataBindingUtil.inflate(layoutInflater, R.layout.product_expiry_atc_row, parent, false)
+        val binding: ProductExpiryAtcRowBinding = DataBindingUtil.inflate(layoutInflater, R.layout.product_expiry_atc_row, parent, false)
         binding.product = getItem(position)
         return binding.root
     }

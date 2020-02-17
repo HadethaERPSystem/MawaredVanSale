@@ -2,12 +2,13 @@ package com.mawared.mawaredvansale.controller.home.dashboard
 
 import android.content.Context
 import android.content.res.Resources
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.services.repositories.MenuRepository
-import com.mawared.mawaredvansale.utilities.lazyDeferred
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 
 class DashboardViewModel(repository: MenuRepository) : ViewModel() {
 
@@ -21,8 +22,16 @@ class DashboardViewModel(repository: MenuRepository) : ViewModel() {
     var system_name: String? = "Mawared App."
     var system_version: String? = ""
 
-    val menus by lazyDeferred {
+    val menus by lazy {
         repository.getByUserId(App.prefs.saveUser!!.id, lang)
+    }
+
+    val networkState: LiveData<NetworkState> by lazy {
+        repository.networkState
+    }
+
+    fun listIsEmpty():Boolean{
+        return menus.value?.isEmpty() ?: true
     }
 
     fun setNavigator(navigator: IMainNavigator<Menu>)

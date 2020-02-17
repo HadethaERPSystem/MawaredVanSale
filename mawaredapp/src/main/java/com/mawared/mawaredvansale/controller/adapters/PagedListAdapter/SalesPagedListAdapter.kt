@@ -1,4 +1,4 @@
-package com.mawared.mawaredvansale.controller.adapters
+package com.mawared.mawaredvansale.controller.adapters.PagedListAdapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,17 +9,16 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.sales.order.orderslist.OrdersViewModel
-import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
-import com.mawared.mawaredvansale.databinding.OrderRowBinding
+import com.mawared.mawaredvansale.controller.sales.invoices.invoiceslist.InvoicesViewModel
+import com.mawared.mawaredvansale.data.db.entities.sales.Sale
+import com.mawared.mawaredvansale.databinding.InvoiceRowBinding
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import kotlinx.android.synthetic.main.network_state_item.view.*
-import kotlinx.android.synthetic.main.orders_fragment.view.*
 
-class OrderPagedListAdapter(private val viewModel: OrdersViewModel, val context: Context):
-    PagedListAdapter<Sale_Order, RecyclerView.ViewHolder>(OrderDiffCallback()) {
+class SalesPagedListAdapter(private val viewModel: InvoicesViewModel, val context: Context):
+    PagedListAdapter<Sale, RecyclerView.ViewHolder>(DiffCallBack()) {
 
-    val ORDER_VIEW_TYPE = 1
+    val MAIN_VIEW_TYPE = 1
     val NETWORK_VIEW_TYPE = 2
 
     private var networkState: NetworkState? = null
@@ -28,9 +27,9 @@ class OrderPagedListAdapter(private val viewModel: OrdersViewModel, val context:
         //val view: View
         val inflater = LayoutInflater.from(parent.context)
 
-        if(viewType == ORDER_VIEW_TYPE){
-            val bind : OrderRowBinding = DataBindingUtil.inflate(inflater, R.layout.order_row, parent, false)
-            return OrderItemViewHolder(bind.root, bind)
+        if(viewType == MAIN_VIEW_TYPE){
+            val bind : InvoiceRowBinding = DataBindingUtil.inflate(inflater, R.layout.invoice_row, parent, false)
+            return ItemViewHolder(bind.root, bind )
         }else {
             val view = inflater.inflate(R.layout.network_state_item, parent, false)
             return NetworkStateItemViewHolder(view)
@@ -39,8 +38,8 @@ class OrderPagedListAdapter(private val viewModel: OrdersViewModel, val context:
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(getItemViewType(position) == ORDER_VIEW_TYPE){
-            (holder as OrderItemViewHolder).bind(getItem(position), viewModel)
+        if(getItemViewType(position) == MAIN_VIEW_TYPE){
+            (holder as ItemViewHolder).bind(getItem(position), viewModel)
         }else{
             (holder as NetworkStateItemViewHolder).bind(networkState, context)
         }
@@ -58,23 +57,23 @@ class OrderPagedListAdapter(private val viewModel: OrdersViewModel, val context:
         return if(hasExtraRow() && position == itemCount -1){
             NETWORK_VIEW_TYPE
         }else{
-            ORDER_VIEW_TYPE
+            MAIN_VIEW_TYPE
         }
     }
 
-    class OrderDiffCallback: DiffUtil.ItemCallback<Sale_Order>(){
-        override fun areItemsTheSame(oldItem: Sale_Order, newItem: Sale_Order): Boolean {
-            return oldItem.so_id == newItem.so_id
+    class DiffCallBack: DiffUtil.ItemCallback<Sale>(){
+        override fun areItemsTheSame(oldItem: Sale, newItem: Sale): Boolean {
+            return oldItem.sl_Id == newItem.sl_Id
         }
 
-        override fun areContentsTheSame(oldItem: Sale_Order, newItem: Sale_Order): Boolean {
+        override fun areContentsTheSame(oldItem: Sale, newItem: Sale): Boolean {
             return oldItem == newItem
         }
     }
 
-    class OrderItemViewHolder(view: View, private val viewBinding: OrderRowBinding): RecyclerView.ViewHolder(view){
-        fun bind(order: Sale_Order?, viewModel: OrdersViewModel){
-            viewBinding.order = order
+    class ItemViewHolder(view: View, private val viewBinding: InvoiceRowBinding): RecyclerView.ViewHolder(view){
+        fun bind(baseEo: Sale?, viewModel: InvoicesViewModel){
+            viewBinding.sale = baseEo
             viewBinding.viewmodel = viewModel
         }
     }

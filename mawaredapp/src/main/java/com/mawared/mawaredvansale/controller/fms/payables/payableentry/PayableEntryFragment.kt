@@ -2,17 +2,19 @@ package com.mawared.mawaredvansale.controller.fms.payables.payableentry
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
+import android.view.View.OnTouchListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter1
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
-import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.databinding.PayableEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
@@ -132,13 +134,43 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
             }
         })
 
-        // bind customer to autocomplete
-        val customerList = viewModel.customerList.await()
-        customerList.observe(viewLifecycleOwner, Observer { cu ->
-            if(cu == null) return@Observer
-            initCustomerAutocomplete(cu)
+        // Customer autocomplete settings
+        val adapter = CustomerAdapter1(context!!, R.layout.support_simple_spinner_dropdown_item )
 
+        binding.atcCustomer.threshold = 0
+        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 50
+        binding.atcCustomer.setAdapter(adapter)
+        binding.atcCustomer.setOnFocusChangeListener { _, b ->
+            if(b) binding.atcCustomer.showDropDown()
+        }
+
+        binding.atcCustomer.setOnTouchListener(OnTouchListener { v, event ->
+            binding.atcCustomer.showDropDown()
+            false
         })
+        binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
+            viewModel.selectedCustomer = adapter.getItem(position)
+        }
+
+        binding.atcCustomer.addTextChangedListener(object: TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.term.value = s.toString()
+            }
+        })
+        // bind customer to autocomplete
+        viewModel.customerList.observe(viewLifecycleOwner, Observer { cu ->
+            adapter.setCustomers(cu)
+            binding.atcCustomer.showDropDown()
+        })
+
 
         viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
@@ -151,23 +183,6 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         viewModel.setVoucherCode("Payable")
         viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
         llProgressBar?.visibility = View.GONE
-    }
-
-    // init customer autocomplete view
-    private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = CustomerAdapter(context!!,
-            R.layout.support_simple_spinner_dropdown_item,
-            customers
-        )
-        binding.atcCustomer.threshold = 0
-        binding.atcCustomer.setAdapter(adapter)
-        binding.atcCustomer.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcCustomer.showDropDown()
-        }
-        binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
-            viewModel.selectedCustomer = adapter.getItem(position)
-        }
-
     }
 
     override fun clear(code: String) {

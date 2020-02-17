@@ -1,6 +1,7 @@
 package com.mawared.mawaredvansale.services.netwrok
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.mawared.mawaredvansale.data.db.entities.reports.fms.CashbookStatement
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.data.db.entities.inventory.Stockin
@@ -97,7 +98,7 @@ interface ApiService {
     ///// CUSTOMERS
     //////////////////////////////////////////////////////////////////////////////////////////
     @GET(URL_ALL_CUSTOMERS)
-    suspend fun getAllCustomers(@Query("sm_Id") sm_Id: Int): Response<ResponseList<Customer>>
+    suspend fun getAllCustomers(@Query("sm_Id") sm_Id: Int, @Query("term") term: String): Response<ResponseList<Customer>>
 
     @GET(URL_CUSTOMERS_ON_PAGES)
     suspend fun customers_OnPages(@Query("sm_Id") sm_Id: Int?,
@@ -105,7 +106,7 @@ interface ApiService {
                                   @Query("page") page: Int,
                                   @Query("pageSize") pageSize: Int): Response<ResponseList<Customer>>
     @GET(URL_SCHEDULE_CUSTOMERS)
-    suspend fun customers_getSchedule(@Query("sm_Id") sm_Id: Int): Response<ResponseList<Customer>>
+    suspend fun customers_getSchedule(@Query("sm_Id") sm_Id: Int, @Query("term") term: String): Response<ResponseList<Customer>>
 
     @GET(URL_SCHEDULE_CUSTOMERS_ON_PAGES)
     suspend fun customers_getScheduleOnPages(@Query("sm_Id") sm_Id: Int,
@@ -116,7 +117,7 @@ interface ApiService {
     ////
     //////////////////////////////////////////////////////////////////////////////////////////
     @GET(URL_CUSTOMERS_BY_ORG)
-    suspend fun customer_GetByOrg(@Query("sm_Id") sm_Id: Int, @Query("org_Id") org_Id: Int?): Response<ResponseList<Customer>>
+    suspend fun customer_GetByOrg(@Query("sm_Id") sm_Id: Int?, @Query("org_Id") org_Id: Int?, @Query("term") term: String): Response<ResponseList<Customer>>
     @GET(URL_CUSTOMER_BY_Id)
     suspend fun getCustomer_ById(@Query("cu_Id") cu_Id: Int): Response<ResponseSingle<Customer>>
 
@@ -387,6 +388,31 @@ interface ApiService {
     @GET(URL_TRANSFER_GET_BY_MASTER_ID)
     suspend fun transfer_GetItemsByMasterId(@Query("tr_Id") tr_Id: Int) : Response<ResponseList<Transfer_Items>>
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// REPORTS API
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @GET(URL_CASHBOOK_STATEMENT_ON_PAGES)
+    suspend fun cashbookStatement_OnPages(@Query("userId") userId: Int,
+                                          @Query("dtFrom") dtFrom: String?,
+                                          @Query("dtTo") dtTo: String?,
+                                          @Query("page") page: Int,
+                                          @Query("pageSize") pageSize: Int): Response<ResponseList<CashbookStatement>>
+
+    @GET(URL_SALES_STATEMENT_ON_PAGES)
+    suspend fun salesStatement_OnPages(@Query("userId") userId: Int,
+                                       @Query("dtFrom") dtFrom: String?,
+                                       @Query("dtTo") dtTo: String?,
+                                       @Query("page") page: Int,
+                                       @Query("pageSize") pageSize: Int): Response<ResponseList<CashbookStatement>>
+
+    @GET(URL_INVENTORY_STATEMENT_ON_PAGES)
+    suspend fun inventoryStatement_OnPages(@Query("wr_Id") wr_Id: Int,
+                                           @Query("dtFrom") dtFrom: String?,
+                                           @Query("dtTo") dtTo: String?,
+                                           @Query("page") page: Int,
+                                           @Query("pageSize") pageSize: Int): Response<ResponseList<CashbookStatement>>
+
+
     companion object{
         operator fun invoke(connectivityInterceptor: ConnectivityInterceptor) : ApiService{
 
@@ -406,7 +432,7 @@ interface ApiService {
             // define okHttpclient for checking if connection is available or not
             val okHttpclient = OkHttpClient.Builder()
                 .addInterceptor(connectivityInterceptor)
-                .connectTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(120, TimeUnit.SECONDS)
                 .build()
 
 

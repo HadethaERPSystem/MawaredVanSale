@@ -2,19 +2,50 @@ package com.mawared.mawaredvansale.services.repositories.transfer
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer_Items
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.ApiException
 import com.mawared.mawaredvansale.utilities.NoConnectivityException
+import com.mawared.mawaredvansale.utilities.POST_PER_PAGE
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 
 class TransferRepositoryImp(private val api: ApiService): ITransferRepository, SafeApiRequest() {
     var job: CompletableJob? = null
+
+    lateinit var pagedList: LiveData<PagedList<Transfer>>
+    lateinit var transferDataSourceFactory: TransferDataSourceFactory
+
+    private val _networkState = MutableLiveData<NetworkState>()
+    override val networkState: LiveData<NetworkState>
+        get() = _networkState
+
+    override fun fetchLivePagedList(userId: Int): LiveData<PagedList<Transfer>> {
+        transferDataSourceFactory = TransferDataSourceFactory(api, userId)
+
+
+        val config: PagedList.Config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setPageSize(POST_PER_PAGE)
+            .build()
+
+        pagedList = LivePagedListBuilder(transferDataSourceFactory, config).build()
+
+        return pagedList
+    }
+
+    override fun getPagedNetworkState(): LiveData<NetworkState> {
+        return Transformations.switchMap<TransferDataSource, NetworkState>(transferDataSourceFactory.transferLiveDataSource, TransferDataSource::networkState)
+    }
 
     override fun saveOrUpdate(baseEo: Transfer): LiveData<Transfer> {
         job = Job()

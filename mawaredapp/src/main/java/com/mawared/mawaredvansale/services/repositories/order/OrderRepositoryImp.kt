@@ -27,28 +27,25 @@ class OrderRepositoryImp(private val api: ApiService): IOrderRepository, SafeApi
 
     lateinit var orderPagedList: LiveData<PagedList<Sale_Order>>
     lateinit var orderDataSourceFactory: OrderDataSourceFactory
-    //var networkStateLiveData: LiveData<NetworkState>? = null
+
     override fun fetchLiveOrdersPagedList(sm_Id: Int, cu_Id: Int?, vo_code: String): LiveData<PagedList<Sale_Order>>{
         orderDataSourceFactory = OrderDataSourceFactory(api, sm_Id, cu_Id, vo_code)
 
-        //networkStateLiveData = Transformations.switchMap<OrderDataSource, NetworkState>(orderDataSourceFactory.orderLiveDataSource, OrderDataSource::networkState)
+
         val config: PagedList.Config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
             .setPageSize(POST_PER_PAGE)
             .build()
 
         orderPagedList = LivePagedListBuilder(orderDataSourceFactory, config).build()
+
         return orderPagedList
     }
 
-//    fun getNetworkState(): LiveData<NetworkState>{
-//        return Transformations.switchMap<OrderDataSource, NetworkState>(orderDataSourceFactory.orderLiveDataSource, OrderDataSource::networkState)
-//
-//    }
-
     private val _networkState = MutableLiveData<NetworkState>()
     override val networkState: LiveData<NetworkState>
-        get() = _networkState
+        get() =  _networkState
+
 
     override fun getOrderNetworkState(): LiveData<NetworkState> {
         return Transformations.switchMap<OrderDataSource, NetworkState>(orderDataSourceFactory.orderLiveDataSource, OrderDataSource::networkState)

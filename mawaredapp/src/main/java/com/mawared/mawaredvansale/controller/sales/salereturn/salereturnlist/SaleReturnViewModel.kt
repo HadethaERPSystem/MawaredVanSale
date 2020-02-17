@@ -3,10 +3,12 @@ package com.mawared.mawaredvansale.controller.sales.salereturn.salereturnlist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.paging.PagedList
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.salereturn.ISaleReturnRepository
 
 class SaleReturnViewModel(private val repository: ISaleReturnRepository) : BaseViewModel() {
@@ -15,10 +17,18 @@ class SaleReturnViewModel(private val repository: ISaleReturnRepository) : BaseV
 
     private val _cu_id: MutableLiveData<Int> = MutableLiveData()
 
-    val saleReturns: LiveData<List<Sale_Return>> = Transformations
+    val saleReturns: LiveData<PagedList<Sale_Return>> = Transformations
         .switchMap(_cu_id){
-            repository.getSaleReturn(_sm_id, it)
+            repository.fetchLivePagedList(_sm_id, it)
         }
+
+    val networkStateRV: LiveData<NetworkState> by lazy {
+        repository.getPagedNetworkState()
+    }
+
+    fun listIsEmpty():Boolean{
+        return saleReturns.value?.isEmpty() ?: true
+    }
 
     private val _sr_Id_for_delete: MutableLiveData<Int> = MutableLiveData()
     val deleteRecord: LiveData<String> = Transformations

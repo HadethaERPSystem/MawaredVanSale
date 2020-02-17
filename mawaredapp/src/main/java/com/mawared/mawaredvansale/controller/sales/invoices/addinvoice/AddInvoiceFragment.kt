@@ -7,6 +7,8 @@ import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -17,9 +19,11 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.itextpdf.text.BaseColor
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
+import android.view.View.OnTouchListener
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter1
 import com.mawared.mawaredvansale.controller.adapters.atc_prod_expiry_Adapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.controller.common.printing.*
@@ -30,6 +34,7 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
 import com.mawared.mawaredvansale.databinding.AddInvoiceFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -63,7 +68,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        loadLocale()
+        //loadLocale()
         val view = inflater.inflate(R.layout.add_invoice_fragment, container, false)
 
         // initialize binding
@@ -202,18 +207,59 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
         })
 
         viewModel.invoiceItems.observe(viewLifecycleOwner, Observer {
-            llProgressBar?.visibility = View.GONE
             if(it == null) return@Observer
             initRecyclerView(it.toInvoiceItemRow())
             viewModel.setTotals()
         })
 
-        // bind customer to autocomplete
-        val customerList = viewModel.customerList.await()
-        customerList.observe(viewLifecycleOwner, Observer { cu ->
-            if(cu == null) return@Observer
-            initCustomerAutocomplete(cu)
+        // Customer autocomplete settings
+        val adapter = CustomerAdapter1(context!!, R.layout.support_simple_spinner_dropdown_item )
 
+        binding.atcCustomer.threshold = 0
+        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 50
+        binding.atcCustomer.setAdapter(adapter)
+        binding.atcCustomer.setOnFocusChangeListener { _, b ->
+            if(b) binding.atcCustomer.showDropDown()
+        }
+
+        binding.atcCustomer.setOnTouchListener(OnTouchListener { v, event ->
+            binding.atcCustomer.showDropDown()
+            false
+        })
+
+        binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
+            viewModel.allowed_select_prod.value = true
+            viewModel.selectedCustomer = adapter.getItem(position)
+            if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_Id){
+                viewModel.clearItems()
+            }
+            viewModel.setPriceCategory()
+            viewModel.setTerm("")
+        }
+
+        binding.atcCustomer.addTextChangedListener(object: TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.term.value = s.toString()
+            }
+        })
+        // bind customer to autocomplete
+        viewModel.customerList.observe(viewLifecycleOwner, Observer { cu ->
+            if(cu != null){
+                adapter.setCustomers(cu)
+                binding.atcCustomer.showDropDown()
+            }
+        })
+
+        viewModel.networkState.observe(viewLifecycleOwner, Observer {
+            progress_bar_sale.visibility =  if(it == NetworkState.LOADING) View.VISIBLE else View.GONE
         })
 
         // bind products to autocomplete
@@ -262,30 +308,6 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
         return this.map {
             InvoiceItemRow(it, viewModel)
         }
-    }
-
-    // init customer autocomplete view
-    private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = CustomerAdapter(context!!,
-            R.layout.support_simple_spinner_dropdown_item,
-            customers
-        )
-        binding.atcCustomer.threshold = 0
-        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels
-        binding.atcCustomer.setAdapter(adapter)
-        binding.atcCustomer.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcCustomer.showDropDown()
-        }
-        binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
-            viewModel.allowed_select_prod.value = true
-            viewModel.selectedCustomer = adapter.getItem(position)
-            if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_Id){
-                viewModel.clearItems()
-            }
-            viewModel.setPriceCategory()
-            viewModel.setTerm("")
-        }
-
     }
 
     // init product autocomplete view
@@ -343,16 +365,16 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
     }
 
     override fun onStarted() {
-        llProgressBar?.visibility = View.VISIBLE
+        progress_bar_sale?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        llProgressBar?.visibility = View.GONE
+        progress_bar_sale?.visibility = View.GONE
         addInvoice_layout?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        llProgressBar?.visibility = View.GONE
+        progress_bar_sale?.visibility = View.GONE
         addInvoice_layout?.snackbar(message)
     }
 

@@ -17,6 +17,6 @@ class CustomerRepository(
     suspend fun deleteAll() = db.getCustomerDao().deleteAll()
 
     suspend fun getBySalesman(sm_Id: Int) : ResponseList<Customer> {
-        return apiRequest { api.getAllCustomers(sm_Id) }
+        return apiRequest { api.getAllCustomers(sm_Id, "") }
     }
 }

@@ -14,10 +14,10 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.invoices.IInvoiceRepository
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.utilities.Coroutines
-import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -71,12 +71,19 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
             saleRepository.getInvoice(it)
         }
 
-    val customerList by lazyDeferred { masterDataRepository.customers_getSchedule(_sm_id)  }
+    var term: MutableLiveData<String> = MutableLiveData()
+    val customerList : LiveData<List<Customer>> = Transformations.switchMap(term) {
+        masterDataRepository.customers_getSchedule(_sm_id, it)
+    }
 
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
             masterDataRepository.getProducts(it, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
+    }
+
+    val networkState: LiveData<NetworkState> by lazy {
+        saleRepository.networkState
     }
 
     var rate : Double = 0.00

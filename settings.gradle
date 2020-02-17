@@ -1,2 +1,2 @@
-include ':mawaredapp', ':library'
+include ':mawaredapp', ':library', ':tableview'
 rootProject.name='MawaredVanSale'

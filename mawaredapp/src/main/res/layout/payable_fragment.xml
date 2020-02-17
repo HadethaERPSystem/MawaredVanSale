@@ -23,10 +23,19 @@
                 android:id="@+id/rcv_payable"/>
 
         <include
-            android:id="@+id/llProgressBar"
-            android:visibility="visible"
+            android:id="@+id/progress_bar_payable"
+            android:visibility="gone"
             layout="@layout/layout_progress_bar_with_text"
             />
+
+        <TextView
+            android:id="@+id/txt_error_payable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="@string/lbl_error"
+            android:visibility="gone"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

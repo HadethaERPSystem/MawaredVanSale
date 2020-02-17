@@ -42,6 +42,9 @@
         <action
                 android:id="@+id/action_dashboardFragment_to_transferFragment"
                 app:destination="@id/transferFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_reportsFragment"
+            app:destination="@id/reportsFragment" />
     </fragment>
     <fragment
             android:id="@+id/invoicesFragment"
@@ -249,4 +252,17 @@
                 app:argType="string"
                 android:defaultValue="Add" />
     </fragment>
+    <fragment
+        android:id="@+id/reportsFragment"
+        android:name="com.mawared.mawaredvansale.controller.home.reportsdashboard.ReportsFragment"
+        android:label="ReportsFragment" >
+        <action
+            android:id="@+id/action_reportsFragment_to_cashbookStatementFragment"
+            app:destination="@id/cashbookStatementFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cashbookStatementFragment"
+        android:name="com.mawared.mawaredvansale.controller.reports.fms.CashbookStatementFragment"
+        android:label="cashbook_statement_fragment"
+        tools:layout="@layout/cashbook_statement_fragment" />
 </navigation>

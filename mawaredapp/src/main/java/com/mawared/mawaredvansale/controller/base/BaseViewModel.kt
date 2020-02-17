@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import java.lang.Exception
+import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,6 +42,13 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
 
+    fun NumberFormat(value: Double?): String{
+        if(value == null) return "0.00"
+        val fdec = DecimalFormat("#,00.#")
+        val formatedNumber = fdec.format(value)
+
+        return formatedNumber
+    }
     fun hideKeyboard(activity: Activity){
 
         val inputManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

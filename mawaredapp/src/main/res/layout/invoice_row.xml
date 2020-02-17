@@ -167,6 +167,116 @@
                     tools:ignore="SmallSp"
                     tools:text="بغداد / الامين" />
 
+            <!-- Totals -->
+            <TextView
+                android:id="@+id/lbl_total_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:text="@string/lbl_total"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline12"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sale_customer_name"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/total_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:text="@{String.valueOf(sale.sl_total_amount)}"
+                android:textColor="@android:color/black"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/guideline12"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_total_name"
+                tools:ignore="SmallSp"
+                tools:text="" />
+
+            <TextView
+                android:id="@+id/lbl_discount_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+
+                android:text="@string/lbl_total_discount"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline18"
+                app:layout_constraintStart_toEndOf="@+id/lbl_total_name"
+                app:layout_constraintTop_toTopOf="@+id/lbl_total_name"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/total_dis_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:text="@{String.valueOf(sale.sl_total_discount)}"
+                android:textColor="@android:color/black"
+
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/guideline18"
+                app:layout_constraintStart_toStartOf="@+id/guideline12"
+                app:layout_constraintTop_toTopOf="@+id/total_name"
+                tools:ignore="SmallSp"
+                tools:text="" />
+
+            <TextView
+                android:id="@+id/lbl_net_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:paddingStart="2dp"
+
+                android:paddingEnd="2dp"
+                android:text="@string/lbl_total"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline18"
+                app:layout_constraintTop_toTopOf="@+id/lbl_discount_name"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/net_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:text="@{String.valueOf(sale.sl_net_amount)}"
+                android:textColor="@android:color/black"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline18"
+                app:layout_constraintTop_toTopOf="@+id/total_dis_name"
+                tools:ignore="SmallSp"
+                tools:text="" />
             <!-- Buttons for view, edit & delete -->
             <View
                     android:id="@+id/view"
@@ -174,7 +284,7 @@
                     android:layout_height="2dp"
                     android:layout_marginTop="8dp"
                     android:background="@color/colorPrimaryDark"
-                    app:layout_constraintTop_toBottomOf="@+id/sale_region_name"
+                    app:layout_constraintTop_toBottomOf="@+id/total_name"
                     tools:layout_editor_absoluteX="0dp" />
 
             <ImageButton
@@ -234,6 +344,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     app:layout_constraintGuide_percent="0.5" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.35" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.65" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>

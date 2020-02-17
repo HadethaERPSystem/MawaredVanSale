@@ -16,12 +16,14 @@ import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.databinding.DashboardFragmentBinding
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.mawared.update.AppUtils
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.dashboard_fragment.*
+import kotlinx.android.synthetic.main.orders_fragment.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -39,10 +41,7 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
 
     lateinit var navController: NavController
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,  savedInstanceState: Bundle?): View? {
         val binding: DashboardFragmentBinding =
             DataBindingUtil.inflate(inflater, R.layout.dashboard_fragment, container, false)
 
@@ -74,9 +73,14 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
 
     private fun bindUI() = Coroutines.main {
         //progress_bar.show()
-        viewModel.menus.await().observe(viewLifecycleOwner, Observer {
+        viewModel.menus.observe(viewLifecycleOwner, Observer {
             //progress_bar.hide()
             initRecyclerView(it.toMenuItem())
+        })
+
+        viewModel.networkState.observe(viewLifecycleOwner, Observer {
+            progress_bar_menu.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+            txt_error_menu.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
         })
     }
 
@@ -169,7 +173,7 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
                 navController.navigate(R.id.action_dashboardFragment_to_customerFragment)
             }
             "Reports"->{
-
+                navController.navigate(R.id.action_dashboardFragment_to_reportsFragment)
             }
             "Settings" ->{
                 navController.navigate(R.id.action_dashboardFragment_to_settingsFragment)

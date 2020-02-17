@@ -21,8 +21,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
-import com.mawared.mawaredvansale.BuildConfig
 import com.mawared.mawaredvansale.R
+import com.xwray.groupie.BuildConfig
 import kotlinx.android.synthetic.main.activity_real_location.*
 import java.text.DateFormat
 import java.util.*

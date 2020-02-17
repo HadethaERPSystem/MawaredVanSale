@@ -2,6 +2,8 @@ package com.mawared.mawaredvansale.controller.sales.psorder.psorderentry
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -12,6 +14,7 @@ import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.AutoCompleteProductAdapter
 import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter
+import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter1
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.data.db.entities.md.Product
@@ -19,10 +22,12 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order_Items
 import com.mawared.mawaredvansale.databinding.PsorderEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.add_order_fragment.*
+import kotlinx.android.synthetic.main.psorders_fragment.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -130,18 +135,57 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
         })
 
         viewModel.soItems.observe(viewLifecycleOwner, Observer {
-            llProgressBar?.visibility = View.GONE
             if(it == null) return@Observer
             initRecyclerView(it.toOrderItemRow())
             viewModel.setTotals()
         })
 
-        // bind customer to autocomplete
-        val customerList = viewModel.customerList.await()
-        customerList.observe(viewLifecycleOwner, Observer { cu ->
-            if(cu == null) return@Observer
-            initCustomerAutocomplete(cu)
+        // Customer autocomplete settings
+        val adapter = CustomerAdapter1(context!!, R.layout.support_simple_spinner_dropdown_item )
 
+        binding.atcCustomer.threshold = 0
+        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 50
+        binding.atcCustomer.setAdapter(adapter)
+        binding.atcCustomer.setOnFocusChangeListener { _, b ->
+            if(b) binding.atcCustomer.showDropDown()
+        }
+
+        binding.atcCustomer.setOnTouchListener(View.OnTouchListener { v, event ->
+            binding.atcCustomer.showDropDown()
+            false
+        })
+
+        binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
+            viewModel.allowed_select_prod.value = true
+            viewModel.selectedCustomer = adapter.getItem(position)
+            if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_Id){
+                viewModel.clearItems()
+            }
+            viewModel.setPriceCategory()
+            viewModel.setTerm("")
+        }
+
+        binding.atcCustomer.addTextChangedListener(object: TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.term.value = s.toString()
+            }
+        })
+        // bind customer to autocomplete
+        viewModel.customerList.observe(viewLifecycleOwner, Observer { cu ->
+            adapter.setCustomers(cu)
+            binding.atcCustomer.showDropDown()
+        })
+
+        viewModel.networkState.observe(viewLifecycleOwner, Observer {
+            progress_bar_psorder.visibility =  if(it == NetworkState.LOADING) View.VISIBLE else View.GONE
         })
 
         // bind products to autocomplete
@@ -262,17 +306,17 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
     }
 
     override fun onStarted() {
-        llProgressBar?.visibility = View.VISIBLE
+        progress_bar_psorder?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
         add_order_layout?.snackbar(message)
-        llProgressBar?.visibility = View.GONE
+        progress_bar_psorder?.visibility = View.GONE
     }
 
     override fun onFailure(message: String) {
         add_order_layout?.snackbar(message)
-        llProgressBar?.visibility = View.GONE
+        progress_bar_psorder?.visibility = View.GONE
     }
 
     override fun onDestroy() {

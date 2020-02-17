@@ -90,7 +90,7 @@ class DownloadRepository(
     // Customer
     //========================================================================================
     private suspend fun getCustomers(sm_Id: Int): ResponseList<Customer>{
-        return apiRequest { api.getAllCustomers(sm_Id) }
+        return apiRequest { api.getAllCustomers(sm_Id, "") }
     }
 
     private suspend fun insertCustomers(baseEoList: List<Customer>) = db.getCustomerDao().insert(baseEoList)

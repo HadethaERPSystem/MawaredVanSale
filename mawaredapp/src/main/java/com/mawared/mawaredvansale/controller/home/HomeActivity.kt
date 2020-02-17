@@ -55,7 +55,7 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadLocale()// call loadLocale
+        //loadLocale()// call loadLocale
 
         setContentView(R.layout.activity_home)
 
