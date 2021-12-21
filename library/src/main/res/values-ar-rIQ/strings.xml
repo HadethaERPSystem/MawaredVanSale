@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="android_auto_update_dialog_title">التحقق من وجود نسخه جديدة</string>
+    <string name="android_msg_version">الاصدار الحالي لتطبيق موارد[%d]\nالاصدار الجديد لتطبيق موارد [%d]\nهذا الاصدار متوافق مع الاجهزة التي تعمل بنظام اندرويد اصدار 7.0 فما فوق</string>
+    <string name="android_auto_update_dialog_title">يوجد اصدار جديد</string>
 
     <string name="android_auto_update_notify_ticker">يوجد اصدار جديد, اضغط للتحديث</string>
     <string name="android_auto_update_notify_content">يوجد اصدار جديد, اضغط للتحديث</string>

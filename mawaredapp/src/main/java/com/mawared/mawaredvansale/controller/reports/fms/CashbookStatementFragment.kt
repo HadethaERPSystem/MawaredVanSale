@@ -11,8 +11,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
+import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.CashbookPagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.pagination.reports.CashbookPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.reports.fms.ReportRowHeader
 import com.mawared.mawaredvansale.databinding.CashbookStatementFragmentBinding
@@ -37,6 +38,7 @@ class CashbookStatementFragment : ScopedFragment(), KodeinAware, IDateRangePicke
     private lateinit var binding: CashbookStatementFragmentBinding
 
     private lateinit var navController: NavController
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.cashbook_statement_fragment, container, false)
@@ -45,8 +47,6 @@ class CashbookStatementFragment : ScopedFragment(), KodeinAware, IDateRangePicke
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_cashbook_statement_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
         bindUI()
         return binding.root
     }
@@ -59,8 +59,6 @@ class CashbookStatementFragment : ScopedFragment(), KodeinAware, IDateRangePicke
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_cashbook_statement_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
     }
 
     // inflate the menu
@@ -80,29 +78,13 @@ class CashbookStatementFragment : ScopedFragment(), KodeinAware, IDateRangePicke
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        removeObservers()
-        super.onResume()
-    }
-
-    override fun onStop() {
-        removeObservers()
-        super.onStop()
-    }
-
-    private fun removeObservers(){
-//        viewModel.orders.removeObservers(this)
-//        viewModel.deleteRecord.removeObservers(this)
-//        viewModel.networkStateRV.removeObservers(this)
-    }
-
     override fun fromDatePicker(v: View) {
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val dpd = DatePickerDialog(context!!, DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+        val dpd = DatePickerDialog(requireContext(), DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
 
             viewModel.dtFrom.value = "${yr}-${monthOfYear + 1}-${dayOfMonth}"
             viewModel.doSearch()
@@ -116,7 +98,8 @@ class CashbookStatementFragment : ScopedFragment(), KodeinAware, IDateRangePicke
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val dpd = DatePickerDialog(context!!, DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+        val dpd = DatePickerDialog(requireContext(), DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+
 
             viewModel.dtTo.value = "${yr}-${monthOfYear + 1}-${dayOfMonth}"
             viewModel.doSearch()
@@ -127,15 +110,9 @@ class CashbookStatementFragment : ScopedFragment(), KodeinAware, IDateRangePicke
 
     private fun bindUI() = GlobalScope.launch(Main){
         try {
-            val pageAdapter = CashbookPagedListAdapter(viewModel, activity!!)
-            val gridLayoutManager = GridLayoutManager(activity!!, 1)
-            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    val viewType = pageAdapter.getItemViewType(position)
-                    if (viewType == pageAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
-                    else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
-                }
-            }
+            val pageAdapter = CashbookPagedListAdapter(viewModel, requireActivity())
+            val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
+
             rcv_cbStatement.apply {
                 layoutManager = gridLayoutManager
                 setHasFixedSize(true)
@@ -144,24 +121,34 @@ class CashbookStatementFragment : ScopedFragment(), KodeinAware, IDateRangePicke
             val header =
                 ReportRowHeader(
                     "#",
-                    "Customer Name",
-                    "Receive Amount",
-                    "Pay Amount",
-                    "Balance"
+                    "${resources.getString(R.string.lbl_customer_name)}",
+                    "${resources.getString(R.string.rpt_received_amount)} ${App.prefs.saveUser?.cr_code}",
+                    "${resources.getString(R.string.rpt_paid_amount)} ${App.prefs.saveUser?.cr_code}",
+                    "${resources.getString(R.string.rpt_amount_balance)} ${App.prefs.saveUser?.cr_code}"
                 )
             pageAdapter.setHeader(header)
             viewModel.cbsItems.observe(viewLifecycleOwner, Observer {
-                pageAdapter.submitList(it)
+                if(it != null){
+                    pageAdapter.submitList(it)
+                }
             })
 
-            viewModel.dtFrom.postValue(null)
-            viewModel.networkState.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.doSearch()
+            viewModel.networkState.observe(viewLifecycleOwner, Observer {
                 progress_bar_cashbook.visibility = if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-                txt_error_cashbook.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+                if (viewModel.listIsEmpty() && (it == NetworkState.ERROR || it == NetworkState.NODATA)) {
+                    val pack = requireContext().packageName
+                    val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                    viewModel.errorMessage.value = resources.getString(id)
+                    txt_error_cashbook.visibility = View.VISIBLE
+                } else {
+                    txt_error_cashbook.visibility = View.GONE
+                }
 
                 if(!viewModel.listIsEmpty()){
                     pageAdapter.setNetworkState(it)
                 }
+
             })
         }catch (ex: Exception){
             Log.i("Exc", "Error is ${ex.message}")

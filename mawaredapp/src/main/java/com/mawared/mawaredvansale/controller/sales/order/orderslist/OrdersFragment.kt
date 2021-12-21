@@ -2,7 +2,6 @@ package com.mawared.mawaredvansale.controller.sales.order.orderslist
 
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -10,13 +9,13 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.OrderPagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.pagination.OrderPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
 import com.mawared.mawaredvansale.databinding.OrdersFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.services.repositories.NetworkState
+import com.mawared.mawaredvansale.services.repositories.Status
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.orders_fragment.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -32,14 +31,14 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
 
     private val factory: OrdersViewModelFactory by instance()
 
-    private lateinit var viewModel: OrdersViewModel
+    val viewModel by lazy {
+        ViewModelProviders.of(this, factory).get(OrdersViewModel::class.java)
+    }
     private lateinit var binding: OrdersFragmentBinding
 
     private lateinit var navController: NavController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        viewModel = ViewModelProviders.of(this, factory).get(OrdersViewModel::class.java)
 
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.orders_fragment, container, false)
@@ -47,23 +46,49 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
         viewModel.navigator = this
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
+
+        removeObservers()
         bindUI()
+        binding.pullToRefresh.setOnRefreshListener {
+            viewModel.refresh()
+            binding.pullToRefresh.isRefreshing = false
+        }
+        binding.btnReload.setOnClickListener { viewModel.refresh() }
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        removeObservers()
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_order_list_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
+     }
+
+    override fun onResume() {
+        removeObservers()
+        super.onResume()
     }
 
+    override fun onStop() {
+        removeObservers()
+        super.onStop()
+    }
+
+    private fun removeObservers(){
+        viewModel.orders.removeObservers(this)
+        viewModel.deleteRecord.removeObservers(this)
+        //viewModel.networkStateRV.removeObservers(this)
+    }
+
+    override fun onDestroyView() {
+        removeObservers()
+        onDestroy()
+        super.onDestroyView()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
+        super.onCreate(savedInstanceState)
+    }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_menu, menu)
@@ -83,26 +108,10 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        removeObservers()
-        super.onResume()
-    }
-
-    override fun onStop() {
-        removeObservers()
-        super.onStop()
-    }
-
-    private fun removeObservers(){
-        viewModel.orders.removeObservers(this)
-        viewModel.deleteRecord.removeObservers(this)
-        viewModel.networkStateRV.removeObservers(this)
-    }
-
     private fun bindUI() = GlobalScope.launch(Main) {
 
-        val pagedAdapter = OrderPagedListAdapter(viewModel, activity!!)
-        val gridLayoutManager = GridLayoutManager(activity!!, 1)
+        val pagedAdapter = OrderPagedListAdapter(viewModel, requireActivity())
+        val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
             override fun getSpanSize(position: Int): Int {
                 val viewType = pagedAdapter.getItemViewType(position)
@@ -121,7 +130,6 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
                 pagedAdapter.submitList(it)
             }
         })
-        viewModel.setCustomer(null)
 
         viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
 
@@ -134,9 +142,20 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
             }
         })
 
+        viewModel.setCustomer(null)
+
         viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-            progress_bar_order.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-            txt_error_order.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+            progress_bar.visibility =  if(viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
+            if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
+                val pack = requireContext().packageName
+                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                ll_error.visibility = View.VISIBLE
+                rcv_orders.visibility = View.GONE
+            } else {
+                ll_error.visibility = View.GONE
+                rcv_orders.visibility = View.VISIBLE
+            }
 
             if(!viewModel.listIsEmpty()){
                 pagedAdapter.setNetworkState(it)
@@ -169,10 +188,10 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
 
 
     override fun onItemDeleteClick(baseEo: Sale_Order) {
-        showDialog(context!!, getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo){
+        showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             onStarted()
             viewModel.confirmDelete(it)
-        }
+        })
     }
 
     override fun onItemEditClick(baseEo: Sale_Order) {
@@ -191,15 +210,16 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Order>
 
     override fun onStarted() {
         //llProgressBar?.visibility = View.VISIBLE
+        progress_bar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        //llProgressBar?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         order_list_cl.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        //llProgressBar?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         order_list_cl.snackbar(message)
     }
 

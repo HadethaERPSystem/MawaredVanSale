@@ -33,7 +33,7 @@ abstract class ScopedFragment : Fragment(), CoroutineScope {
         job.cancel()
     }
 
-    fun <T> showDialog(context: Context, title: String, msg: String, baseEo: T, doRun: (obj: T) -> Unit) {
+    fun <T> showDialog(context: Context, title: String, msg: String, baseEo: T, doRun: (obj: T) -> Unit, doCancel:(()->Unit)={}) {
         AlertDialog.Builder(context).apply {
             setTitle(title)
             setMessage(msg)
@@ -42,17 +42,17 @@ abstract class ScopedFragment : Fragment(), CoroutineScope {
             }
 
             setNegativeButton("Cancel") { _, _ ->
-                //pass
+                doCancel()
             }
-        }.create().show()
+        }.setCancelable(false).create().show()
     }
 
     fun hideKeyboard(){
 
-        val inputManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         if(inputManager.isAcceptingText){
-            inputManager.hideSoftInputFromWindow(view!!.windowToken, 0)
+            inputManager.hideSoftInputFromWindow(requireView().windowToken, 0)
         }
     }
 
@@ -61,7 +61,7 @@ abstract class ScopedFragment : Fragment(), CoroutineScope {
         Locale.setDefault(locale)
         val config = Configuration()
         config.locale = locale
-        activity!!.resources.updateConfiguration(config, activity!!.resources.displayMetrics)
+        requireActivity().resources.updateConfiguration(config, requireActivity().resources.displayMetrics)
 
         App.prefs.systemLanguage = lang
 

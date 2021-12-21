@@ -9,7 +9,10 @@ import androidx.lifecycle.Transformations
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
-import com.mawared.mawaredvansale.data.db.entities.md.*
+import com.mawared.mawaredvansale.data.db.entities.md.Currency_Rate
+import com.mawared.mawaredvansale.data.db.entities.md.Customer
+import com.mawared.mawaredvansale.data.db.entities.md.Product
+import com.mawared.mawaredvansale.data.db.entities.md.Voucher
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return_Items
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
@@ -17,7 +20,6 @@ import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.services.repositories.salereturn.ISaleReturnRepository
 import com.mawared.mawaredvansale.utilities.Coroutines
-import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -30,19 +32,23 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     var addNavigator: IAddNavigator<Sale_Return_Items>? = null
     var allowed_select_prod: MutableLiveData<Boolean> = MutableLiveData(false)
     var isRunning: Boolean = false
+    var pr_is_batch_no: String? = null
+    var visible = View.VISIBLE
     // google map location GPS
     var location: Location? = null
     var resources: Resources? = null
 
     // View model properties
-    private var rowNo: Int = 0
+    var rowNo: Int = 0
 
     var doc_no: MutableLiveData<String> = MutableLiveData()
     var doc_date = MutableLiveData<String>()
+    var doc_expiry = MutableLiveData<String>()
+    var doc_unit_price = MutableLiveData<String>()
     var totalAmount : MutableLiveData<Double> = MutableLiveData()
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
-    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
 
      var tmpSRItems: ArrayList<Sale_Return_Items> = arrayListOf()
     var tmpDeletedItems: ArrayList<Sale_Return_Items> = arrayListOf()
@@ -78,11 +84,17 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
-            masterdataRepository.getProducts(it, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
+            masterdataRepository.getProductsBySearch(it)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
         }
 
+    var selectedInvoice: Product? = null
+    private val _term1: MutableLiveData<String> = MutableLiveData()
+    val InvoicesList: LiveData<List<Product>> = Transformations
+        .switchMap(_term1){
+            masterdataRepository.getProducts_InvoicesByCustomer(selectedCustomer!!.cu_ref_Id!!, selectedProduct!!.pr_Id, it)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
+        }
 
-    var rate : Double = 0.00
+    var rate : Double = 0.0
     private val _cr_Id: MutableLiveData<Int> = MutableLiveData()
     val currencyRate: LiveData<Currency_Rate> = Transformations
         .switchMap(_cr_Id) {
@@ -96,9 +108,12 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             masterdataRepository.getVoucherByCode(it)
         }
 
-    var unitPrice : Double = 0.00
+    var unitPrice : Double = 0.0
     var price_cat_code = "POS"
-
+    var invQty : Double = 0.0
+    var ref_rowNo : Int? = 0
+    var ref_Id : Int? = null
+    var ref_no : String? = null
     // function to set value
     fun setId(id: Int){
         if(_id.value == id){
@@ -112,6 +127,10 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             return
         }
         _term.value = term
+    }
+
+    fun setInvoices(term: String){
+        _term1.value = term
     }
 
     fun setVoucherCode(vo_code: String){
@@ -136,7 +155,9 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         if(items != null && items == _srItems){
             return
         }
-        _srItems.value = items
+        _srItems.value = items ?: arrayListOf()
+        if(items != null)
+            tmpSRItems.addAll(items)
     }
     //////////// button operation
     fun onSave(){
@@ -148,11 +169,14 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 val netAmount: Double = tmpSRItems.sumByDouble { it.srd_line_total!! }
                 val strDate = LocalDateTime.now()
                 val dtFull = doc_date.value + " " + LocalTime.now()
+                val doc_num = doc_no.value?.toInt() ?: 0
+                val cu_Id = selectedCustomer?.cu_ref_Id ?: _entityEo?.sr_customerId
+                val cu_price_cat_Id = selectedCustomer?.cu_price_cat_Id ?: _entityEo?.sr_price_cat_Id
                 val baseEo = Sale_Return(
-                    user.cl_Id, user.org_Id,0, dtFull,
+                    user.cl_Id, user.org_Id,doc_num, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, selectedCustomer!!.cu_ref_Id, null, totalAmount, netAmount, user.sl_cr_Id, user.cr_Id, rate,
-                    null, false,0, location?.latitude, location?.longitude, selectedCustomer!!.cu_price_cat_Id,"$strDate",
+                    _sm_id, cu_Id, null, totalAmount, netAmount, user.ss_cr_Id, user.sf_cr_Id, rate,
+                    null, false,0, location?.latitude, location?.longitude, cu_price_cat_Id,"$strDate",
                     "${user.id}", "$strDate", "${user.id}"
                 )
                 baseEo.sr_price_cat_code = price_cat_code
@@ -163,12 +187,14 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                     baseEo.sr_rate = _entityEo!!.sr_rate
                 }
                 baseEo.items.addAll(tmpSRItems)
-
+                if(tmpDeletedItems.count() > 0){
+                    baseEo.items_deleted.addAll(tmpDeletedItems)
+                }
                 Coroutines.main {
                     try {
                         val response = repository.SaveOrUpdate(baseEo)
                         if(response.isSuccessful){
-                            _baseEo.value = response.data
+                            _baseEo.value = response.data!!
                             isRunning = false
                         }
                         else{
@@ -195,7 +221,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         if (doc_date.value == null) {
             msg = resources!!.getString(R.string.msg_error_invalid_date)
         }
-        if (selectedCustomer == null) {
+        if (selectedCustomer == null && _entityEo == null) {
             msg += (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_no_customer)
         }
 
@@ -219,7 +245,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         doc_date.value = "${LocalDate.now()}"
         tmpSRItems.clear()
         rowNo = 0
-        searchBarcode.value = null
+        searchBarcode.value = ""
         searchQty.value = "1"
         unitPrice = 0.00
         price_cat_code = "POS"
@@ -231,12 +257,18 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     fun onAddItem(){
         if(isValidRow()){
             try {
-                createRow() { complete ->
+                createRow { complete ->
                     if(complete){
                         selectedProduct = null
                         searchBarcode.value = ""
                         searchQty.value = ""
-                        unitPrice = 0.00
+                        unitPrice = 0.0
+                        invQty = 0.0
+                        ref_Id = null
+                        ref_no = null
+                        doc_expiry.value = ""
+                        doc_unit_price.value = ""
+                        selectedInvoice = null
                         clear("prod")
                     }else{
                         msgListener?.onFailure(resources!!.getString(R.string.msg_error_fail_add_item))
@@ -251,18 +283,18 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     private fun createRow(complete:(Boolean) -> Unit){
 
         try {
-            rowNo++
             val strDate = LocalDate.now()
-            val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id }
-            val qty = searchQty.value!!.toDouble() + (if(mItem?.srd_pack_qty != null)   mItem.srd_pack_qty!! else 0.00)
+            val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id && it.srd_ref_rowNo == ref_rowNo && it.srd_Id == ref_Id }//&& it.srd_batch_no == selectedInvoice!!.pr_batch_no && it.srd_expiry_date == selectedInvoice!!.pr_expiry_date }
+            val qty = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0 + (if(mItem?.srd_pack_qty != null)   mItem.srd_pack_qty!! else 0.0)
             val lineTotal = unitPrice * qty
             val netTotal = lineTotal
             val user = App.prefs.saveUser
 
             if(mItem == null){
+                rowNo++
                 val itemEo = Sale_Return_Items(0, rowNo, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, qty, 1.00, qty, unitPrice,
-                    lineTotal, 0.00, 0.00, netTotal, null, null, null, _wr_id,null,
-                    selectedProduct!!.pr_batch_no, selectedProduct!!.pr_expiry_date,  selectedProduct!!.pr_mfg_date,"$strDate",
+                    lineTotal, 0.0, 0.0, netTotal, null, null, null, _wr_id, ref_rowNo, ref_Id, ref_no,
+                    selectedInvoice!!.pr_batch_no, selectedInvoice!!.pr_expiry_date,  selectedInvoice!!.pr_mfg_date,"$strDate",
                     "${user?.id}", "$strDate", "${user?.id}")
 
                 itemEo.srd_prod_name = selectedProduct!!.pr_description_ar
@@ -288,19 +320,31 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     private fun isValidRow(): Boolean{
         var isSuccessful = true
         var msg: String? = ""
-
         if(searchQty.value.isNullOrEmpty()){
             msg = resources!!.getString(R.string.msg_error_invalid_qty)
         }else if(!(searchQty.value!!matches("-?\\d+(\\.\\d+)?".toRegex()))){
             msg = resources!!.getString(R.string.msg_error_invalid_qty)
         }
+//        if(pr_is_batch_no == "Y"){
+//            if(doc_expiry.value.isNullOrEmpty()){
+//                msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + "Should enter expire date"
+//            }
+//            if(selectedInvoice == null){
+//                msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + "Should select batch no"
+//            }
+//        }
 
-        if (selectedProduct == null && searchBarcode.value != "") {
-            msg += (if(msg!!.length > 0) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_product)
+        val qty : Double = if(searchQty.value.isNullOrEmpty()) 0.0 else searchQty.value!!.toDouble()
+        if(qty > invQty){
+            msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_return_qty_greater_invqty)
         }
 
-        if (unitPrice == 0.00) {
-            msg += (if(msg!!.length > 0) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_price)
+        if (selectedProduct == null && searchBarcode.value != "") {
+            msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_product)
+        }
+
+        if (unitPrice == 0.0 || unitPrice.toInt() == 0) {
+            msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_price)
         }
 
         if(!msg.isNullOrEmpty()){
@@ -312,9 +356,9 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     }
 
     fun setTotals(){
-        totalAmount.postValue(srItems.value!!.sumByDouble{ it.srd_line_total ?: 0.00 } )
-        totalDiscount.postValue(srItems.value!!.sumByDouble { it.srd_dis_value  ?: 0.00 })
-        netTotal.postValue(srItems.value!!.sumByDouble { it.srd_net_total ?: 0.00 })
+        totalAmount.postValue(srItems.value!!.sumByDouble{ it.srd_line_total ?: 0.0 } )
+        totalDiscount.postValue(srItems.value!!.sumByDouble { it.srd_dis_value  ?: 0.0 })
+        netTotal.postValue(srItems.value!!.sumByDouble { it.srd_net_total ?: 0.0 })
     }
 
     fun onItemDelete(item: Sale_Return_Items) {
@@ -330,6 +374,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             }
         }
         // delete from current list
+        tmpSRItems.remove(baseEo)
         _srItems.value = _srItems.value?.filter { it.srd_rowNo != baseEo.srd_rowNo }
     }
 
@@ -345,6 +390,9 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             }
             "prod"-> {
                 selectedProduct = null
+            }
+            "invoices"->{
+                selectedInvoice = null
             }
         }
         addNavigator?.clear(code)

@@ -3,18 +3,15 @@ package com.mawared.mawaredvansale.controller.common
 import android.content.Context
 import android.text.TextUtils
 import android.util.Log
-
 import print.Print
 import print.PublicFunction
-import java.util.HashMap
+import java.util.*
 
 class PublicAction {
     private var context: Context? = null
     private val CODEPAGE_KHEMR = "Khemr"
 
-    constructor() {
-
-    }
+    constructor()
 
     constructor(con: Context) {
         context = con
@@ -22,8 +19,8 @@ class PublicAction {
 
     fun BeforePrintAction() {
         try {
-            Print.LanguageEncode = "iso8859-8"
-            Print.setCodePage(0)
+            Print.LanguageEncode = "gb2312"
+            //Print.setCodePage(39)
         } catch (e: Exception) {
             Log.e(
                 "Print",

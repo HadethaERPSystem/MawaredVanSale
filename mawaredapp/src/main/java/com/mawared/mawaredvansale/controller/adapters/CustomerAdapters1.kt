@@ -44,30 +44,31 @@ class CustomerAdapter1(context: Context, @LayoutRes private val layoutResource: 
         return binding.root
     }
 
-//    @Suppress("UNCHECKED_CAST")
-//    override fun getFilter(): Filter {
-//        return object : Filter(){
-//            override fun publishResults(constraint: CharSequence?, filterResults: FilterResults?) {
-//                mCustomers = filterResults?.values as List<Customer>
-//                notifyDataSetChanged()
-//            }
-//
-//            override fun performFiltering(constraint: CharSequence?): FilterResults {
-//                val queryString = constraint?.toString()
-//
-//                val filterResult = Filter.FilterResults()
-//                filterResult.values = if(queryString.isNullOrEmpty())
-//                    allCustomers
-//                else
+    @Suppress("UNCHECKED_CAST")
+    override fun getFilter(): Filter {
+        return object : Filter(){
+            override fun publishResults(constraint: CharSequence?, filterResults: FilterResults?) {
+                mCustomers = filterResults?.values as List<Customer>
+                notifyDataSetChanged()
+            }
+
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val queryString = constraint?.toString()
+
+                val filterResult = Filter.FilterResults()
+                filterResult.values = if(queryString.isNullOrEmpty())
+                    allCustomers
+                else
+                    allCustomers
 //                    allCustomers.filter {
 //                        it.cu_name_ar!!.contains(queryString)
 //                    }
-//                return filterResult
-//            }
-//
-//            override fun convertResultToString(resultValue: Any?): CharSequence {
-//                return (resultValue as Customer).cu_name_ar as CharSequence
-//            }
-//        }
-//    }
+                return filterResult
+            }
+
+            override fun convertResultToString(resultValue: Any?): CharSequence {
+                return (resultValue as Customer).cu_name_ar as CharSequence
+            }
+        }
+    }
 }

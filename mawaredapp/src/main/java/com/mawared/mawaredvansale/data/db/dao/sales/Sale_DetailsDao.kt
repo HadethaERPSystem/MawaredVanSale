@@ -14,6 +14,7 @@ interface Sale_DetailsDao : BaseDao<Sale_Items> {
      */
     @Query("SELECT d.sld_id, d.sld_sl_Id, d.sld_rowNo, d.sld_ref_rowNo, d.sld_prod_Id, p.pr_description sld_prod_name, p.pr_barcode sld_barcode," +
                  "       d.sld_uom_Id, '' as sld_uom_name, d.sld_pack_qty, d.sld_pack_size, d.sld_unit_qty, d.sld_unit_price, d.sld_line_total, d.sld_dis_per, d.sld_dis_value," +
+                 "       sld_gift_qty, d.sld_isGift," +
                  "       ((d.sld_unit_price * d.sld_pack_qty) - d.sld_dis_value) sld_net_total, d.sld_lotno, d.sld_isPromotion, d.sld_promotionId, d.sld_warehouseId, d.created_at, d.created_by," +
                  "       d.updated_at, d.updated_by " +
                  " FROM Sale_Items d " +

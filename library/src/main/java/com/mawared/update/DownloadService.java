@@ -48,7 +48,7 @@ public class DownloadService extends IntentService {
             int byteread = 0;
             in = urlConnection.getInputStream();
             File dir = StorageUtils.getCacheDirectory(this);
-            String apkName = urlStr.substring(urlStr.lastIndexOf("/") + 1, urlStr.length());
+            String apkName = urlStr.substring(urlStr.lastIndexOf("/") + 1);
             File apkFile = new File(dir, apkName);
             out = new FileOutputStream(apkFile);
             byte[] buffer = new byte[BUFFER_SIZE];

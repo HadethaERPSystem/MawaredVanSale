@@ -84,8 +84,9 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
         super.onViewCreated(view, savedInstanceState)
 
         if(arguments != null){
-            val args = TransferEntryFragmentArgs.fromBundle(arguments!!)
+            val args = TransferEntryFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
+            if(viewModel.mode == "View") viewModel.visible = View.GONE else viewModel.visible = View.VISIBLE
             if(viewModel.mode != "Add"){
                 viewModel.setId(args.transferId)
             }
@@ -129,7 +130,11 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
 
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.add_menu, menu)
+        if(viewModel.mode == "View"){
+            inflater.inflate(R.menu.view_menu, menu)
+        }else{
+            inflater.inflate(R.menu.add_menu, menu)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -138,16 +143,19 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
         when(item.itemId){
             R.id.save_btn ->{
                 if(!viewModel.isRunning){
+                    viewModel.isRunning = true
                     hideKeyboard()
-                    showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
+                    showDialog(requireContext(), getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null,{
                         onStarted()
                         viewModel.onSave()
-                    }
+                    },{
+                        viewModel.isRunning = false
+                    })
                 }
             }
             R.id.close_btn -> {
                 hideKeyboard()
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -160,7 +168,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
         viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }
@@ -172,7 +180,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
                 viewModel._entityEo = it
                 viewModel.docNo.value = it.tr_ref_no
                 viewModel.docDate.value = viewModel.returnDateString(it.tr_doc_date!!)
-
+                viewModel.rowNo = it.items.maxByOrNull { it.trd_rowNo!! }?.trd_rowNo ?: 0
                 viewModel.selectToWarehouse?.wr_Id = it.tr_wr_Id!!
                 viewModel.selectToWarehouse?.wr_description = it.tr_wr_name
                 binding.atcToWarehouse.setText("${it.tr_wr_name}", true)
@@ -233,7 +241,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
 
 
     private fun initToWhsAutocomplete(list: List<Warehouse>){
-        val adapter = atc_Whs_Adapter(context!!.applicationContext, R.layout.support_simple_spinner_dropdown_item, ArrayList<Warehouse>(list))
+        val adapter = atc_Whs_Adapter(requireContext().applicationContext, R.layout.support_simple_spinner_dropdown_item, ArrayList<Warehouse>(list))
         binding.atcToWarehouse.threshold = 0
         binding.atcToWarehouse.setAdapter(adapter)
         binding.atcToWarehouse.setOnFocusChangeListener { _, b ->
@@ -255,7 +263,7 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
     }
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = ProductSearchAdapter(activity!!,
+        val adapter = ProductSearchAdapter(requireActivity(),
             R.layout.support_simple_spinner_dropdown_item,
             products
         )
@@ -281,9 +289,9 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
     }
 
     override fun onDelete(baseEo: Transfer_Items) {
-        showDialog(context!!, getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo){
+        showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             viewModel.deleteItem(it)
-        }
+        })
     }
 
     override fun onShowDatePicker(v: View) {
@@ -292,8 +300,8 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val dpd = DatePickerDialog(activity!!, DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
-            viewModel.docDate.value = "${dayOfMonth}-${monthOfYear + 1}-${yr}"
+        val dpd = DatePickerDialog(requireActivity(), DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+            viewModel.docDate.value = "${yr}-${monthOfYear + 1}-${dayOfMonth}"//"${dayOfMonth}-${monthOfYear + 1}-${yr}"
 
         }, year, month, day)
         dpd.show()

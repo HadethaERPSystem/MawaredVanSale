@@ -71,7 +71,7 @@ class LocationsData {
         val dt = LocationsData()
         dt.location = LatLng(loc.latitude, loc.longitude)
         dt.bitmapDescriptor = bitmapDescriptor
-        dts.add(dt);
+        dts.add(dt)
         return dts
     }
 

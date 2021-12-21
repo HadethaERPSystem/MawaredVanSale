@@ -10,7 +10,7 @@ class StockinItemRow(private val items: Stockin_Items, private val viewModel: Ad
     override fun getLayout() = R.layout.stockin_item_row
 
     override fun bind(viewBinding: StockinItemRowBinding, position: Int) {
-        viewBinding.setEntityEo(items)
-        viewBinding.setViewmodel(viewModel)
+        viewBinding.entityEo = items
+        viewBinding.viewmodel = viewModel
     }
 }

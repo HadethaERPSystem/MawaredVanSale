@@ -2,6 +2,7 @@ package com.mawared.mawaredvansale.controller.home.reportsdashboard
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
@@ -18,6 +19,8 @@ class ReportsViewModel(repository: MenuRepository) : ViewModel() {
     var branchName: String? = App.prefs.saveUser?.org_name ?: ""
     var system_name: String? = "Mawared App."
     var system_version: String? = ""
+    var client_logo = "client_logo.png"
+    var errorMessage: MutableLiveData<String> = MutableLiveData()
 
     val menus by lazy {
         repository.getReportLocalMenu(ctx!!)

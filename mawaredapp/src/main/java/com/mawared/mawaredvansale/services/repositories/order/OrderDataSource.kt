@@ -9,10 +9,12 @@ import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.ApiException
 import com.mawared.mawaredvansale.utilities.FIRST_PAGE
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import com.mawared.mawaredvansale.utilities.POST_PER_PAGE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class OrderDataSource(private val api: ApiService, private val sm_Id: Int, private val cu_Id: Int?, private val vo_code: String): PageKeyedDataSource<Int, Sale_Order>() {
@@ -28,7 +30,7 @@ class OrderDataSource(private val api: ApiService, private val sm_Id: Int, priva
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {
-                        if(result.data != null){
+                        if(result.data != null && result.data.isNotEmpty()){
                             val data: MutableList<Sale_Order> = result.data as MutableList<Sale_Order>
                             callback.onResult(data, null, page + 1)
                             networkState.postValue(NetworkState.LOADED)
@@ -46,7 +48,11 @@ class OrderDataSource(private val api: ApiService, private val sm_Id: Int, priva
                 networkState.postValue(NetworkState.ERROR)
                 Log.e("Connectivity", "No internet connection", e)
                 return@launch
-            } catch (e: Exception) {
+            }catch (e: NoConnectivityException){
+                Log.e("Connectivity", "No internet connection", e)
+                networkState.postValue(NetworkState.ERROR_CONNECTION)
+                return@launch
+            }catch (e: Exception) {
                 networkState.postValue(NetworkState.ERROR)
                 Log.e("Exception", "Error exception when call getOrders", e)
                 return@launch
@@ -70,10 +76,8 @@ class OrderDataSource(private val api: ApiService, private val sm_Id: Int, priva
                             }else{
                                 networkState.postValue(NetworkState.ENDOFLIST)
                             }
-                        }else{
-                            networkState.postValue(NetworkState.NODATA)
                         }
-                    } else {
+                    }else {
                         networkState.postValue(NetworkState.ERROR)
                         Log.i("OrderDataSource", "${result.message}")
                     }
@@ -83,6 +87,10 @@ class OrderDataSource(private val api: ApiService, private val sm_Id: Int, priva
             } catch (e: ApiException) {
                 networkState.postValue(NetworkState.ERROR)
                 Log.e("Connectivity", "No internet connection", e)
+                return@launch
+            } catch (e: NoConnectivityException){
+                Log.e("Connectivity", "No internet connection", e)
+                networkState.postValue(NetworkState.ERROR_CONNECTION)
                 return@launch
             } catch (e: Exception) {
                 networkState.postValue(NetworkState.ERROR)

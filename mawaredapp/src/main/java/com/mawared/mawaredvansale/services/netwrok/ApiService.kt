@@ -10,6 +10,12 @@ import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout
 import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout_Items
 import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.md.Currency
+import com.mawared.mawaredvansale.data.db.entities.reports.customer.CustomerStatement
+import com.mawared.mawaredvansale.data.db.entities.reports.customer.CustomerStatus
+import com.mawared.mawaredvansale.data.db.entities.reports.dashboard.sm_dash1
+import com.mawared.mawaredvansale.data.db.entities.reports.dashboard.sm_dash2
+import com.mawared.mawaredvansale.data.db.entities.reports.sales.SalesStatement
+import com.mawared.mawaredvansale.data.db.entities.reports.stock.StockStatement
 import com.mawared.mawaredvansale.data.db.entities.sales.*
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.data.db.entities.security.User
@@ -24,6 +30,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 interface ApiService {
@@ -82,7 +89,10 @@ interface ApiService {
     suspend fun product_GetByBarcode(@Query("Barcode") barcode: String,
                                @Query("WarehouseId") warehouseId: Int?,
                                @Query("PriceCode") priceCode: String) : Response<ResponseSingle<Product>>
-
+    @GET(URL_PRODUCTS_ON_INVOICES)
+    suspend fun product_GetInvoicessByCustomer(@Query("cu_Id") cu_Id: Int,
+                                               @Query("prod_Id") prod_Id: Int,
+                                               @Query("term") term: String): Response<ResponseList<Product>>
     //////////////////////////////////////////////////////////////////////////////////////////
     //// PRICES
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -103,6 +113,7 @@ interface ApiService {
     @GET(URL_CUSTOMERS_ON_PAGES)
     suspend fun customers_OnPages(@Query("sm_Id") sm_Id: Int?,
                                   @Query("org_Id") org_Id: Int?,
+                                  @Query("term") term: String,
                                   @Query("page") page: Int,
                                   @Query("pageSize") pageSize: Int): Response<ResponseList<Customer>>
     @GET(URL_SCHEDULE_CUSTOMERS)
@@ -113,6 +124,12 @@ interface ApiService {
                                              @Query("page") page: Int,
                                              @Query("pageSize") pageSize: Int): Response<ResponseList<Customer>>
 
+    @GET(URL_PLACES_CUSTOMERS)
+    suspend fun customers_getPlaces(@Query("sm_Id") sm_Id: Int?,
+                                    @Query("cyDate") cyDate: String): Response<ResponseList<Customer>>
+
+    @GET(URL_CUSTOMER_STATUS)
+    suspend fun customers_getStatus(@Query("cu_Id") cu_Id: Int): Response<ResponseSingle<CustomerStatus>>
     //////////////////////////////////////////////////////////////////////////////////////////
     ////
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -163,12 +180,17 @@ interface ApiService {
     suspend fun salesmanGetByCode(@Query("pda_code") pda_code: String): Response<ResponseSingle<Salesman>>
     @GET(URL_GET_SALESMAN_BY_USER)
     suspend fun salesmanGetByUser(@Query("UserId") userId: Int): Response<ResponseSingle<Salesman>>
+    @GET(URL_GET_CLIENT)
+    suspend fun client_Get(): Response<ResponseSingle<Client>>
     @GET(URL_ALL_SALESMAN)
     suspend fun salesmanGetAll(): Response<ResponseList<Salesman>>
 
     @GET(URL_ALL_SALESMAN_CUSTOMERS)
     suspend fun getAllSalesmanCustomers(): Response<ResponseList<Salesman_Customer>>
 
+    @GET(URL_SALESMAN_SUMMARY)
+    suspend fun getSalesmanSummary(@Query("sm_Id") sm_Id: Int?,
+                                   @Query("selDate") selDate: String): Response<ResponseSingle<SalesmanSummary>>
     //////////////////////////////////////////////////////////////////////////////////////////
     // VOUCHER
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -180,6 +202,8 @@ interface ApiService {
     //////////////////////////////////////////////////////////////////////////////////////////
     @GET(URL_PRICE_CAT_BY_All)
     suspend fun getPriceCatAll(): Response<ResponseList<PriceCategory>>
+    @GET(URL_PRICE_CAT_BY_SALESMAN)
+    suspend fun getPriceCatBySalesman(@Query("sm_Id") sm_Id: Int): Response<ResponseList<PriceCategory>>
     @GET(URL_PRICE_CAT_BY_ID)
     suspend fun getPriceCategoryById(@Query("prc_Id") prc_Id: Int): Response<ResponseSingle<PriceCategory>>
 
@@ -369,7 +393,25 @@ interface ApiService {
 
     @GET(URL_STOCK_OUT_ITEMS)
     suspend fun getStockOutItemsById(@Query("sot_Id") sot_Id: Int) : Response<ResponseList<Stockout_Items>>
+    /////////////////////////////////////////////////////
+    ///////////////////// Lookup ////////////////////
+    /////////////////////////////////////////////////////
+    @GET(URL_LOOKUP_GET_BY_ENTITY)
+    suspend fun loockup_getByEntity(@Query("entity_name") entity_name: String) : Response<ResponseList<Lookups>>
+    /////////////////////////////////////////////////////
+    ///////////////////// Call Cycle ////////////////////
+    /////////////////////////////////////////////////////
+    @GET(URL_CALL_CYCLE_GET_BY_ID)
+    suspend fun call_cycle_GetById(@Query("cy_Id") cy_Id: Int) : Response<ResponseSingle<Call_Cycle>>
 
+    @GET(URL_CALL_CYCLE_GET_ON_PAGES)
+    suspend fun call_cycle_GetByOnPages(@Query("sm_Id") sm_Id: Int,
+                                        @Query("cu_Id") cu_Ic: Int?,
+                                        @Query("page") page: Int,
+                                        @Query("pageSize") pageSize: Int) : Response<ResponseList<Call_Cycle>>
+
+    @POST(URL_SAVE_OR_UPDATE_CALL_CYCLE)
+    suspend fun callCycle_SaveOrUpdate(@Body baseEo: Call_Cycle) : Response<ResponseSingle<Call_Cycle>>
     /////////////////////////////////////////////////////
     ///////////////////// TRANSFER //////////////////////
     /////////////////////////////////////////////////////
@@ -403,15 +445,34 @@ interface ApiService {
                                        @Query("dtFrom") dtFrom: String?,
                                        @Query("dtTo") dtTo: String?,
                                        @Query("page") page: Int,
-                                       @Query("pageSize") pageSize: Int): Response<ResponseList<CashbookStatement>>
+                                       @Query("pageSize") pageSize: Int): Response<ResponseList<SalesStatement>>
 
     @GET(URL_INVENTORY_STATEMENT_ON_PAGES)
     suspend fun inventoryStatement_OnPages(@Query("wr_Id") wr_Id: Int,
-                                           @Query("dtFrom") dtFrom: String?,
                                            @Query("dtTo") dtTo: String?,
                                            @Query("page") page: Int,
-                                           @Query("pageSize") pageSize: Int): Response<ResponseList<CashbookStatement>>
+                                           @Query("pageSize") pageSize: Int): Response<ResponseList<StockStatement>>
 
+
+    @GET(URL_CUSTOMER_STATEMENT_ON_PAGES)
+    suspend fun cusotmerStatement_OnPages(@Query("userId") userId: Int,
+                                          @Query("cu_Id") cu_Id: Int,
+                                          @Query("dtFrom") dtFrom: String?,
+                                          @Query("dtTo") dtTo: String?,
+                                          @Query("page") page: Int,
+                                          @Query("pageSize") pageSize: Int): Response<ResponseList<CustomerStatement>>
+
+    //================ Dashboard functions
+    @GET(URL_DASHBOARD_TOTAL_CUSTOMER)
+    suspend fun getDashboardTotCustomer(@Query("sm_Id") sm_Id: Int,
+                                        @Query("dtFrom") dtFrom: String,
+                                        @Query("dtTo") dtTo: String): Response<ResponseSingle<sm_dash1>>
+    @GET(URL_DASHBOARD_SALES_PLAN)
+    suspend fun getDashboardSalesPlanning(@Query("sm_Id") sm_Id: Int,
+                                        @Query("PlanId") planId: Int): Response<ResponseSingle<sm_dash2>>
+
+    @GET(URL_SALES_PLAN)
+    suspend fun getSalesPlan(): Response<ResponseList<Lookups>>
 
     companion object{
         operator fun invoke(connectivityInterceptor: ConnectivityInterceptor) : ApiService{

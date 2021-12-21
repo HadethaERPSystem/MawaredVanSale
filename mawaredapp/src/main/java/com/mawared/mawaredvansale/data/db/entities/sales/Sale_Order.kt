@@ -23,6 +23,8 @@ data class Sale_Order (
     var so_vo_Id: Int?,
     var so_salesmanId: Int?,       // Salesman Id
     var so_customerId: Int?,       // Customer Id
+    var so_ccustomer_name: String?,
+
     var so_regionId: Int?,         // region Id
     var so_total_amount: Double?,  // total sale amount
     var so_total_discount: Double?,
@@ -53,8 +55,11 @@ data class Sale_Order (
     @Ignore
     var so_region_name: String? = null
     var so_price_cat_code: String? = null
+    var sod_status_code: String? = null
+
     @Ignore
     var items: ArrayList<Sale_Order_Items> = arrayListOf()
-
+    @Ignore
+    var items_deleted: ArrayList<Sale_Order_Items> = arrayListOf()
 }
 

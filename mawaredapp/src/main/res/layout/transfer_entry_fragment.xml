@@ -46,6 +46,7 @@
                         android:text="@={viewmodel.docNo}"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:textSize="12sp"
+                        android:autofillHints="@string/lbl_transfer_no"
                         app:layout_constraintEnd_toStartOf="@+id/etxt_date"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -55,9 +56,11 @@
                         android:id="@+id/etxt_date"
                         android:layout_width="130dp"
                         android:layout_height="wrap_content"
+                        android:inputType="date"
                         android:enabled="false"
                         android:gravity="center"
                         android:hint="@string/lbl_doc_date"
+                        android:autofillHints="@string/lbl_doc_date"
                         android:text="@{viewmodel.returnDateString(viewmodel.docDate)}"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:textSize="12sp"
@@ -65,16 +68,16 @@
                         app:layout_constraintTop_toTopOf="@+id/tr_doc_no" />
 
                 <ImageButton
-                        android:id="@+id/btn_date"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@android:color/transparent"
-                        android:contentDescription="@string/lbl_doc_date"
-                        android:onClick="@{viewmodel::onDatePicker}"
-                        app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/etxt_date"
-                        app:srcCompat="@drawable/ic_datepicker" />
+                    android:id="@+id/btn_date"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/lbl_doc_date"
+                    android:onClick="@{viewmodel::onDatePicker}"
+                    app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/etxt_date"
+                    app:srcCompat="@drawable/ic_calendar" />
 
                 <!-- Warehouse to Info -->
                 <AutoCompleteTextView
@@ -92,19 +95,31 @@
                         app:layout_constraintEnd_toStartOf="@+id/btn_cancelToWarehouse"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/etxt_date" />
+                <ImageButton
+                    android:id="@+id/btn_openWarehouse"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_to_warehouse"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelToWarehouse"
+                    app:layout_constraintTop_toTopOf="@+id/atc_to_warehouse"
+                    app:srcCompat="@drawable/ic_arrow_drop_down" />
 
                 <ImageButton
-                        android:id="@+id/btn_cancelToWarehouse"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@null"
-                        android:contentDescription="@string/btn_add_item_caption"
-                        android:onClick="@{()-> viewmodel.clear(`to_wr`)}"
-                        android:enabled="false"
-                        app:layout_constraintBottom_toBottomOf="@+id/atc_to_warehouse"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/atc_to_warehouse"
-                        app:srcCompat="@drawable/ic_action_close" />
+                    android:id="@+id/btn_cancelToWarehouse"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:enabled="false"
+                    android:onClick="@{()-> viewmodel.clear(`to_wr`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_to_warehouse"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/atc_to_warehouse"
+                    app:srcCompat="@drawable/btn_close" />
                 <!-- Item Name-->
                 <AutoCompleteTextView
                         android:id="@+id/atc_product"
@@ -120,18 +135,30 @@
                         app:layout_constraintEnd_toStartOf="@+id/btn_cancelProduct"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/atc_to_warehouse" />
+                <ImageButton
+                    android:id="@+id/btn_openItems"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_product"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelProduct"
+                    app:layout_constraintTop_toTopOf="@+id/atc_product"
+                    app:srcCompat="@drawable/ic_arrow_drop_down" />
 
                 <ImageButton
-                        android:id="@+id/btn_cancelProduct"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@null"
-                        android:contentDescription="@string/btn_add_item_caption"
-                        android:onClick="@{()-> viewmodel.clear(`prod`)}"
-                        app:layout_constraintBottom_toBottomOf="@+id/atc_product"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/atc_product"
-                        app:srcCompat="@drawable/ic_action_close" />
+                    android:id="@+id/btn_cancelProduct"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.clear(`prod`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_product"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/atc_product"
+                    app:srcCompat="@drawable/btn_close" />
                 <!-- Barcode -->
                 <EditText
                         android:id="@+id/edtxt_barcode"
@@ -140,6 +167,7 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:hint="@string/lbl_barcode"
+                        android:autofillHints="@string/lbl_barcode"
                         android:inputType="text"
                         android:text="@={viewmodel.searchBarcode}"
                         android:textSize="12sp"
@@ -154,6 +182,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:hint="@string/lbl_qty"
+                        android:autofillHints="@string/lbl_qty"
                         android:text="@={viewmodel.searchQty}"
                         android:textAlignment="center"
                         android:textSize="12sp"

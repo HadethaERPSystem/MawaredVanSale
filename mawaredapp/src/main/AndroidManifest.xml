@@ -5,16 +5,20 @@
     android:versionCode="1"
     android:versionName="1.0">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-feature android:name="android.hardware.usb.host" />
 
@@ -24,22 +28,22 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" /> -->
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.camera.autofocus" /> <!-- <android:uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
-    
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_logo_black"
+        android:icon="@drawable/mderp_app_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+        android:roundIcon="@drawable/mderp_app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-
-        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
-        <activity android:name=".controller.common.PdfActivity"/>
+<!--        <activity android:name=".controller.common.printing.PrintingActivity"></activity>-->
+        <activity android:name=".controller.common.PdfActivity" />
         <activity android:name=".controller.map.MapsActivity" />
         <activity android:name=".controller.map.RealLocationActivity" />
 
@@ -51,22 +55,26 @@
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />
-        <activity android:name=".controller.auth.LoginActivity">
+        <activity
+            android:name=".controller.home.SplashScreenActivity"
+            android:noHistory="true"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".controller.auth.LoginActivity"></activity>
         <activity
             android:name=".controller.home.HomeActivity"
             android:label="@string/home_page_title" />
         <activity
             android:name=".controller.common.ControlActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".controller.settings.DeviceListActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="fullSensor" />
 
         <meta-data
             android:name="preloaded_fonts"

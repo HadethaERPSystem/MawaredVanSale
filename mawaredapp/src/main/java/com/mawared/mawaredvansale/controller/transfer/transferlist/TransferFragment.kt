@@ -3,7 +3,6 @@ package com.mawared.mawaredvansale.controller.transfer.transferlist
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -11,8 +10,9 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.TransferPagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.pagination.TransferPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.controller.common.GenerateTicket
 import com.mawared.mawaredvansale.controller.common.PdfActivity
@@ -22,6 +22,7 @@ import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.interfaces.IPrintNavigator
 import com.mawared.mawaredvansale.services.repositories.NetworkState
+import com.mawared.mawaredvansale.services.repositories.Status
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -51,22 +52,23 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     private lateinit var navController: NavController
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.transfer_fragment, container, false)
 
         viewModel.navigator = this
         viewModel.msgListener = this
         viewModel.printListener = this
-        viewModel.ctx = activity!!
+        viewModel.ctx = requireActivity()
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_transfer_list_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
-
         bindUI()
-
+        binding.pullToRefresh.setOnRefreshListener {
+            viewModel.refresh()
+            binding.pullToRefresh.isRefreshing = false
+        }
+        binding.btnReload.setOnClickListener { viewModel.refresh() }
         return binding.root
     }
 
@@ -103,8 +105,8 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Main) {
 
-        val pagedAdapter = TransferPagedListAdapter(viewModel, activity!!)
-        val gridLayoutManager = GridLayoutManager(activity!!, 1)
+        val pagedAdapter = TransferPagedListAdapter(viewModel, requireActivity())
+        val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
             override fun getSpanSize(position: Int): Int {
                 val viewType = pagedAdapter.getItemViewType(position)
@@ -119,13 +121,19 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         }
 
         viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
-            it.sortByDescending { it.tr_doc_date }
             pagedAdapter.submitList(it)
         })
 
         viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-            progress_bar_transfer.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-            txt_error_transfer.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+            progress_bar.visibility =  if(viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
+            if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
+                val pack = requireContext().packageName
+                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                ll_error.visibility = View.VISIBLE
+            } else {
+                ll_error.visibility = View.GONE
+            }
 
             if(!viewModel.listIsEmpty()){
                 pagedAdapter.setNetworkState(it)
@@ -163,24 +171,24 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     override fun onStarted() {
-        progress_bar_transfer?.visibility = View.VISIBLE
+        progress_bar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        progress_bar_transfer?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         transfer_list_lc.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        progress_bar_transfer?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         transfer_list_lc.snackbar(message)
     }
 
     override fun onItemDeleteClick(baseEo: Transfer) {
-        showDialog(context!!, getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo){
+        showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             onStarted()
             viewModel.confirmDelete(it)
-        }
+        })
     }
 
     override fun onItemEditClick(baseEo: Transfer) {
@@ -200,10 +208,10 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
 
     override fun doPrint(baseEo: Transfer) {
-        val intent = Intent(activity, PdfActivity::class.java)
+        val intent = Intent(requireActivity(), PdfActivity::class.java)
         //intent.putExtra("TRS_PDF_TICKET",lines as Serializable)
         val lang = Locale.getDefault().toString().toLowerCase()
-        val template = GenerateTicket(activity!!, lang).createPdf(viewModel.baseEo.value!!,
+        val template = GenerateTicket(requireActivity(), lang).createPdf(viewModel.baseEo.value!!,
             R.drawable.ic_logo_black, "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", null, null)
         val bundle = Bundle()
         val data = template as Serializable

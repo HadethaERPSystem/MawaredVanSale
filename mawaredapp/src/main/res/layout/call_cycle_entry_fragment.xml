@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.mawared.mawaredvansale.controller.callcycle.cyentry.CallCycleEntryViewModel" />
+    </data>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/mcv_callcycle"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+        android:padding="0dp">
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="6dp"
+            app:cardMaxElevation="6dp"
+            app:contentPadding="5dp"
+            app:cardBackgroundColor="@android:color/white"
+            android:layout_margin="0dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:minHeight="?listPreferredItemHeightLarge">
+
+                <!-- Customer Info -->
+                <TextView
+                    android:id="@+id/lbl_customer_code"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/lbl_cu_code"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="SmallSp" />
+
+                <TextView
+                    android:id="@+id/cy_customer_code"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@{viewmodel._cyBaseEo.cy_cu_code}"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"
+
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_customer_code"
+                    tools:ignore="SmallSp"
+                    tools:text="CUS-000001" />
+                <!-- Customer Info -->
+                <TextView
+                    android:id="@+id/lbl_customer_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/lbl_customer_name"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline23"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="SmallSp" />
+
+                <TextView
+                    android:id="@+id/cy_customer_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@{viewmodel._cyBaseEo.cy_cu_name}"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline23"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_customer_name"
+                    tools:ignore="SmallSp"
+                    tools:text="محمد احمد سعيد" />
+
+                <!-- Call cycle Date -->
+                <TextView
+                    android:id="@+id/lbl_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/lbl_doc_date"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cy_customer_code"
+                    tools:ignore="SmallSp" />
+
+                <TextView
+                    android:id="@+id/txtv_doc_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@{viewmodel.returnDateString(viewmodel._cyBaseEo.cy_date)}"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline23"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_date"
+                    tools:text="2019-09-08" />
+
+                <!-- Call cycle Day -->
+                <TextView
+                    android:id="@+id/lbl_dayname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/lbl_day_name"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline23"
+                    app:layout_constraintTop_toBottomOf="@+id/cy_customer_name"
+                    tools:ignore="SmallSp" />
+
+                <TextView
+                    android:id="@+id/txtv_day_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@{viewmodel._cyBaseEo.cy_dayname}"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline23"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_dayname"
+                    tools:text="" />
+
+                <!-- Call cycle Status -->
+                <TextView
+                    android:id="@+id/lbl_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/lbl_status_name"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtv_doc_date"
+                    tools:ignore="SmallSp" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/atc_status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:autofillHints="@string/lbl_status"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_status"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelStatus"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_status"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <ImageButton
+                    android:id="@+id/btn_openStatus"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_status"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelStatus"
+                    app:layout_constraintTop_toTopOf="@+id/atc_status"
+                    app:srcCompat="@drawable/ic_arrow_drop_down"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <ImageButton
+                    android:id="@+id/btn_cancelStatus"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:onClick="@{()-> viewmodel.onClear()}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_status"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/atc_status"
+                    app:srcCompat="@drawable/btn_close"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <!--Comment-->
+
+                <EditText
+                    android:id="@+id/edtxt_comment"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:autofillHints="@string/lbl_comment"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_comment"
+                    android:inputType="text"
+                    android:text="@={viewmodel.cy_notes}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_status" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.50" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <include
+            android:id="@+id/progress_bar_entry_cy"
+            android:visibility="gone"
+            layout="@layout/layout_progress_bar_with_text"
+            />
+
+    </RelativeLayout>
+
+</layout>

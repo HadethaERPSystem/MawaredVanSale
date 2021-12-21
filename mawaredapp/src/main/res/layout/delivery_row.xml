@@ -201,7 +201,7 @@
                     android:background="@null"
                     app:layout_constraintEnd_toStartOf="@+id/btn_edit"
                     app:layout_constraintTop_toTopOf="@+id/btn_edit"
-                    app:srcCompat="@drawable/ic_view"
+                    app:srcCompat="@drawable/ic_view1"
                     android:contentDescription="@string/btn_view_caption"/>
 
             <ImageButton

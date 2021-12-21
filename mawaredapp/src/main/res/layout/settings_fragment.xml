@@ -10,6 +10,7 @@
             type="com.mawared.mawaredvansale.controller.settings.SettingsViewModel" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/settings_list_lc"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".controller.settings.SettingsFragment">
@@ -61,6 +62,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/et_printer_port" />
 
+    <TextView
+        android:id="@+id/lbl_latin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        android:gravity="start"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:text="@string/select_latin_language_encode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_printer_port"/>
     <Spinner
             android:id="@+id/spnCodepageLatin"
             android:layout_width="match_parent"
@@ -68,11 +81,23 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="4dp"
-            android:text="@string/select_latin_language_encode"
+            android:autofillHints="@string/select_latin_language_encode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_printer_port" />
+            app:layout_constraintTop_toBottomOf="@+id/lbl_latin" />
 
+    <TextView
+        android:id="@+id/lbl_ar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        android:gravity="start"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:text="@string/select_arabic_language_encode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spnCodepageLatin"/>
     <Spinner
             android:id="@+id/spnCodepageAr"
             android:layout_width="match_parent"
@@ -80,25 +105,36 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="4dp"
-            android:text="@string/select_arabic_language_encode"
+            android:autofillHints="@string/select_arabic_language_encode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spnCodepageLatin" />
+            app:layout_constraintTop_toBottomOf="@+id/lbl_ar" />
 
-    <EditText
-            android:id="@+id/et_server_url"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="4dp"
-            android:hint="@string/server_url"
-            android:inputType="textUri"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spnCodepageAr" />
+    <TextView
+        android:id="@+id/lbl_printtype"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        android:gravity="start"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:text="@string/select_print_type"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spnCodepageAr"/>
+    <Spinner
+        android:id="@+id/spnPrintType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:autofillHints="@string/select_arabic_language_encode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_printtype" />
 
     <Button
             android:id="@+id/btnSaveSettings"
@@ -112,6 +148,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+    <include
+        android:id="@+id/progress_bar_settings"
+        android:visibility="gone"
+        layout="@layout/layout_progress_bar_with_text"
+        />
 
+    <TextView
+        android:id="@+id/txt_error_settings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="@{viewmodel.errorMessage}"
+        android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

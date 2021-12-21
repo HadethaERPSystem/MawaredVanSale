@@ -17,6 +17,7 @@ data class Sale_Items (
     var sld_unit_qty: Double?,      // Unit Quantity
     var sld_gift_qty: Double? = null,
     var sld_unit_price: Double?,    // Unit Price
+    var sld_price_afd: Double?,     // Unit Price after discount
     var sld_line_total: Double?,    // Line Total
     var sld_dis_per: Double?,      // Percentage Discount
     var sld_dis_value: Double?,      // Fixed Amount Discount
@@ -29,6 +30,7 @@ data class Sale_Items (
     var sld_batch_no: String?,
     var sld_expiry_date: String?,
     var sld_mfg_date: String?,
+    var sld_isGift: Boolean,
     var created_at: String?,    // created datetime
     var created_by: String?,    // created user
     var updated_at: String?,    // Updated datetime

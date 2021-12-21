@@ -10,7 +10,7 @@ class SaleReturnItemRow(private val baseEo: Sale_Return_Items, private val viewM
     override fun getLayout() = R.layout.sale_return_item_row
 
     override fun bind(viewBinding: SaleReturnItemRowBinding, position: Int) {
-        viewBinding.setEntityEo(baseEo)
-        viewBinding.setViewmodel(viewModel)
+        viewBinding.entityEo = baseEo
+        viewBinding.viewmodel = viewModel
     }
 }

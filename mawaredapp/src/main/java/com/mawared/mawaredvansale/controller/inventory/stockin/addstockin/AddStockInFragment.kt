@@ -60,7 +60,7 @@ class AddStockInFragment : Fragment(), KodeinAware, IDatePicker, IResetNavigator
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar!!.setTitle("Add Invoice")
+        (activity as AppCompatActivity).supportActionBar!!.title = "Add Invoice"
     }
 
     // enable options menu in this fragment
@@ -81,7 +81,7 @@ class AddStockInFragment : Fragment(), KodeinAware, IDatePicker, IResetNavigator
                 //viewModel.saveInvoice()
             }
             R.id.close_btn -> {
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -94,7 +94,7 @@ class AddStockInFragment : Fragment(), KodeinAware, IDatePicker, IResetNavigator
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val dpd = DatePickerDialog(activity!!, DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+        val dpd = DatePickerDialog(requireActivity(), DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
 
             //val myFormat = "dd/MM/yyyy" // mention the format you need
             //val sdf = SimpleDateFormat(myFormat, Locale.US)
@@ -158,7 +158,7 @@ class AddStockInFragment : Fragment(), KodeinAware, IDatePicker, IResetNavigator
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = CustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(requireContext().applicationContext,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
@@ -174,7 +174,7 @@ class AddStockInFragment : Fragment(), KodeinAware, IDatePicker, IResetNavigator
     }
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = AutoCompleteProductAdapter(context!!.applicationContext,
+        val adapter = AutoCompleteProductAdapter(requireContext().applicationContext,
             R.layout.support_simple_spinner_dropdown_item,
             products
         )

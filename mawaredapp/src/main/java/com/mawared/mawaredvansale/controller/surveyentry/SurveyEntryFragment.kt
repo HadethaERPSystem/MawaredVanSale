@@ -52,7 +52,7 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
 
     private var SPLASH_DISPLAY_LENGTH = 3000
 
-    private var TAG = SurveyEntryFragment::class.java.getSimpleName()
+    private var TAG = SurveyEntryFragment::class.java.simpleName
 
     private var allSurveyQuestions: List<Survey_Detail>? = null
 
@@ -133,7 +133,7 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
                             onFailure("You must select an answer")
                             return@setOnClickListener
                         }
-                        val str = activity!!.findViewById<RadioButton>(i).text.toString()
+                        val str = requireActivity().findViewById<RadioButton>(i).text.toString()
                         viewModel.qnEoList[questionNumber-1].qn_answer = str
                     }
                 }
@@ -253,7 +253,7 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
 
     // init customer autocomplete view
     private fun initCustomerAutocomplete(customers: List<Customer>){
-        val adapter = CustomerAdapter(context!!.applicationContext,
+        val adapter = CustomerAdapter(requireContext().applicationContext,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
@@ -283,9 +283,9 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
     }
 
     override fun onDelete(baseEo: Survey_Detail) {
-        showDialog(context!!, getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo){
+        showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             //viewModel.deleteItem(it)
-        }
+        })
     }
 
     override fun onShowDatePicker(v: View) {
@@ -294,7 +294,7 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val dpd = DatePickerDialog(activity!!, DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+        val dpd = DatePickerDialog(requireActivity(), DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
             viewModel.mSrv_vst_date.value = "${dayOfMonth}-${monthOfYear + 1}-${yr}"
 
         }, year, month, day)
@@ -359,7 +359,7 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
             this.dotLayout?.removeAllViews()
         //this.dots = arrayOf(this.surveyTotalCount)
         for (i in 0 until this.surveyTotalCount) {
-            this.dots.add(ImageView(activity!!))
+            this.dots.add(ImageView(requireActivity()))
             if (i == paramInt) {
                 this.dots[i].setImageDrawable(resources.getDrawable(R.drawable.selecteddot))
             } else {

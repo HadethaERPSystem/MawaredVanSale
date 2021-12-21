@@ -58,7 +58,7 @@ class StockOutFragment : Fragment(), KodeinAware, IMainNavigator<Stockout> {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.setTitle("Stock out")
+        (activity as AppCompatActivity).supportActionBar!!.title = "Stock out"
     }
 
     // enable options menu in this fragment

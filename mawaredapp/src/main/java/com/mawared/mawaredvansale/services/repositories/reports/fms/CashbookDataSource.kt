@@ -28,8 +28,14 @@ class CashbookDataSource(private val api: ApiService, private val userId: Int, p
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {
-                        if(result.data != null){
+                        if(result.data != null && result.data.isNotEmpty()){
                             val data: MutableList<CashbookStatement> = result.data as MutableList<CashbookStatement>
+                            data.add(0, CashbookStatement(0, "Header", "", "", null,null,
+                                null, null, null, null ))
+                            if(result.totalPages == 1){
+                                data.add(data.size, CashbookStatement(data.size, "Footer", "", "", null,null,
+                                    null, null, null, null ))
+                            }
                             callback.onResult(data, null, page + 1)
                             networkState.postValue(NetworkState.LOADED)
                         }else{
@@ -65,13 +71,15 @@ class CashbookDataSource(private val api: ApiService, private val userId: Int, p
                         if(result.data != null){
                             if(result.totalPages >= params.key){
                                 val data: MutableList<CashbookStatement> = result.data as MutableList<CashbookStatement>
+                                if(result.totalPages < params.key +1){
+                                    data.add(data.size,CashbookStatement(data.size, "Footer", "", "", null,null,
+                                        null, null, null, null))
+                                }
                                 callback.onResult(data, params.key + 1)
                                 networkState.postValue(NetworkState.LOADED)
                             }else{
                                 networkState.postValue(NetworkState.ENDOFLIST)
                             }
-                        }else{
-                            networkState.postValue(NetworkState.NODATA)
                         }
                     } else {
                         networkState.postValue(NetworkState.ERROR)

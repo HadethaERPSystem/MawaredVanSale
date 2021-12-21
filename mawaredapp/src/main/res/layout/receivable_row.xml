@@ -135,14 +135,14 @@
             <!-- Amount label -->
 
             <TextView
-                    android:id="@+id/lbl_amount_usd"
+                    android:id="@+id/lbl_amount_sc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@string/lbl_received_amount_usd"
+                    android:text="@{viewmodel.lbl_SCAmount + ` ` + entityEo.rcv_cr_symbol}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="parent"
@@ -150,115 +150,115 @@
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/txtv_amount_usd"
+                    android:id="@+id/txtv_amount_sc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@{String.valueOf(entityEo.rcv_amount)}"
+                    android:text="@{viewmodel.numberFormat(entityEo.rcv_amount)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:gravity="start"
                     app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lbl_amount_usd"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_amount_sc"
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/lbl_amount_iqd"
+                    android:id="@+id/lbl_amount_fc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@string/lbl_received_amount_iqd"
+                    android:text="@{viewmodel.lbl_FCAmount + ` ` + entityEo.rcv_lc_cr_symbol}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/txtv_amount_usd"
-                    app:layout_constraintTop_toTopOf="@+id/lbl_amount_usd" />
+                    app:layout_constraintStart_toEndOf="@+id/txtv_amount_sc"
+                    app:layout_constraintTop_toTopOf="@+id/lbl_amount_sc" />
 
             <!-- Amount label -->
 
             <TextView
-                    android:id="@+id/txtv_amount_iqd"
+                    android:id="@+id/txtv_amount_fc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:gravity="start"
-                    android:text="@{String.valueOf(entityEo.rcv_lc_amount)}"
+                    android:text="@{viewmodel.numberFormat(entityEo.rcv_lc_amount)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
-                    app:layout_constraintTop_toTopOf="@+id/txtv_amount_usd" />
+                    app:layout_constraintTop_toTopOf="@+id/txtv_amount_sc" />
 
             <TextView
-                    android:id="@+id/lbl_change_usd"
+                    android:id="@+id/lbl_change_sc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@string/lbl_change_amount_usd"
+                    android:text="@{viewmodel.lbl_SCChange + ` ` + entityEo.rcv_cr_symbol}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtv_amount_usd"
+                    app:layout_constraintTop_toBottomOf="@+id/txtv_amount_sc"
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/txtv_change_usd"
+                    android:id="@+id/txtv_change_sc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@{String.valueOf(entityEo.rcv_change)}"
+                    android:text="@{viewmodel.numberFormat(entityEo.rcv_change)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:gravity="start"
                     app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lbl_change_usd"
+                    app:layout_constraintTop_toBottomOf="@+id/lbl_change_sc"
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/lbl_change_iqd"
+                    android:id="@+id/lbl_change_fc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@string/lbl_change_amount_lc"
+                    android:text="@{viewmodel.lbl_FCChange + ` ` + entityEo.rcv_lc_cr_symbol}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
-                    app:layout_constraintTop_toTopOf="@+id/lbl_change_usd" />
+                    app:layout_constraintTop_toTopOf="@+id/lbl_change_sc" />
 
             <TextView
-                    android:id="@+id/txtv_change_iqd"
+                    android:id="@+id/txtv_change_fc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:gravity="start"
-                    android:text="@{String.valueOf(entityEo.rcv_lc_change)}"
+                    android:text="@{viewmodel.numberFormat(entityEo.rcv_lc_change)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/txtv_change_usd"
-                    app:layout_constraintTop_toTopOf="@+id/txtv_change_usd" />
+                    app:layout_constraintStart_toEndOf="@+id/txtv_change_sc"
+                    app:layout_constraintTop_toTopOf="@+id/txtv_change_sc" />
 
             <View
                     android:id="@+id/view"
@@ -266,57 +266,63 @@
                     android:layout_height="2dp"
                     android:layout_marginTop="4dp"
                     android:background="@color/colorPrimaryDark"
-                    app:layout_constraintTop_toBottomOf="@+id/txtv_change_usd"
+                    app:layout_constraintTop_toBottomOf="@+id/txtv_change_sc"
                     tools:layout_editor_absoluteX="1dp" />
             <!-- Buttons for view, edit & delete -->
             <ImageButton
-                    android:id="@+id/btn_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@null"
-                    android:onClick="@{()-> viewmodel.onItemDelete(entityEo)}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view"
-                    app:srcCompat="@drawable/ic_delete"
-                    android:contentDescription="@string/btn_delete_caption"/>
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@null"
+                android:contentDescription="@string/btn_delete_caption"
+                android:visibility="gone"
+                android:onClick="@{()-> viewmodel.onItemDelete(entityEo)}"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_edit"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/btn_edit"
+                app:srcCompat="@drawable/ic_delete" />
 
             <ImageButton
-                    android:id="@+id/btn_edit"
-                    android:onClick="@{()-> viewmodel.onItemEdit(entityEo)}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_delete"
-                    app:layout_constraintTop_toTopOf="@+id/btn_delete"
-                    app:srcCompat="@drawable/ic_edit"
-                    android:contentDescription="@string/btn_edit_caption"/>
-
-            <ImageButton
-                    android:id="@+id/btn_view"
-                    android:onClick="@{()-> viewmodel.onItemView(entityEo)}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_edit"
-                    app:layout_constraintTop_toTopOf="@+id/btn_edit"
-                    app:srcCompat="@drawable/ic_view"
-                    android:contentDescription="@string/btn_view_caption"/>
-
-            <ImageButton
-                android:id="@+id/btn_print"
-                android:onClick="@{()-> viewmodel.onPrint(entityEo.rcv_Id)}"
+                android:id="@+id/btn_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:background="@null"
-                app:layout_constraintEnd_toStartOf="@+id/btn_view"
+                android:contentDescription="@string/btn_edit_caption"
+                android:onClick="@{()-> viewmodel.onItemEdit(entityEo)}"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_view"
+                app:layout_constraintEnd_toStartOf="@+id/btn_delete"
                 app:layout_constraintTop_toTopOf="@+id/btn_view"
-                app:srcCompat="@drawable/ic_print"
-                android:contentDescription="@string/btn_view_caption"/>
+                app:srcCompat="@drawable/ic_edit" />
+
+            <ImageButton
+                android:id="@+id/btn_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                android:contentDescription="@string/btn_view_caption"
+                android:onClick="@{()-> viewmodel.onItemView(entityEo)}"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_print"
+                app:layout_constraintEnd_toStartOf="@+id/btn_edit"
+                app:layout_constraintTop_toTopOf="@+id/btn_print"
+                app:srcCompat="@drawable/ic_view1" />
+
+            <ImageButton
+                android:id="@+id/btn_print"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="4dp"
+                android:background="@null"
+                android:contentDescription="@string/btn_view_caption"
+                android:onClick="@{()-> viewmodel.onPrint(entityEo.rcv_Id)}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_view"
+                app:layout_constraintTop_toBottomOf="@+id/view"
+                app:srcCompat="@drawable/ic_print" />
 
             <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline14"

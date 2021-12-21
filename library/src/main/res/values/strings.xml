@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="android_auto_update_dialog_title">Discover new version</string>
+    <string name="android_msg_version">Current Version for Mawared App is [%d]\nNew Version for Mawared App is [%d]\nThis version adapte with android 7.0 and above</string>
+
+    <string name="android_auto_update_dialog_title">There is new version</string>
 
     <string name="android_auto_update_notify_ticker">Found a new version, click to upgrade</string>
     <string name="android_auto_update_notify_content">Found a new version, click to upgrade</string>

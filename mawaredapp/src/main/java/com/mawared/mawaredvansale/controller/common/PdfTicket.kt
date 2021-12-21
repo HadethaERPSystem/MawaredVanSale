@@ -32,7 +32,7 @@ class PdfBody(
     var rows: ArrayList<HashMap<Int, ReportColumn>>? = null
 ): Serializable
 
-class Template(): Serializable{
+class Template : Serializable{
     var header: ArrayList<PdfHeader>? = arrayListOf()
     var body: PdfBody? = null
     var footer: ArrayList<PdfFooter>? = arrayListOf()

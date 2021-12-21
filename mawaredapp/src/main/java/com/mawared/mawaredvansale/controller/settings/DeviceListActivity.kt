@@ -45,7 +45,7 @@ class DeviceListActivity: Activity() {
 
     internal var handler: Handler = object : Handler() {
         override fun handleMessage(msg: Message) {
-            progress.setVisibility(View.GONE)
+            progress.visibility = View.GONE
             val intent = Intent()
             intent.putExtra("is_connected", if (msg.what == 0) "OK" else "NO")
             intent.putExtra("BTAddress", toothAddress)
@@ -101,7 +101,7 @@ class DeviceListActivity: Activity() {
         //默认的蓝牙适配器
         mBtAdapter = BluetoothAdapter.getDefaultAdapter()
         // 得到当前的一个已经配对的蓝牙设备
-        val pairedDevices = mBtAdapter!!.getBondedDevices()
+        val pairedDevices = mBtAdapter!!.bondedDevices
         val pairedListView = findViewById<View>(R.id.paired_devices) as ListView
         val newDevicesListView = findViewById<View>(R.id.new_devices) as ListView
 
@@ -145,7 +145,7 @@ class DeviceListActivity: Activity() {
         // 打开子标题的新设备
         findViewById<View>(R.id.title_new_devices).visibility = View.VISIBLE
         // 若启动了扫描，关闭扫描
-        if (mBtAdapter!!.isDiscovering()) {
+        if (mBtAdapter!!.isDiscovering) {
             mBtAdapter!!.cancelDiscovery()
         }
         //扫描
@@ -168,7 +168,7 @@ class DeviceListActivity: Activity() {
             val hasConnected = false
             progress.visibility = View.VISIBLE
             try {
-                if (mBtAdapter!!.isDiscovering()) {
+                if (mBtAdapter!!.isDiscovering) {
                     mBtAdapter!!.cancelDiscovery()
                 }
 
@@ -179,7 +179,7 @@ class DeviceListActivity: Activity() {
                     return@OnItemClickListener
                 }
                 thread = Thread(Runnable {
-                    // TODO Auto-generated method stub
+                    // Auto-generated method stub
                     try {
                         //                            Config.isLog=true;
                         //val portOpen = Print.PortOpen(ctx, "Bluetooth,$toothAddress")
@@ -190,7 +190,7 @@ class DeviceListActivity: Activity() {
                         message!!.what = 1// portOpen
                         handler.sendMessage(message)
                     } catch (e: Exception) {
-                        // TODO Auto-generated catch block
+                        // Auto-generated catch block
                         e.printStackTrace()
                     }
                 })

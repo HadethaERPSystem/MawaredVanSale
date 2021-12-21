@@ -9,9 +9,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.ReceivablePagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.pagination.ReceivablePagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.databinding.ReceivableFragmentBinding
@@ -19,8 +18,6 @@ import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.receivable_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -51,18 +48,22 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
         viewModel.navigator = this
         viewModel.msgListener = this
         viewModel.activity = activity as AppCompatActivity
+        viewModel.ctx = context
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
-
         bindUI()
+        binding.pullToRefresh.setOnRefreshListener {
+            viewModel.refresh()
+            binding.pullToRefresh.isRefreshing = false
+        }
+        binding.btnReload.setOnClickListener { viewModel.refresh() }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_receivable_list_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
+
     }
 
     // enable options menu in this fragment
@@ -91,8 +92,12 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Dispatchers.Main) {
-        val pagedAdapter = ReceivablePagedListAdapter(viewModel, activity!!)
-        val gridLayoutManager = GridLayoutManager(activity!!, 1)
+        viewModel.lbl_SCAmount.value = resources.getString(R.string.lbl_received_amount)
+        viewModel.lbl_SCChange.value = resources.getString(R.string.lbl_change_amount)
+        viewModel.lbl_FCAmount.value = resources.getString(R.string.lbl_received_amount)
+        viewModel.lbl_FCChange.value = resources.getString(R.string.lbl_change_amount)
+        val pagedAdapter = ReceivablePagedListAdapter(viewModel, requireActivity())
+        val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
             override fun getSpanSize(position: Int): Int {
                 val viewType = pagedAdapter.getItemViewType(position)
@@ -107,16 +112,22 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
         }
 
         viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
-            it.sortByDescending { it.rcv_doc_date }
             pagedAdapter.submitList(it)
         })
 
         viewModel.setCustomer(null)
 
         viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-            progress_bar_receivable.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-            txt_error_receivable.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+            progress_bar.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
 
+            if (viewModel.listIsEmpty() && (it == NetworkState.ERROR || it == NetworkState.NODATA)) {
+                val pack = requireContext().packageName
+                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                ll_error.visibility = View.VISIBLE
+            } else {
+                ll_error.visibility = View.GONE
+            }
             if(!viewModel.listIsEmpty()){
                 pagedAdapter.setNetworkState(it)
             }
@@ -145,10 +156,10 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
     }
 
     override fun onItemDeleteClick(baseEo: Receivable) {
-        showDialog(context!!, getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo){
+        showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             onStarted()
             viewModel.confirmDelete(it)
-        }
+        })
     }
 
     override fun onItemEditClick(baseEo: Receivable) {
@@ -166,16 +177,16 @@ class ReceivableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Receiva
     }
 
     override fun onStarted() {
-        progress_bar_receivable?.visibility = View.VISIBLE
+        progress_bar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        progress_bar_receivable?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         receivable_list_cl.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        progress_bar_receivable?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         receivable_list_cl?.snackbar(message)
     }
 }

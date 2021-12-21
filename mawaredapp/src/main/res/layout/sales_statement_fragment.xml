@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.mawared.mawaredvansale.controller.reports.sales.SalesStatementViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="4dp"
+        tools:context=".controller.reports.sales.SalesStatementFragment">
+
+        <include
+            android:id="@+id/progress_bar_sales"
+            android:visibility="gone"
+            layout="@layout/layout_progress_bar_with_text"/>
+
+        <TextView
+            android:id="@+id/txt_error_sales"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:text="@{viewmodel.errorMessage}"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/llViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true">
+
+            <EditText
+                android:id="@+id/dtFrom"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/from_date"
+                android:enabled="false"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:hint="@string/from_date"
+                android:inputType="date"
+                android:text="@={viewmodel.dtFrom}"
+                android:textSize="14sp"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <ImageButton
+                android:id="@+id/btn_dateFrom"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/btn_delete_caption"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:onClick="@{viewmodel::onFromDate}"
+                app:layout_constraintBottom_toBottomOf="@+id/dtFrom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/dtFrom"
+                app:srcCompat="@drawable/ic_calendar"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <EditText
+                android:id="@+id/dtTo"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/to_date"
+                android:enabled="false"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:hint="@string/to_date"
+                android:inputType="date"
+                android:text="@={viewmodel.dtTo}"
+                android:textSize="14sp"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <ImageButton
+                android:id="@+id/btn_dateTo"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/btn_delete_caption"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:onClick="@{viewmodel::onToDate}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/dtFrom"
+                app:srcCompat="@drawable/ic_calendar"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <ImageButton
+                android:id="@+id/btn_doSearch"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/btn_delete_caption"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:onClick="@{()-> viewmodel.doSearch()}"
+                app:layout_constraintBottom_toBottomOf="@+id/dtFrom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/dtFrom"
+                app:srcCompat="@drawable/ic_search"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/llViewTitle"
+            android:fillViewport="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_sales"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/sales_statement_row"
+                />
+
+        </HorizontalScrollView>
+    </RelativeLayout>
+
+</layout>

@@ -37,99 +37,106 @@
 
                 <!-- Invoice no label and data-->
                 <EditText
-                        android:id="@+id/sale_doc_no"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:gravity="center"
-                        android:hint="@string/visit_no"
-                        android:text="@={viewmodel.mSrv_vst_no}"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:inputType="text"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/etxt_date"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:id="@+id/sale_doc_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="center"
+                    android:hint="@string/visit_no"
+                    android:inputType="text"
+                    android:text="@={viewmodel.mSrv_vst_no}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/etxt_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <!-- Invoice date label and data-->
                 <EditText
-                        android:id="@+id/etxt_date"
-                        android:layout_width="130dp"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:gravity="center"
-                        android:hint="@string/lbl_doc_date"
-                        android:inputType="date"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:text="@={viewmodel.mSrv_vst_date}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_date"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:id="@+id/etxt_date"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="center"
+                    android:hint="@string/lbl_doc_date"
+                    android:inputType="date"
+                    android:text="@={viewmodel.mSrv_vst_date}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_date"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <ImageButton
-                        android:id="@+id/btn_date"
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/etxt_date"
-                        app:srcCompat="@drawable/ic_datepicker" />
+                    android:id="@+id/btn_date"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/etxt_date"
+                    app:srcCompat="@drawable/ic_calendar"
+                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
 
                 <!-- Survey Name -->
                 <EditText
-                        android:id="@+id/edtxt_barcode"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/survey_name"
-                        android:inputType="text"
-                        android:text="@={viewmodel.mSrv_name}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/next_vst_date"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
+                    android:id="@+id/edtxt_barcode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/survey_name"
+                    android:inputType="text"
+                    android:text="@={viewmodel.mSrv_name}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/next_vst_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sale_doc_no"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <EditText
-                        android:id="@+id/next_vst_date"
-                        android:layout_width="130dp"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:gravity="center"
-                        android:hint="@string/lbl_doc_date"
-                        android:inputType="date"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:text="@={viewmodel.mSrv_vst_date}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_next_vst_date"
-                        app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
+                    android:id="@+id/next_vst_date"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="center"
+                    android:hint="@string/lbl_doc_date"
+                    android:inputType="date"
+                    android:text="@={viewmodel.mSrv_vst_date}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_next_vst_date"
+                    app:layout_constraintTop_toTopOf="@+id/edtxt_barcode"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <ImageButton
-                        android:id="@+id/btn_next_vst_date"
-                        android:layout_width="30dp"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:onClick="@{viewmodel::onDatePicker}"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        app:layout_constraintBottom_toBottomOf="@+id/next_vst_date"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/next_vst_date"
-                        app:srcCompat="@drawable/ic_datepicker" />
+                    android:id="@+id/btn_next_vst_date"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:onClick="@{viewmodel::onDatePicker}"
+                    app:layout_constraintBottom_toBottomOf="@+id/next_vst_date"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/next_vst_date"
+                    app:srcCompat="@drawable/ic_calendar"
+                    tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
                 <!-- Customer Info -->
                 <AutoCompleteTextView
-                        android:id="@+id/atc_customer"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:gravity="start"
-                        android:hint="@string/lbl_customer_name"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/edtxt_barcode" />
+                    android:id="@+id/atc_customer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_customer_name"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edtxt_barcode"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <ImageButton
                         android:id="@+id/btn_cancelCustomer"
@@ -141,7 +148,7 @@
                         app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/atc_customer"
-                        app:srcCompat="@drawable/ic_action_close" />
+                        app:srcCompat="@drawable/btn_close" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -244,13 +251,14 @@
                         android:textColor="@android:color/white" />
 
                 <Button
-                        android:id="@+id/next_qn_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorAccent"
-                        android:padding="12dp"
-                        android:text="@string/next_btn"
-                        android:textColor="@android:color/white" />
+                    android:id="@+id/next_qn_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorAccent"
+                    android:padding="12dp"
+                    android:text="@string/next_btn"
+                    android:textColor="@android:color/white"
+                    tools:ignore="TextContrastCheck" />
             </LinearLayout>
         </RelativeLayout>
 

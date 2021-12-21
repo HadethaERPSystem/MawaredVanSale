@@ -15,8 +15,8 @@ abstract class PaginationScrollListener (layoutManager: LinearLayoutManager):Rec
 
     override fun onScrolled(recyclerView:RecyclerView, dx:Int, dy:Int) {
         super.onScrolled(recyclerView, dx, dy)
-        val visibleItemCount = layoutManager.getChildCount()
-        val totalItemCount = layoutManager.getItemCount()
+        val visibleItemCount = layoutManager.childCount
+        val totalItemCount = layoutManager.itemCount
         val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
         if (!isLoading() && !isLastPage())
         {

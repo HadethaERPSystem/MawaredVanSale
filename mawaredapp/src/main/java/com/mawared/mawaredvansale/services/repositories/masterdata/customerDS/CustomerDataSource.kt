@@ -8,12 +8,13 @@ import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.ApiException
 import com.mawared.mawaredvansale.utilities.FIRST_PAGE
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import com.mawared.mawaredvansale.utilities.POST_PER_PAGE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CustomerDataSource(private val api: ApiService, private val sm_Id: Int?, private val org_Id: Int?):
+class CustomerDataSource(private val api: ApiService, private val sm_Id: Int?, private val org_Id: Int?, private val term: String):
     PageKeyedDataSource<Int, Customer>(){
 
     private var page = FIRST_PAGE
@@ -23,11 +24,11 @@ class CustomerDataSource(private val api: ApiService, private val sm_Id: Int?, p
         networkState.postValue(NetworkState.LOADING)
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = api.customers_OnPages(sm_Id, org_Id, page, POST_PER_PAGE)
+                val response = api.customers_OnPages(sm_Id, org_Id, term, page, POST_PER_PAGE)
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {
-                        if(result.data != null){
+                        if(result.data != null && result.data.isNotEmpty()){
                             val data: MutableList<Customer> = result.data as MutableList<Customer>
                             callback.onResult(data, null, page + 1)
                             networkState.postValue(NetworkState.LOADED)
@@ -45,6 +46,10 @@ class CustomerDataSource(private val api: ApiService, private val sm_Id: Int?, p
                 networkState.postValue(NetworkState.ERROR)
                 Log.e("Connectivity", "No internet connection", e)
                 return@launch
+            } catch (e: NoConnectivityException){
+                networkState.postValue(NetworkState.ERROR_CONNECTION)
+                Log.e("Connectivity", "No internet connection", e)
+                return@launch
             } catch (e: Exception) {
                 networkState.postValue(NetworkState.ERROR)
                 Log.e("Exception", "Error exception when call getOrders", e)
@@ -57,7 +62,7 @@ class CustomerDataSource(private val api: ApiService, private val sm_Id: Int?, p
         networkState.postValue(NetworkState.LOADING)
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = api.customers_OnPages(sm_Id, org_Id, params.key, POST_PER_PAGE)
+                val response = api.customers_OnPages(sm_Id, org_Id, term, params.key, POST_PER_PAGE)
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {
@@ -69,8 +74,6 @@ class CustomerDataSource(private val api: ApiService, private val sm_Id: Int?, p
                             }else{
                                 networkState.postValue(NetworkState.ENDOFLIST)
                             }
-                        }else{
-                            networkState.postValue(NetworkState.NODATA)
                         }
                     } else {
                         networkState.postValue(NetworkState.ERROR)
@@ -81,6 +84,10 @@ class CustomerDataSource(private val api: ApiService, private val sm_Id: Int?, p
                 }
             } catch (e: ApiException) {
                 networkState.postValue(NetworkState.ERROR)
+                Log.e("Connectivity", "No internet connection", e)
+                return@launch
+            } catch (e: NoConnectivityException){
+                networkState.postValue(NetworkState.ERROR_CONNECTION)
                 Log.e("Connectivity", "No internet connection", e)
                 return@launch
             } catch (e: Exception) {

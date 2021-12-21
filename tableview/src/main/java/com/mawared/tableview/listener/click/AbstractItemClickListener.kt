@@ -50,7 +50,7 @@ abstract class AbstractItemClickListener(
                 recyclerView.context,
                 object : GestureDetector.SimpleOnGestureListener() {
 
-                    internal var start: MotionEvent? = null
+                    var start: MotionEvent? = null
 
                     override fun onSingleTapUp(e: MotionEvent): Boolean = true
 

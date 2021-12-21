@@ -20,12 +20,12 @@ class LocaleManager {
     private fun persistLanguage(c: Context, language: String) {  }
 
     private fun updateResources(context: Context, language: String) {
-        val locale = Locale(language);
-        Locale.setDefault(locale);
+        val locale = Locale(language)
+        Locale.setDefault(locale)
 
         val res = context.resources
-        val config = Configuration(res.getConfiguration());
+        val config = Configuration(res.configuration)
         config.locale = locale
-        res.updateConfiguration(config, res.getDisplayMetrics());
+        res.updateConfiguration(config, res.displayMetrics)
     }
 }

@@ -36,7 +36,7 @@ class DownloadActivity : AppCompatActivity(), KodeinAware {
         var toolbar : Toolbar = findViewById(R.id.download_toolbar)
 
         setSupportActionBar(toolbar)
-        supportActionBar!!.setTitle("Download Service")
+        supportActionBar!!.title = "Download Service"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 }

@@ -15,7 +15,7 @@ class SalesRepositoryImp(private val api: ApiService): ISalesRepository, SafeApi
     lateinit var pagedList: LiveData<PagedList<SalesStatement>>
     lateinit var salesDataSourceFactory: SalesDataSourceFactory
 
-    override fun fetchLivePagedList(userId: Int, dtFrom: String, dtTo: String): LiveData<PagedList<SalesStatement>> {
+    override fun fetchLivePagedList(userId: Int, dtFrom: String?, dtTo: String?): LiveData<PagedList<SalesStatement>> {
         salesDataSourceFactory = SalesDataSourceFactory(api, userId, dtFrom, dtTo)
 
 

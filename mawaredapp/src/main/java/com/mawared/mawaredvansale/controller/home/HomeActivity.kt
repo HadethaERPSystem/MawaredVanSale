@@ -2,29 +2,25 @@ package com.mawared.mawaredvansale.controller.home
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
-import android.util.AttributeSet
-import android.util.DisplayMetrics
-import android.view.LayoutInflater
+import android.os.Environment
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationView
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.auth.AuthViewModel
-import com.mawared.mawaredvansale.controller.auth.AuthViewModelFactory
 import com.mawared.mawaredvansale.controller.auth.LoginActivity
 import com.mawared.mawaredvansale.databinding.NavHeaderBinding
+import com.mawared.update.UpdateChecker
 import kotlinx.android.synthetic.main.activity_home.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
@@ -33,11 +29,12 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
-import org.xmlpull.v1.XmlPullParserFactory
+import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.util.*
+import java.util.jar.Manifest
 import javax.xml.parsers.DocumentBuilderFactory
+
 
 class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigationItemSelectedListener{
 
@@ -53,16 +50,21 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
     var navigationView: NavigationView? = null
 
+    override fun onStart() {
+        super.onStart()
+        UpdateChecker.checkForSilent(this)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //loadLocale()// call loadLocale
-
+        val lang = Locale.getDefault().toString()
+        App.prefs.systemLanguage = lang
         setContentView(R.layout.activity_home)
 
         setSupportActionBar(toolbar)
 
         navigationView = findViewById(R.id.nav_view)
-        navigationView!!.setNavigationItemSelectedListener (this)
+        navigationView!!.setNavigationItemSelectedListener(this)
 
         val navController = Navigation.findNavController(this, R.id.fragment)
         NavigationUI.setupWithNavController(nav_view, navController)
@@ -73,6 +75,32 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
+        navigationView!!.setNavigationItemSelectedListener {
+            when(it.itemId){
+                    R.id.menu_settings -> {
+                        navController.navigate(R.id.action_dashboardFragment_to_settingsFragment)
+                        true
+                    }
+                    R.id.menu_changeLanguage -> {
+                        //showChangeLang()
+                        true
+                    }
+                    R.id.menu_logout -> {
+                        logout()
+                        true
+                    }
+                else -> { true }
+            }
+        }
+//        ActivityCompat.requestPermissions(
+//            this,
+//            arrayOf(
+//                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                android.Manifest.permission.READ_EXTERNAL_STORAGE
+//            ),
+//            PackageManager.PERMISSION_GRANTED
+//        )
+        //ActivityCompat.requestPermissions(this, {})
 //        xmlParses()
 //        val pullParserFactory: XmlPullParserFactory
 //        try {
@@ -89,6 +117,8 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 //        }catch (e: IOException){
 //            e.printStackTrace()
 //        }
+
+
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
@@ -97,46 +127,80 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         while (eventType != XmlPullParser.END_DOCUMENT){
             val name: String
             when(eventType){
-                XmlPullParser.START_DOCUMENT -> {}
+                XmlPullParser.START_DOCUMENT -> {
+                }
                 XmlPullParser.START_TAG -> {
                     name = parser.name
-                    when(name){
-                        "PageSetting" ->{}
-                        "Paper" -> {val paper = parser.nextText()}
-                        "Width" -> {val width = parser.nextText() }
-                        "Height" -> {val height = parser.nextText()}
-                        "PageHeader" -> {}
-                        "Title" -> {}
-                        "Table" -> {}
-                        "thead" -> {}
-                        "tr" -> {}
-                        "td" -> {}
-                        "Separator" -> {}
-                        "Body" -> {}
-                        "GrandTotal" -> {}
-                        "PageFooter" -> {}
-                        "PageNumber" -> {}
+                    when (name) {
+                        "PageSetting" -> {
+                        }
+                        "Paper" -> {
+                            val paper = parser.nextText()
+                        }
+                        "Width" -> {
+                            val width = parser.nextText()
+                        }
+                        "Height" -> {
+                            val height = parser.nextText()
+                        }
+                        "PageHeader" -> {
+                        }
+                        "Title" -> {
+                        }
+                        "Table" -> {
+                        }
+                        "thead" -> {
+                        }
+                        "tr" -> {
+                        }
+                        "td" -> {
+                        }
+                        "Separator" -> {
+                        }
+                        "Body" -> {
+                        }
+                        "GrandTotal" -> {
+                        }
+                        "PageFooter" -> {
+                        }
+                        "PageNumber" -> {
+                        }
 
                     }
                 }
                 XmlPullParser.END_TAG -> {
                     name = parser.name
-                    when(name){
-                        "PageSetting" -> {}
-                        "Paper" -> {}
-                        "Width" -> {}
-                        "Height" -> {}
-                        "PageHeader" -> {}
-                        "Title" -> {}
-                        "Table" -> {}
-                        "thead" -> {}
-                        "tr" -> {}
-                        "td" -> {}
-                        "Separator" -> {}
-                        "Body" -> {}
-                        "GrandTotal" -> {}
-                        "PageFooter" -> {}
-                        "PageNumber" -> {}
+                    when (name) {
+                        "PageSetting" -> {
+                        }
+                        "Paper" -> {
+                        }
+                        "Width" -> {
+                        }
+                        "Height" -> {
+                        }
+                        "PageHeader" -> {
+                        }
+                        "Title" -> {
+                        }
+                        "Table" -> {
+                        }
+                        "thead" -> {
+                        }
+                        "tr" -> {
+                        }
+                        "td" -> {
+                        }
+                        "Separator" -> {
+                        }
+                        "Body" -> {
+                        }
+                        "GrandTotal" -> {
+                        }
+                        "PageFooter" -> {
+                        }
+                        "PageNumber" -> {
+                        }
                     }
                 }
             }
@@ -211,6 +275,8 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         logout()
     }
     private fun logout(){
+        //deleteFile()
+        deleteCache(this)
         if(App.prefs.saveUser != null){
             viewModel.deleteUser(App.prefs.saveUser!!)
         }
@@ -222,6 +288,13 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         startActivity(loginIntent)
     }
 
+//    private fun deleteFile(){
+//        val _filepath: String = "${Environment.getExternalStorageDirectory()}/mmobilepos.db"
+//        val filePath : File = File(_filepath)
+//        if(filePath.exists()){
+//            filePath.delete()
+//        }
+//    }
     private fun showChangeLang(){
         val listItems = arrayOf("عربي", "English")
         val mBulider = AlertDialog.Builder(this)
@@ -264,6 +337,30 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
         if(inputManager.isAcceptingText){
             inputManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        }
+    }
+    fun deleteCache(context: Context) {
+        try {
+            val dir: File = context.cacheDir
+            deleteDir(dir)
+        } catch (e: Exception) {
+        }
+    }
+
+    fun deleteDir(dir: File?): Boolean {
+        return if (dir != null && dir.isDirectory) {
+            val children: Array<String> = dir.list()
+            for (i in children.indices) {
+                val success = deleteDir(File(dir, children[i]))
+                if (!success) {
+                    return false
+                }
+            }
+            dir.delete()
+        } else if (dir != null && dir.isFile) {
+            dir.delete()
+        } else {
+            false
         }
     }
 }

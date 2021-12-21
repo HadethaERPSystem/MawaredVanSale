@@ -162,6 +162,7 @@ class TransferRepositoryImp(private val api: ApiService): ITransferRepository, S
     }
 
     override fun cancelJob() {
+        _networkState.value = null
         job?.cancel()
     }
 }

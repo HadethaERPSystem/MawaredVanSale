@@ -9,6 +9,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.view.View.OnTouchListener
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -19,11 +20,14 @@ import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter1
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
+import com.mawared.mawaredvansale.controller.common.GenerateTicket
+import com.mawared.mawaredvansale.controller.common.TicketPrinting
 import com.mawared.mawaredvansale.controller.common.printing.*
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.databinding.ReceivableEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.utilities.URL_LOGO
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.receivable_entry_fragment.*
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +61,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.doc_date.value = "${LocalDate.now()}"
-        viewModel.ctx = activity!!
+        viewModel.ctx = requireActivity()
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
@@ -71,7 +75,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_receivable_entry_title)
         (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
         if(arguments != null){
-            val args = ReceivableEntryFragmentArgs.fromBundle(arguments!!)
+            val args = ReceivableEntryFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
             if(viewModel.mode != "Add"){
                 viewModel.setReceivableId(args.rcvId)
@@ -86,7 +90,11 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.add_menu, menu)
+        if(viewModel.mode == "View"){
+            inflater.inflate(R.menu.view_menu, menu)
+        }else{
+            inflater.inflate(R.menu.add_menu, menu)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -95,17 +103,23 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         when(item.itemId){
             R.id.save_btn ->{
                 if(!viewModel.isRunning){
+                    viewModel.isRunning = true
+                   // UIUtil.hideKeyboard(activity!!)
                     hideKeyboard()
-                    showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
+                    showDialog(requireContext(), getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null,{
                         onStarted()
                         viewModel.location = getLocationData()
                         viewModel.onSave()
-                    }
+                    },{
+                        viewModel.isRunning = false
+                    })
                 }
             }
             R.id.close_btn -> {
+                //UIUtil.hideKeyboard(activity!!)
                 hideKeyboard()
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
+                setHasOptionsMenu(false)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -118,6 +132,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
 
     override fun onStop() {
         removeObservers()
+        hideKeyboard()
         super.onStop()
     }
 
@@ -132,7 +147,8 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
                 doPrint(it)
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
+                setHasOptionsMenu(false)
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }
@@ -143,8 +159,6 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
                 viewModel._entityEo = it
                 viewModel.doc_no.value = it.rcv_doc_no?.toString()
                 viewModel.doc_date.value = viewModel.returnDateString(it.rcv_doc_date!!)
-                viewModel.selectedCustomer?.cu_ref_Id = it.rcv_cu_Id!!
-                viewModel.selectedCustomer?.cu_name = it.rcv_cu_name
                 viewModel.bc_amount.value = it.rcv_amount.toString()
                 viewModel.lc_amount.value = it.rcv_lc_amount.toString()
                 viewModel.bc_change.value = it.rcv_change.toString()
@@ -157,19 +171,15 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         })
 
         // Customer autocomplete settings
-        val adapter = CustomerAdapter1(context!!, R.layout.support_simple_spinner_dropdown_item )
+        val adapter = CustomerAdapter1(requireContext(), R.layout.support_simple_spinner_dropdown_item )
 
         binding.atcCustomer.threshold = 0
-        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 50
+        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 10
         binding.atcCustomer.setAdapter(adapter)
-        binding.atcCustomer.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcCustomer.showDropDown()
+        binding.btnOpenCustomer.setOnClickListener {
+            binding.atcCustomer.showDropDown()
         }
 
-        binding.atcCustomer.setOnTouchListener(OnTouchListener { v, event ->
-            binding.atcCustomer.showDropDown()
-            false
-        })
         binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedCustomer = adapter.getItem(position)
         }
@@ -184,13 +194,20 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
 
             }
             override fun afterTextChanged(s: Editable?) {
-                viewModel.term.value = s.toString()
+                if(viewModel.selectedCustomer == null) viewModel.term.value = s.toString() else binding.atcCustomer.dismissDropDown()
             }
         })
         // bind customer to autocomplete
         viewModel.customerList.observe(viewLifecycleOwner, Observer { cu ->
-            adapter.setCustomers(cu)
-            binding.atcCustomer.showDropDown()
+            if(cu != null){
+                adapter.setCustomers(cu)
+                if(viewModel.mode != "Add" && cu.size > 0 && viewModel._entityEo != null){
+                    viewModel.selectedCustomer = cu.find { it.cu_ref_Id == viewModel._entityEo?.rcv_cu_Id}
+                }else{
+                    binding.atcCustomer.showDropDown()
+                }
+            }
+
         })
 
         viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
@@ -198,12 +215,12 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         })
 
         viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
-            viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.00
+            viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.0
         })
 
         viewModel.setVoucherCode("Recievable")
         viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
-        viewModel.term.value = ""
+        if(viewModel.mode == "Add") viewModel.term.value = ""
         llProgressBar?.visibility = View.GONE
     }
 
@@ -215,7 +232,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
 
 
     override fun onDelete(baseEo: Receivable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+         //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onShowDatePicker(v: View) {
@@ -224,9 +241,9 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val dpd = DatePickerDialog(activity!!, DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+        val dpd = DatePickerDialog(requireActivity(), DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
 
-            viewModel.doc_date.value = "${dayOfMonth}-${monthOfYear + 1}-${yr}"
+            viewModel.doc_date.value = "${yr}-${monthOfYear + 1}-${dayOfMonth}"
 
         }, year, month, day)
         dpd.show()
@@ -252,48 +269,133 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         viewModel.cancelJob()
     }
 
-    private fun doPrint(_baseEo: Receivable){
-        val config = activity!!.resources.configuration
-        val isRTL = if(config.layoutDirection == View.LAYOUT_DIRECTION_LTR) false else true
-        var bmp: Bitmap? = null
+    private fun doPrint(_baseEo: Receivable) {
+        if (App.prefs.printing_type == "R") {
+            try {
+                val lang = Locale.getDefault().toString().toLowerCase()
+                val tickets = GenerateTicket(requireActivity(), lang).create(
+                    _baseEo,
+                    URL_LOGO + "co_black_logo.png",
+                    "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION",
+                    null,
+                    null
+                )
 
-        val mngr: AssetManager = activity!!.getAssets()
-        var `is`: InputStream? = null
-        try {
-            `is` = mngr.open("images/co_logo.bmp")
-            bmp = BitmapFactory.decodeStream(`is`)
-        } catch (e1: IOException) {
-            e1.printStackTrace()
-        }
-        val fontNameEn = "assets/fonts/arial.ttf"
-        val fontNameAr = "assets/fonts/arial.ttf"
-        val fontNameAr1 = "assets/fonts/droid_kufi_regular.ttf"
-        try {
-
-            val imgLogo = RepLogo(bmp, 10F, 800F)
-            val header: ArrayList<HeaderFooterRow> = arrayListOf()
-            var tbl: HashMap<Int, TCell> = hashMapOf()
-            var rws: ArrayList<CTable> = arrayListOf()
-            val phones = if(_baseEo.rcv_org_phone != null) _baseEo.rcv_org_phone!! else ""
-
-            header.add(HeaderFooterRow(0, null, "شركة النادر التجارية", 14F, Element.ALIGN_CENTER, Font.BOLD, fontNameAr1 ))
-            header.add(HeaderFooterRow(1, null, "Al-Nadir Trading Company",  14F, Element.ALIGN_CENTER, Font.BOLD, fontNameEn))
-            header.add(HeaderFooterRow(2, null, "${_baseEo.rcv_org_name}", 14F, Element.ALIGN_CENTER, Font.BOLD, fontNameEn))
-            header.add(HeaderFooterRow(3, null, phones, 12F, Element.ALIGN_CENTER, Font.BOLD, fontNameEn))
-
-            val footer: ArrayList<HeaderFooterRow> = arrayListOf()
-            footer.add(HeaderFooterRow(0,null,"موارد" + " - " + "الشركة الحديثة للبرامجيات الاتمتة المحدودة",fontSize = 9F,align = Element.ALIGN_LEFT,fontName = fontNameAr))
-            footer.add(HeaderFooterRow(2,null,activity!!.resources!!.getString(R.string.rpt_user_name) + ": ${App.prefs.saveUser!!.name}",fontSize = 9F, align = Element.ALIGN_LEFT, fontName = fontNameAr))
-            _baseEo.created_by = activity!!.resources!!.getString(R.string.rpt_user_name) + ": ${App.prefs.saveUser!!.name}"
-
-            val act = activity!!
-            GeneratePdf().createPdf(activity!!,imgLogo, _baseEo, header, footer,isRTL) { _, path ->
-                onSuccess("Pdf Created Successfully")
-                GeneratePdf().printPDF(act, path)
+                TicketPrinting(requireActivity(), tickets).run()
+            } catch (e: Exception) {
+                onFailure("Error Exception ${e.message}")
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            onFailure("Error Exception ${e.message}")
-            e.printStackTrace()
+
+        } else {
+            val config = requireActivity().resources.configuration
+            val isRTL = config.layoutDirection != View.LAYOUT_DIRECTION_LTR
+            var bmp: Bitmap? = null
+
+            val mngr: AssetManager = requireActivity().assets
+            var `is`: InputStream? = null
+            try {
+                //`is` = mngr.open("images/co_logo.bmp")
+                //bmp = BitmapFactory.decodeStream(`is`)
+            } catch (e1: IOException) {
+                e1.printStackTrace()
+            }
+            val fontNameEn = "assets/fonts/arial.ttf"
+            val fontNameAr = "assets/fonts/arial.ttf"
+            val fontNameAr1 = "assets/fonts/droid_kufi_regular.ttf"
+            try {
+
+                val imgLogo = RepLogo(bmp, 10F, 800F)
+                val header: ArrayList<HeaderFooterRow> = arrayListOf()
+                var tbl: HashMap<Int, TCell> = hashMapOf()
+                var rws: ArrayList<CTable> = arrayListOf()
+                val phones = if (_baseEo.rcv_org_phone != null) _baseEo.rcv_org_phone!! else ""
+
+                header.add(
+                    HeaderFooterRow(
+                        0,
+                        null,
+                        App.prefs.saveUser!!.client_name,
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameAr1
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        1,
+                        null,
+                        "",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        2,
+                        null,
+                        "${_baseEo.rcv_org_name}",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        3,
+                        null,
+                        phones,
+                        12F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+
+                val footer: ArrayList<HeaderFooterRow> = arrayListOf()
+                footer.add(
+                    HeaderFooterRow(
+                        0,
+                        null,
+                        "موارد" + " - " + "الشركة الحديثة للبرامجيات الاتمتة المحدودة",
+                        fontSize = 9F,
+                        align = Element.ALIGN_LEFT,
+                        fontName = fontNameAr
+                    )
+                )
+                footer.add(
+                    HeaderFooterRow(
+                        2,
+                        null,
+                        requireActivity().resources!!.getString(R.string.rpt_user_name) + ": ${App.prefs.saveUser!!.name}",
+                        fontSize = 9F,
+                        align = Element.ALIGN_LEFT,
+                        fontName = fontNameAr
+                    )
+                )
+                _baseEo.created_by =
+                    requireActivity().resources!!.getString(R.string.rpt_user_name) + ": ${App.prefs.saveUser!!.name}"
+
+                val act = requireActivity()
+                GeneratePdf().createPdf(
+                    requireActivity(),
+                    imgLogo,
+                    _baseEo,
+                    header,
+                    footer,
+                    isRTL
+                ) { _, path ->
+                    onSuccess("Pdf Created Successfully")
+                    GeneratePdf().printPDF(act, path)
+                }
+            } catch (e: Exception) {
+                onFailure("Error Exception ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 }

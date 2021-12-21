@@ -1,6 +1,6 @@
 <resources>
     <!--
-    TODO: Before you run your application, you need a Google Maps API key.
+    ODO: Before you run your application, you need a Google Maps API key.
 
     To get one, follow this link, follow the directions and press "Create" at the end:
 
@@ -21,5 +21,5 @@
     string in this file.
     old key  = AIzaSyA7DwhiWxGBkY03U9ZMootu32iobqVUfJs
     -->
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyCTB0MK2K9P6dguzsergvYggr-K834Ly8A</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDoF1KQqwUPKcf0JwdxugadgIlPMWFdF78</string>
 </resources>

@@ -11,8 +11,8 @@ object Utils {
     private val hexStr = "0123456789ABCDEF"
     private val binaryArray = arrayOf<String>("0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111")
     fun decodeBitmap(bmp: Bitmap):ByteArray? {
-        val bmpWidth = bmp.getWidth()
-        val bmpHeight = bmp.getHeight()
+        val bmpWidth = bmp.width
+        val bmpHeight = bmp.height
         val list = ArrayList<String>() //binaryString list
         var sb:StringBuffer
         var bitLen = bmpWidth / 8

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+                name="product"
+                type="com.mawared.mawaredvansale.data.db.entities.md.Product" />
+
+    </data>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:background="@color/lightgray">
+
+            <TextView
+                android:id="@+id/lblBatchNo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:text="@string/lbl_batch_no"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline9"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:hint="@string/lbl_batch_no" />
+
+            <TextView
+                android:id="@+id/txtBatchNo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:text="@{product.pr_batch_no}"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline9"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lblBatchNo"
+                tools:hint="@string/tag_batch_no" />
+
+            <TextView
+                android:id="@+id/lblExpiry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:text="@string/lbl_expiry_date"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintStart_toStartOf="@+id/guideline9"
+                app:layout_constraintTop_toTopOf="@+id/lblBatchNo"
+                tools:hint="@string/tag_expiry_date" />
+
+            <TextView
+                android:id="@+id/tv_expiry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@{product.returnDateString(product.pr_expiry_date)}"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintStart_toStartOf="@+id/guideline9"
+                app:layout_constraintTop_toTopOf="@+id/txtBatchNo"
+                tools:hint="Expiry Date" />
+
+            <TextView
+                android:id="@+id/lbl_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:text="@string/lbl_unit_price"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/lblExpiry"
+                app:layout_constraintTop_toTopOf="@+id/lblExpiry"
+                tools:hint="@string/lbl_unit_price" />
+
+            <TextView
+                android:id="@+id/tv_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@{product.numberFormat(product.pr_unit_price)}"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/tv_expiry"
+                tools:hint="@string/lbl_unit_price" />
+
+            <TextView
+                android:id="@+id/lbl_refno"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:text="@string/lbl_doc_no"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline9"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtBatchNo"
+                tools:hint="@string/lbl_doc_no" />
+
+            <TextView
+                android:id="@+id/txtRefNo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center"
+                android:text="@{product.ref_no}"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_refno"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/lbl_refno"
+                app:layout_constraintTop_toTopOf="@+id/lbl_refno"
+                tools:hint="@string/lbl_doc_no" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.33" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.66" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</layout>

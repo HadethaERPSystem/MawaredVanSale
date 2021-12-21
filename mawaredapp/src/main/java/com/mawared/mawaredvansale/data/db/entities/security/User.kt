@@ -18,6 +18,10 @@ data class User (
     var cr_code: String?,
     var sl_cr_Id: Int?,
     var sl_cr_code: String?,
+    var ss_cr_Id: Int?,
+    var ss_cr_code: String?,
+    var sf_cr_Id: Int?,
+    var sf_cr_code: String?,
     var token: String?,
     var created_at: String? = null,
     var updated_at: String? = null
@@ -26,4 +30,6 @@ data class User (
     var id: Int = 0
     var client_name: String? = null
     var org_name: String? = null
+    var dis_Per: Double? = null
+    var hasGift: String? = null
 }

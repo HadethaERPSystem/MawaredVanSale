@@ -7,51 +7,64 @@
             name="viewmodel"
             type="com.mawared.mawaredvansale.controller.reports.fms.CashbookStatementViewModel" />
     </data>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:orientation="horizontal">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:orientation="horizontal">
 
         <TextView
-            android:layout_width="60dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_gravity="top"
+            android:fontFamily="@font/droid_kufi_regular"
             android:text=""
-            android:background="@drawable/table_content_cell_bg"
+            android:background="@drawable/table_header_cell_bg"
+            android:textColor="@android:color/white"
             android:textSize="12sp"/>
 
         <TextView
-            android:layout_width="150dp"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/table_header_cell_bg"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:text="@string/lbl_total"
+            android:textAlignment="viewEnd"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:text="Total"
-            android:background="@drawable/table_content_cell_bg"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:text="@{viewmodel.numberFormat(entityEo.total_rcv_amount)}"
+            android:background="@drawable/table_header_cell_bg"
+            android:textColor="@android:color/white"
             android:textSize="12sp"/>
 
         <TextView
-            android:layout_width="100dp"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:text="@{String.valueOf(entityEo.total_rcv_amount)}"
-            android:background="@drawable/table_content_cell_bg"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:text="@{viewmodel.numberFormat(entityEo.total_py_amount)}"
+            android:background="@drawable/table_header_cell_bg"
+            android:textColor="@android:color/white"
             android:textSize="12sp"/>
 
         <TextView
-            android:layout_width="100dp"
+            android:layout_width="110dp"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:text="@{String.valueOf(entityEo.total_py_amount)}"
-            android:background="@drawable/table_content_cell_bg"
-            android:textSize="12sp"/>
-
-        <TextView
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="top"
-            android:text="@{String.valueOf(entityEo.total_balance)}"
-            android:background="@drawable/table_content_cell_bg"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:text="@{viewmodel.numberFormat(entityEo.total_balance)}"
+            android:background="@drawable/table_header_cell_bg"
+            android:textColor="@android:color/white"
             android:textSize="12sp"/>
     </LinearLayout>
-
+    </androidx.cardview.widget.CardView>
 </layout>

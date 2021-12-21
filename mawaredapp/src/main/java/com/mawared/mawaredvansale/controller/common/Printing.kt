@@ -4,6 +4,7 @@ import HPRTAndroidSDK.HPRTPrinterHelper
 import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Message
 import android.util.Log
@@ -11,6 +12,9 @@ import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.utilities.toast
 import print.Print
 import print.PublicFunction
+import java.io.File
+import java.io.InputStream
+import java.net.URL
 import java.util.concurrent.Executors
 
 class TicketPrinting(val ctx: Context, val lines: List<Ticket>) {
@@ -26,7 +30,7 @@ class TicketPrinting(val ctx: Context, val lines: List<Ticket>) {
     private var PRINTER_ENCODE: String = ""
 
     private var BarcodeType = Print.BC_CODE128
-    private var BarcodeWidth = 2
+    private var BarcodeWidth = 1
     private var BarcodeHeight = 80
     private var BarcodeHRILayout = 2
 
@@ -34,6 +38,7 @@ class TicketPrinting(val ctx: Context, val lines: List<Ticket>) {
     private var dialog: ProgressDialog? = null
 
     fun run() {
+
         PFun = PublicFunction(ctx)
         PAct = PublicAction(ctx)
         try {
@@ -85,7 +90,7 @@ class TicketPrinting(val ctx: Context, val lines: List<Ticket>) {
         var bRet = false
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (mBluetoothAdapter != null) {
-            if (mBluetoothAdapter!!.isEnabled())
+            if (mBluetoothAdapter!!.isEnabled)
                 return true
             mBluetoothAdapter!!.enable()
             try {
@@ -94,7 +99,7 @@ class TicketPrinting(val ctx: Context, val lines: List<Ticket>) {
                 e.printStackTrace()
             }
 
-            if (!mBluetoothAdapter!!.isEnabled()) {
+            if (!mBluetoothAdapter!!.isEnabled) {
                 bRet = true
                 Log.d("PRTLIB", "BTO_EnableBluetooth --> Open OK")
             }
@@ -109,54 +114,90 @@ class TicketPrinting(val ctx: Context, val lines: List<Ticket>) {
 
     @Throws(Exception::class)
     private fun Barcode_BC_CODE128(barcode: String, justification: Int): Int {
-        return Print.PrintBarCode(BarcodeType, "{BS/N:$barcode", BarcodeWidth, BarcodeHeight, BarcodeHRILayout, justification )
+        //"{BS/N:{$barcode"
+        //Print.PrintBarCode(BarcodeType, "197288L")
+        val bc = "{B$barcode"
+        return Print.PrintBarCode(BarcodeType, bc, BarcodeWidth, BarcodeHeight, BarcodeHRILayout, 1)//justification )
     }
 
     private fun printReceipt(tickets: List<Ticket>) {
         dialog = ProgressDialog(ctx)
         dialog?.setMessage("Printing.....")
-        dialog?.setProgress(100)
+        dialog?.progress = 100
         dialog?.show()
         executorService.execute {
             try {
+                val th : Thread = Thread(Runnable {
+                    Print.Initialize()
+                    //Print.setPrintResolution(203, 203)
+                    //Print.SelectPageMode()
+                    //Print.SetPageModePrintArea(0, 0, 640, 240);//Area (start x, start y, width, height)
+                    //Print.SetPageModePrintDirection(0)
+                    Print.setCodePage(PRINTER_CODE_PAGE)
+                    Print.LanguageEncode = PRINTER_ENCODE
+                    HPRTPrinterHelper.SetCharacterSet(PRINTER_CODE_PAGE.toByte())
+                    HPRTPrinterHelper.LanguageEncode = PRINTER_ENCODE
 
-                Print.Initialize()
-                Print.setCodePage(PRINTER_CODE_PAGE)
-                Print.LanguageEncode = PRINTER_ENCODE
-                HPRTPrinterHelper.SetCharacterSet(PRINTER_CODE_PAGE.toByte())
-                HPRTPrinterHelper.LanguageEncode = PRINTER_ENCODE
+                    // Print Line x1,y1 to x2,y2 , Line Width
+                    //Print.PrintPageLine(0, 128, 1280, 128, 2)
+                    //Print.setPrintResolution(203,203) set print resolution
+                    //Print.SetCharacterSize(17) set character size
+                    for (t in tickets){
 
-                for (t in tickets){
-
-                    when(t.type){
-                        LineType.Text -> {
-                            Print.PrintText(t.text, t.align.ordinal, t.attribute.ordinal, t.textSize)
-                        }
-                        LineType.Image -> {
-                            try {
-                                //val bmp = BitmapFactory.decodeResource(ctx.resources, R.mipmap.ic_logo_black)
-                                if(t.bmp != null){
-                                    Print.PrintBitmap(t.bmp, 2, 1)
-                                    HPRTPrinterHelper.PrintText("\r\n")
-                                }
-                            }catch (e: java.lang.Exception){
-                                e.printStackTrace()
+                        when(t.type){
+                            LineType.Rectangle -> {
+                                Print.PrintPageRectangle(t.xPos!!, t.yPos!!, t.exPos!!, t.eyPos!!, 2)
                             }
+                            LineType.Text -> {
+                                if(t.xPos != null && t.yPos != null){
+                                    Print.SetPageModeAbsolutePosition(t.xPos!!, t.yPos!!)
+                                    Print.SetCharacterSize(0)
+                                    Print.PrintText(t.text)//, t.align.ordinal, t.attribute.ordinal, t.textSize)
+                                }
+                                else{
+                                    Print.PrintText(t.text, t.align.ordinal, t.attribute.ordinal, t.textSize)
+                                }
 
-                        }
-                        LineType.Barcode -> {
-                            if(t.text != null){
-                                PAct!!.BeforePrintAction()
-                                Barcode_BC_CODE128(t.text!!, t.align.ordinal)
-                                PAct!!.AfterPrintAction()
+                            }
+                            LineType.Image -> {
+                                try {
+                                    //val bmp = BitmapFactory.decodeResource(ctx.resources, R.mipmap.ic_logo_black)
+                                    val conn = URL(t.text).openConnection()
+                                    conn.connect()
+                                    val length = conn.contentLength
+                                    if (length > 0) {
+                                        val bitmapData = IntArray(length)
+                                        val bitmapData2 = ByteArray(length)
+                                        val `is`: InputStream = conn.getInputStream()
+                                        val bmp = BitmapFactory.decodeStream(`is`)
+                                        if(bmp != null){
+                                            Print.PrintBitmap(bmp, 2, 1)
+                                            HPRTPrinterHelper.PrintText("\r\n")
+                                        }
+                                    }
+
+                                }catch (e: java.lang.Exception){
+                                    e.printStackTrace()
+                                }
+
+                            }
+                            LineType.Barcode -> {
+                                if(t.text != null){
+                                    PAct!!.BeforePrintAction()
+                                    Barcode_BC_CODE128(t.text!!, t.align.ordinal)
+                                    PAct!!.AfterPrintAction()
+                                }
                             }
                         }
                     }
-                }
 
-                HPRTPrinterHelper.CutPaper(Print.PARTIAL_CUT_FEED.toInt(), 50)
+                    Print.PrintDataInPageMode()
+                    //HPRTPrinterHelper.CutPaper(Print.PARTIAL_CUT_FEED.toInt(), 50)
 
-                handler?.sendEmptyMessage(PRINT_SUCCEED)
+                    handler?.sendEmptyMessage(PRINT_SUCCEED)
+                })
+                th.start()
+
             } catch (e: Exception) {
                 Log.e(
                     "Print",
@@ -166,5 +207,11 @@ class TicketPrinting(val ctx: Context, val lines: List<Ticket>) {
             }
 
         }
+    }
+
+    private fun printPDF(ctx: Context,mFilename: String){
+        val file = File(mFilename)
+        val bitmaps = HPRTPrinterHelper.PrintPDF(ctx, file, "1", 384)
+        Print.PrintBitmap(bitmaps[0], 1, 0)
     }
 }

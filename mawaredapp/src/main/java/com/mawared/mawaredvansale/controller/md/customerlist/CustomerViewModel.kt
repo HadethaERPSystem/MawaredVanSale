@@ -18,12 +18,13 @@ class CustomerViewModel(private val repository:IMDataRepository) : BaseViewModel
 
     var navigator: IMainNavigator<Customer>? = null
     var msgListener: IMessageListener? = null
+    var errorMessage: MutableLiveData<String> = MutableLiveData()
 
-    val _cu_Id: MutableLiveData<Int> = MutableLiveData()
-
+    //val _cu_Id: MutableLiveData<Int> = MutableLiveData()
+    var searchFilter: MutableLiveData<CustomerFilter> = MutableLiveData()
     val baseEoList: LiveData<PagedList<Customer>> = Transformations
-        .switchMap(_cu_Id){
-            repository.fetchCustomerOnPages(_sm_id, it)
+        .switchMap(searchFilter){
+            repository.fetchCustomerOnPages(_sm_id, it.org_Id, it.term)
         }
 
     val networkStateRV: LiveData<NetworkState> by lazy {
@@ -50,5 +51,9 @@ class CustomerViewModel(private val repository:IMDataRepository) : BaseViewModel
 
     fun cancelJob(){
         repository.cancelJob()
+    }
+
+    fun doSearch(org_Id: Int?, term: String){
+        searchFilter.value = CustomerFilter(org_Id, term)
     }
 }

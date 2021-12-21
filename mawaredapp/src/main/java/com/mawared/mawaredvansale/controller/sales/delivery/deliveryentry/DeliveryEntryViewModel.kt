@@ -20,7 +20,7 @@ import org.threeten.bp.LocalDateTime
 
 class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
                              private val mdrepository: IMDataRepository) : BaseViewModel() {
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     private val _wr_id: Int = if(App.prefs.savedSalesman?.sm_warehouse_id != null)  App.prefs.savedSalesman!!.sm_warehouse_id!! else 0
     var mode: String = "Add"
     var msgListener: IMessageListener? = null
@@ -64,7 +64,7 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
         if(items != null && _items == items){
             return
         }
-        _items.value = items
+        _items.value = items!!
     }
     //---------------------
     //---- button function

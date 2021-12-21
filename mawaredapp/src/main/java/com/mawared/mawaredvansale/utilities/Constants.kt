@@ -4,24 +4,82 @@ package com.mawared.mawaredvansale.utilities
  * Created by alibawi on 2019-07-02
  */
 const val API_KEY = ""
-//const val BASE_URL_API = "http://185.80.42.68:6615/api/"
-//const val BASE_URL = "http://185.80.42.68:6615/"
-// For Demo
-//const val BASE_URL_API = "http://185.80.42.68:6633/api/"
-//const val BASE_URL = "http://185.80.42.68:6633/"
+//===========================================================================
+// AL-NADER
+//===========================================================================
+//Cloud
+//const val BASE_URL_API = "http://104.227.250.246:6615/api/"
+//const val BASE_URL = "http://104.227.250.246:6615/"
 
-//const val BASE_URL_API = "http://172.0.0.1:80/mderp.WebAPI/api/"
-//const val BASE_URL = "http://172.0.0.1:80/mderp.WebAPI/"
+// Demo  Al-nader cloud
+//const val BASE_URL_API = "http://104.227.250.246:3984/api/"
+//const val BASE_URL = "http://104.227.250.246:3984/"
 
-//const val BASE_URL_API = "http://172.29.50.2:6615/api/"
-//const val BASE_URL = "http://172.29.50.2:6615/"
+// demo local alnader
+//const val BASE_URL_API = "http://172.29.50.2:6633/api/"
+//const val BASE_URL = "http://172.29.50.2:6633/"
 
+//===========================================================================
+// IIF Live
+//===========================================================================
+//const val BASE_URL_API = "http://185.80.42.138:6615/api/"
+//const val BASE_URL = "http://185.80.42.138:6615/"
 
-const val BASE_URL_API = "http://10.200.0.10/mderp.WebAPI/api/"
-const val BASE_URL = "http://10.200.0.10/mderp.WebAPI/"
+// IIF Demo
+const val BASE_URL_API = "http://185.80.42.138:6555/api/"
+const val BASE_URL = "http://185.80.42.138:6555/"
 
-//const val BASE_URL_API = "http://192.168.1.160/mderp.WebAPI/api/"
-//const val BASE_URL = "http://192.168.1.160/mderp.WebAPI/"
+//===========================================================================
+// KR LIVE 192.168.111.2
+//const val BASE_URL_API = "http://185.80.42.104:7777/api/"
+//const val BASE_URL = "http://185.80.42.104:7777/"
+//const val BASE_URL_API = "http://192.168.111.2:7777/api/"
+//const val BASE_URL = "http://192.168.111.2:7777/"
+//===========================================================================
+// KR DEMO
+//const val BASE_URL_API = "http://185.80.42.104:4444/api/"
+//const val BASE_URL = "http://185.80.42.104:4444/"
+
+//===========================================================================
+//=================== Home Center ===========================================
+// home center live
+//const val BASE_URL_API = "http://172.20.0.100:6115/api/"
+//const val BASE_URL = "http://172.20.0.100:6115/"
+
+// DEMO
+//const val BASE_URL_API = "http://10.10.100.100:7272/api/"
+//const val BASE_URL = "http://10.10.100.100:7272/"
+
+//===========================================================================
+// For local test
+//const val BASE_URL_API = "http://10.200.0.34/mderp.WebAPI/api/"
+//const val BASE_URL = "http://10.200.0.34/mderp.WebAPI/"
+
+//192.168.1.14
+//const val BASE_URL_API = "http://192.168.1.14/mderp.WebAPI/api/"
+//const val BASE_URL = "http://192.168.1.14/mderp.WebAPI/"
+
+//const val BASE_URL_API = "http://192.168.1.18/mderp.WebAPI/api/"
+//const val BASE_URL = "http://192.168.1.18/mderp.WebAPI/"
+
+//===========================================================================
+//=================== AL-RAAQI live =========================================
+// AL-RAAQI live
+// DEMO
+//const val BASE_URL_API = "http://185.80.42.118:1881/api/"
+//const val BASE_URL = "http://185.80.42.118:1881/"
+// LIVE
+//const val BASE_URL_API = "http://185.80.42.118:1882/api/"
+//const val BASE_URL = "http://185.80.42.118:1882/"
+
+//===========================================================================
+//====================== Diwan ==============================================
+// Live //7667
+//const val BASE_URL_API = "http://185.80.42.100:7667/api/"
+//const val BASE_URL = "http://185.80.42.100:7667/"
+// Demo
+//const val BASE_URL_API = "http://185.80.42.100:7586/api/"
+//const val BASE_URL = "http://185.80.42.100:7586/"
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 
@@ -32,7 +90,7 @@ const val URL_ALL_PRODUCTS = "${BASE_URL_API}PDAMasterData/ProductGetByTerm"
 const val URL_ALL_PRODUCTS_PRICE_CAT = "${BASE_URL_API}PDAMasterData/ProductGetByPriceTerm"
 const val URL_PRODUCTS_BY_USER = "${BASE_URL_API}PDAMasterData/ProductGetByUser"
 const val URL_PRODUCTS_BY_SEARCH = "${BASE_URL_API}PDAMasterData/ProductGetBySearch"
-
+const val URL_PRODUCTS_ON_INVOICES = "${BASE_URL_API}PDAMasterData/Product_GeInvoices"
 const val URL_PRODUCTS_GET_WAREHOUSE_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetByWarehouseOnPages"
 const val URL_PRODUCTS_GET_USER_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetByUserOnPages"
 const val URL_PRODUCTS_GET_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetOnPages"
@@ -55,6 +113,8 @@ const val URL_ALL_PRODUCTS_PRICE_LIST = "${BASE_URL_API}PDAMasterData/Product_Pr
 const val URL_VOUCHER_BY_CODE = "${BASE_URL_API}PDAMasterData/Voucher_GetByCode"
 // Price Category
 const val URL_PRICE_CAT_BY_All = "${BASE_URL_API}PDAMasterData/PriceCat_GetAll"
+const val URL_PRICE_CAT_BY_SALESMAN = "${BASE_URL_API}PDAMasterData/PriceCat_GetBySalesman"
+
 const val URL_PRICE_CAT_BY_ID = "${BASE_URL_API}PDAMasterData/PriceCat_GetById"
 //Discount
 const val URL_DISCOUNT_BY_PRODUCT = "${BASE_URL_API}PDAMasterData/Discount_GetCurrent"
@@ -72,6 +132,8 @@ const val URL_CURRENT_CURRENCY_RATE = "${BASE_URL_API}PDAMasterData/Currency_Rat
 // Get all customers for specific salesman URL
 const val URL_ALL_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_BySalesmanTerm"
 const val URL_SCHEDULE_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_ScheduleTerm"
+const val URL_PLACES_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_Places"
+const val URL_CUSTOMER_STATUS = "${BASE_URL_API}PDAMasterData/Customers_getStatus"
 const val URL_CUSTOMERS_BY_ORG = "${BASE_URL_API}PDAMasterData/Customers_GetByOrgTerm"
 const val URL_CUSTOMERS_ON_PAGES = "${BASE_URL_API}PDAMasterData/Customers_GetOnPages"
 const val URL_SCHEDULE_CUSTOMERS_ON_PAGES = "${BASE_URL_API}PDAMasterData/Customers_ScheduleOnPages"
@@ -87,6 +149,10 @@ const val URL_ALL_SALESMAN_BY_CODE = "${BASE_URL_API}PDAMasterData/Salesman_GetB
 const val URL_GET_SALESMAN_BY_USER = "${BASE_URL_API}PDAMasterData/Salesman_GetByUser"
 const val URL_ALL_SALESMAN = "${BASE_URL_API}PDAMasterData/Salesman_GetAll"
 const val URL_ALL_SALESMAN_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Salesman_CustomerGetByTerm"
+const val URL_SALESMAN_SUMMARY = "${BASE_URL_API}PDAMasterData/Salesman_GetSummary"
+
+// Get Client
+const val URL_GET_CLIENT = "${BASE_URL_API}PDAMasterData/Client_Get"
 // Warehouse URL
 const val URL_WAREHOUSE_GET_ALL = "${BASE_URL_API}PDAMasterData/Warehouse_GetAll"
 const val URL_WAREHOUSE_GET_BY_SALESMAN = "${BASE_URL_API}PDAMasterData/Warehouse_GetSalesmanId"
@@ -98,6 +164,12 @@ const val URL_ALL_DELIVERY_ON_PAGES = "${BASE_URL_API}Delivery/Delivery_GetOnPag
 
 const val URL_ALL_DELIVERY_DETAILS = "${BASE_URL_API}Delivery/GetItems_ByDeliveryId"
 
+// Call Cycle
+const val URL_CALL_CYCLE_GET_BY_ID = "${BASE_URL_API}CallCycle/CallCycle_GetById"
+const val URL_CALL_CYCLE_GET_ON_PAGES = "${BASE_URL_API}CallCycle/CallCycle_GetOnPages"
+const val URL_SAVE_OR_UPDATE_CALL_CYCLE = "${BASE_URL_API}CallCycle/CallCycle_SaveOrUpdate"
+//Lookup
+const val URL_LOOKUP_GET_BY_ENTITY = "${BASE_URL_API}PDAMasterData/Lookup_GetByEntity"
 // check load URL
 const val URL_ALL_CHECK_LOAD = "${BASE_URL_API}Check_Load/GetBySalesmanId"
 const val URL_ALL_CHECK_LOAD_DETAILS = "${BASE_URL_API}Check_Load/GetDetailBySalesmanId"
@@ -170,6 +242,7 @@ const val URL_TRANSFER_GET_BY_MASTER_ID = "${BASE_URL_API}Transfer/transfer_GetI
 const val URL_CASHBOOK_STATEMENT_ON_PAGES = "${BASE_URL_API}Reports/Cashbook_Statement"
 const val URL_SALES_STATEMENT_ON_PAGES = "${BASE_URL_API}Reports/Sales_Statement"
 const val URL_INVENTORY_STATEMENT_ON_PAGES = "${BASE_URL_API}Reports/Stock_Statement"
+const val URL_CUSTOMER_STATEMENT_ON_PAGES = "${BASE_URL_API}Reports/Customer_Statement"
 
 // Voucher get by code
 const val URL_ADD_VOUCHER_BYCODE = "${BASE_URL_API}PDAMasterData/Voucher_GetByCode"
@@ -180,9 +253,14 @@ const val BROADCAST_USER_DATA_CHANGE = "BROADCAST_USER_DATA_CHANGE"
 // Exception Messages
 const val NO_CONNECTION_AVAILABLE = "Make sure you have an active data connection"
 
+// Dashboard URL
+const val URL_DASHBOARD_TOTAL_CUSTOMER = "${BASE_URL_API}PDAMasterData/DashboardCust_GetBySalesman"
+const val URL_DASHBOARD_SALES_PLAN = "${BASE_URL_API}PDAMasterData/DashboardPlan_GetBySalesman"
+// Sales Plan
+const val URL_SALES_PLAN = "${BASE_URL_API}PDAMasterData/SalesPlan_Get"
 // Image URL
-const val URL_IMAGE = "${BASE_URL}uploads/Products/"
-const val URL_LOGO = "${BASE_URL}CompanyInfo/"
+const val URL_IMAGE = "${BASE_URL}wwwroot/uploads/Products/"
+const val URL_LOGO = "${BASE_URL}wwwroot/CompanyInfo/"
 
 const val EXTRA_DATA_LOCATIONS = "extra_data_locations"
 const val EXTRA_CURRENT_LOCATION = "extra_current_location"
@@ -190,3 +268,34 @@ const val EXTRA_DEVICE_ADDRESS = "device_address"
 
 const val FIRST_PAGE = 1
 const val POST_PER_PAGE = 20
+
+const val MY_PERMISSION_ACCESS_COARSE_LOCATION = 1
+
+/** */ // Message types sent from the BluetoothService Handler
+const val MESSAGE_STATE_CHANGE = 1
+const val MESSAGE_READ = 2
+const val MESSAGE_WRITE = 3
+const val MESSAGE_DEVICE_NAME = 4
+const val MESSAGE_TOAST = 5
+const val MESSAGE_CONNECTION_LOST = 6
+const val MESSAGE_UNABLE_CONNECT = 7
+
+/** */ // Key names received from the BluetoothService Handler
+const val DEVICE_NAME = "device_name"
+const val MSG_TOAST = "toast"
+
+// Intent request codes
+private const val REQUEST_CONNECT_DEVICE = 1
+private const val REQUEST_ENABLE_BT = 2
+private const val REQUEST_CHOSE_BMP = 3
+private const val REQUEST_CAMER = 4
+
+//QRcode
+private const val QR_WIDTH = 350
+private const val QR_HEIGHT = 350
+
+/** */
+private const val CHINESE = "GBK"
+private const val THAI = "CP874"
+private const val KOREAN = "EUC-KR"
+private const val BIG5 = "BIG5"

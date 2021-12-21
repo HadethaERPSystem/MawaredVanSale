@@ -10,7 +10,7 @@ class StockoutRow(private val baseEo: Stockout, private val viewModel: StockOutV
     override fun getLayout() = R.layout.stockout_row
 
     override fun bind(viewBinding: StockoutRowBinding, position: Int) {
-        viewBinding.setEntityEo(baseEo)
-        viewBinding.setViewmodel(viewModel)
+        viewBinding.entityEo = baseEo
+        viewBinding.viewmodel = viewModel
     }
 }

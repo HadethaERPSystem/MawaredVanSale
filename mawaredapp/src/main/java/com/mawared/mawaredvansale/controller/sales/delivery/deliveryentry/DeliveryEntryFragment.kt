@@ -63,7 +63,7 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_delivery_entry_title)
         (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
         if(arguments != null){
-            val args = DeliveryEntryFragmentArgs.fromBundle(arguments!!)
+            val args = DeliveryEntryFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
             if(viewModel.mode != "Add"){
                 viewModel.dl_id.value = args.deliveryId
@@ -108,7 +108,11 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
 
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.add_menu, menu)
+        if(viewModel.mode == "View"){
+            inflater.inflate(R.menu.view_menu, menu)
+        }else{
+            inflater.inflate(R.menu.add_menu, menu)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -116,14 +120,14 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
-                showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
+                showDialog(requireContext(), getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ,{
                     onStarted()
                     viewModel.location = getLocationData()
                     viewModel.onSave()
-                }
+                })
             }
             R.id.close_btn -> {
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -136,7 +140,7 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }

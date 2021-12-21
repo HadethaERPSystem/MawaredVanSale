@@ -1,11 +1,14 @@
 package com.mawared.mawaredvansale.controller.common.printing
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.print.PrintAttributes
 import android.print.PrintManager
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.*
 import com.itextpdf.text.pdf.draw.LineSeparator
@@ -15,6 +18,7 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.controller.common.Common
 import com.mawared.mawaredvansale.controller.common.PdfDocumentAdapter
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
@@ -24,7 +28,6 @@ import java.io.FileOutputStream
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MawaredPdf: PdfPageEventHelper(){
@@ -232,7 +235,7 @@ class MawaredPdf: PdfPageEventHelper(){
         tbl.widthPercentage = 100F
         tbl.setWidths(intArrayOf(200))
         var p = Paragraph()
-        var c = PdfPCell(Phrase("شركة النادر التجارية", fontStyle))
+        var c = PdfPCell(Phrase(App.prefs.saveUser!!.client_name, fontStyle))
         c.horizontalAlignment = Element.ALIGN_CENTER
         c.border = -1
         c.horizontalAlignment = Element.ALIGN_CENTER
@@ -240,7 +243,7 @@ class MawaredPdf: PdfPageEventHelper(){
         c.runDirection = PdfWriter.RUN_DIRECTION_RTL
         tbl.addCell(c)
 
-        c = PdfPCell(Phrase("AL-Nadir Trading Company", fontStyle))
+        c = PdfPCell(Phrase("", fontStyle))
         c.horizontalAlignment = Element.ALIGN_CENTER
         c.border = -1
         c.horizontalAlignment = Element.ALIGN_CENTER
@@ -269,24 +272,37 @@ class MawaredPdf: PdfPageEventHelper(){
         table.addCell(cel)
 
         val cb = writer!!.directContent
-        val stream = ByteArrayOutputStream()
-        logo!!.bmp!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        val image: Image = Image.getInstance(stream.toByteArray())
-        image.scaleAbsolute(120F, 110F)
-        image.setAbsolutePosition(2f, 2f);
-        val cell = PdfPCell()
-        cell.horizontalAlignment = Element.ALIGN_CENTER
-        cell.verticalAlignment = Element.ALIGN_CENTER
-        cell.addElement(image)
+        if(logo!!.bmp != null) {
+            val stream = ByteArrayOutputStream()
+            logo!!.bmp!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            val image: Image = Image.getInstance(stream.toByteArray())
+            image.scaleAbsolute(120F, 110F)
+            image.setAbsolutePosition(2f, 2f)
+            val cell = PdfPCell()
+            cell.horizontalAlignment = Element.ALIGN_CENTER
+            cell.verticalAlignment = Element.ALIGN_CENTER
+            cell.addElement(image)
 
-        cell.paddingTop = 4F
-        cell.paddingBottom = 4F
-        cell.border = -1
-        cell.horizontalAlignment = Element.ALIGN_CENTER
-        cell.verticalAlignment = Element.ALIGN_CENTER
-        cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
-        table.addCell(cell)
+            cell.paddingTop = 4F
+            cell.paddingBottom = 4F
+            cell.border = -1
+            cell.horizontalAlignment = Element.ALIGN_CENTER
+            cell.verticalAlignment = Element.ALIGN_CENTER
+            cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+            table.addCell(cell)
+        }else{
+            val cell = PdfPCell()
+            cell.horizontalAlignment = Element.ALIGN_CENTER
+            cell.verticalAlignment = Element.ALIGN_CENTER
 
+            cell.paddingTop = 4F
+            cell.paddingBottom = 4F
+            cell.border = -1
+            cell.horizontalAlignment = Element.ALIGN_CENTER
+            cell.verticalAlignment = Element.ALIGN_CENTER
+            cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+            table.addCell(cell)
+        }
         yPos =  table.writeSelectedRows(0, -1, 5F, ypos, writer.directContent)
     }
 
@@ -300,10 +316,10 @@ class MawaredPdf: PdfPageEventHelper(){
         yPos = pageSize.height - 100
         printDetail(writer, baseEo)
 
-        cb.setLineWidth(1f);
+        cb.setLineWidth(1f)
         cb.moveTo(30F, yPos - 25)
         cb.lineTo(570F, yPos - 25)
-        cb.stroke();
+        cb.stroke()
 
         printHeader(writer, baseEo, yPos - 50)
 
@@ -627,13 +643,13 @@ class MawaredPdf: PdfPageEventHelper(){
     }
 
     private fun header(writer: PdfWriter?, document: Document?){
-        if(logo != null){
+        if(logo?.bmp != null){
             val cb = writer!!.directContent
             val stream = ByteArrayOutputStream()
             logo!!.bmp!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
             val image: Image = Image.getInstance(stream.toByteArray())
             image.scaleAbsolute(120F,110F)
-            image.setAbsolutePosition(50f, 700f);
+            image.setAbsolutePosition(50f, 700f)
             cb.addImage(image)
         }
         val pw = writer!!.pageSize.width
@@ -710,7 +726,7 @@ class MawaredPdf: PdfPageEventHelper(){
             val fontStyle = Font()
             fontStyle.color = BaseColor.BLACK
             fontStyle.size = 10F
-            val sdf = SimpleDateFormat("dd-MM-YYYY", Locale.ENGLISH)
+            val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH)
             val date: String = sdf.format(Date())
             ColumnText.showTextAligned(writer.directContent, Element.ALIGN_CENTER, Phrase(String.format( "Page - %d, Printed on : %s %s", writer.pageNumber, date, "" ), fontStyle),
                 document!!.pageSize.width / 2, rect.bottom + 10, 0f
@@ -852,11 +868,11 @@ class MawaredPdf1: PdfPageEventHelper(){
             // a X & Y placement syntax.
 
             val cb: PdfContentByte = writer.directContent
-            cb.saveState();
+            cb.saveState()
             cb.setColorStroke(BaseColor.BLACK)
             cb.rectangle(1F,1F,595F,842F)
-            cb.stroke();
-            cb.restoreState();
+            cb.stroke()
+            cb.restoreState()
             // Don't forget to call the BeginText() method when done doing graphics!
             //cb.beginText()
 
@@ -998,9 +1014,9 @@ class MawaredPdf1: PdfPageEventHelper(){
         // Move to the bottom left corner of the template
         tmpFooter.moveTo(1F, 1F)
         // Place the footer content
-        tmpFooter.stroke();
+        tmpFooter.stroke()
         // Begin writing the footer
-        tmpFooter.beginText();
+        tmpFooter.beginText()
         // Set the font and size
 
         // Write out details from the payee table
@@ -1010,7 +1026,7 @@ class MawaredPdf1: PdfPageEventHelper(){
             tmpFooter.showTextAligned(f.align, f.text, f.xPos, f.yPos, 0F)
         }
 
-        val sdf = SimpleDateFormat("dd-MM-YYYY", Locale.ENGLISH)
+        val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH)
         val date: String = sdf.format(Date())
 
         val x = 580F / 2
@@ -1020,10 +1036,10 @@ class MawaredPdf1: PdfPageEventHelper(){
         // End text
         tmpFooter.endText()
         // Stamp a line above the page footer
-        cb.setLineWidth(4f);
-        cb.moveTo(30F, 70F);
-        cb.lineTo(570F, 70F);
-        cb.stroke();
+        cb.setLineWidth(4f)
+        cb.moveTo(30F, 70F)
+        cb.lineTo(570F, 70F)
+        cb.stroke()
         // Write page number
         //val fontStyle = Font()
         //fontStyle.color = BaseColor.BLACK
@@ -1035,7 +1051,7 @@ class MawaredPdf1: PdfPageEventHelper(){
 //        )
 
         // Return the footer template
-        return tmpFooter;
+        return tmpFooter
     }
 
     private fun pdfHeader(cb: PdfContentByte){
@@ -1085,7 +1101,7 @@ class MawaredPdf1: PdfPageEventHelper(){
         cb.setLineWidth(4f)
         cb.moveTo(30F, 700F)
         cb.lineTo(570F, 700F)
-        cb.stroke();
+        cb.stroke()
 //        // Return the footer template
 //        return tmpHeader;
     }
@@ -1096,9 +1112,9 @@ class MawaredPdf1: PdfPageEventHelper(){
         // Move to the bottom left corner of the template
         tmpSummary.moveTo(1F, 1F)
         // Place the footer content
-        tmpSummary.stroke();
+        tmpSummary.stroke()
         // Begin writing the footer
-        tmpSummary.beginText();
+        tmpSummary.beginText()
         // Set the font and size
         // Write out details from the payee table
         for (f in summary!!.sortedBy { it.order }){
@@ -1114,7 +1130,7 @@ class MawaredPdf1: PdfPageEventHelper(){
 //        cb.lineTo(570F, 480F);
 //        cb.stroke();
         // Return the footer template
-        return tmpSummary;
+        return tmpSummary
     }
 
     @Throws(DocumentException::class)
@@ -1145,6 +1161,37 @@ class GeneratePdf{
     var workArea: Float = 0F
     val fileName: String = "test.pdf"
     var activity: Activity? = null
+
+    // Storage Permissions
+    private val REQUEST_EXTERNAL_STORAGE = 1
+    private val PERMISSIONS_STORAGE = arrayOf<String>(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
+
+    /**
+     * Checks if the app has permission to write to device storage
+     *
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     * @param activity
+     */
+    fun verifyStoragePermissions(activity: Activity?) {
+        // Check if we have write permission
+        val permission = ActivityCompat.checkSelfPermission(
+            activity!!,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                activity,
+                PERMISSIONS_STORAGE,
+                REQUEST_EXTERNAL_STORAGE
+            )
+        }
+    }
+
     fun createPdf(activity: Activity, logo: RepLogo?, rows: List<Sale_Items>, _rowHeader: HashMap<Int, RowHeader>, _pageHeader: ArrayList<HeaderFooterRow>?,
                   _pageFooter: ArrayList<HeaderFooterRow>?, _reportFitler: HashMap<String, PageFilter>?, _summary: ArrayList<HeaderFooterRow>?, isRTL: Boolean, complete: (Boolean, String) -> Unit){
         PageSetting().page = PageSize.A4
@@ -1153,6 +1200,7 @@ class GeneratePdf{
 
         workArea = PageSetting().page.width * 0.95F // - (document!!.leftMargin() + document!!.rightMargin())
         this.activity = activity
+        verifyStoragePermissions(activity)
         Dexter.withActivity(activity)
             .withPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .withListener(object : PermissionListener {
@@ -1202,9 +1250,7 @@ class GeneratePdf{
                     writer.runDirection = PdfWriter.RUN_DIRECTION_RTL
                     pdf.writeBody(writer!!, document!!, baseEo)
                     complete(true, path)
-
                 }
-
                 override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken? ) {
 
                 }
@@ -1218,11 +1264,11 @@ class GeneratePdf{
     }
 
     private fun setDocumentInfo(document: Document){
-        document.addAuthor("Al-Hadetha For Software and Automation");
-        document.addCreator("Mawared Van Sale Pdf");
-        document.addKeywords("PDF tutorial invoice");
-        document.addSubject("Describing the steps creating a PDF document");
-        document.addTitle("PDF creation using iText - Sample invoice");
+        document.addAuthor("Al-Hadetha For Software and Automation")
+        document.addCreator("Mawared Van Sale Pdf")
+        document.addKeywords("PDF tutorial invoice")
+        document.addSubject("Describing the steps creating a PDF document")
+        document.addTitle("PDF creation using iText - Sample invoice")
     }
     fun printPDF(act: Activity, path: String) {
         val printManager = act.getSystemService(Context.PRINT_SERVICE) as PrintManager
@@ -1280,11 +1326,500 @@ class GeneratePdf1{
     }
 
     private fun setDocumentInfo(document: Document){
-        document.addAuthor("Al-Hadetha For Software and Automation");
-        document.addCreator("Mawared Van Sale Pdf");
-        document.addKeywords("PDF tutorial invoice");
-        document.addSubject("Describing the steps creating a PDF document");
-        document.addTitle("PDF creation using iText - Sample invoice");
+        document.addAuthor("Al-Hadetha For Software and Automation")
+        document.addCreator("Mawared Van Sale Pdf")
+        document.addKeywords("PDF tutorial invoice")
+        document.addSubject("Describing the steps creating a PDF document")
+        document.addTitle("PDF creation using iText - Sample invoice")
+    }
+    fun printPDF(act: Activity, path: String) {
+        val printManager = act.getSystemService(Context.PRINT_SERVICE) as PrintManager
+
+        try {
+            val printAdapter = PdfDocumentAdapter(act, path)
+            printManager.print("Document", printAdapter, PrintAttributes.Builder().build())
+
+        }catch (e: Exception){
+            Log.e("PdfActivity", "" + e.message)
+        }
+    }
+}
+
+class PdfTicket: PdfPageEventHelper(){
+    // variable
+    companion object{
+        var pageNumber: Int = 0
+
+        var headerRow: HashMap<Int, RowHeader>? = null
+        var pageHeader:ArrayList<HeaderFooterRow>? = null
+        var pageFooter: ArrayList<HeaderFooterRow>? = null
+        var pageFilter: HashMap<String, PageFilter>? = null
+        var summary: ArrayList<HeaderFooterRow>? = null
+        var tableLoopData: ArrayList<Hashtable<String, String>>? = null
+
+        var workArea: Float = 0f
+        var yPos: Float = 0F
+        var yPosForSummary: Float = 0F
+        var footerHeight = 90F
+        var logo: RepLogo? = null
+        var isRTL: Boolean = false
+        var pageSize = PageSize.A4
+        var isPrintHeader = true
+        var isPrintFooter = true
+    }
+
+    // override function
+
+    fun setConfig(mlogo: RepLogo?, _rowHeader: HashMap<Int, RowHeader>?, _pageHeader: ArrayList<HeaderFooterRow>?,
+                  _pageFooter: ArrayList<HeaderFooterRow>?, _summary: ArrayList<HeaderFooterRow>?, _workArea: Float, _isRTL: Boolean, _pageSize: Rectangle): PdfTicket{
+        val pdf = PdfTicket()
+
+        logo = mlogo
+        headerRow = _rowHeader
+        pageHeader = _pageHeader
+        pageFooter = _pageFooter
+        //pageFilter = _reportFitler
+        workArea = _workArea
+        summary = _summary
+        isRTL = _isRTL
+        pageSize = _pageSize
+        return pdf
+    }
+
+    fun writeBody(writer: PdfWriter, document: Document, rows: List<Sale_Items>){
+        isPrintHeader = true
+        isPrintFooter = true
+        val table = PdfPTable(headerRow!!.count())
+        document.open()
+        var rowNo = 1
+        var pageRows = 1
+        val cellsWidth : ArrayList<Int> = arrayListOf() // intArrayOf(20, 8, 8, 8, 5, 20, 10, 5)
+        table.spacingAfter = 10F
+        table.defaultCell.verticalAlignment = Element.ALIGN_CENTER
+        if(isRTL) {
+            table.runDirection = PdfWriter.RUN_DIRECTION_RTL
+            for (c in headerRow!!.toSortedMap(compareByDescending { it })){
+                cellsWidth.add(c.value.cellWidth)
+            }
+        }else{
+            for (c in headerRow!!.toSortedMap(compareBy { it })){
+                cellsWidth.add(c.value.cellWidth)
+            }
+        }
+
+        table.totalWidth = workArea
+        table.widthPercentage = 100F
+
+        if(cellsWidth.size > 0) {
+            table.setWidths(cellsWidth.toIntArray())
+        }
+
+
+        val mBreakPage = writer.pageSize.bottom //+ footerHeight
+        val mCenterOfBody = (document.pageSize.width / 2) - (table.totalWidth / 2)
+        val mRowsCount = rows.count()
+        val df = DecimalFormat("#,###,###.###")
+        val df1 = DecimalFormat("#,###")
+        val fontName = BaseFont.createFont(headerRow!![0]!!.fontName, BaseFont.IDENTITY_H, true)
+        val fontStyle = Font(fontName, headerRow!![0]!!.fontSize, headerRow!![0]!!.fontWeight, BaseColor.BLACK)
+        while (true){
+            for(c in headerRow!!.toSortedMap()){
+                //val fontName = BaseFont.createFont(c.value.fontName, BaseFont.IDENTITY_H, true)
+                //val fontStyle = Font(fontName, c.value.fontSize, c.value.fontWeight, BaseColor.BLACK)
+                val cell = PdfPCell(Phrase(9F, c.value.cellName, fontStyle))
+                cell.horizontalAlignment = c.value.align
+                cell.backgroundColor = BaseColor.LIGHT_GRAY
+                cell.paddingBottom = 5F
+                cell.paddingTop = 5F
+                table.addCell(cell)
+            }
+            for (r in rows){
+//                var cell = PdfPCell(Phrase(9F, rowNo.toString(), fontStyle))
+//                cell.horizontalAlignment = Element.ALIGN_CENTER
+//
+//                table.addCell(cell)
+
+//                cell = PdfPCell(Phrase(9F, r.sld_barcode, fontStyle))
+//                cell.paddingTop = 4F
+//                cell.paddingBottom = 4F
+//                cell.horizontalAlignment = Element.ALIGN_TOP
+//                cell.verticalAlignment = Element.ALIGN_CENTER
+//                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+//                table.addCell(cell)
+                var pr_name = r.sld_prod_name
+                if(isRTL){
+                    pr_name = r.sld_prod_name_ar
+                }
+                var cell = PdfPCell(Phrase(9F, pr_name, fontStyle))
+                cell.setPadding(5F)
+                if(isRTL){
+                    cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                    cell.horizontalAlignment = Element.ALIGN_LEFT
+                }else{
+                    cell.horizontalAlignment = Element.ALIGN_LEFT
+                }
+
+                cell.verticalAlignment = Element.ALIGN_TOP
+                table.addCell(cell)
+                val cellHeight = cell.calculatedHeight
+
+                cell = PdfPCell(Phrase(9F, df1.format(r.sld_pack_qty), fontStyle))
+                cell.setPadding(5F)
+                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                cell.horizontalAlignment = Element.ALIGN_LEFT
+                cell.verticalAlignment = Element.ALIGN_TOP
+                table.addCell(cell)
+
+//                cell = PdfPCell(Phrase(9F, df1.format(r.sld_gift_qty), fontStyle))
+//                cell.setPadding(5F)
+//                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+//                cell.horizontalAlignment = Element.ALIGN_LEFT
+//                cell.verticalAlignment = Element.ALIGN_TOP
+//                table.addCell(cell)
+
+                cell = PdfPCell(Phrase(9F, df.format(r.sld_unit_price), fontStyle))
+                cell.setPadding(5F)
+                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                cell.horizontalAlignment = Element.ALIGN_LEFT
+                cell.verticalAlignment = Element.ALIGN_TOP
+                table.addCell(cell)
+
+//                cell = PdfPCell(Phrase(9F, df.format(r.sld_dis_value), fontStyle))
+//                cell.setPadding(5F)
+//                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+//                cell.horizontalAlignment = Element.ALIGN_LEFT
+//                cell.verticalAlignment = Element.ALIGN_TOP
+//                table.addCell(cell)
+
+                cell = PdfPCell(Phrase(9F, df.format(r.sld_net_total), fontStyle))
+                cell.setPadding(5F)
+                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                cell.horizontalAlignment = Element.ALIGN_LEFT
+                cell.verticalAlignment = Element.ALIGN_TOP
+                table.addCell(cell)
+
+//                cell = PdfPCell(Phrase(9F, "", fontStyle))
+//                cell.setPadding(5F)
+//                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+//                cell.horizontalAlignment = Element.ALIGN_RIGHT
+//                cell.verticalAlignment = Element.ALIGN_TOP
+//                table.addCell(cell)
+
+                // increase page number
+                pageRows++
+                // increase Row number
+                rowNo++
+
+                val mHeightOfTable = table.calculateHeights() + cellHeight
+//                if((yPos - mHeightOfTable) <= mBreakPage){
+//                    break
+//                }
+
+            }// end rows
+            yPosForSummary = table.writeSelectedRows(0, -1, mCenterOfBody, yPos, writer.directContent)
+            yPos = yPosForSummary
+            // check if end of page or not
+            //if(pageRows < mRowsCount){
+                // write the rows in the pdf Page
+                //document.newPage()
+                table.flushContent()
+            //}else{
+                break
+            //}
+        } // end while
+
+        // Print Total In Last Page
+        if(summary != null){
+            showSummary(writer, mCenterOfBody)
+        }
+        document.close()
+    }
+    private fun showSummary(writer: PdfWriter, xPos: Float){
+
+        for (h in summary!!){
+            if(h.rows == null){
+                //addLineSpace(document)
+                val table = PdfPTable(1)
+                table.totalWidth = workArea
+                if(isRTL) table.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                table.setWidths(intArrayOf(100))
+                val fontName = BaseFont.createFont(h.fontName, BaseFont.IDENTITY_H, true)
+                val fontStyle = Font(fontName, h.fontSize, h.fontWeight, h.fontColor)
+                //val font: Font = FontFactory.getFont(h.fontName, BaseFont.CP1252,true,22F, Font.BOLD )
+                val p1 = Paragraph(h.text, fontStyle)
+
+                val cell = PdfPCell()//Phrase(9F, h.text, fontStyle))
+                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                cell.horizontalAlignment = h.align
+                cell.border = 0
+                cell.paddingBottom = 8F
+                cell.paddingTop = 5F
+                cell.addElement(p1)
+                table.addCell(cell)
+
+                yPosForSummary = table.writeSelectedRows(0, -1, xPos, yPosForSummary, writer.directContent)
+            }else{
+                val cells = h.rows[0].cells
+                val table = PdfPTable(cells.size)
+                val row = h.rows[0]
+                val cwidth : ArrayList<Int> = arrayListOf()
+                if(!isRTL){
+                    for (c in row.cells.toSortedMap(compareBy { it })){
+                        cwidth.add(c.value.cellWidth.toInt())
+                    }
+                }else{
+                    for (c in row.cells.toSortedMap(compareByDescending { it })){
+                        cwidth.add(c.value.cellWidth.toInt())
+                    }
+                }
+
+
+                table.setWidths(cwidth.toIntArray())
+
+                table.totalWidth = workArea
+
+                if(isRTL) table.runDirection = PdfWriter.RUN_DIRECTION_RTL
+
+                for(row in h.rows){
+                    for(c in row.cells.toSortedMap()){
+                        val fontName = BaseFont.createFont(c.value.fontName, BaseFont.IDENTITY_H, true)
+                        val fontStyle = Font(fontName, c.value.fontSize, c.value.fontWeight, BaseColor.BLACK)
+                        val cell = PdfPCell(Phrase(9F, c.value.cellName, fontStyle))
+                        cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                        cell.horizontalAlignment = c.value.align
+
+                        if(c.value.border == 0){
+                            cell.border = 0
+                        }
+                        cell.setPadding(4F)
+                        table.addCell(cell)
+                    }
+                    table.spacingAfter = 10F
+                }
+                yPosForSummary = table.writeSelectedRows(0, -1, xPos, yPosForSummary, writer.directContent)
+            }
+        }
+    }
+    override fun onOpenDocument(writer: PdfWriter?, document: Document?) {
+        //header[0] = Phrase("Al-Nahder")
+    }
+
+    override fun onChapter(writer: PdfWriter?,document: Document?, paragraphPosition: Float, title: Paragraph?) {
+        //header[1] = Phrase(title!!.content)
+        pageNumber = 1
+    }
+
+    override fun onStartPage(writer: PdfWriter?, document: Document?) {
+
+        super.onStartPage(writer, document)
+        if(isPrintHeader)
+            header(writer)
+        yPos -= 10
+        pageNumber++
+    }
+
+    private fun header(writer: PdfWriter?){
+        if(logo?.bmp != null){
+            val cb = writer!!.directContent
+            val stream = ByteArrayOutputStream()
+            logo!!.bmp!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            val image: Image = Image.getInstance(stream.toByteArray())
+            image.scaleAbsolute(120F,110F)
+            image.setAbsolutePosition(50f, 700f)
+            cb.addImage(image)
+        }
+        val pw = writer!!.pageSize.width
+        if(pageHeader != null){
+            yPos = writer.getVerticalPosition(false)
+            for (h in pageHeader!!){
+                if(h.rows == null){
+                    val table = PdfPTable(1)
+                    table.totalWidth = workArea
+                    if(isRTL) table.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                    val xPos = (pw / 2) - (table.totalWidth / 2)
+                    val fontName = BaseFont.createFont(h.fontName, BaseFont.IDENTITY_H, true)
+                    val fontStyle = Font(fontName, h.fontSize, h.fontWeight, BaseColor.BLACK)
+                    //val font: Font = FontFactory.getFont(h.fontName, BaseFont.CP1252,true,22F, Font.BOLD )
+                    val cell = PdfPCell(Phrase(9F, h.text, fontStyle))
+                    cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                    cell.horizontalAlignment = h.align
+                    cell.border = 0
+                    cell.paddingBottom = 8F
+                    cell.paddingTop = 5F
+                    table.addCell(cell)
+
+                    yPos = table.writeSelectedRows(0, -1, xPos, yPos, writer.directContent)
+
+                }else{
+                    val cells = h.rows[0].cells
+                    val table = PdfPTable(cells.size)
+                    val row = h.rows[0]
+                    val cwidth : ArrayList<Int> = arrayListOf()
+                    if(isRTL){
+                        for (c in row.cells.toSortedMap(compareByDescending  { it })){
+                            cwidth.add(c.value.cellWidth.toInt())
+                        }
+                    }else{
+                        for (c in row.cells.toSortedMap(compareBy{ it })){
+                            cwidth.add(c.value.cellWidth.toInt())
+                        }
+                    }
+
+
+                    table.setWidths(cwidth.toIntArray())
+
+
+                    table.totalWidth = workArea
+                    if(isRTL) table.runDirection = PdfWriter.RUN_DIRECTION_RTL
+
+                    val xPos = (pw / 2) - (table.totalWidth / 2)
+                    for(row in h.rows){
+                        for(c in row.cells.toSortedMap()){
+                            val fontName = BaseFont.createFont(c.value.fontName, BaseFont.IDENTITY_H, true)
+                            val fontStyle = Font(fontName, c.value.fontSize, c.value.fontWeight, BaseColor.BLACK)
+                            val cell = PdfPCell(Phrase(9F, c.value.cellName, fontStyle))
+                            cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                            cell.horizontalAlignment = c.value.align
+                            cell.border = c.value.border
+                            cell.paddingBottom = 8F
+                            cell.paddingTop = 5F
+                            table.addCell(cell)
+                        }
+                    }
+                    yPos = table.writeSelectedRows(0, -1, xPos, yPos - 10, writer.directContent)
+                }
+            }
+            // addLineSeparator(document!!)
+        }
+        yPos -= 10
+    }
+    override fun onEndPage(writer: PdfWriter?, document: Document?) {
+        if(isPrintFooter){
+//            val rect = writer!!.pageSize
+//            val font = Font(Font.FontFamily.HELVETICA, 52f, Font.BOLD, GrayColor(0.85f))
+//            //ColumnText.showTextAligned(writer.directContent, Element.ALIGN_CENTER, Phrase("MAWARED VAN SALE", font),297.5f, 421f, if((writer.pageNumber % 2) == 1) 45f else -45f)
+//            footer(writer, document)
+//            val fontStyle = Font()
+//            fontStyle.color = BaseColor.BLACK
+//            fontStyle.size = 10F
+//            val sdf = SimpleDateFormat("dd-MM-YYYY", Locale.ENGLISH)
+//            val date: String = sdf.format(Date())
+//            ColumnText.showTextAligned(writer.directContent, Element.ALIGN_CENTER, Phrase(String.format( "Page - %d, Printed on : %s %s", writer.pageNumber, date, "" ), fontStyle),
+//                document!!.pageSize.width / 2, rect.bottom + 10, 0f
+//            )
+        }
+
+    }
+
+    private fun footer(writer: PdfWriter?, document: Document?){
+        if(isPrintFooter){
+            val rect = writer!!.pageSize
+            val font = Font(Font.FontFamily.HELVETICA, 52f, Font.BOLD, GrayColor(0.85f))
+            val pw =rect.width
+            var fyPos = rect.bottom + footerHeight
+            if(pageFooter != null){
+
+                for (h in pageFooter!!){
+                    if(h.rows == null){
+                        val table = PdfPTable(1)
+                        table.totalWidth = workArea
+                        if(isRTL) table.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                        val xPos = (pw / 2) - (table.totalWidth / 2)
+                        val fontName = BaseFont.createFont(h.fontName, BaseFont.IDENTITY_H, true)
+                        val fontStyle = Font(fontName, h.fontSize, h.fontWeight, BaseColor.BLACK)
+                        //val font: Font = FontFactory.getFont(h.fontName, BaseFont.CP1252,true,22F, Font.BOLD )
+                        val cell = PdfPCell(Phrase(9F, h.text, fontStyle))
+                        cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                        cell.horizontalAlignment = h.align
+                        cell.border = 0
+                        cell.paddingBottom = 8F
+                        cell.paddingTop = 5F
+                        table.addCell(cell)
+
+                        fyPos = table.writeSelectedRows(0, -1, xPos, fyPos, writer.directContent)
+
+                    }else{
+                        val cells = h.rows[0].cells
+                        val table = PdfPTable(cells.size)
+                        //table.setWidths(intArrayOf(10, 20, 10, 25, 18, 10))
+                        table.totalWidth = workArea
+                        if(isRTL) table.runDirection = PdfWriter.RUN_DIRECTION_RTL
+
+                        val xPos = (pw / 2) - (table.totalWidth / 2)
+                        for(row in h.rows){
+                            for(c in row.cells.toSortedMap()){
+                                val fontName = BaseFont.createFont(c.value.fontName, BaseFont.IDENTITY_H, true)
+                                val fontStyle = Font(fontName, c.value.fontSize, c.value.fontWeight, BaseColor.BLACK)
+                                val cell = PdfPCell(Phrase(9F, c.value.cellName, fontStyle))
+                                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                                cell.horizontalAlignment = c.value.align
+                                cell.border = c.value.border
+                                cell.paddingBottom = 8F
+                                cell.paddingTop = 5F
+                                table.addCell(cell)
+                            }
+                        }
+                        fyPos = table.writeSelectedRows(0, -1, xPos, fyPos - 10, writer.directContent)
+                    }
+                }
+            }
+        }
+
+    }
+
+}
+
+class GenerateTicketPDF{
+    var document: Document? = null
+    var workArea: Float = 0F
+    val fileName: String = "ticket.pdf"
+    var activity: Activity? = null
+    fun createPdf(activity: Activity, logo: RepLogo?, rows: List<Sale_Items>, _rowHeader: HashMap<Int, RowHeader>, _pageHeader: ArrayList<HeaderFooterRow>?,
+                  _pageFooter: ArrayList<HeaderFooterRow>?, _summary: ArrayList<HeaderFooterRow>?, isRTL: Boolean, complete: (Boolean, String) -> Unit){
+
+        val rowsCount : Int = rows.count() + 1 + (_pageHeader?.count() ?: 0) + (_summary?.count() ?: 0) + (_pageFooter?.count() ?: 0)
+        val height: Float = 100f + (rowsCount * 50)
+
+        val pgSize = Rectangle(300f, height)
+
+        document = Document(pgSize, 0.1F, 0.1F, 0.1F, 0.1F)
+
+        workArea = pgSize.width * 0.95F
+        this.activity = activity
+        Dexter.withActivity(activity)
+            .withPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .withListener(object : PermissionListener {
+                override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+
+                    val path = Common.getAppPath(activity) + fileName
+                    val fs = FileOutputStream(path)
+                    val pdf = PdfTicket()
+                    val writer = PdfWriter.getInstance(document, fs)
+                    setDocumentInfo(document!!)
+                    writer.pageEvent = pdf.setConfig(logo, _rowHeader, _pageHeader, _pageFooter, _summary, workArea, isRTL, pgSize)
+                    pdf.writeBody(writer!!, document!!, rows)
+                    complete(true, path)
+
+                }
+
+                override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken? ) {
+
+                }
+
+                override fun onPermissionDenied(response: PermissionDeniedResponse?) {
+
+                }
+            })
+            .check()
+
+    }
+
+    private fun setDocumentInfo(document: Document){
+        document.addAuthor("Al-Hadetha For Software and Automation")
+        document.addCreator("Mawared Van Sale Pdf")
+        document.addKeywords("PDF tutorial invoice")
+        document.addSubject("Describing the steps creating a PDF document")
+        document.addTitle("PDF creation using iText - Sample invoice")
     }
     fun printPDF(act: Activity, path: String) {
         val printManager = act.getSystemService(Context.PRINT_SERVICE) as PrintManager

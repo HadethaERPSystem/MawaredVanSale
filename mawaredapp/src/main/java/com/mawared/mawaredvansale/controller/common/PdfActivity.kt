@@ -405,10 +405,10 @@ class PdfActivity : AppCompatActivity() {
         val myString1 = "Mawared ERP System"
 
         val x = 10f
-        var y = 25f;
+        var y = 25f
 
         myPage.canvas.drawText(myString, x, y, myPaint)
-        y += myString.length + 10;
+        y += myString.length + 10
         myPage.canvas.drawText(myString1, x, y, myPaint)
 
         val path = Environment.getExternalStorageDirectory().path + "/myPDFFile.Pdf"

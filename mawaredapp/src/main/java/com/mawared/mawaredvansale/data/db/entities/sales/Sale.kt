@@ -26,6 +26,10 @@ data class Sale(
     var sl_latitude: Double?,
     var sl_longitude: Double?,
     var sl_price_cat_Id: Int?,
+    var sl_paidUSD: Double,
+    var sl_changeUSD: Double,
+    var sl_paidIQD: Double,
+    var sl_changeIQD: Double,
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime

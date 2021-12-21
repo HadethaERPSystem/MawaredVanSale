@@ -26,6 +26,7 @@ data class Customer(
     var cu_ref_Id: Int?,             // ERP customer Id
     var cu_balance: Double?,        // Customer Balance
     var cu_credit_limit: Double?,   // Customer Credit Limit
+    var cu_credit_days: Int?,
     var cu_payment_terms: String?,   // Payment method : CO: Cash only, CK: Cash And Check, CC: Credit
     var cu_latitude: Double?,
     var cu_longitude: Double?,
@@ -41,6 +42,10 @@ data class Customer(
     var cu_payment_name: String? = null
     var cu_cat_name: String? = null
     var cu_rg_name: String? = null
+    var payCode: String? = null
     var cu_price_cat_code: String? = null
     var cu_price_cat_name: String? = null
+    var cu_visit_code: String? = null
+    var cu_credit_age:Int = 0
+    var cu_cr_code: String? = null
 }

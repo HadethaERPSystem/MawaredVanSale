@@ -43,7 +43,7 @@
                 android:layout_marginBottom="4dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{product.pr_description_ar + ` ` + product.pr_barcode}"
+                android:text="@{product.pr_description_ar + ` ` + product.pr_barcode + ` ` + product.pr_partno}"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="13sp"
                 app:layout_constraintBottom_toTopOf="@+id/tv_whs"
@@ -71,25 +71,6 @@
                 tools:hint="@string/lbl_warehouse_name" />
 
             <TextView
-                android:id="@+id/tv_price"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
-                android:fontFamily="@font/droid_kufi_regular"
-                android:gravity="start"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:text="@{`السعر :` + String.valueOf(product.pr_unit_price)}"
-                android:textColor="@android:color/holo_green_dark"
-                android:textSize="13sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline10"
-                app:layout_constraintStart_toStartOf="@+id/guideline9"
-                app:layout_constraintTop_toTopOf="@+id/tv_qty"
-                tools:hint="@string/lbl_unit_price" />
-
-
-            <TextView
                 android:id="@+id/tv_qty"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -110,6 +91,26 @@
                 tools:hint="@string/lbl_product_balance" />
 
             <TextView
+                android:id="@+id/tv_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:text="@{product.numberFormat(product.pr_unit_price)}"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintStart_toStartOf="@+id/guideline9"
+                app:layout_constraintTop_toTopOf="@+id/tv_qty"
+                tools:hint="@string/lbl_unit_price" />
+
+
+
+            <TextView
                 android:id="@+id/tv_expiry"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -118,7 +119,7 @@
                 android:gravity="start"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
-                android:text="@{product.pr_expiry_date}"
+                android:text="@{product.returnDateString(product.pr_expiry_date)}"
                 android:textColor="@android:color/holo_green_dark"
                 android:textSize="13sp"
 
@@ -132,14 +133,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.23" />
+                app:layout_constraintGuide_percent="0.18" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.5" />
+                app:layout_constraintGuide_percent="0.44" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>

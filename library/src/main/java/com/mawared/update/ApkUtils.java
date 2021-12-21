@@ -41,7 +41,6 @@ public class ApkUtils {
         return intent;
     }
 
-
     private static Uri getApkUri(File apkFile) {
         Log.d(Constants.TAG, apkFile.toString());
         //If SDCard write permissions are not set, or SDCard, apk files are not stored in memory, permissions need to be granted to install

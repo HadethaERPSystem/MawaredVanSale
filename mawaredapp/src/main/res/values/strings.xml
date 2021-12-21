@@ -48,9 +48,14 @@
     <string name="layout_transfer_list_title">Transfer</string>
     <string name="layout_transfer_entry_title">Transfer</string>
 
+    <string name="layout_call_cycle_title">Call Cycle</string>
+
     <string name="layout_cashbook_statement_title">Cashbook Statement</string>
+    <string name="layout_customer_statement_title">Customer Statement</string>
     <string name="layout_sales_statement_title">Sales Statement</string>
     <string name="layout_stock_statement_title">Stock Statement</string>
+    <string name="layout_kpi_title">Key Performance Indecator</string>
+    <string name="layout_customer_places_title">Customers Places</string>
     <!--sub title for all layout-->
     <string name="layout_entry_sub_title">Add/Edit</string>
 
@@ -69,13 +74,19 @@
     <string name="menu_notification">Alert</string>
     <string name="menu_settings">Settings</string>
     <!-- Reports Menu Items-->
+    <string name="menu_customer_statement">Customer Statement</string>
     <string name="menu_cashbook_statement">Cashbook Statement</string>
     <string name="menu_sales_statement">Sales Statement</string>
     <string name="menu_stock_statement">Stock Statement</string>
     <!-- labels caption -->
+    <string name="lbl_receipt_title">Receipt</string>
+    <string name="lbl_payment_title">Payment</string>
+
     <string name="lbl_doc_no">Invoice No</string>
     <string name="lbl_doc_date">Date</string>
     <string name="lbl_customer_name">Customer Name</string>
+    <string name="lbl_customer_name_en">Customer English Name</string>
+    <string name="lbl_customer_name_ar">Customer Arabic Name</string>
     <string name="lbl_region_name">Region Name</string>
     <string name="lbl_count_items">Items count</string>
     <string name="btn_view_caption">View</string>
@@ -91,13 +102,16 @@
     <string name="lbl_line_total">Total</string>
     <string name="hint_line_total">119.00</string>
     <string name="lbl_discount_per">Dis. Per.</string>
+    <string name="lbl_discount">Discount</string>
     <string name="hint_zero">0.00</string>
     <string name="tag_qty">20.00</string>
     <string name="lbl_net_total">Net Total</string>
     <string name="tag_net_total">119.00</string>
     <string name="btn_new_caption">New</string>
     <string name="btn_save_caption">Save</string>
-
+    <string name="lbl_ref_no">Select Invoice</string>
+    <string name="lbl_expiry_date">Expire date</string>
+    <string name="lbl_mfg_date">Mfg date</string>
     <string name="tag_search">Search</string>
     <string name="add_invoice_button_tag">Add Invoice</string>
     <string name="tag_print">Print</string>
@@ -123,11 +137,16 @@
     <string name="lbl_change_amount_lc">Amount Change IQD</string>
     <string name="lbl_paid_amount">Amount Paid</string>
     <string name="lbl_change_amount">Amount Change</string>
+    <string name="lbl_amount_balance">Balance</string>
     <string name="lbl_product_balance">Qty</string>
-    <string name="lbl_received_amount_usd">Received Amount $</string>
+    <string name="lbl_received_amount">Received Amount</string>
     <string name="lbl_received_amount_iqd">Received Amount IQD</string>
     <string name="lbl_order_no">Order No</string>
+    <string name="lbl_day_name">Day name</string>
     <string name="delete_dialog_title">Delete Record</string>
+
+    <string name="lbl_recipientby">The recipient s name</string>
+    <string name="lbl_sign">Signature</string>
     <!-- system messages -->
     <string name="msg_confirm_delete">Are you sure to delete current record?</string>
     <string name="msg_success_delete">Successfully deleted current selected record </string>
@@ -150,7 +169,7 @@
     <string name="msg_error_invalid_qty">Invalid enter qty</string>
     <string name="msg_error_invalid_product">Select product or enter barcode</string>
     <string name="msg_error_invalid_price">Product dose not have price</string>
-
+    <string name="invoice_payment_title">Invoice Payment</string>
     <string name="msg_error_invalid_received_Amount">Should enter received amount</string>
     <string name="msg_error_invalid_usd_amount_change">Error not valid USD amount equal to USD change amount</string>
     <string name="msg_error_invalid_iqd_amount_change">Error not valid IQD amount equal to IQD change amount</string>
@@ -162,12 +181,19 @@
     <string name="msg_error_address">Should enter address</string>
     <string name="msg_error_mobile">Should enter mobile or phone number</string>
     <string name="msg_error_logtude_latitude">Should enter longtude and latitude</string>
-
+    <string name="msg_error_credit_limit">The customer exceeds the credit limit</string>
+    <string name="msg_error_credit_days">The customer exceeds the credit days</string>
+    <string name="msg_error_not_paid_amount">The customer is cash then should paid this invoice</string>
+    <string name="msg_error_remain_amount">The paid amount greater than invoice amount</string>
+    <string name="msg_error_not_remain_amount">Should paid whole invoice amount</string>
     <string name="msg_error_no_from_warehouse">From warehouse is empty. Please select it</string>
     <string name="msg_error_no_to_warehouse">To warehouse is empty. Please select it</string>
-
+    <string name="msg_error_qty_has_digit">Qty should be an integer number</string>
+    <string name="msg_error_gift_qty_has_digit">Gift qty should be an integer number</string>
     <string name="msg_notify_device_not_support_bluetooth">the device does not support bluetooth</string>
     <string name="msg_notify_no_paired_bluetooth_device">no paired bluetooth devices found</string>
+    <string name="msg_return_qty_greater_invqty">Return quantity greater than invoice quantity</string>
+
 
     <string name="msg_notify_bluetooth_enabled">Bluetooth has been enabled</string>
     <string name="msg_notify_bluetooth_disabled">Bluetooth has been disabled</string>
@@ -176,9 +202,15 @@
     <string name="msg_error_no_selected_salesman">Should selected salesman for this PDA</string>
     <string name="msg_error_no_selected_warehouse">Should selected warehouse related with this PDA</string>
     <string name="msg_error_price_category">Should select price category</string>
+    <string name="msg_error_region">Should select region for current customer</string>
     <string name="msg_error_not_available_product_qty">Not available quantity for this item</string>
     <string name="msg_error_not_required_qty_less_product_qty">Required quantity greater than for available quantity</string>
     <string name="msg_error_not_selected_to_delivered">You should press delivery button to select all items to be delivered</string>
+    <string name="msg_error_not_load_call_cycle">Current Call Cycle not loaded correctly </string>
+    <string name="msg_error_not_select_status">Should select status for this call cycle</string>
+    <string name="msg_error_not_fill_notes">Should fill notes for this call cycle</string>
+    <string name="msg_error_discount_overflow">User Discount on Item should be less than or equal [%s]</string>
+
     <string name="lbl_error">Connection Problem!!</string>
     <string name="connecting">Connecting...</string>
 
@@ -204,7 +236,8 @@
     <string name="lbl_contact_name">Contact Name</string>
     <string name="lbl_code">Code</string>
     <string name="lbl_customer_cat_name">Customer Category</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="lbl_status">Select Status</string>
+    <!-- Remove or change this placeholder text -->
     <string name="refresh">Refresh</string>
     <string name="btn_on">On</string>
     <string name="btn_off">Off</string>
@@ -221,10 +254,12 @@
     <string name="lbl_no">No.:</string>
     <string name="lbl_time">Time:</string>
     <string name="lbl_total_discount">Total Discount:</string>
-    <string name="lbl_total">Total:</string>
+    <string name="lbl_total">Total Invoice:</string>
+    <string name="lbl_total_qty">Total Qty</string>
+    <string name="lbl_total_gift">Total Gifts</string>
     <string name="lbl_net_amount">Net Amount:</string>
     <string name="lbl_is_delivered">Is Delivered</string>
-
+    <string name="lbl_batch_no">Batch No.</string>
 
     <string name="location_settings_inadequate_warning">The location settings on the device are not
         adequate to run this sample. Fix in Settings.</string>
@@ -241,6 +276,7 @@
     <string name="server_url">Server URL</string>
     <string name="select_arabic_language_encode">Select Arabic Language Encode</string>
     <string name="select_latin_language_encode">Select Latin Language Encode</string>
+    <string name="select_print_type">Select Print Type</string>
     <string name="visit_no">Visit No</string>
     <string name="survey_name">Survey Name</string>
     <string name="previous_btn">Previous</string>
@@ -250,7 +286,7 @@
     <string name="lbl_from_warehouse">From Warehouse</string>
     <string name="lbl_transfer_no">Transfer No.</string>
     <string name="lbl_warehouse_name">Warehouse Name</string>
-    <string name="lbl_price_category">Price Category Name</string>
+    <string name="lbl_price_category">Price Category</string>
     <!--Report part string name -->
     <string name="rpt_invoice_no">No.</string>
     <string name="rpt_invoice_date">Date</string>
@@ -277,7 +313,14 @@
     <string name="rpt_contact_name">Contact Name </string>
     <string name="rpt_customer_phone">Phone</string>
     <string name="rpt_cr_name">Currency</string>
-
+    <string name="rpt_Ref_No">Ref. no</string>
+    <string name="rpt_Ref_Date">Date</string>
+    <string name="rpt_net_amount1">Net Amount</string>
+    <string name="rpt_received_amount">Received Amount</string>
+    <string name="rpt_paid_amount">Paid Amount</string>
+    <string name="rpt_amount_balance">Balance</string>
+    <string name="rpt_pr_image">Prod. Image</string>
+    <string name="rpt_todate">Balance Till</string>
     <!-- Network state string -->
     <string name="ns_success">Success</string>
     <string name="ns_running">Running</string>
@@ -287,7 +330,18 @@
     <string name="ns_problem_connection">Connection Problem</string>
     <string name="to_date">To Date</string>
     <string name="from_date">From Date</string>
+    <string name="hint_status_name">Waiting</string>
+    <string name="lbl_status_name">Status</string>
+    <string name="btn_caption_cancel">Cancel</string>
+    <string name="tag_batch_no">Batch no.</string>
+    <string name="tag_expiry_date">Expiry date</string>
+    <string name="tag_mfg_date">Mfg date</string>
+    <string name="lbl_IsGift">Gift</string>
 
+    <string-array name="PrintType">
+        <item>I-Invoice</item>
+        <item>R-Receipt</item>
+    </string-array>
     <string-array name="codepage">
         <item>"Default"</item>
         <item>"Chinese Simplified"</item>
@@ -339,4 +393,59 @@
         <item>"ABICOMP"</item>
         <item>"Khemr"</item>
     </string-array>
+
+    <string name="app_title">BlueTooth Demo</string>
+    <!--main_activity-->
+    <string name="connect">Search for and connect a Bluetooth printer</string>
+    <string name="txt_content">&quot;&quot;</string>
+    <string name="choose_paper_width">Paper width:</string>
+    <string name="width1">58mm</string>
+    <string name="width2">80mm</string>
+    <string name="printhex">HEX</string>
+    <string name="btnSend">Send Data</string>
+    <string name="btn_test">Print Test</string>
+    <string name="btn_prtbmp">Print Picture</string>
+    <string name="printpicture">Graphical Print</string>
+    <string name="chosecommand">Please select instruction</string>
+    <string name="btnClose">Close</string>
+    <string name="contentdescription">Content Description</string>
+    <string name="btn_prttable">Print Form</string>
+    <string name="Smallticketprinting">Small Ticket Printing</string>
+    <string name="btn_prtcode">Print 1D/2D Codebar</string>
+    <string name="btn_scqr">Generate QR Code Print</string>
+    <string name="btn_dyca">Turn on the camera</string>
+    <string name="input">Please enter a print!</string>
+    <string name="choose_printcoding">Choose Print code page</string>
+    <string name="big5">BIG5</string>
+    <string name="thai">Thai</string>
+    <string name="kor">Korean</string>
+    <string name="gbk12">Simplified</string>
+
+    <!--  Message -->
+    <string name="msg_state">Input Error!</string>
+    <string name="empty1">Input is empty, in the text box to enter the content to be converted &#8230;</string>
+    <string name="empty">Input is empty</string>
+    <string name="not_connected">Please connect a Bluetooth printer</string>
+    <string name="bt_not_enabled_leaving">Bluetooth does not start, quit the program</string>
+    <string name="title_connecting">connecting…</string>
+    <string name="title_connected_to">connected: </string>
+    <string name="title_not_connected">Is not connected</string>
+    <string name="Connecting">It is connected to a Bluetooth printer</string>
+    <string name="msg_statev1">Without a picture</string>
+    <string name="strLang">en</string>
+    <string name="camer">No pictures</string>
+    <string name="msg_error">Input errors, please check!</string>
+    <string name="tot_customers">Tot. Customers</string>
+    <string name="visited_customers">Visited Customers</string>
+    <string name="unvisited_customers">Unvisited Customers</string>
+    <string name="last_visit_type">Last Visit Type</string>
+    <string name="lbl_visit">Visit</string>
+    <string name="lbl_un_visit">Un-visit</string>
+    <string name="select_plan">Select Plan</string>
+    <string name="lbl_credit_limit_amount">Credit limit amount</string>
+    <string name="credit_limit_days">Credit Limit Days</string>
+    <string name="paid_usd">Paid USD</string>
+    <string name="remain_amount">Remain Amount</string>
+    <string name="btn_reload">Reload</string>
+
 </resources>

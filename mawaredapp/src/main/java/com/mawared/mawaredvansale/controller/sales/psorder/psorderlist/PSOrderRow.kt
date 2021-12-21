@@ -10,7 +10,7 @@ class PSOrderRow(private val  order: Sale_Order, private val viewModel: PSOrders
     override fun getLayout() = R.layout.psorder_row
 
     override fun bind(viewBinding: PsorderRowBinding, position: Int) {
-        viewBinding.setOrder(order)
-        viewBinding.setViewmodel(viewModel)
+        viewBinding.order = order
+        viewBinding.viewmodel = viewModel
     }
 }

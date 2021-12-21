@@ -18,9 +18,9 @@ import org.json.JSONObject;
 class CheckUpdateTask extends AsyncTask<Void, Void, String> {
 
     private ProgressDialog dialog;
-    private Context mContext;
-    private int mType;
-    private boolean mShowProgressDialog;
+    private final Context mContext;
+    private final int mType;
+    private final boolean mShowProgressDialog;
     private static final String url = Constants.UPDATE_URL;
 
     CheckUpdateTask(Context context, int type, boolean showProgressDialog) {
@@ -55,19 +55,21 @@ class CheckUpdateTask extends AsyncTask<Void, Void, String> {
 
     private void parseJson(String result) {
         try {
-
+            String msg1 =  mContext.getString(R.string.android_msg_version);
             JSONObject obj = new JSONObject(result);
-            String updateMessage = obj.getString(Constants.APK_UPDATE_CONTENT);
+            //String updateMessage = obj.getString(Constants.APK_UPDATE_CONTENT);
+
             String apkUrl = obj.getString(Constants.APK_DOWNLOAD_URL);
             int apkCode = obj.getInt(Constants.APK_VERSION_CODE);
 
             int versionCode = AppUtils.getVersionCode(mContext);
+            String upmsg = String.format(msg1, versionCode, apkCode);// String.format(msg1.toString(), versionCode) + "\n" + String.format(msg2.toString(), apkCode) + "\n" + msg3;
 
             if (apkCode > versionCode) {
                 if (mType == Constants.TYPE_NOTIFICATION) {
-                    new NotificationHelper(mContext).showNotification(updateMessage, apkUrl);
+                    new NotificationHelper(mContext).showNotification(upmsg, apkUrl);
                 } else if (mType == Constants.TYPE_DIALOG) {
-                    showDialog(mContext, updateMessage, apkUrl);
+                    showDialog(mContext, upmsg, apkUrl);
                 }
             } else if (mShowProgressDialog) {
                 Toast.makeText(mContext, mContext.getString(R.string.android_auto_update_toast_no_new_update), Toast.LENGTH_SHORT).show();

@@ -8,10 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerGroupAdapter
-import com.mawared.mawaredvansale.controller.adapters.AutoCompleteCustomerTypeAdapter
-import com.mawared.mawaredvansale.controller.adapters.CustomerCategoryAdapter
-import com.mawared.mawaredvansale.controller.adapters.PriceCategoryAdapter
+import com.mawared.mawaredvansale.controller.adapters.*
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.controller.map.MapsActivity
 import com.mawared.mawaredvansale.data.db.entities.md.*
@@ -21,6 +18,7 @@ import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.utilities.EXTRA_CURRENT_LOCATION
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.customer_entry_fragment.*
+import kotlinx.android.synthetic.main.settings_fragment.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -66,7 +64,7 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         super.onViewCreated(view, savedInstanceState)
 
         if(arguments != null){
-            val args = CustomerEntryFragmentArgs.fromBundle(arguments!!)
+            val args = CustomerEntryFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
             if(viewModel.mode != "Add"){
                 viewModel.setCustomerId(args.customerId)
@@ -96,7 +94,11 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.add_menu, menu)
+        if(viewModel.mode == "View"){
+            inflater.inflate(R.menu.view_menu, menu)
+        }else{
+            inflater.inflate(R.menu.add_menu, menu)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -104,14 +106,20 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.save_btn ->{
-                showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
-                    onStarted()
-                    viewModel.location = getLocationData()
-                    viewModel.onSave()
+                if(!viewModel.isRunning){
+                    viewModel.isRunning = true
+                    hideKeyboard()
+                    showDialog(requireContext(), getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null,{
+                        onStarted()
+                        viewModel.location = getLocationData()
+                        viewModel.onSave()
+                    },{
+                        viewModel.isRunning = false
+                    })
                 }
             }
             R.id.close_btn -> {
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -122,7 +130,7 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }
@@ -147,14 +155,18 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
                 viewModel.mcu_payment_terms.value = it.cu_payment_terms
                 viewModel.mcu_longitude.value = if(it.cu_longitude != null) it.cu_longitude.toString() else ""
                 viewModel.mcu_latitude.value = if(it.cu_latitude != null) it.cu_latitude.toString() else ""
+
                 val payment_name = it.cu_payment_name ?: ""
                 val group_name = it.cu_cg_name ?: ""
                 val cat_name = it.cu_cat_name ?: ""
                 val price_cat = it.cu_price_cat_name
+                val region = it.cu_rg_name ?: ""
                 binding.atcCpt.setText(payment_name, true)
-                binding.atcGroup.setText(group_name, true)
+                //binding.atcGroup.setText(group_name, true)
                 binding.atcCategory.setText(cat_name, true)
                 binding.atcPriceCategory.setText(price_cat, true)
+                binding.atcRegion.setText(region, true)
+
             }
         })
 
@@ -164,10 +176,10 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
             initCptAutocomplete(cu)
         })
         // bind customer gropu to autocomplete
-        viewModel.CG_List.await().observe(viewLifecycleOwner, Observer {
-            if(it == null) return@Observer
-            initAutocompleteCustomerGroup(it)
-        })
+//        viewModel.CG_List.await().observe(viewLifecycleOwner, Observer {
+//            if(it == null) return@Observer
+//            initAutocompleteCustomerGroup(it)
+//        })
 
         viewModel.Category_List.await().observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
@@ -178,61 +190,91 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
             if(it != null)
                 initAtcPriceCategory(it)
         })
+
+        viewModel.reginList.await().observe(viewLifecycleOwner, Observer {
+            if(it != null)
+                initRegions(it)
+        })
     }
 
     // init customer autocomplete view
     private fun initCptAutocomplete(customers: List<Customer_Payment_Type>){
-        val adapter = AutoCompleteCustomerTypeAdapter(context!!.applicationContext,
+        val adapter = AutoCompleteCustomerTypeAdapter(requireContext().applicationContext,
             R.layout.support_simple_spinner_dropdown_item,
             customers
         )
         binding.atcCpt.threshold = 0
         binding.atcCpt.setAdapter(adapter)
-        binding.atcCpt.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcCpt.showDropDown()
+        binding.btnOpencpt.setOnClickListener {
+            binding.atcCpt.showDropDown()
         }
+//        binding.atcCpt.setOnFocusChangeListener { _, b ->
+//            if(b) binding.atcCpt.showDropDown()
+//        }
         binding.atcCpt.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedCPT = adapter.getItem(position)
         }
     }
 
-    private fun initAutocompleteCustomerGroup(groups: List<Customer_Group>){
-        val adapter = AutoCompleteCustomerGroupAdapter(context!!.applicationContext,
-            R.layout.support_simple_spinner_dropdown_item,
-            groups
-        )
-        binding.atcGroup.threshold = 0
-        binding.atcGroup.setAdapter(adapter)
-        binding.atcGroup.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcGroup.showDropDown()
-        }
-        binding.atcGroup.setOnItemClickListener { _, _, position, _ ->
-            viewModel.selectedCustomerGroup = adapter.getItem(position)
-        }
-    }
+//    private fun initAutocompleteCustomerGroup(groups: List<Customer_Group>){
+//        val adapter = AutoCompleteCustomerGroupAdapter(context!!.applicationContext,
+//            R.layout.support_simple_spinner_dropdown_item,
+//            groups
+//        )
+//        binding.atcGroup.threshold = 0
+//        binding.atcGroup.setAdapter(adapter)
+//        binding.btnOpenGroup.setOnClickListener {
+//            binding.atcGroup.showDropDown()
+//        }
+////        binding.atcGroup.setOnFocusChangeListener { _, b ->
+////            if(b) binding.atcGroup.showDropDown()
+////        }
+//        binding.atcGroup.setOnItemClickListener { _, _, position, _ ->
+//            viewModel.selectedCustomerGroup = adapter.getItem(position)
+//        }
+//    }
 
     private fun initCategory(list: List<Customer_Category>){
-        val adapter = CustomerCategoryAdapter(activity!!,
+        val adapter = CustomerCategoryAdapter(requireActivity(),
             R.layout.support_simple_spinner_dropdown_item,
             list
         )
         binding.atcCategory.threshold = 0
         binding.atcCategory.setAdapter(adapter)
-        binding.atcCategory.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcCategory.showDropDown()
+        binding.btnOpenCategory.setOnClickListener {
+            binding.atcCategory.showDropDown()
         }
+
         binding.atcCategory.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedCustomerCat = adapter.getItem(position)
         }
     }
 
+    private fun  initRegions(regions: List<Region>){
+        val adapter = RegionAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, regions)
+        binding.atcRegion.threshold = 0
+        binding.atcRegion.setAdapter(adapter)
+        binding.btnOpenRegion.setOnClickListener {
+            binding.atcRegion.showDropDown()
+        }
+//        binding.atcPriceCategory.setOnFocusChangeListener { _, b ->
+//            if(b) binding.atcPriceCategory.showDropDown()
+//        }
+        binding.atcRegion.setOnItemClickListener { _, _, position, _ ->
+            viewModel.selectedRegion = adapter.getItem(position)
+        }
+    }
+
     private fun initAtcPriceCategory(prclist: List<PriceCategory>){
-        val adapter = PriceCategoryAdapter(context!!, R.layout.support_simple_spinner_dropdown_item, prclist)
+        val adapter = PriceCategoryAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, prclist)
         binding.atcPriceCategory.threshold = 0
         binding.atcPriceCategory.setAdapter(adapter)
-        binding.atcPriceCategory.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcPriceCategory.showDropDown()
+        binding.btnOpenPriceCategory.setOnClickListener {
+            binding.atcPriceCategory.showDropDown()
         }
+//        binding.atcPriceCategory.setOnFocusChangeListener { _, b ->
+//            if(b) binding.atcPriceCategory.showDropDown()
+//        }
         binding.atcPriceCategory.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedPriceCategory = adapter.getItem(position)
         }
@@ -241,18 +283,19 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
     override fun clear(code: String) {
         when(code){
             "cpt" -> binding.atcCpt.setText("", true)
-            "cg" -> binding.atcGroup.setText("", true)
+            //"cg" -> binding.atcGroup.setText("", true)
             "cat" -> binding.atcCategory.setText("", true)
             "prcode" -> binding.atcPriceCategory.setText("", true)
+            "rg" -> binding.atcRegion.setText("", true)
         }
     }
 
     override fun onDelete(baseEo: Customer) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onShowDatePicker(v: View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onStarted() {

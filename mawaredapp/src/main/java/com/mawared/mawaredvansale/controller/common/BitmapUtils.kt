@@ -30,7 +30,7 @@ object BitmapUtils {
                     baos.close()
                 }
                 catch (e:IOException) {
-                    Log.e(BitmapUtils::class.java.getSimpleName(), "ByteArrayOutputStream was not closed")
+                    Log.e(BitmapUtils::class.java.simpleName, "ByteArrayOutputStream was not closed")
                 }
             }
         }
@@ -41,7 +41,7 @@ object BitmapUtils {
      * @return result byte array
      */
     fun convertBitmapToByteArrayUncompressed(bitmap:Bitmap):ByteArray {
-        val byteBuffer = ByteBuffer.allocate(bitmap.getByteCount())
+        val byteBuffer = ByteBuffer.allocate(bitmap.byteCount)
         bitmap.copyPixelsToBuffer(byteBuffer)
         byteBuffer.rewind()
         return byteBuffer.array()

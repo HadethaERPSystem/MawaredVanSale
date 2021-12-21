@@ -1,43 +1,33 @@
 package com.mawared.mawaredvansale.services.repositories.reports.fms
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.mawared.mawaredvansale.data.db.entities.reports.fms.CashbookStatement
 import com.mawared.mawaredvansale.services.netwrok.ApiService
-import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.POST_PER_PAGE
-import java.lang.Exception
 
-class CashbookRepositoryImp(private val api: ApiService): ICashbookRepository, SafeApiRequest() {
+class CashbookRepositoryImp(private val api: ApiService): ICashbookRepository {
 
-    lateinit var pagedList: LiveData<PagedList<CashbookStatement>>
-    lateinit var cbsDataSourceFactory: CashbookDataSourceFactory
+    lateinit var pagedListData: LiveData<PagedList<CashbookStatement>>
+    lateinit var cashbookDataSourceFactory: CashbookDataSourceFactory
 
-
-
-    override fun fetchLivePagedList(userId: Int, dtFrom: String?, dtTo: String?): LiveData<PagedList<CashbookStatement>> {
-        cbsDataSourceFactory = CashbookDataSourceFactory(api, userId, dtFrom, dtTo)
-
-
-        val config: PagedList.Config = PagedList.Config.Builder()
+    override fun fetchData(userId: Int, dtFrom: String?, dtTo: String?): LiveData<PagedList<CashbookStatement>> {
+        cashbookDataSourceFactory = CashbookDataSourceFactory(api, userId, dtFrom, dtTo)
+        val config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
             .setPageSize(POST_PER_PAGE)
             .build()
 
-        pagedList = LivePagedListBuilder(cbsDataSourceFactory, config).build()
+        pagedListData = LivePagedListBuilder(cashbookDataSourceFactory, config).build()
 
-        return pagedList
+        return pagedListData
     }
 
-    override fun getNetworkState(): LiveData<NetworkState> {
-        try {
-            return Transformations.switchMap<CashbookDataSource, NetworkState>(cbsDataSourceFactory.cbsLiveDataSource, CashbookDataSource::networkState)
-        }catch(e: Exception){
-            return MutableLiveData()
-        }
+    override fun getCashNetworkState(): LiveData<NetworkState> {
+        return Transformations.switchMap<CashbookDataSource, NetworkState>(cashbookDataSourceFactory.cashbookLiveDataSource, CashbookDataSource::networkState)
     }
+
 }

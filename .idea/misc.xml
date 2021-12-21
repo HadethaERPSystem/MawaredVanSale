@@ -1,6 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/drawable/button_cyan.xml" value="0.2453125" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/drawable/button_gray.xml" value="0.2453125" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/activity_home.xml" value="0.175" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/activity_splash_screen.xml" value="0.3625" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/add_invoice_fragment.xml" value="0.4" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/add_order_fragment.xml" value="0.4" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/atc_batchs_row.xml" value="0.1" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/atc_invoices_row.xml" value="0.4" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/call_cycle_dialog_fragment.xml" value="0.3625" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/call_cycle_entry_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/call_cycle_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/call_cycle_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/cashbook_statement_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/control_layout.xml" value="0.20104166666666667" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_entry_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_fragment.xml" value="0.25677083333333334" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_statement_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/dashboard_fragment.xml" value="0.4" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/delivery_entry_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/delivery_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/delivery_item_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/delivery_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/fragment_invoices.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/invoice_item_row.xml" value="0.4" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/invoice_payment.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/invoice_row.xml" value="0.15416666666666667" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/kpi_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/map_fragment.xml" value="0.25" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/nav_header.xml" value="0.175" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/network_state_item.xml" value="0.3625" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/order_item_row.xml" value="0.4" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/order_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/orders_fragment.xml" value="0.25677083333333334" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/payable_entry_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/payable_fragment.xml" value="0.25677083333333334" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/payable_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/psorder_entry_fragment.xml" value="0.4" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/psorder_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/psorders_fragment.xml" value="0.25677083333333334" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/receivable_entry_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/receivable_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/receivable_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/reports_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/sale_return_entry_fragment.xml" value="0.4" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/sale_return_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/sale_return_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/sales_statement_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/settings_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/survey_entry_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/transfer_entry_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/transfer_fragment.xml" value="0.25677083333333334" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/transfer_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/menu/nav_menu.xml" value="0.17083333333333334" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

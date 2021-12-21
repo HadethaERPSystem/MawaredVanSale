@@ -5,9 +5,6 @@ class StockStatement(
     var pr_barcode: String?,
     var pr_name_ar: String?,
     var pr_name: String?,
-    var pr_batch_no: String?,
-    var pr_expiry_date: String?,
-    var pr_mfg_date: String?,
     var pr_image: String?,
     var qty: Double?,
     var tqty: Double?

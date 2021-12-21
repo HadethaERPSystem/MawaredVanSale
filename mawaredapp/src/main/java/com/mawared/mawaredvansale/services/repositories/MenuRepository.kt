@@ -1,7 +1,6 @@
 package com.mawared.mawaredvansale.services.repositories
 
 import android.content.Context
-import android.content.res.Resources
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -9,12 +8,16 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.AppDatabase
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
 import com.mawared.mawaredvansale.utilities.ApiException
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
+import com.mawared.mawaredvansale.utilities.URL_LOGO
 import kotlinx.coroutines.*
 
 class MenuRepository(
@@ -44,12 +47,25 @@ class MenuRepository(
                             }
                         }catch (e: ApiException){
                             Log.e("Connectivity", "No internet connection", e)
-                            _networkState.postValue(NetworkState.ERROR)
-                            return@launch
+                            withContext(Dispatchers.Main){
+                                value = null
+                                _networkState.postValue(NetworkState.ERROR)
+                                job?.complete()
+                            }
+                        }catch (e: NoConnectivityException){
+                            withContext(Dispatchers.Main){
+                                value = null
+                                _networkState.postValue(NetworkState.ERROR_CONNECTION)
+                                job?.complete()
+                            }
+                            Log.e("Connectivity", "No internet connection", e)
                         }catch (e: Exception){
                             Log.e("Exception", "Error exception when call menu get by User Id", e)
-                            _networkState.postValue(NetworkState.ERROR)
-                            return@launch
+                            withContext(Dispatchers.Main){
+                                value = null
+                                _networkState.postValue(NetworkState.ERROR)
+                                job?.complete()
+                            }
                         }
                     }
                 }
@@ -91,9 +107,10 @@ class MenuRepository(
         //var id = res.getIdentifier("ic_so", null, ctx.packageName)
 
         val mList = listOf(
-            Menu(1, res.getString(R.string.menu_cashbook_statement),  "CashbookStatement", "ic_cashbook"),
-            Menu(2, res.getString(R.string.menu_sales_statement),  "SalesStatement",   "ic_sales"),
-            Menu(3, res.getString(R.string.menu_stock_statement), "StockStatement", "ic_stock")
+            Menu(1, res.getString(R.string.menu_customer_statement),  "CustomerStatement", "ic_cu_statement"),
+            Menu(2, res.getString(R.string.menu_cashbook_statement),  "CashbookStatement", "ic_cashbook"),
+            Menu(3, res.getString(R.string.menu_sales_statement),  "SalesStatement",   "ic_sales"),
+            Menu(4, res.getString(R.string.menu_stock_statement), "StockStatement", "ic_stock")
         )
         menuList.postValue(mList)
         return  menuList
@@ -109,6 +126,16 @@ class MenuRepository(
                 val imgView: ImageView = view as ImageView
                 imgView.setImageDrawable(ContextCompat.getDrawable(imgView.context, iconId))
             }
+        }
+    }
+
+    object loadUrlLogo{
+        @JvmStatic
+        @BindingAdapter("android:urlRemoteLogo")
+        fun loadImage(view: ImageView, imgeUrl: String){
+            Glide.with(view.context)
+                .load(URL_LOGO + imgeUrl).apply(RequestOptions().fitCenter())
+                .into(view)
         }
     }
 }

@@ -9,7 +9,7 @@ class ReceivableRow(private val baseEo: Receivable, private val viewModel: Recei
 
     override fun getLayout() = R.layout.receivable_row
     override fun bind(viewBinding: ReceivableRowBinding, position: Int) {
-        viewBinding.setEntityEo(baseEo)
-        viewBinding.setViewmodel(viewModel)
+        viewBinding.entityEo = baseEo
+        viewBinding.viewmodel = viewModel
     }
 }

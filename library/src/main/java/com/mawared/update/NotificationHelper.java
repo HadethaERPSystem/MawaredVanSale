@@ -20,7 +20,7 @@ public class NotificationHelper extends ContextWrapper {
 
     private NotificationManager manager;
 
-    private static String CHANNEL_ID = "dxy_app_update";
+    private static final String CHANNEL_ID = "dxy_app_update";
 
     private static final int NOTIFICATION_ID = 0;
 
@@ -55,7 +55,7 @@ public class NotificationHelper extends ContextWrapper {
 
     public void updateProgress(int progress) {
         String str = this.getString(R.string.android_auto_update_download_progress);
-        String text =  String.format(str.toString(), progress);
+        String text =  String.format(str, progress);
 
         PendingIntent pendingintent = PendingIntent.getActivity(this, 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -75,7 +75,7 @@ public class NotificationHelper extends ContextWrapper {
                 .setSmallIcon(getSmallIcon())
                 .setLargeIcon(getLargeIcon())
                 .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW);
+                .setPriority(NotificationCompat.PRIORITY_MAX);
 
     }
 

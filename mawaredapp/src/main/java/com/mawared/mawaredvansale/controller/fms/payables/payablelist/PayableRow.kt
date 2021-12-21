@@ -8,7 +8,7 @@ import com.xwray.groupie.databinding.BindableItem
 class PayableRow(private val baseEo: Payable, private val viewModel: PayableViewModel): BindableItem<PayableRowBinding>() {
     override fun getLayout() = R.layout.payable_row
     override fun bind(viewBinding: PayableRowBinding, position: Int) {
-        viewBinding.setEntityEo(baseEo)
-        viewBinding.setViewmodel(viewModel)
+        viewBinding.entityEo = baseEo
+        viewBinding.viewmodel = viewModel
     }
 }

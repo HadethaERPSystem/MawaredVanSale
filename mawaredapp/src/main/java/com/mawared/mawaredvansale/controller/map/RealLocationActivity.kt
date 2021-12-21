@@ -206,13 +206,13 @@ class RealLocationActivity : AppCompatActivity() {
         // inexact. You may not receive updates at all if no location sources are available, or
         // you may receive them slower than requested. You may also receive updates faster than
         // requested if other applications are requesting location at a faster interval.
-        mLocationRequest?.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS)
+        mLocationRequest?.interval = UPDATE_INTERVAL_IN_MILLISECONDS
 
         // Sets the fastest rate for active location updates. This interval is exact, and your
         // application will never receive updates faster than this value.
-        mLocationRequest?.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS)
+        mLocationRequest?.fastestInterval = FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS
 
-        mLocationRequest?.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        mLocationRequest?.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
     /**
@@ -292,6 +292,23 @@ class RealLocationActivity : AppCompatActivity() {
                 Log.i(TAG, "All location settings are satisfied.")
 
 
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    //return
+                }
                 mFusedLocationClient?.requestLocationUpdates(
                     mLocationRequest,
                     mLocationCallback, Looper.myLooper()
@@ -363,23 +380,17 @@ class RealLocationActivity : AppCompatActivity() {
      */
     private fun updateLocationUI() {
         if (mCurrentLocation != null) {
-            mLatitudeTextView?.setText(
-                String.format(
-                    Locale.ENGLISH, "%s: %f", mLatitudeLabel,
-                    mCurrentLocation?.getLatitude()
-                )
+            mLatitudeTextView?.text = String.format(
+                Locale.ENGLISH, "%s: %f", mLatitudeLabel,
+                mCurrentLocation?.latitude
             )
-            mLongitudeTextView?.setText(
-                String.format(
-                    Locale.ENGLISH, "%s: %f", mLongitudeLabel,
-                    mCurrentLocation?.getLongitude()
-                )
+            mLongitudeTextView?.text = String.format(
+                Locale.ENGLISH, "%s: %f", mLongitudeLabel,
+                mCurrentLocation?.longitude
             )
-            mLastUpdateTimeTextView?.setText(
-                String.format(
-                    Locale.ENGLISH, "%s: %s",
-                    mLastUpdateTimeLabel, mLastUpdateTime
-                )
+            mLastUpdateTimeTextView?.text = String.format(
+                Locale.ENGLISH, "%s: %s",
+                mLastUpdateTimeLabel, mLastUpdateTime
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale.controller.sales.psorder.psorderentry
 
+import android.view.View
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order_Items
 import com.mawared.mawaredvansale.databinding.PsorderItemRowBinding
@@ -9,7 +10,7 @@ class PSOrderItemRow(private val orderItemRow: Sale_Order_Items, private val vie
     override fun getLayout() = R.layout.psorder_item_row
 
     override fun bind(viewBinding: PsorderItemRowBinding, position: Int) {
-        viewBinding.setOrderitem(orderItemRow)
-        viewBinding.setViewmodel(viewModel)
+        viewBinding.orderitem = orderItemRow
+        viewBinding.viewmodel = viewModel
     }
 }

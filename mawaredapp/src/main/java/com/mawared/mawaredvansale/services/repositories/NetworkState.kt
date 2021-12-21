@@ -14,14 +14,19 @@ class NetworkState(val status: Status, val msg: String) {
         val ENDOFLIST: NetworkState
         val NODATA: NetworkState
         val ERROR_CONNECTION: NetworkState
+        val WAITING: NetworkState
+        val SUCCESS: NetworkState
 
         init {
+            WAITING = NetworkState(Status.RUNNING, "ns_waiting")
             LOADED = NetworkState(Status.SUCCESS, "ns_success")
-            LOADING = NetworkState(Status.RUNNING, "ns_unning")
+            LOADING = NetworkState(Status.RUNNING, "ns_running")
             ERROR = NetworkState(Status.FAILED, "ns_went_wrong")
             ENDOFLIST = NetworkState(Status.FAILED, "ns_end_list")
             NODATA = NetworkState(Status.FAILED, "ns_no_data")
             ERROR_CONNECTION = NetworkState(Status.FAILED, "ns_problem_connection")
+            SUCCESS = NetworkState(Status.SUCCESS, "ns_success")
+
         }
     }
 }

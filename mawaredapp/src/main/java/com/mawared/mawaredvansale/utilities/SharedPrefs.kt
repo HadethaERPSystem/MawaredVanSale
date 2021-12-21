@@ -34,7 +34,8 @@ class SharedPrefs(context: Context) {
     val KEY_LANG_CODEPAGE_AR = "lang_codepage_ar"
     val KEY_BASE_SERVER_URL = ""
     val gson = Gson()
-
+    val KEY_PRINTING_TYPE = "Key_priting_type"
+    val KEY_APP_VERSION = "key_app_verion"
     var isLoggedIn: Boolean
         get() = prefs.getBoolean(IS_LOGGED_IN, false)
         set(value) = prefs.edit().putBoolean(IS_LOGGED_IN, value).apply()
@@ -82,6 +83,10 @@ class SharedPrefs(context: Context) {
         get() = prefs.getString(KEY_PRINETER_NAME, null)
         set(value) = prefs.edit().putString(KEY_PRINETER_NAME, value).apply()
 
+    var printing_type: String?
+        get() = prefs.getString(KEY_PRINTING_TYPE, "R") // I - Invoice OR R-Receipt
+        set(value) = prefs.edit().putString(KEY_PRINTING_TYPE, value).apply()
+
     var lang_Encode_latin:String?
         get() = prefs.getString(KEY_LANG_ENCODE_LATIN, null)
         set(value) = prefs.edit().putString(KEY_LANG_ENCODE_LATIN, value).apply()
@@ -101,4 +106,8 @@ class SharedPrefs(context: Context) {
     var server_url: String?
         get() = prefs.getString(KEY_BASE_SERVER_URL, null)
         set(value) = prefs.edit().putString(KEY_BASE_SERVER_URL, value).apply()
+
+    var app_version: String?
+        get() = prefs.getString(KEY_APP_VERSION, null)
+        set(value) = prefs.edit().putString(KEY_APP_VERSION, value).apply()
 }

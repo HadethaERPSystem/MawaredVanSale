@@ -15,6 +15,7 @@ import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataReposit
 class SettingsViewModel(private val masterDataRepository: IMDataRepository) : BaseViewModel() {
     var msgListener: IMessageListener? = null
     var ctx: Context? = null
+    var errorMessage: MutableLiveData<String> = MutableLiveData()
 
     var selectedSalesman: Salesman? = null
     private val term: MutableLiveData<String> = MutableLiveData()

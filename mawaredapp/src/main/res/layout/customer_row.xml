@@ -69,7 +69,7 @@
                     android:fontFamily="@font/droid_kufi_regular"
                     android:paddingStart="2dp"
                     android:paddingEnd="2dp"
-                    android:text="@string/lbl_customer_group"
+                    android:text="@string/lbl_customer_type"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline8"
@@ -85,7 +85,7 @@
                     android:gravity="start"
                     android:paddingStart="2dp"
                     android:paddingEnd="2dp"
-                    android:text="@{entityEo.cu_cg_name}"
+                    android:text="@{entityEo.cu_payment_name}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -203,7 +203,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/btn_edit"
                     app:layout_constraintEnd_toStartOf="@+id/btn_edit"
                     app:layout_constraintTop_toTopOf="@+id/btn_edit"
-                    app:srcCompat="@drawable/ic_view" />
+                    app:srcCompat="@drawable/ic_view1" />
 
             <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline8"

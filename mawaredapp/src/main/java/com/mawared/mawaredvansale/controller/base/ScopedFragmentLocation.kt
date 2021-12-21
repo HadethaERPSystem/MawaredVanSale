@@ -104,8 +104,8 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
         super.onCreate(savedInstanceState)
         job = Job()
         mRequestingLocationUpdates = true
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
-        mSettingsClient = LocationServices.getSettingsClient(activity!!)
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        mSettingsClient = LocationServices.getSettingsClient(requireActivity())
 
         createLocationCallback()
         createLocationRequest()
@@ -128,7 +128,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
         }
     }
 
-    fun <T> showDialog(context: Context, title: String, msg: String, baseEo: T, doRun: (obj: T) -> Unit) {
+    fun <T> showDialog(context: Context, title: String, msg: String, baseEo: T, doRun: (obj: T) -> Unit, doCancel:(() -> Unit) = {}) {
         AlertDialog.Builder(context).apply {
             setTitle(title)
             setMessage(msg)
@@ -137,9 +137,9 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
             }
 
             setNegativeButton("Cancel") { _, _ ->
-                //pass
+                doCancel()
             }
-        }.create().show()
+        }.setCancelable(false).create().show()
     }
 
 
@@ -178,13 +178,13 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
         // inexact. You may not receive updates at all if no location sources are available, or
         // you may receive them slower than requested. You may also receive updates faster than
         // requested if other applications are requesting location at a faster interval.
-        mLocationRequest?.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS)
+        mLocationRequest?.interval = UPDATE_INTERVAL_IN_MILLISECONDS
 
         // Sets the fastest rate for active location updates. This interval is exact, and your
         // application will never receive updates faster than this value.
-        mLocationRequest?.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS)
+        mLocationRequest?.fastestInterval = FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS
 
-        mLocationRequest?.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        mLocationRequest?.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
     /**
@@ -221,14 +221,31 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
     private fun startLocationUpdates() {
         // Begin by checking if the device has the necessary location settings.
         mSettingsClient?.checkLocationSettings(mLocationSettingsRequest)
-            ?.addOnSuccessListener(activity!!) {
+            ?.addOnSuccessListener(requireActivity()) {
                 Log.i(TAG, "All location settings are satisfied.")
 
+                if (ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    //return
+                }
                 mFusedLocationClient?.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper() )
 
                 //updateUI()
             }
-            ?.addOnFailureListener(activity!!) { e ->
+            ?.addOnFailureListener(requireActivity()) { e ->
                 val statusCode = (e as ApiException).statusCode
                 when (statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
@@ -240,7 +257,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
                             // Show the dialog by calling startResolutionForResult(), and check the
                             // result in onActivityResult().
                             val rae = e as ResolvableApiException
-                            rae.startResolutionForResult(activity!!, REQUEST_CHECK_SETTINGS)
+                            rae.startResolutionForResult(requireActivity(), REQUEST_CHECK_SETTINGS)
                         } catch (sie: IntentSender.SendIntentException) {
                             Log.i(TAG, "PendingIntent unable to execute request.")
                         }
@@ -250,7 +267,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
                         val errorMessage =
                             "Location settings are inadequate, and cannot be " + "fixed here. Fix in Settings."
                         Log.e(TAG, errorMessage)
-                        Toast.makeText(activity!!, errorMessage, Toast.LENGTH_LONG)
+                        Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
                             .show()
                         mRequestingLocationUpdates = false
                     }
@@ -267,7 +284,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
      * @param listener         The listener associated with the Snackbar action.
      */
     private fun showSnackbar(mainTextStringId: Int, actionStringId: Int, listener: View.OnClickListener ) {
-        Snackbar.make(activity!!.findViewById(android.R.id.content), getString(mainTextStringId), Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(requireActivity().findViewById(android.R.id.content), getString(mainTextStringId), Snackbar.LENGTH_INDEFINITE)
             .setAction(getString(actionStringId), listener).show()
     }
 
@@ -276,7 +293,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
      */
     private fun checkPermissions(): Boolean {
         val permissionState = ActivityCompat.checkSelfPermission(
-            activity!!,
+            requireActivity(),
             Manifest.permission.ACCESS_FINE_LOCATION
         )
         return permissionState == PackageManager.PERMISSION_GRANTED
@@ -284,7 +301,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
 
     private fun requestPermissions() {
         val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-            activity!!,
+            requireActivity(),
             Manifest.permission.ACCESS_FINE_LOCATION
         )
 
@@ -297,7 +314,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
                 android.R.string.ok, View.OnClickListener {
                     // Request permission
                     ActivityCompat.requestPermissions(
-                        activity!!,
+                        requireActivity(),
                         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                         REQUEST_PERMISSIONS_REQUEST_CODE
                     )
@@ -308,7 +325,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(
-                activity!!,
+                requireActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 REQUEST_PERMISSIONS_REQUEST_CODE
             )
@@ -356,11 +373,13 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
     }
 
     fun hideKeyboard(){
+        val view = requireActivity().currentFocus
+        if(view != null){
+            val inputManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-        val inputManager = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        if(inputManager.isAcceptingText){
-            inputManager.hideSoftInputFromWindow(view!!.windowToken, 0)
+            if(inputManager.isAcceptingText){
+                inputManager.hideSoftInputFromWindow(view.windowToken, 0)
+            }
         }
     }
 
@@ -369,7 +388,7 @@ abstract class ScopedFragmentLocation : Fragment(), CoroutineScope {
         Locale.setDefault(locale)
         val config = Configuration()
         config.locale = locale
-        activity!!.resources.updateConfiguration(config, activity!!.resources.displayMetrics)
+        requireActivity().resources.updateConfiguration(config, requireActivity().resources.displayMetrics)
 
         App.prefs.systemLanguage = lang
 

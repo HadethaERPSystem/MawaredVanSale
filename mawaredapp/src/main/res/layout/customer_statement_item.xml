@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="entityEo"
+            type="com.mawared.mawaredvansale.data.db.entities.reports.customer.CustomerStatement"/>
+        <variable
+            name="viewmodel"
+            type="com.mawared.mawaredvansale.controller.reports.customer.CustomerStatementViewModel" />
+    </data>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:text="@{entityEo.ref_no}"
+                    android:background="@drawable/table_content_cell_bg"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:text="@{viewmodel.returnDateString(entityEo.ref_date)}"
+                    android:background="@drawable/table_content_cell_bg"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="130dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:text="@{viewmodel.numberFormat(entityEo.net_amount)}"
+                    android:background="@drawable/table_content_cell_bg"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:text="@{viewmodel.numberFormat(entityEo.rcv_amount)}"
+                    android:background="@drawable/table_content_cell_bg"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:text="@{viewmodel.numberFormat(entityEo.py_amount)}"
+                    android:background="@drawable/table_content_cell_bg"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="top"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:text="@{viewmodel.numberFormat(entityEo.cu_balance)}"
+                    android:background="@drawable/table_content_cell_bg"
+                    android:textSize="12sp"/>
+
+            </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
+</layout>

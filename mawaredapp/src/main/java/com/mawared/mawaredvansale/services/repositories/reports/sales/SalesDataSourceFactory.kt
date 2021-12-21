@@ -5,7 +5,7 @@ import androidx.paging.DataSource
 import com.mawared.mawaredvansale.data.db.entities.reports.sales.SalesStatement
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 
-class SalesDataSourceFactory(private val api: ApiService, private val userId: Int, private val dtFrom: String, private val dtTo: String): DataSource.Factory<Int, SalesStatement>() {
+class SalesDataSourceFactory(private val api: ApiService, private val userId: Int, private val dtFrom: String?, private val dtTo: String?): DataSource.Factory<Int, SalesStatement>() {
 
     val salesLiveDataSource = MutableLiveData<SalesDataSource>()
 

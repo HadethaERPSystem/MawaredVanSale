@@ -211,6 +211,7 @@ class SaleReturnRepositoryImp(private val api: ApiService): ISaleReturnRepositor
     }
 
     override fun cancelJob() {
+        _networkState.value = null
         job?.cancel()
     }
 }

@@ -15,12 +15,12 @@ class PSOrdersViewModel(private val orderRepository: IOrderRepository) : BaseVie
 
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     var navigator: IMainNavigator<Sale_Order>? = null
+    var errorMessage: MutableLiveData<String> = MutableLiveData()
 
+    private val cuId: MutableLiveData<Int> = MutableLiveData()
 
-    private val _cu_id: MutableLiveData<Int> = MutableLiveData()
-
-    val orders: LiveData<PagedList<Sale_Order>> by lazy {
-        orderRepository.fetchLiveOrdersPagedList(_sm_id, null, "PSOrder")
+    val orders: LiveData<PagedList<Sale_Order>> = Transformations.switchMap(cuId) {
+        orderRepository.fetchLiveOrdersPagedList(_sm_id, it, "PSOrder")
     }
 
     val networkStateRV: LiveData<NetworkState> by lazy {
@@ -37,12 +37,15 @@ class PSOrdersViewModel(private val orderRepository: IOrderRepository) : BaseVie
             orderRepository.delete(it)
         }
 
+    fun refresh(){
+        setCustomer(cuId.value)
+    }
     // using to refresh recycler view
     fun setCustomer(cm_Id: Int?){
-        if(_cu_id.value == cm_Id && cm_Id != null){
+        if(cuId.value == cm_Id && cm_Id != null){
             return
         }
-        _cu_id.value = cm_Id
+        cuId.value = cm_Id
     }
 
     // confirm delete

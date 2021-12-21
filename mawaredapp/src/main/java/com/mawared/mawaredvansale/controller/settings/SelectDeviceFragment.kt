@@ -71,7 +71,7 @@ class SelectDeviceFragment : Fragment() {
         } else{
             select_device_cl.snackbar(getString(R.string.msg_notify_no_paired_bluetooth_device))
         }
-        val adapter = ArrayAdapter(activity!!, R.layout.support_simple_spinner_dropdown_item, list)
+        val adapter = ArrayAdapter(requireActivity(), R.layout.support_simple_spinner_dropdown_item, list)
         select_device_list.adapter = adapter
         select_device_list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             try {

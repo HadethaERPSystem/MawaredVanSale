@@ -9,8 +9,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
+import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.PayablePagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.pagination.PayablePagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.databinding.PayableFragmentBinding
@@ -19,6 +20,9 @@ import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.payable_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -40,19 +44,23 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
 
         viewModel.navigator = this
         viewModel.msgListener = this
+        viewModel.ctx = context
 
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
         bindUI()
-        return binding.root
+        binding.pullToRefresh.setOnRefreshListener {
+            viewModel.refresh()
+            binding.pullToRefresh.isRefreshing = false
+        }
+        binding.btnReload.setOnClickListener { viewModel.refresh() }
+         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_payable_list_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
     }
 
     // enable options menu in this fragment
@@ -80,10 +88,14 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
     }
 
     // binding recycler view
-    private fun bindUI() {
+    private fun bindUI() = GlobalScope.launch(Dispatchers.Main){
+        viewModel.lbl_SCAmount.value = resources.getString(R.string.lbl_paid_amount)
+        viewModel.lbl_SCChange.value = resources.getString(R.string.lbl_change_amount)
+        viewModel.lbl_FCAmount.value = resources.getString(R.string.lbl_paid_amount)
+        viewModel.lbl_FCChange.value = resources.getString(R.string.lbl_change_amount)
 
-        val pagedAdapter = PayablePagedListAdapter(viewModel, activity!!)
-        val gridLayoutManager = GridLayoutManager(activity!!, 1)
+        val pagedAdapter = PayablePagedListAdapter(viewModel, requireActivity())
+        val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
             override fun getSpanSize(position: Int): Int {
                 val viewType = pagedAdapter.getItemViewType(position)
@@ -97,17 +109,24 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
             adapter = pagedAdapter// groupAdapter
         }
         viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
-            it.sortByDescending { it.py_doc_date }
             pagedAdapter.submitList(it)
         })
-
+        viewModel.setCustomer(null)
         viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-            progress_bar_payable.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-            txt_error_payable.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+            progress_bar.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+            if (viewModel.listIsEmpty() && (it == NetworkState.ERROR || it == NetworkState.NODATA)) {
+                val pack = requireContext().packageName
+                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                ll_error.visibility = View.VISIBLE
+            } else {
+                ll_error.visibility = View.GONE
+            }
 
             if(!viewModel.listIsEmpty()){
                 pagedAdapter.setNetworkState(it)
             }
+
         })
 
         viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
@@ -119,7 +138,7 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
                 onFailure(getString(R.string.msg_failure_delete))
             }
         })
-        viewModel.setCustomer(null)
+
     }
 
     override fun onDestroy() {
@@ -128,10 +147,10 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
     }
 
     override fun onItemDeleteClick(baseEo: Payable) {
-        showDialog(context!!, getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo){
+        showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             onStarted()
             viewModel.confirmDelete(it)
-        }
+        })
     }
 
     override fun onItemEditClick(baseEo: Payable) {
@@ -149,16 +168,16 @@ class PayableFragment : ScopedFragment(), KodeinAware, IMainNavigator<Payable>, 
     }
 
     override fun onStarted() {
-        progress_bar_payable?.visibility = View.VISIBLE
+        progress_bar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        progress_bar_payable?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         payable_list_cl?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        progress_bar_payable?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         payable_list_cl?.snackbar(message)
     }
 }

@@ -10,7 +10,7 @@ class InvoiceRow(private val  saleRead: Sale, private val viewModel: InvoicesVie
     override fun getLayout() = R.layout.invoice_row
 
     override fun bind(viewBinding: InvoiceRowBinding, position: Int) {
-        viewBinding.setSale(saleRead)
-        viewBinding.setViewmodel(viewModel)
+        viewBinding.sale = saleRead
+        viewBinding.viewmodel = viewModel
     }
 }

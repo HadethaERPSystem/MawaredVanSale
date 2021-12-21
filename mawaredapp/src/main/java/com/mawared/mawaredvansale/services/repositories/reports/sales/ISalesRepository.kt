@@ -7,5 +7,5 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 
 interface ISalesRepository {
     fun getRecNetworkState(): LiveData<NetworkState>
-    fun fetchLivePagedList(userId: Int, dtFrom: String, dtTo: String): LiveData<PagedList<SalesStatement>>
+    fun fetchLivePagedList(userId: Int, dtFrom: String?, dtTo: String?): LiveData<PagedList<SalesStatement>>
 }

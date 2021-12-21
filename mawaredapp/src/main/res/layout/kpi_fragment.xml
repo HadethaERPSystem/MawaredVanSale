@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.mawared.mawaredvansale.controller.reports.kpi.KpiViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="com.example.mansigoel.charts.MainActivity">
+        <LinearLayout
+            android:id="@+id/llViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+
+            <EditText
+                android:id="@+id/dtFrom"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:gravity="center"
+                android:hint="@string/from_date"
+                android:autofillHints="@string/from_date"
+                android:inputType="date"
+                android:text="@={viewmodel.dtFrom}"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btn_dateFrom"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/btn_delete_caption"
+                android:onClick="@{viewmodel::onFromDate}"
+                app:layout_constraintBottom_toBottomOf="@+id/dtFrom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/dtFrom"
+                app:srcCompat="@drawable/ic_calendar" />
+
+            <EditText
+                android:id="@+id/dtTo"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:gravity="center"
+                android:hint="@string/to_date"
+                android:autofillHints="@string/to_date"
+                android:inputType="date"
+                android:text="@={viewmodel.dtTo}"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btn_dateTo"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:layout_marginEnd="20dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/btn_delete_caption"
+                android:onClick="@{viewmodel::onToDate}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/dtFrom"
+                app:srcCompat="@drawable/ic_calendar" />
+
+            <ImageButton
+                android:id="@+id/btn_doSearch"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/btn_delete_caption"
+                android:onClick="@{()-> viewmodel.doApplyDateFilter()}"
+                app:layout_constraintBottom_toBottomOf="@+id/dtFrom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/dtFrom"
+                app:srcCompat="@drawable/ic_search" />
+        </LinearLayout>
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChart"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="8dp" />
+
+
+        <LinearLayout
+            android:id="@+id/llViewTitle1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="2dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="2dp"
+                android:minHeight="?listPreferredItemHeightLarge">
+
+                <TextView
+                    android:id="@+id/lbl_plan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
+                    android:text="@string/select_plan"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="SmallSp" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/atc_plan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="4dp"
+                    android:autofillHints="@string/lbl_status"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_status"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_openPlan"
+                    app:layout_constraintStart_toEndOf="@+id/lbl_plan"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/btn_openPlan"
+                    android:layout_width="30dp"
+                    android:layout_height="46dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_doSearch1"
+                    app:layout_constraintTop_toTopOf="@+id/atc_plan"
+                    app:srcCompat="@drawable/ic_arrow_drop_down" />
+
+                <ImageButton
+                    android:id="@+id/btn_doSearch1"
+                    android:layout_width="40dp"
+                    android:layout_height="38dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/btn_delete_caption"
+
+                    android:onClick="@{()-> viewmodel.doApplyPlanFilter()}"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/btn_openPlan"
+                    app:srcCompat="@drawable/ic_search" />
+
+                <com.github.mikephil.charting.charts.HorizontalBarChart
+                    android:id="@+id/barChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_plan"
+                    tools:layout_editor_absoluteX="2dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

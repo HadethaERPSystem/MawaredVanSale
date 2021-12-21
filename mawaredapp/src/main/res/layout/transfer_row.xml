@@ -52,6 +52,7 @@
                     android:gravity="start"
                     android:paddingStart="2dp"
                     android:paddingEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
                     android:text="@{entityEo.tr_ref_no}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
@@ -86,6 +87,7 @@
                     android:gravity="start"
                     android:paddingStart="2dp"
                     android:paddingEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
                     android:text="@{viewmodel.returnDateString(entityEo.tr_doc_date)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
@@ -130,68 +132,71 @@
                     app:layout_constraintTop_toBottomOf="@+id/lbl_whs_from"
                     tools:ignore="SmallSp" />
 
-            <!-- Invoice region label and data-->
-
             <!-- Buttons for view, edit & delete -->
             <View
-                    android:id="@+id/view"
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/colorPrimaryDark"
-                    app:layout_constraintTop_toBottomOf="@+id/whs_from"
-                    tools:layout_editor_absoluteX="0dp" />
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/colorPrimaryDark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/whs_from" />
 
             <ImageButton
-                    android:id="@+id/btn_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="4dp"
-                    android:background="@null"
-                    android:contentDescription="@string/btn_delete_caption"
-                    android:onClick="@{()-> viewmodel.onItemDelete(entityEo)}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view"
-                    app:srcCompat="@drawable/ic_delete" />
+                android:id="@+id/btn_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@null"
+                android:contentDescription="@string/btn_delete_caption"
+                android:visibility="gone"
+                android:onClick="@{()-> viewmodel.onItemDelete(entityEo)}"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_edit"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/btn_edit"
+                app:srcCompat="@drawable/ic_delete" />
 
             <ImageButton
-                    android:id="@+id/btn_edit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    android:contentDescription="@string/btn_edit_caption"
-                    android:onClick="@{()-> viewmodel.onItemEdit(entityEo)}"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_delete"
-                    app:layout_constraintTop_toTopOf="@+id/btn_delete"
-                    app:srcCompat="@drawable/ic_edit" />
+                android:id="@+id/btn_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                android:contentDescription="@string/btn_edit_caption"
+                android:onClick="@{()-> viewmodel.onItemEdit(entityEo)}"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_view"
+                app:layout_constraintEnd_toStartOf="@+id/btn_delete"
+                app:layout_constraintTop_toTopOf="@+id/btn_view"
+                app:srcCompat="@drawable/ic_edit" />
 
             <ImageButton
-                    android:id="@+id/btn_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    android:contentDescription="@string/btn_view_caption"
-                    android:onClick="@{()-> viewmodel.onItemView(entityEo)}"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_edit"
-                    app:layout_constraintTop_toTopOf="@+id/btn_edit"
-                    app:srcCompat="@drawable/ic_view" />
+                android:id="@+id/btn_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                android:contentDescription="@string/btn_view_caption"
+                android:onClick="@{()-> viewmodel.onItemView(entityEo)}"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_print"
+                app:layout_constraintEnd_toStartOf="@+id/btn_edit"
+                app:layout_constraintTop_toTopOf="@+id/btn_print"
+                app:srcCompat="@drawable/ic_view1" />
 
             <ImageButton
-                    android:id="@+id/btn_print"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    android:contentDescription="@string/btn_view_caption"
-                    android:onClick="@{()-> viewmodel.onPrint(entityEo.tr_Id)}"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_view"
-                    app:layout_constraintTop_toTopOf="@+id/btn_view"
-                    app:srcCompat="@drawable/ic_print" />
+                android:id="@+id/btn_print"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="4dp"
+                android:background="@null"
+                android:contentDescription="@string/btn_view_caption"
+                android:onClick="@{()-> viewmodel.onPrint(entityEo.tr_Id)}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_view"
+                app:layout_constraintTop_toBottomOf="@+id/view"
+                app:srcCompat="@drawable/ic_print" />
 
             <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline8"

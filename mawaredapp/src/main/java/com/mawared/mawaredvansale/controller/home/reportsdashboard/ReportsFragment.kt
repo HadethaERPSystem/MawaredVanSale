@@ -12,19 +12,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
-import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.databinding.ReportsFragmentBinding
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.Coroutines
-import com.mawared.mawaredvansale.utilities.snackbar
 import com.mawared.update.AppUtils
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.dashboard_fragment.*
-import kotlinx.android.synthetic.main.dashboard_fragment.progress_bar_menu
-import kotlinx.android.synthetic.main.dashboard_fragment.txt_error_menu
 import kotlinx.android.synthetic.main.reports_fragment.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
@@ -60,7 +55,7 @@ class ReportsFragment : Fragment(), KodeinAware {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setHasOptionsMenu(true)
     }
@@ -76,7 +71,7 @@ class ReportsFragment : Fragment(), KodeinAware {
         })
 
         viewModel.networkState.observe(viewLifecycleOwner, Observer {
-            progress_bar_menu.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+            progress_bar.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
             txt_error_menu.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
         })
     }
@@ -105,17 +100,24 @@ class ReportsFragment : Fragment(), KodeinAware {
     }
 
     fun showFragment(menu: Menu){
-
-        when (menu.menu_code){
-            "CashbookStatement"->{
-                navController.navigate(R.id.action_reportsFragment_to_cashbookStatementFragment)
+        try {
+            when (menu.menu_code){
+                "CustomerStatement" ->{
+                    navController.navigate(R.id.action_reportsFragment_to_customerStatementFragment)
+                }
+                "CashbookStatement"->{
+                    navController.navigate(R.id.action_reportsFragment_to_cashbookStatementFragment)
+                }
+                "SalesStatement"->{
+                    navController.navigate(R.id.action_reportsFragment_to_salesStatementFragment)
+                }
+                "StockStatement"->{
+                    navController.navigate(R.id.action_reportsFragment_to_stockFragment)
+                }
             }
-            "SalesStatement"->{
-                //navController.navigate(R.id.action_dashboardFragment_to_ordersFragment)
-            }
-            "StockStatement"->{
-                //navController.navigate(R.id.action_dashboardFragment_to_receivableFragment)
-            }
+        }catch (e: Exception){
+            txt_error_menu.visibility = View.VISIBLE
         }
+
     }
 }

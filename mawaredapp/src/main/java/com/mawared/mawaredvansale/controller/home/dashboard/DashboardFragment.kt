@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale.controller.home.dashboard
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,14 +17,13 @@ import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.databinding.DashboardFragmentBinding
-import com.mawared.mawaredvansale.services.repositories.NetworkState
+import com.mawared.mawaredvansale.services.repositories.Status
 import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.mawared.update.AppUtils
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.dashboard_fragment.*
-import kotlinx.android.synthetic.main.orders_fragment.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -48,24 +48,25 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
         viewModel.res = resources
         viewModel.ctx = context
         viewModel.system_version = AppUtils.getVersionName(context) //AppUtils.getVersionCode(this)
-        var s =  AppUtils.getVersionCode(context)
+        //var s =  AppUtils.getVersionCode(context)
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
         bindUI()
 
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.home_page_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
-
+        binding.pullToRefresh.setOnRefreshListener {
+            viewModel.refresh()
+            binding.pullToRefresh.isRefreshing = false
+        }
+        binding.btnReload.setOnClickListener { viewModel.refresh() }
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setHasOptionsMenu(true)
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
@@ -75,22 +76,45 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
         //progress_bar.show()
         viewModel.menus.observe(viewLifecycleOwner, Observer {
             //progress_bar.hide()
-            initRecyclerView(it.toMenuItem())
+            if(it != null) {
+                viewModel.menusCount = it.count()
+                initRecyclerView(it.toMenuItem())
+            }else{
+                viewModel.menusCount = 0
+                menurecyclerview.removeAllViews()
+            }
         })
 
         viewModel.networkState.observe(viewLifecycleOwner, Observer {
-            progress_bar_menu.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-            txt_error_menu.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+            progress_bar.visibility =  if(viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
+
+            if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
+                val pack = requireContext().packageName
+                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                ll_error.visibility = View.VISIBLE
+                menurecyclerview.visibility = View.GONE
+            } else {
+                menurecyclerview.visibility = View.VISIBLE
+                ll_error.visibility = View.GONE
+            }
+
         })
+
+        //viewModel.loadMenus()
     }
 
     private fun initRecyclerView(menuItem: List<MenuItem>) {
         val mAdapter = GroupAdapter<ViewHolder>().apply {
             addAll(menuItem)
         }
-
+        var cols = 2
+        val currentOrientation = resources.configuration.orientation
+        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            cols = 3
+        }
         menurecyclerview.apply {
-            layoutManager = GridLayoutManager(context, 2)
+            layoutManager = GridLayoutManager(context, cols)
             setHasFixedSize(true)
             adapter = mAdapter
         }
@@ -123,11 +147,19 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
                     root_layout?.snackbar(resources.getString(R.string.msg_user_not_authorize))
                 }
             }
-            "PSOrder"->{
-               navController.navigate(R.id.action_dashboardFragment_to_PSOrdersFragment)
+            "PSOrder"-> {
+                if (App.prefs.savedSalesman != null) {
+                    navController.navigate(R.id.action_dashboardFragment_to_PSOrdersFragment)
+                } else {
+                    root_layout?.snackbar(resources.getString(R.string.msg_user_not_authorize))
+                }
             }
-            "Order"->{
-                navController.navigate(R.id.action_dashboardFragment_to_ordersFragment)
+            "Order"-> {
+                if (App.prefs.savedSalesman != null) {
+                    navController.navigate(R.id.action_dashboardFragment_to_ordersFragment)
+                } else {
+                    root_layout?.snackbar(resources.getString(R.string.msg_user_not_authorize))
+                }
             }
             "SaleReturn"->{
                 if(App.prefs.savedSalesman != null){
@@ -177,7 +209,15 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
             }
             "Settings" ->{
                 navController.navigate(R.id.action_dashboardFragment_to_settingsFragment)
-
+            }
+            "CallCycle" ->{
+                navController.navigate(R.id.action_dashboardFragment_to_callCycleFragment)
+            }
+            "Map" ->{
+                navController.navigate(R.id.action_dashboardFragment_to_mapFragment)
+            }
+            "KPI" ->{
+                navController.navigate(R.id.action_dashboardFragment_to_kpiFragment)
             }
         }
     }

@@ -133,6 +133,7 @@ class OrderRepositoryImp(private val api: ApiService): IOrderRepository, SafeApi
     ): LiveData<List<Sale_Order>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+
     override fun getOrderById(so_Id: Int): LiveData<Sale_Order> {
         job = Job()
         _networkState.postValue(NetworkState.LOADING)
@@ -223,6 +224,7 @@ class OrderRepositoryImp(private val api: ApiService): IOrderRepository, SafeApi
     }
 
     override fun cancelJob() {
+        _networkState.value = null
         job?.cancel()
     }
 }

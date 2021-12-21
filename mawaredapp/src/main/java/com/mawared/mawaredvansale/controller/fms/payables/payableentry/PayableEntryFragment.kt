@@ -46,7 +46,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         binding = DataBindingUtil.inflate(inflater, R.layout.payable_entry_fragment, container, false)
 
         //viewModel.showDatePicker = this
-        viewModel.ctx = activity!!
+        viewModel.ctx = requireActivity()
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.doc_date.value = "${LocalDate.now()}"
@@ -64,7 +64,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_payable_entry_title)
         (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
         if(arguments != null){
-            val args = PayableEntryFragmentArgs.fromBundle(arguments!!)
+            val args = PayableEntryFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
             if(viewModel.mode != "Add"){
                 viewModel.setPayableId(args.pyId)
@@ -80,6 +80,9 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.add_menu, menu)
+        if(viewModel.mode == "View"){
+            menu.findItem(R.id.save_btn).isVisible = false
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -88,17 +91,20 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         when(item.itemId){
             R.id.save_btn ->{
                 if(!viewModel.isRunning){
+                    viewModel.isRunning = true
                     hideKeyboard()
-                    showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
+                    showDialog(requireContext(), getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null, {
                         onStarted()
                         viewModel.location = getLocationData()
                         viewModel.onSave()
-                    }
+                    },{
+                        viewModel.isRunning = false
+                    })
                 }
             }
             R.id.close_btn -> {
                 hideKeyboard()
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -110,7 +116,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }
@@ -135,19 +141,15 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         })
 
         // Customer autocomplete settings
-        val adapter = CustomerAdapter1(context!!, R.layout.support_simple_spinner_dropdown_item )
+        val adapter = CustomerAdapter1(requireContext(), R.layout.support_simple_spinner_dropdown_item )
 
         binding.atcCustomer.threshold = 0
         binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 50
         binding.atcCustomer.setAdapter(adapter)
-        binding.atcCustomer.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcCustomer.showDropDown()
+        binding.btnOpenCustomer.setOnClickListener {
+            binding.atcCustomer.showDropDown()
         }
 
-        binding.atcCustomer.setOnTouchListener(OnTouchListener { v, event ->
-            binding.atcCustomer.showDropDown()
-            false
-        })
         binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedCustomer = adapter.getItem(position)
         }
@@ -162,13 +164,17 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
 
             }
             override fun afterTextChanged(s: Editable?) {
-                viewModel.term.value = s.toString()
+                if(viewModel.selectedCustomer == null) viewModel.term.value = s.toString() else binding.atcCustomer.dismissDropDown()
             }
         })
         // bind customer to autocomplete
         viewModel.customerList.observe(viewLifecycleOwner, Observer { cu ->
             adapter.setCustomers(cu)
-            binding.atcCustomer.showDropDown()
+            if(viewModel.mode != "Add" && cu.size > 0 && viewModel._entityEo != null){
+                viewModel.selectedCustomer = cu.find { it.cu_ref_Id == viewModel._entityEo?.py_cu_Id}
+            }else{
+                binding.atcCustomer.showDropDown()
+            }
         })
 
 
@@ -177,7 +183,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         })
 
         viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
-            viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.00
+            viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.0
         })
 
         viewModel.setVoucherCode("Payable")
@@ -192,7 +198,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
     }
 
     override fun onDelete(baseEo: Payable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+         //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onShowDatePicker(v: View) {
@@ -201,8 +207,8 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val dpd = DatePickerDialog(activity!!, DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
-            viewModel.doc_date.value = "${dayOfMonth}-${monthOfYear + 1}-${yr}"
+        val dpd = DatePickerDialog(requireActivity(), DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+            viewModel.doc_date.value = "${yr}-${monthOfYear + 1}-${dayOfMonth}"
         }, year, month, day)
         dpd.show()
     }

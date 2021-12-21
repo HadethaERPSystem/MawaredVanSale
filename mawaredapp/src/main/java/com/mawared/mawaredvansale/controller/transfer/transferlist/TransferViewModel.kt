@@ -16,14 +16,16 @@ import com.mawared.mawaredvansale.services.repositories.transfer.ITransferReposi
 
 class TransferViewModel(private val repository: ITransferRepository) : BaseViewModel() {
 
-    private val _user_id: Int = if(App.prefs.saveUser?.id != null)  App.prefs.saveUser!!.id else 0
+    private val userId: MutableLiveData<Int> = MutableLiveData(if(App.prefs.saveUser?.id != null)  App.prefs.saveUser!!.id else 0)
     var ctx: Context? = null
     var navigator: IMainNavigator<Transfer>? = null
     var msgListener: IMessageListener? = null
     var printListener: IPrintNavigator<Transfer>? = null
     var isPrint = false
-    val baseEoList: LiveData<PagedList<Transfer>> by lazy {
-        repository.fetchLivePagedList(_user_id)
+    var errorMessage: MutableLiveData<String> = MutableLiveData()
+
+    val baseEoList: LiveData<PagedList<Transfer>> = Transformations.switchMap(userId) {
+        repository.fetchLivePagedList(it)
     }
 
     val networkStateRV: LiveData<NetworkState> by lazy {
@@ -40,6 +42,9 @@ class TransferViewModel(private val repository: ITransferRepository) : BaseViewM
             repository.getById(it)
         }
 
+    fun refresh(){
+        userId.value = App.prefs.saveUser!!.id
+    }
     // confirm delete sale return record
     fun find(id: Int){
         if(_tr_Id.value == id){

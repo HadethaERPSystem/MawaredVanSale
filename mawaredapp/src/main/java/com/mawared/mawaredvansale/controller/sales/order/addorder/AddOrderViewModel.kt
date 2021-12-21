@@ -17,7 +17,6 @@ import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.services.repositories.order.IOrderRepository
 import com.mawared.mawaredvansale.utilities.Coroutines
-import com.mawared.mawaredvansale.utilities.lazyDeferred
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -28,12 +27,13 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     var mode: String = "Add"
     var ctx: Context? = null
-
+    var visible = View.VISIBLE
     // listener
     var msgListener: IMessageListener? = null
     var addNavigator: IAddNavigator<Sale_Order_Items>? = null
     var allowed_discount: MutableLiveData<Boolean> = MutableLiveData(false)
     var allowed_select_prod: MutableLiveData<Boolean> = MutableLiveData(false)
+    var allowed_enter_gift_qty: MutableLiveData<Boolean> = MutableLiveData(false)
     var isRunning: Boolean = false
     // google map location GPS
     var location: Location? = null
@@ -41,13 +41,17 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     var rowNo: Int = 0
     var docNo: MutableLiveData<String> = MutableLiveData()
     var docDate = MutableLiveData<String>()
+    var cCustomer_Name = MutableLiveData<String>()
     var totalAmount : MutableLiveData<Double> = MutableLiveData()
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
-    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
+    //var isGift: MutableLiveData<Boolean> = MutableLiveData(false)
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
 
     var searchQty: MutableLiveData<String> = MutableLiveData("1")
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
+    var giftQty: MutableLiveData<String> = MutableLiveData("")
+    var disPer: MutableLiveData<String> = MutableLiveData("")
 
     var selectedCustomer: Customer? = null
     var oCu_Id: Int? = null
@@ -78,13 +82,13 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
 
     val networkState by lazy { orderRepository.networkState }
 
-    private val _term: MutableLiveData<String> = MutableLiveData()
+    val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
             masterDataRepository.getProductsByUserWarehouse(it, _sm_id, price_cat_code)
         }
 
-    var rate : Double = 0.00
+    var rate : Double = 0.0
     private val _cr_Id: MutableLiveData<Int> = MutableLiveData()
     val currencyRate: LiveData<Currency_Rate> = Transformations
         .switchMap(_cr_Id) {
@@ -98,7 +102,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
             masterDataRepository.getVoucherByCode(it)
         }
 
-    var unitPrice : Double = 0.00
+    var unitPrice : Double = 0.0
     var price_cat_code = "POS"
     private val _prod_Id: MutableLiveData<Int> = MutableLiveData()
     var discount: Discount? = null
@@ -150,7 +154,9 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
         if(items != null && _soItems == items){
             return
         }
-        _soItems.value = items
+        _soItems.value = items ?: arrayListOf()
+        if(items != null)
+            tmpSOItems.addAll(items)
     }
     //---------------------------------------
     //----- button function
@@ -160,16 +166,20 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
                 isRunning = true
                 val user = App.prefs.saveUser!!
                 val totalAmount: Double = tmpSOItems.sumByDouble { it.sod_line_total!! }
-                val netAmount: Double = tmpSOItems.sumByDouble { it.sod_line_total!! }
+                val netAmount: Double = tmpSOItems.sumByDouble { it.sod_net_total!! }
+                val totalDiscount = tmpSOItems.sumByDouble { it.sod_disvalue!! }
                 val strDate= LocalDateTime.now()
                 val dtFull = docDate.value + " " + LocalTime.now()
-                val baseEo = Sale_Order( user.cl_Id, user.org_Id,0, dtFull,
+                val doc_num = docNo.value?.toInt() ?: 0
+                val cu_Id = selectedCustomer?.cu_ref_Id ?: _entityEo?.so_customerId
+                val price_cat_Id = selectedCustomer?.cu_price_cat_Id ?: _entityEo?.so_price_cat_Id
+                val baseEo = Sale_Order( user.cl_Id, user.org_Id, doc_num, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, selectedCustomer!!.cu_ref_Id, null, totalAmount, 0.00, netAmount, user.sl_cr_Id, rate,
-                    false, location?.latitude, location?.longitude, selectedCustomer!!.cu_price_cat_Id, "$strDate",
+                    _sm_id, cu_Id, cCustomer_Name.value, null, totalAmount, totalDiscount, netAmount, user.ss_cr_Id, rate,
+                    false, location?.latitude, location?.longitude, price_cat_Id, "$strDate",
                     "${user.id}", "$strDate", "${user.id}"
                 )
-                baseEo.so_price_cat_code = price_cat_code
+                baseEo.so_price_cat_code =  price_cat_code
 
                 if(mode != "Add"){
                     baseEo.so_id = _entityEo!!.so_id
@@ -178,13 +188,16 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
                     baseEo.so_rate = _entityEo!!.so_rate
                 }
 
+                baseEo.items = arrayListOf()
                 baseEo.items.addAll(tmpSOItems)
-
+                if(tmpDeletedItems.count() > 0){
+                    baseEo.items_deleted.addAll(tmpDeletedItems)
+                }
                 Coroutines.main {
                     try {
                         val response = orderRepository.SaveOrUpdate(baseEo)
                         if(response.isSuccessful){
-                            _baseEo.value = response.data
+                            _baseEo.value = response.data!!
                             isRunning = false
                         }
                         else{
@@ -211,7 +224,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
         if (docDate.value == null) {
                 msg =  ctx!!.resources!!.getString(R.string.msg_error_invalid_date)
         }
-        if (selectedCustomer == null) {
+        if (selectedCustomer == null && _entityEo == null) {
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_customer)
         }
 
@@ -234,10 +247,13 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
         val strDate: LocalDate = LocalDate.now()
         docNo.value = ""
         docDate.value = returnDateString(strDate.toString())
-        totalAmount.value = 0.00
-        netTotal.value = 0.00
-        totalDiscount.value = 0.00
-        unitPrice = 0.00
+        totalAmount.value = 0.0
+        netTotal.value = 0.0
+        totalDiscount.value = 0.0
+        giftQty.value = ""
+        searchQty.value = "1"
+        unitPrice = 0.0
+        //isGift.value = false
         price_cat_code = "POS"
         clear("cu")
         clear("prod")
@@ -247,11 +263,14 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     fun onAddItem(){
         if(isValidRow()){
             try {
-                createRow() { complete ->
+                createRow { complete ->
                     if(complete){
+                        selectedProduct = null
                         searchBarcode.value = ""
                         searchQty.value = "1"
-                        unitPrice = 0.00
+                        giftQty.value = ""
+                        //isGift.value = false
+                        unitPrice = 0.0
                         clear("prod")
                     }else{
                         msgListener?.onFailure(ctx!!.resources!!.getString(R.string.msg_error_fail_add_item))
@@ -265,31 +284,82 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
 
     private fun createRow(complete:(Boolean) -> Unit){
         try {
-            rowNo++
             val strDate = LocalDateTime.now()
-            val mItem = tmpSOItems.find { it.sod_prod_Id == selectedProduct!!.pr_Id }
-            val qty = searchQty.value!!.toDouble() + (if(mItem?.sod_pack_qty != null)   mItem.sod_pack_qty!! else 0.00)
-            val lineTotal = unitPrice * qty
-            val netTotal = lineTotal
+            val mItem = tmpSOItems.find { it.sod_prod_Id == selectedProduct!!.pr_Id && it.sod_batch_no == selectedProduct!!.pr_batch_no && it.sod_expiry_date == selectedProduct!!.pr_expiry_date }
+
+            var qty: Double = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0
+
+            if(mItem?.sod_pack_qty != null)
+                qty += mItem.sod_pack_qty!!
+
+            val gift_qty : Double = (if(!giftQty.value.isNullOrEmpty()) giftQty.value!!.toDouble() else 0.0)
+            val ogQty : Double = (if(mItem != null) mItem.sod_gift_qty!!.toDouble() else 0.0)
+
+            //val newQty = qty + if(isGift.value == true) 0.0 else gift_qty
+            val newQty = qty + gift_qty
+
+           // val lineTotal = if(isGift.value == true) 0.0 else  unitPrice * newQty
+            val lineTotal = unitPrice * newQty
+            //val netTotal = if(isGift.value == true) 0.0 else lineTotal
+            //val gdisValue = if(isGift.value == true) 0.0 else unitPrice * gift_qty
+            val gdisValue =  unitPrice * (gift_qty + ogQty)
+            val gdis_per = ((gdisValue / lineTotal) * 100)
+
+            var disValue = 0.0
+            var lDisPer: Double = 0.0
+
+            if(disPer.value != null && disPer.value!!.length > 0){
+                lDisPer =  disPer.value!!.toDouble()
+            }
+            disValue = (lDisPer / 100) * lineTotal
+
+
+            // check if there is discount on item
+            if(discount != null /*&& isGift.value == false*/){
+                if(discount!!.pr_dis_type == "P"){
+                    lDisPer = discount!!.pr_dis_value!!
+                    disValue = (lDisPer / 100) * lineTotal
+                }else{
+                    lDisPer = (discount!!.pr_dis_value!! / lineTotal) * 100
+                    disValue = discount!!.pr_dis_value!! * qty
+                }
+            }
+
+            if(gdisValue != 0.0){
+                lDisPer += gdis_per
+                disValue += gdisValue
+            }
+
+            //val netTotal = if(isGift.value == true) 0.0 else (lineTotal - disValue)
+            val netTotal = (lineTotal - disValue)
+            val price_afd = (lDisPer / 100) * unitPrice
 
             val user = App.prefs.saveUser!!
 
             if(mItem == null){
-                val itemEo = Sale_Order_Items(rowNo, 0, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, qty, 1.00, qty, unitPrice,
-                    lineTotal, null, null, netTotal, selectedProduct!!.pr_wr_Id,  selectedProduct!!.pr_batch_no,  selectedProduct!!.pr_expiry_date,
-                    selectedProduct!!.pr_mfg_date, null, null, null,"${strDate}",
+                rowNo++
+                val itemEo = Sale_Order_Items(rowNo, 0, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, newQty, 1.00, newQty, gift_qty, unitPrice, price_afd,
+                    lineTotal, lDisPer, disValue, netTotal, selectedProduct!!.pr_wr_Id,  selectedProduct!!.pr_batch_no,  selectedProduct!!.pr_expiry_date,
+                    selectedProduct!!.pr_mfg_date, null, null, null, false,"${strDate}",
                     "${user.id}", "${strDate}", "${user.id}")
                 itemEo.sod_prod_name = selectedProduct!!.pr_description_ar
                 itemEo.sod_barcode = selectedProduct!!.pr_barcode
-
+                itemEo.sod_partno = selectedProduct!!.pr_partno
+                itemEo.sod_pr_is_batch = selectedProduct!!.pr_is_batch_no
                 tmpSOItems.add(itemEo)
             }
             else{
-                mItem.sod_pack_qty = qty
-                mItem.sod_unit_qty = qty
+                mItem.sod_pack_qty = newQty
+                mItem.sod_unit_qty = newQty
+                mItem.sod_gift_qty = gift_qty + ogQty
+
                 mItem.sod_line_total = lineTotal
                 mItem.sod_net_total = netTotal
+                mItem.sod_discount = lDisPer
+                mItem.sod_disvalue = disValue
+                mItem.updated_at = "$strDate"
             }
+            _soItems.value = arrayListOf()
             _soItems.postValue(tmpSOItems)
 
             complete(true)
@@ -302,27 +372,54 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     private fun isValidRow(): Boolean{
         var isSuccessful = true
         var msg: String? = ""
-        val qty = if(searchQty.value != null) searchQty.value!!.toInt() else 0
-        val pr_qty: Int = if(selectedProduct?.pr_qty != null) selectedProduct?.pr_qty!!.toInt()  else 0
+        var tQty = 0.0
+        val mItem = tmpSOItems.find { it.sod_prod_Id == selectedProduct!!.pr_Id && it.sod_batch_no == selectedProduct!!.pr_batch_no && it.sod_expiry_date == selectedProduct!!.pr_expiry_date }
+        if(mItem != null){
+            tQty +=  mItem.sod_unit_qty!!
+        }
+        val gQty: Double = (if(!giftQty.value.isNullOrEmpty()) giftQty.value!!.toDouble() else 0.0) +  (if(mItem != null) mItem.sod_gift_qty!!.toDouble() else 0.0)
+
+        val qty = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0
+        tQty += qty + gQty
+
+        val pr_qty: Double = if(selectedProduct?.pr_qty != null) selectedProduct?.pr_qty!!  else 0.0
 
         if (selectedProduct == null && searchBarcode.value != "") {
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_product)
+        }
+
+        if(disPer.value != null && disPer.value!!.length > 0){
+            val tmpDisPer =  disPer.value!!.toDouble()
+            val disPerLimit = App.prefs.saveUser!!.dis_Per ?: 0.0
+
+            if(tmpDisPer > disPerLimit) {
+                val str: String = ctx!!.resources!!.getString(R.string.msg_error_discount_overflow)
+                msg += (if (msg!!.length > 0) "\n\r" else "") + String.format(str, App.prefs.saveUser!!.dis_Per!!)
+            }
         }
 
         if(pr_qty <= 0){
             msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_available_product_qty)
         }
 
-        if (qty <= 0) {
+        if (qty <= 0 && gQty <= 0) {
             msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_invalid_qty)
         }
 
-        if(qty > pr_qty){
+        if(tQty > pr_qty){
             msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_required_qty_less_product_qty)
         }
 
         if (unitPrice == 0.00) {
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_price)
+        }
+
+        if((qty % 1) != 0.0){
+            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_qty_has_digit)
+        }
+
+        if((gQty % 1) != 0.0){
+            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_gift_qty_has_digit)
         }
 
         if(!msg.isNullOrEmpty()){
@@ -334,9 +431,9 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     }
 
     fun setTotals(){
-        totalAmount.postValue(soItems.value!!.sumByDouble{ it.sod_line_total ?: 0.00 } )
-        totalDiscount.postValue(soItems.value!!.sumByDouble { it.sod_disvalue  ?: 0.00 })
-        netTotal.postValue(soItems.value!!.sumByDouble { it.sod_net_total ?: 0.00 })
+        totalAmount.postValue(soItems.value!!.sumByDouble{ it.sod_line_total ?: 0.0 } )
+        totalDiscount.postValue(soItems.value!!.sumByDouble { it.sod_disvalue  ?: 0.0 })
+        netTotal.postValue(soItems.value!!.sumByDouble { it.sod_net_total ?: 0.0 })
     }
 
     fun onItemDelete(orderItem: Sale_Order_Items) {
@@ -344,7 +441,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     }
 
     fun deleteItem(baseEo: Sale_Order_Items){
-        if(baseEo.sod_id != 0){
+        if(baseEo.sod_Id != 0){
             // delete from database
             val item = _soItems.value?.find { it.sod_rowNo == baseEo.sod_rowNo }
             if(item != null){
@@ -352,6 +449,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
             }
         }
         // delete from current list
+        tmpSOItems.remove(baseEo)
         _soItems.value = _soItems.value?.filter { it.sod_rowNo != baseEo.sod_rowNo }
     }
 

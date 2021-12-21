@@ -1,9 +1,6 @@
 package com.mawared.mawaredvansale.utilities
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 object Coroutines {
 
@@ -16,5 +13,11 @@ object Coroutines {
         CoroutineScope(Dispatchers.IO).launch {
             work()
         }
-
+    fun<T: Any> ioThenMain(work: suspend (()-> T?), callback:((T?)->Unit)) =
+        CoroutineScope(Dispatchers.Main).launch {
+            val data = CoroutineScope(Dispatchers.IO).async  rt@{
+                return@rt work()
+            }.await()
+            callback(data)
+        }
 }

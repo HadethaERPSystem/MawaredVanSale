@@ -19,7 +19,7 @@ import com.mawared.mawaredvansale.services.repositories.srv.SurveyRepositoryImp
 import com.mawared.mawaredvansale.utilities.lazyDeferred
 
 class SurveyEntryViewModel(private val repositoryImp: SurveyRepositoryImp, private val masterDataRepository: IMDataRepository) : BaseViewModel() {
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_id != null)  App.prefs.savedSalesman!!.sm_id else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     var mode: String = "Add"
     var msgListener: IMessageListener? = null
 

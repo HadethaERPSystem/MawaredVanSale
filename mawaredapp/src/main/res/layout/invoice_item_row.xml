@@ -33,22 +33,27 @@
             <!-- Item Name-->
             <TextView
                 android:id="@+id/lbl_prod_name"
-                android:layout_width="90dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
+                android:layout_marginBottom="4dp"
+                android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:hint="@string/lbl_prod_name"
                 android:textSize="13sp"
+                app:layout_constraintBottom_toTopOf="@+id/lbl_Qty"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/prod_name"
                 tools:ignore="SmallSp" />
 
             <TextView
                 android:id="@+id/prod_name"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="50dp"
                 android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:maxLines="3"
@@ -58,8 +63,8 @@
                 android:textSize="13sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/btn_delete"
-                app:layout_constraintStart_toEndOf="@+id/lbl_prod_name"
-                app:layout_constraintTop_toTopOf="@+id/lbl_prod_name"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="SmallSp" />
 
             <!-- Qty Label -->
@@ -68,45 +73,55 @@
                 android:id="@+id/lbl_Qty"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="center_horizontal"
                 android:text="@string/lbl_qty"
+                android:textAlignment="center"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline10"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/lbl_GQty"
+                app:layout_constraintTop_toBottomOf="@+id/prod_name"
                 tools:ignore="SmallSp" />
 
+            <!-- Gift Qty -->
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:hint="@string/tag_qty"
-                android:text="@{String.valueOf(saleitem.sld_pack_qty)}"
+                android:text="@{viewmodel.numberFormat(saleitem.sld_pack_qty)}"
                 android:textAlignment="center"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/guideline11"
-                app:layout_constraintStart_toStartOf="@+id/guideline10"
-                app:layout_constraintTop_toTopOf="@+id/lbl_Qty"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_Qty"
                 tools:ignore="SmallSp" />
 
-            <!-- Gift Qty -->
             <TextView
                 android:id="@+id/lbl_GQty"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="center_horizontal"
                 android:text="@string/lbl_gift_qty"
+                android:textAlignment="center"
                 android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="@+id/guideline11"
-                app:layout_constraintTop_toBottomOf="@+id/prod_name"
+                app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/lbl_Qty"
                 tools:ignore="SmallSp" />
 
             <TextView
@@ -117,13 +132,83 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:hint="@string/tag_qty"
-                android:text="@{String.valueOf(saleitem.sld_gift_qty)}"
+                android:text="@{viewmodel.numberFormat(saleitem.sld_gift_qty)}"
                 android:textAlignment="center"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/lbl_GQty"
+                app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/textView"
+                tools:ignore="SmallSp" />
+
+            <!-- Batch and Expiry Date -->
+            <TextView
+                android:id="@+id/lbl_batch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:text="@string/lbl_batch_no"
+
+                android:textAlignment="center"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline24"
+                app:layout_constraintStart_toStartOf="@+id/guideline11"
                 app:layout_constraintTop_toTopOf="@+id/lbl_GQty"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/txt_batch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:hint="@string/tag_batch_no"
+                android:text="@{saleitem.sld_batch_no}"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/guideline24"
+                app:layout_constraintStart_toStartOf="@+id/guideline11"
+                app:layout_constraintTop_toTopOf="@+id/txtvGQty"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/lbl_expiry"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:text="@string/lbl_expiry_date"
+                android:textAlignment="center"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline24"
+                app:layout_constraintTop_toTopOf="@+id/lbl_batch"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/txt_expirty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:hint="@string/tag_expiry_date"
+                android:text="@{viewmodel.returnDateString(saleitem.sld_expiry_date)}"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline24"
+                app:layout_constraintTop_toTopOf="@+id/txt_batch"
                 tools:ignore="SmallSp" />
             <!-- Price Label-->
 
@@ -132,11 +217,16 @@
                 android:id="@+id/lbl_uprice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:text="@string/lbl_unit_price"
+                android:textAlignment="center"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView"
                 tools:ignore="SmallSp" />
@@ -146,84 +236,97 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
+                android:layout_marginTop="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:hint="@string/hint_unit_price"
-                android:text="@{String.valueOf(saleitem.sld_unit_price)}"
+                android:text="@{viewmodel.numberFormat(saleitem.sld_unit_price)}"
                 android:textAlignment="center"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/textView6"
-                app:layout_constraintStart_toStartOf="@+id/guideline10"
-                app:layout_constraintTop_toTopOf="@+id/lbl_uprice"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_uprice"
                 tools:ignore="SmallSp" />
 
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:paddingLeft="2dp"
                 android:paddingRight="2dp"
                 android:text="@{viewmodel.cr_symbol}"
+                android:hint="@string/lbl_iqd_cr_symbol"
                 android:textSize="13sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
                 app:layout_constraintTop_toTopOf="@+id/txt_uprice"
                 tools:ignore="SmallSp" />
             <!-- Total Price Label-->
 
             <TextView
                 android:id="@+id/lbl_linetotal"
-                android:layout_width="60dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:text="@string/lbl_line_total"
+                android:textAlignment="center"
                 android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="@+id/guideline11"
-                app:layout_constraintTop_toTopOf="@+id/txt_uprice"
+                app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/lbl_uprice"
                 tools:ignore="SmallSp" />
 
             <TextView
                 android:id="@+id/txt_linetotal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:hint="@string/hint_line_total"
-                android:text="@{String.valueOf(saleitem.sld_line_total)}"
+                android:text="@{viewmodel.numberFormat(saleitem.sld_line_total)}"
                 android:textAlignment="center"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/lbl_cur"
-                app:layout_constraintStart_toEndOf="@+id/lbl_linetotal"
-                app:layout_constraintTop_toTopOf="@+id/lbl_linetotal"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/txt_uprice"
                 tools:ignore="SmallSp" />
+
+            <!--Discount -->
 
             <TextView
                 android:id="@+id/lbl_cur"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:paddingLeft="2dp"
                 android:paddingRight="2dp"
                 android:text="@{viewmodel.cr_symbol}"
+                android:hint="@string/lbl_iqd_cr_symbol"
                 android:textSize="13sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline11"
                 app:layout_constraintTop_toTopOf="@+id/txt_linetotal"
                 tools:ignore="SmallSp" />
-            <!--Discount -->
 
             <TextView
                 android:id="@+id/lbl_discount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
-                android:text="@string/lbl_discount_per"
+                android:text="@string/lbl_discount"
+                android:textAlignment="center"
                 android:textSize="13sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline10"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lbl_uprice"
+                app:layout_constraintEnd_toStartOf="@+id/guideline24"
+                app:layout_constraintStart_toStartOf="@+id/guideline11"
+                app:layout_constraintTop_toTopOf="@+id/lbl_linetotal"
                 tools:ignore="SmallSp" />
 
             <TextView
@@ -234,78 +337,75 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:hint="@string/hint_zero"
-                android:text="@{String.valueOf(saleitem.sld_dis_value)}"
+                android:text="@{viewmodel.numberFormat(saleitem.sld_dis_value)}"
                 android:textAlignment="center"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/textView7"
-                app:layout_constraintStart_toStartOf="@+id/guideline10"
-                app:layout_constraintTop_toTopOf="@+id/lbl_discount"
+                app:layout_constraintEnd_toStartOf="@+id/guideline24"
+                app:layout_constraintStart_toStartOf="@+id/guideline11"
+                app:layout_constraintTop_toTopOf="@+id/lbl_cur"
                 tools:ignore="SmallSp" />
 
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/droid_kufi_regular"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp"
-                android:text="@{viewmodel.cr_symbol}"
-                android:textSize="13sp"
-                app:layout_constraintEnd_toStartOf="@+id/guideline11"
-                app:layout_constraintTop_toTopOf="@+id/txt_discount"
-                tools:ignore="SmallSp" />
             <!-- Net Total -->
 
             <TextView
                 android:id="@+id/lbl_nettotal"
-                android:layout_width="60dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:text="@string/lbl_net_total"
+                android:textAlignment="center"
                 android:textSize="13sp"
-                app:layout_constraintStart_toStartOf="@+id/guideline11"
-                app:layout_constraintTop_toTopOf="@+id/txt_discount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline24"
+                app:layout_constraintTop_toTopOf="@+id/lbl_discount"
                 tools:ignore="SmallSp" />
+
+            <!--Delete Button-->
 
             <TextView
                 android:id="@+id/txt_nettotal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:hint="@string/tag_net_total"
-                android:text="@{String.valueOf(saleitem.sld_net_total)}"
+                android:text="@{viewmodel.numberFormat(saleitem.sld_net_total)}"
                 android:textAlignment="center"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/textView8"
-                app:layout_constraintStart_toEndOf="@+id/lbl_nettotal"
-                app:layout_constraintTop_toTopOf="@+id/lbl_nettotal"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline24"
+                app:layout_constraintTop_toTopOf="@+id/txt_discount"
                 tools:ignore="SmallSp" />
 
             <TextView
                 android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:paddingLeft="2dp"
                 android:paddingRight="2dp"
                 android:text="@{viewmodel.cr_symbol}"
+                android:hint="@string/lbl_iqd_cr_symbol"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/txt_nettotal"
                 tools:ignore="SmallSp" />
-            <!--Delete Button-->
 
             <ImageButton
                 android:id="@+id/btn_delete"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_delete_caption"
                 android:onClick="@{()-> viewmodel.onItemDelete(saleitem)}"
+                android:visibility="@{viewmodel.visible}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -317,14 +417,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.2" />
+                app:layout_constraintGuide_percent="0.25" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.54" />
+                app:layout_constraintGuide_percent="0.49" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

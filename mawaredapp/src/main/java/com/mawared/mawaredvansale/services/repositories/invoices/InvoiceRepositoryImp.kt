@@ -212,6 +212,7 @@ class InvoiceRepositoryImp(private val api: ApiService): IInvoiceRepository, Saf
     }
 
     override fun cancelJob(){
+        _networkState.value = null
         job?.cancel()
     }
 }

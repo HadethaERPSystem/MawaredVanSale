@@ -43,6 +43,9 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
     var lc_change: MutableLiveData<String> = MutableLiveData()
     var comment: MutableLiveData<String> = MutableLiveData()
 
+    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.cr_code!!)
+    var fcr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sl_cr_code!!)
+
     val _baseEo: MutableLiveData<Receivable> = MutableLiveData()
 
     // for load order for edit or view
@@ -54,13 +57,12 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
         }
 
     var selectedCustomer: Customer? = null
-
     val term : MutableLiveData<String> = MutableLiveData()
     val customerList: LiveData<List<Customer>> = Transformations.switchMap(term){
         masterDataRepository.getCustomersByOrg(App.prefs.saveUser!!.org_Id, it)
     }
 
-    var rate : Double = 0.00
+    var rate : Double = 0.0
     private val _cr_Id: MutableLiveData<Int> = MutableLiveData()
     val currencyRate: LiveData<Currency_Rate> = Transformations
         .switchMap(_cr_Id) {
@@ -103,18 +105,21 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
                 isRunning = true
                 val user = App.prefs.saveUser!!
                 val strDate = LocalDateTime.now()
-                val amount_usd: Double = if(bc_amount.value != null)  bc_amount.value!!.toDouble() else 0.00
-                val amount_iqd: Double = if(lc_amount.value != null)  lc_amount.value!!.toDouble() else 0.00
-                val change_usd: Double = if(bc_change.value != null)  bc_change.value!!.toDouble() else 0.00
-                val change_iqd: Double = if(lc_change.value != null)  lc_change.value!!.toDouble() else 0.00
+                val amount_usd: Double = if(bc_amount.value != null)  bc_amount.value!!.toDouble() else 0.0
+                val amount_iqd: Double = if(lc_amount.value != null)  lc_amount.value!!.toDouble() else 0.0
+                val change_usd: Double = if(bc_change.value != null)  bc_change.value!!.toDouble() else 0.0
+                val change_iqd: Double = if(lc_change.value != null)  lc_change.value!!.toDouble() else 0.0
                 val dtFull = doc_date.value + " " + LocalTime.now()
+                val cu_Id = selectedCustomer?.cu_ref_Id ?: _entityEo?.rcv_cu_Id
                 val baseEo = Receivable(
                     user.cl_Id, user.org_Id, 0,dtFull, mVoucher.value!!.vo_Id, "${mVoucher.value!!.vo_prefix}",
-                    null, _sm_id, selectedCustomer!!.cu_ref_Id, 0.00, amount_usd, change_usd,
+                    null, _sm_id, cu_Id, 0.0, amount_usd, change_usd,
                     amount_iqd, change_iqd, user.cr_Id, user.sl_cr_Id, rate, comment.value, false,
                     location?.latitude, location?.longitude, null,"$strDate", "${user.id}","$strDate", "${user.id}"
                 )
-
+                if(rcv_Id.value != null){
+                    baseEo.rcv_Id= rcv_Id.value!!
+                }
                 Coroutines.main {
                     try {
                         val response = repository.SaveOrUpdate(baseEo)
@@ -144,10 +149,10 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
         var isSuccessful = true
         var msg: String? = ""
 
-        val amount_usd: Double = if(bc_amount.value != null)  bc_amount.value!!.toDouble() else 0.00
-        val amount_iqd: Double = if(lc_amount.value != null)  lc_amount.value!!.toDouble() else 0.00
-        val change_usd: Double = if(bc_change.value != null)  bc_change.value!!.toDouble() else 0.00
-        val change_iqd: Double = if(lc_change.value != null)  lc_change.value!!.toDouble() else 0.00
+        val amount_usd: Double = if(!bc_amount.value.isNullOrEmpty())  bc_amount.value!!.toDouble() else 0.00
+        val amount_iqd: Double = if(!lc_amount.value.isNullOrEmpty())  lc_amount.value!!.toDouble() else 0.00
+        val change_usd: Double = if(!bc_change.value.isNullOrEmpty())  bc_change.value!!.toDouble() else 0.00
+        val change_iqd: Double = if(!lc_change.value.isNullOrEmpty())  lc_change.value!!.toDouble() else 0.00
 
         if(doc_date.value.isNullOrEmpty()){
             msg = ctx!!.resources!!.getString(R.string.msg_error_invalid_date)
@@ -156,15 +161,21 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_received_Amount)
         }
 
-        if(selectedCustomer == null){
+        if(selectedCustomer == null && _entityEo == null){
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_customer)
+        }
+        else if((selectedCustomer?.cu_ref_Id == null || selectedCustomer?.cu_ref_Id == 0) && (_entityEo?.rcv_cu_Id == null || _entityEo?.rcv_cu_Id == 0)){
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_customer)
         }
 
-        if(amount_usd != 0.00 && amount_usd == change_usd){
+        if(amount_usd == 0.0 && amount_iqd == 0.0){
+            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_received_Amount)
+        }
+        if(amount_usd != 0.0 && amount_usd == change_usd){
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_usd_amount_change)
         }
 
-        if(amount_iqd != 0.00 && amount_iqd == change_iqd){
+        if(amount_iqd != 0.0 && amount_iqd == change_iqd){
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_iqd_amount_change)
         }
 

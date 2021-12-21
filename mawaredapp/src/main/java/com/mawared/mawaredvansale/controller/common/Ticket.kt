@@ -9,11 +9,15 @@ class Ticket(
     var align: AlignText = AlignText.LEFT,
     var attribute: Attribute = Attribute.LARGE_FONT_NO_BOLD_NO_UNDERLINE_NO_HIGHLIGHT,
     var textSize: Int = 0,
-    val bmp: Bitmap? = null
+    val bmp: Bitmap? = null,
+    var xPos: Int? = null,
+    var yPos: Int? = null,
+    var exPos: Int? = null,
+    var eyPos: Int? = null
 ): Serializable
 
 enum class LineType{
-    Text, Image, Barcode, Column, LineSeparator, NewLine
+    Text, Image, Barcode, Column, LineSeparator, NewLine, Line, Rectangle
 }
 
 enum class AlignText{
@@ -24,7 +28,7 @@ enum class AlignText{
 
 }
 
-enum class Attribute(){
+enum class Attribute {
     LARGE_FONT_NO_BOLD_NO_UNDERLINE_NO_HIGHLIGHT,
     SMALL_FONT_NO_BOLD_NO_UNDERLINE_NO_HIGHLIGHT,
     LARGE_FONT_BOLD_NO_UNDERLINE_NO_HIGHLIGHT,

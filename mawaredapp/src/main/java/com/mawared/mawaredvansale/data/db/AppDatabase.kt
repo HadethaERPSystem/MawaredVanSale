@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import com.mawared.mawaredvansale.data.db.dao.md.*
 import com.mawared.mawaredvansale.data.db.dao.sales.SaleDao
 import com.mawared.mawaredvansale.data.db.dao.sales.Sale_DetailsDao
@@ -21,7 +22,7 @@ import com.mawared.mawaredvansale.data.db.entities.security.User
     entities = [User::class, Sale::class, Sale_Items::class, Menu::class, Call_Cycle::class, Currency::class, Currency_Rate::class,
                 Customer::class, Customer_Group::class, Customer_Price_List::class, Product::class, Product_Brand::class, Product_Category::class,
                 Product_Price_List::class, Region::class, Salesman::class, Salesman_Customer::class],
-    version = 20, exportSchema = false
+    version = 28, exportSchema = false
 )
 @TypeConverters(LocalDateConverter::class)
 abstract class AppDatabase : RoomDatabase() {

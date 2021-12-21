@@ -15,12 +15,12 @@ class OrdersViewModel(private val orderRepository: IOrderRepository) : BaseViewM
 
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     var navigator: IMainNavigator<Sale_Order>? = null
+    var errorMessage: MutableLiveData<String> = MutableLiveData()
 
+    private val cu_id: MutableLiveData<Int?> = MutableLiveData()
 
-    private val _cu_id: MutableLiveData<Int?> = MutableLiveData()
-
-    val orders: LiveData<PagedList<Sale_Order>> by lazy {
-        orderRepository.fetchLiveOrdersPagedList(_sm_id, null, "SaleOrder")
+    val orders: LiveData<PagedList<Sale_Order>> = Transformations.switchMap(cu_id) {
+        orderRepository.fetchLiveOrdersPagedList(_sm_id, it, "SaleOrder")
     }
 
     val networkStateRV: LiveData<NetworkState> by lazy {
@@ -38,12 +38,15 @@ class OrdersViewModel(private val orderRepository: IOrderRepository) : BaseViewM
 
     // using to refresh recycler view
     fun setCustomer(cm_Id: Int?){
-        if(_cu_id.value == cm_Id && _cu_id.value != null){
+        if(cu_id.value == cm_Id && cu_id.value != null){
             return
         }
-        _cu_id.value = cm_Id
+        cu_id.value = cm_Id
     }
 
+    fun refresh(){
+        setCustomer(cu_id.value)
+    }
     // confirm delete
     fun confirmDelete(baseEo: Sale_Order){
         _so_Id_for_delete.value = baseEo.so_id
@@ -65,6 +68,11 @@ class OrdersViewModel(private val orderRepository: IOrderRepository) : BaseViewM
     fun onItemView(baseEo: Sale_Order)
     {
         navigator?.onItemViewClick(baseEo)
+    }
+
+    fun checkStatus(baseEo: Sale_Order): Boolean{
+        val value = (baseEo.sod_status_code != "Invoice")
+        return  value
     }
 
     fun cancelJob(){

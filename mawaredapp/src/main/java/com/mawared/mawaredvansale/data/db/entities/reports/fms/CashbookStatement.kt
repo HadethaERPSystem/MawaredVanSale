@@ -24,6 +24,7 @@ class ReportRowHeader(
     var colHeader8: String = "",
     var colHeader9: String = "",
     var colHeader10: String = "",
-    var colHeader11: String = ""
+    var colHeader11: String = "",
+    var colHeader12: String = ""
 
 )

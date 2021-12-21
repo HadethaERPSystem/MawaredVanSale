@@ -23,6 +23,8 @@ data class Sale_Return_Items(
     var srd_promotionId: Int?,      // Promotion Id
     var srd_warehouseId: Int?,       // Salesman Warehouse Id
     var srd_ref_rowNo: Int?,
+    var srd_ref_Id: Int?,
+    var srd_ref_no: String?,
     var srd_batch_no: String?,
     var srd_expiry_date: String?,
     var srd_mfg_date: String?,
@@ -37,6 +39,7 @@ data class Sale_Return_Items(
     var srd_warehouse_name: String? = null
     @Ignore
     var srd_prod_name: String? = null
+    var srd_prod_name_ar: String? = null
     @Ignore
     var srd_barcode: String? = null
     @Ignore

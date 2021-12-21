@@ -13,9 +13,9 @@ class LoadImage: AsyncTask<String, Void, Bitmap>() {
         try {
             val url = URL(params[0])
             val connection = url.openConnection() as HttpURLConnection
-            connection.setDoInput(true)
+            connection.doInput = true
             connection.connect()
-            val input = connection.getInputStream()
+            val input = connection.inputStream
             return BitmapFactory.decodeStream(input)
         } catch (e: IOException) {
             return null

@@ -1,28 +1,24 @@
 package com.mawared.mawaredvansale.controller.sales.psorder.psorderlist
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.PagedListAdapter.PSOrderPagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.pagination.PSOrderPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
 import com.mawared.mawaredvansale.databinding.PsordersFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.NetworkState
+import com.mawared.mawaredvansale.services.repositories.Status
 import com.mawared.mawaredvansale.utilities.snackbar
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.orders_fragment.*
+import kotlinx.android.synthetic.main.psorders_fragment.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -41,10 +37,7 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
 
     private lateinit var navController: NavController
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,  savedInstanceState: Bundle?): View {
 
         viewModel = ViewModelProviders.of(this, factory).get(PSOrdersViewModel::class.java)
 
@@ -55,6 +48,12 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
         bindUI()
+        binding.pullToRefresh.setOnRefreshListener {
+            viewModel.refresh()
+            binding.pullToRefresh.isRefreshing = false
+        }
+        binding.btnReload.setOnClickListener { viewModel.refresh() }
+        setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -67,8 +66,6 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_psorder_list_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
     }
 
     // inflate the menu
@@ -91,8 +88,8 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     }
 
     private fun bindUI() = GlobalScope.launch(Main) {
-        val pagedAdapter = PSOrderPagedListAdapter(viewModel, activity!!)
-        val gridLayoutManager = GridLayoutManager(activity!!, 1)
+        val pagedAdapter = PSOrderPagedListAdapter(viewModel, requireActivity())
+        val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
             override fun getSpanSize(position: Int): Int {
                 val viewType = pagedAdapter.getItemViewType(position)
@@ -100,21 +97,27 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
                 else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
             }
         }
-        rcv_orders.apply {
+        rcv_psorders.apply {
             layoutManager = gridLayoutManager// LinearLayoutManager(this@OrdersFragment.context)
             setHasFixedSize(true)
             adapter = pagedAdapter// groupAdapter
         }
 
         viewModel.orders.observe(viewLifecycleOwner, Observer {
-            it.sortByDescending { it.so_date }
             pagedAdapter.submitList(it)
         })
         viewModel.setCustomer(null)
 
         viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-            progress_bar_order.visibility =  if(viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-            txt_error_order.visibility = if(viewModel.listIsEmpty() && it == NetworkState.ERROR) View.VISIBLE else View.GONE
+            progress_bar.visibility =  if(viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
+            if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
+                val pack = requireContext().packageName
+                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                ll_error.visibility = View.VISIBLE
+            } else {
+                ll_error.visibility = View.GONE
+            }
 
             if(!viewModel.listIsEmpty()){
                 pagedAdapter.setNetworkState(it)
@@ -135,10 +138,10 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     }
 
     override fun onItemDeleteClick(baseEo: Sale_Order) {
-        showDialog(context!!, getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo){
+        showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             onStarted()
             viewModel.confirmDelete(it)
-        }
+        })
     }
 
     override fun onItemEditClick(baseEo: Sale_Order) {
@@ -156,17 +159,17 @@ class PSOrdersFragment : ScopedFragment(), KodeinAware, IMainNavigator<Sale_Orde
     }
 
     override fun onStarted() {
-        //llProgressBar?.visibility = View.VISIBLE
+        progress_bar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        //llProgressBar?.visibility = View.GONE
-        order_list_cl.snackbar(message)
+        progress_bar?.visibility = View.GONE
+        psorder_list_cl.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        //llProgressBar?.visibility = View.GONE
-        order_list_cl.snackbar(message)
+        progress_bar?.visibility = View.GONE
+        psorder_list_cl.snackbar(message)
     }
 
     override fun onDestroy() {

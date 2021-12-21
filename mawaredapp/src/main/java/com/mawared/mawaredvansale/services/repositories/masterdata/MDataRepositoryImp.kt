@@ -8,12 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import androidx.paging.toLiveData
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.mawared.mawaredvansale.data.db.AppDatabase
 import com.mawared.mawaredvansale.data.db.entities.md.*
-import com.mawared.mawaredvansale.data.db.entities.md.Currency
+import com.mawared.mawaredvansale.data.db.entities.reports.customer.CustomerStatus
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
@@ -47,10 +46,10 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
     lateinit var itemUserDSFactory: ItemOnUserDataSourceFactory
     lateinit var itemWareDSFactory: ItemOnWareDataSourceFactory
 
-    override fun fetchCustomerOnPages(sm_Id: Int?, org_Id: Int?): LiveData<PagedList<Customer>> {
-        customerDSFactory = CustomerDataSourceFactory(api, sm_Id, org_Id)
-        val ns = Transformations.switchMap<CustomerDataSource, NetworkState>(customerDSFactory.customerLiveDS, CustomerDataSource::networkState)
-       _networkState.postValue(ns.value)
+    override fun fetchCustomerOnPages(sm_Id: Int?, org_Id: Int?, term: String): LiveData<PagedList<Customer>> {
+        customerDSFactory = CustomerDataSourceFactory(api, sm_Id, org_Id, term)
+        //val ns = Transformations.switchMap<CustomerDataSource, NetworkState>(customerDSFactory.customerLiveDS, CustomerDataSource::networkState)
+       //_networkState.postValue(ns.value)
 
         val config: PagedList.Config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
@@ -177,6 +176,35 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override fun getCustomerStatus(cu_Id: Int): LiveData<CustomerStatus> {
+        job = Job()
+        return object : LiveData<CustomerStatus>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.customers_getStatus(cu_Id) }
+                            withContext(Main) {
+                                value = response.data
+                                //_networkState.postValue(NetworkState.LOADED)
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            //_networkState.postValue(NetworkState.ERROR)
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            //_networkState.postValue(NetworkState.ERROR)
+                            Log.e("Exception", "Error exception when call customers schedule", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun customers_getSchedule(sm_Id: Int, term: String): LiveData<List<Customer>> {
         job = Job()
         _networkState.postValue(NetworkState.LOADING)
@@ -206,6 +234,37 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
             }
         }
     }
+
+    override fun customers_getPlaces(sm_Id: Int, cyDate: String): LiveData<List<Customer>> {
+        job = Job()
+        _networkState.postValue(NetworkState.LOADING)
+        return object : LiveData<List<Customer>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.customers_getPlaces(sm_Id, cyDate) }
+                            withContext(Main) {
+                                value = response.data
+                                _networkState.postValue(NetworkState.LOADED)
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            _networkState.postValue(NetworkState.ERROR)
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            _networkState.postValue(NetworkState.ERROR)
+                            Log.e("Exception", "Error exception when call customers Places", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun getCustomersByOrg(org_Id: Int?, term: String): LiveData<List<Customer>> {
         job = Job()
         _networkState.postValue(NetworkState.LOADING)
@@ -496,7 +555,34 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
             }
         }
     }
-    
+
+    override fun getProducts_InvoicesByCustomer(cu_Id: Int, prod_Id: Int, term: String ): LiveData<List<Product>> {
+        job = Job()
+        return object : LiveData<List<Product>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response =
+                                apiRequest { api.product_GetInvoicessByCustomer(cu_Id, prod_Id, term) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call getProductsByBatchs", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun productGetByBarcode(barcode: String,
                                      warehouseId: Int?,
                                      priceCode: String): LiveData<Product> {
@@ -715,6 +801,33 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
             }
         }
     }
+
+    override fun salesman_getSummary(sm_Id: Int, selDate: String): LiveData<SalesmanSummary> {
+        job = Job()
+        return object : LiveData<SalesmanSummary>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.getSalesmanSummary(sm_Id, selDate) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call getSalesman", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun getVoucherByCode(vo_code: String): LiveData<Voucher> {
         job = Job()
         return object : LiveData<Voucher>() {
@@ -759,6 +872,32 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                             return@launch
                         }catch (e: Exception){
                             Log.e("Exception", "Error exception when call price category get all", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun priceCat_GetBySalesman(sm_Id: Int): LiveData<List<PriceCategory>> {
+        job = Job()
+        return object : LiveData<List<PriceCategory>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.getPriceCatBySalesman(sm_Id) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call price category get by user", e)
                             return@launch
                         }
                     }
@@ -870,6 +1009,91 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override fun lookup_getByEntity(entity_name: String): LiveData<List<Lookups>> {
+        job = Job()
+        return object : LiveData<List<Lookups>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.loockup_getByEntity(entity_name) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call lookup for specific entity", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun getSalesPaln(): LiveData<List<Lookups>> {
+        job = Job()
+        _networkState.postValue(NetworkState.LOADING)
+        return object : LiveData<List<Lookups>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.getSalesPlan() }
+                            withContext(Main) {
+                                value = response.data
+                                _networkState.postValue(NetworkState.LOADED)
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            _networkState.postValue(NetworkState.ERROR)
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            _networkState.postValue(NetworkState.ERROR)
+                            Log.e("Exception", "Error exception when call getCustomers", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    override fun getRegions(): LiveData<List<Region>> {
+        job = Job()
+        _networkState.postValue(NetworkState.LOADING)
+        return object : LiveData<List<Region>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.getAllRegions() }
+                            withContext(Main) {
+                                value = response.data
+                                _networkState.postValue(NetworkState.LOADED)
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            _networkState.postValue(NetworkState.ERROR)
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            _networkState.postValue(NetworkState.ERROR)
+                            Log.e("Exception", "Error exception when call getCustomers", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
     override fun cancelJob(){
         job?.cancel()
     }
@@ -877,7 +1101,8 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
     object loadUrlImage{
         @JvmStatic
         @BindingAdapter("android:urlRemoteImage")
-        fun loadImage(view: ImageView, imgeUrl: String){
+        fun loadImage(view: ImageView, imgeUrl: String?){
+            if(imgeUrl == null) return
             Glide.with(view.context)
                 .load(URL_IMAGE + imgeUrl).apply(RequestOptions().fitCenter())
                 //.error(R.drawable.ic_broken_image) //6

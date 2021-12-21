@@ -196,7 +196,7 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{String.valueOf(order.so_total_amount)}"
+                android:text="@{viewmodel.numberFormat(order.so_total_amount)}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -232,7 +232,7 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{String.valueOf(order.so_total_discount)}"
+                android:text="@{viewmodel.numberFormat(order.so_total_discount)}"
                 android:textColor="@android:color/black"
 
                 android:textSize="12sp"
@@ -269,7 +269,7 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{String.valueOf(order.so_net_amount)}"
+                android:text="@{viewmodel.numberFormat(order.so_net_amount)}"
                 android:textColor="@android:color/black"
 
                 android:textSize="12sp"
@@ -293,15 +293,14 @@
                 android:id="@+id/btn_delete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="4dp"
                 android:background="@null"
+                android:visibility="gone"
                 android:contentDescription="@string/btn_delete_caption"
                 android:onClick="@{()-> viewmodel.onItemDelete(order)}"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_edit"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view"
+                app:layout_constraintTop_toTopOf="@+id/btn_edit"
                 app:srcCompat="@drawable/ic_delete" />
 
             <ImageButton
@@ -312,21 +311,25 @@
                 android:background="@null"
                 android:contentDescription="@string/btn_edit_caption"
                 android:onClick="@{()-> viewmodel.onItemEdit(order)}"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_view"
                 app:layout_constraintEnd_toStartOf="@+id/btn_delete"
-                app:layout_constraintTop_toTopOf="@+id/btn_delete"
+                app:layout_constraintTop_toTopOf="@+id/btn_view"
                 app:srcCompat="@drawable/ic_edit" />
 
             <ImageButton
                 android:id="@+id/btn_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="4dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_view_caption"
                 android:onClick="@{()-> viewmodel.onItemView(order)}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btn_edit"
-                app:layout_constraintTop_toTopOf="@+id/btn_edit"
-                app:srcCompat="@drawable/ic_view" />
+                app:layout_constraintTop_toBottomOf="@+id/view"
+                app:srcCompat="@drawable/ic_view1" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline7"

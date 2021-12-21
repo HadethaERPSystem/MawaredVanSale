@@ -1,28 +1,24 @@
 package com.mawared.mawaredvansale.controller.sales.delivery.deliverylist
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.adapters.pagination.DeliveryPagedListAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.controller.sales.invoices.invoiceslist.InvoicesFragmentDirections
 import com.mawared.mawaredvansale.data.db.entities.sales.Delivery
 import com.mawared.mawaredvansale.databinding.DeliveryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.utilities.URL_LOGO
-import com.mawared.mawaredvansale.utilities.hide
-import com.mawared.mawaredvansale.utilities.show
+import com.mawared.mawaredvansale.services.repositories.NetworkState
+import com.mawared.mawaredvansale.services.repositories.Status
 import com.mawared.mawaredvansale.utilities.snackbar
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.delivery_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -54,6 +50,11 @@ class DeliveryFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         binding.lifecycleOwner = this
 
         bindUI()
+        binding.pullToRefresh.setOnRefreshListener {
+            viewModel.refresh()
+            binding.pullToRefresh.isRefreshing = false
+        }
+        binding.btnReload.setOnClickListener { viewModel.refresh() }
         return binding.root
     }
 
@@ -66,8 +67,6 @@ class DeliveryFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         super.onViewCreated(view, savedInstanceState)
 
         navController = Navigation.findNavController(view)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_delivery_list_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
     }
 
     // enable options menu in this fragment
@@ -93,10 +92,23 @@ class DeliveryFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Dispatchers.Main) {
+
+        val pagedAdapter = DeliveryPagedListAdapter(viewModel, requireActivity())
+        val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                val viewType = pagedAdapter.getItemViewType(position)
+                if (viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
+                else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
+            }
+        }
+        rcv_delivery.apply {
+            layoutManager = gridLayoutManager
+            setHasFixedSize(true)
+            adapter = pagedAdapter
+        }
         viewModel.entityEoList.observe(viewLifecycleOwner, Observer { dl ->
-            gp_loading_dl.hide()
-            if(dl == null) return@Observer
-            initRecyclerView(dl.toRow())
+            pagedAdapter.submitList(dl)
         })
 
         viewModel.baseEo.observe(viewLifecycleOwner, Observer {
@@ -105,37 +117,41 @@ class DeliveryFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
             }
         })
         viewModel.setCustomer(null)
+
+        viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
+            progress_bar.visibility = if (viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
+
+            if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
+                val pack = requireContext().packageName
+                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                ll_error.visibility = View.VISIBLE
+            } else {
+                ll_error.visibility = View.GONE
+            }
+            if(!viewModel.listIsEmpty()){
+                pagedAdapter.setNetworkState(it)
+            }
+        })
+
+        viewModel.networkState.observe(viewLifecycleOwner, Observer {
+            progress_bar.visibility =
+                if (viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+        })
     }
 
-    private fun initRecyclerView(baseEo: List<DeliveryRow>){
-        val groupAdapter = GroupAdapter<ViewHolder>().apply {
-            addAll(baseEo)
-        }
-
-        rcv_delivery.apply {
-            layoutManager = LinearLayoutManager(this@DeliveryFragment.context)
-            setHasFixedSize(true)
-            adapter = groupAdapter
-        }
-    }
-
-    private fun List<Delivery>.toRow(): List<DeliveryRow>{
-        return this.map {
-            DeliveryRow( it, viewModel )
-        }
-    }
 
     override fun onStarted() {
-        gp_loading_dl.show()
+        progress_bar.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        gp_loading_dl.hide()
+        progress_bar.visibility = View.GONE
         delivery_list_lc.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        gp_loading_dl.hide()
+        progress_bar.visibility = View.GONE
         delivery_list_lc.snackbar(message)
     }
 

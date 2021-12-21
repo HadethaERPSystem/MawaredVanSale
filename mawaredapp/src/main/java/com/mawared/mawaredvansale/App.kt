@@ -3,6 +3,8 @@ package com.mawared.mawaredvansale
 import android.app.Application
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.mawared.mawaredvansale.controller.auth.AuthViewModelFactory
+import com.mawared.mawaredvansale.controller.callcycle.cyentry.CallCycleEntryViewModelFactory
+import com.mawared.mawaredvansale.controller.callcycle.cylist.CallCycleViewModelFactory
 import com.mawared.mawaredvansale.controller.fms.payables.payableentry.PayableEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.fms.payables.payablelist.PayableViewModelFactory
 import com.mawared.mawaredvansale.controller.fms.receivables.receivableentry.ReceivableEntryViewModelFactory
@@ -10,10 +12,14 @@ import com.mawared.mawaredvansale.controller.fms.receivables.receivablelist.Rece
 import com.mawared.mawaredvansale.controller.home.HomeViewModelFactory
 import com.mawared.mawaredvansale.controller.home.dashboard.DashboardViewModelFactory
 import com.mawared.mawaredvansale.controller.home.reportsdashboard.ReportViewModelFactory
-import com.mawared.mawaredvansale.controller.home.reportsdashboard.ReportsViewModel
+import com.mawared.mawaredvansale.controller.map.MapViewModelFactory
 import com.mawared.mawaredvansale.controller.md.customerentry.CustomerEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.md.customerlist.CustomerViewModelFactory
+import com.mawared.mawaredvansale.controller.reports.customer.CustomerStatementViewModelFactory
 import com.mawared.mawaredvansale.controller.reports.fms.CashbookStatementViewModelFactory
+import com.mawared.mawaredvansale.controller.reports.kpi.KpiViewModelFactory
+import com.mawared.mawaredvansale.controller.reports.sales.SalesStatementViewModelFactory
+import com.mawared.mawaredvansale.controller.reports.stock.StockViewModelFactory
 import com.mawared.mawaredvansale.controller.sales.delivery.deliveryentry.DeliveryEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.sales.delivery.deliverylist.DeliveryViewModelFactory
 import com.mawared.mawaredvansale.controller.sales.invoices.addinvoice.AddInvoiceViewModelFactory
@@ -25,6 +31,7 @@ import com.mawared.mawaredvansale.controller.sales.psorder.psorderlist.PSOrdersV
 import com.mawared.mawaredvansale.controller.sales.salereturn.salereturnentry.SaleReturnEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.sales.salereturn.salereturnlist.SaleReturnViewModelFactory
 import com.mawared.mawaredvansale.controller.settings.DownloadViewModelFactory
+import com.mawared.mawaredvansale.controller.settings.SettingsViewModelFactory
 import com.mawared.mawaredvansale.controller.surveyentry.SurveyEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.transfer.transferentry.TransferEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.transfer.transferlist.TransferViewModelFactory
@@ -35,6 +42,8 @@ import com.mawared.mawaredvansale.services.netwrok.INetworkDataSource
 import com.mawared.mawaredvansale.services.netwrok.NetworkDataSourceImp
 import com.mawared.mawaredvansale.services.repositories.MenuRepository
 import com.mawared.mawaredvansale.services.repositories.UserRepository
+import com.mawared.mawaredvansale.services.repositories.callcycle.CallCycleRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.callcycle.ICallCycleRepository
 import com.mawared.mawaredvansale.services.repositories.delivery.DeliveryRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.delivery.IDeliveryRepository
 import com.mawared.mawaredvansale.services.repositories.fms.IPayableRepository
@@ -49,8 +58,16 @@ import com.mawared.mawaredvansale.services.repositories.md.DownloadRepository
 import com.mawared.mawaredvansale.services.repositories.md.MasterDataRepository
 import com.mawared.mawaredvansale.services.repositories.order.IOrderRepository
 import com.mawared.mawaredvansale.services.repositories.order.OrderRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.reports.customer.CuStatementRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.reports.customer.ICuStatementRepository
+import com.mawared.mawaredvansale.services.repositories.reports.dashboard.DashboardRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.reports.dashboard.IDashboardRepository
 import com.mawared.mawaredvansale.services.repositories.reports.fms.CashbookRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.reports.fms.ICashbookRepository
+import com.mawared.mawaredvansale.services.repositories.reports.sales.ISalesRepository
+import com.mawared.mawaredvansale.services.repositories.reports.sales.SalesRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.reports.stock.IStockRepository
+import com.mawared.mawaredvansale.services.repositories.reports.stock.StockRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.salereturn.ISaleReturnRepository
 import com.mawared.mawaredvansale.services.repositories.salereturn.SaleReturnRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.srv.SurveyRepositoryImp
@@ -106,8 +123,13 @@ class App : Application(), KodeinAware {
         bind<IDeliveryRepository>() with singleton { DeliveryRepositoryImp(instance()) }
 
         bind<ITransferRepository>() with singleton { TransferRepositoryImp(instance())}
-
+        bind<ICallCycleRepository>() with singleton { CallCycleRepositoryImp(instance())}
+        // Fror Reporting
+        bind<ICuStatementRepository>() with singleton { CuStatementRepositoryImp(instance()) }
         bind<ICashbookRepository>() with singleton { CashbookRepositoryImp(instance()) }
+        bind<ISalesRepository>() with singleton { SalesRepositoryImp(instance()) }
+        bind<IStockRepository>() with singleton { StockRepositoryImp(instance()) }
+        bind<IDashboardRepository>() with singleton { DashboardRepositoryImp(instance()) }
 
         bind() from singleton { SurveyRepositoryImp(instance()) }
         // no singleton for below because we need more than one instance for view model
@@ -154,9 +176,24 @@ class App : Application(), KodeinAware {
         // Transfer
         bind() from provider { TransferViewModelFactory(instance())}
         bind() from provider { TransferEntryViewModelFactory(instance(), instance()) }
+        // Call Cycle
+        bind() from provider { CallCycleViewModelFactory(instance(), instance())}
+        bind() from provider { CallCycleEntryViewModelFactory(instance(), instance())}
 
+        // Customer statement report
+        bind() from provider { CustomerStatementViewModelFactory(instance(), instance()) }
         // Cashbook statement report
         bind() from provider { CashbookStatementViewModelFactory(instance()) }
+        bind() from provider { MapViewModelFactory(instance()) }
+
+        // Sales statement report
+        bind() from provider { SalesStatementViewModelFactory(instance()) }
+        // Stock statement report
+        bind() from provider { StockViewModelFactory(instance()) }
+
+        bind() from provider { SettingsViewModelFactory(instance()) }
+
+        bind() from provider { KpiViewModelFactory(instance(), instance()) }
     }
 
     companion object{

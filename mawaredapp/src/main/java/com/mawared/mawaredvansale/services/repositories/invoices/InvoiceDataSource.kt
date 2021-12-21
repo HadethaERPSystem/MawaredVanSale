@@ -9,6 +9,7 @@ import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.ApiException
 import com.mawared.mawaredvansale.utilities.FIRST_PAGE
+import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import com.mawared.mawaredvansale.utilities.POST_PER_PAGE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -28,7 +29,7 @@ class InvoiceDataSource(private val api: ApiService, private val sm_Id: Int, pri
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {
-                        if(result.data != null){
+                        if(result.data != null && result.data.isNotEmpty()){
                             val data: MutableList<Sale> = result.data as MutableList<Sale>
                             callback.onResult(data, null, page + 1)
                             networkState.postValue(NetworkState.LOADED)
@@ -44,6 +45,10 @@ class InvoiceDataSource(private val api: ApiService, private val sm_Id: Int, pri
                 }
             } catch (e: ApiException) {
                 networkState.postValue(NetworkState.ERROR)
+                Log.e("Connectivity", "No internet connection", e)
+                return@launch
+            } catch (e: NoConnectivityException){
+                networkState.postValue(NetworkState.ERROR_CONNECTION)
                 Log.e("Connectivity", "No internet connection", e)
                 return@launch
             } catch (e: Exception) {
@@ -70,8 +75,6 @@ class InvoiceDataSource(private val api: ApiService, private val sm_Id: Int, pri
                             }else{
                                 networkState.postValue(NetworkState.ENDOFLIST)
                             }
-                        }else{
-                            networkState.postValue(NetworkState.NODATA)
                         }
                     } else {
                         networkState.postValue(NetworkState.ERROR)
@@ -82,6 +85,10 @@ class InvoiceDataSource(private val api: ApiService, private val sm_Id: Int, pri
                 }
             } catch (e: ApiException) {
                 networkState.postValue(NetworkState.ERROR)
+                Log.e("Connectivity", "No internet connection", e)
+                return@launch
+            } catch (e: NoConnectivityException){
+                networkState.postValue(NetworkState.ERROR_CONNECTION)
                 Log.e("Connectivity", "No internet connection", e)
                 return@launch
             } catch (e: Exception) {

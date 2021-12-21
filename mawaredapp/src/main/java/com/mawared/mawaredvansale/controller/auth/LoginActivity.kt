@@ -2,7 +2,9 @@ package com.mawared.mawaredvansale.controller.auth
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -14,31 +16,51 @@ import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.home.HomeActivity
 import com.mawared.mawaredvansale.data.db.entities.security.User
 import com.mawared.mawaredvansale.databinding.ActivityLoginBinding
+import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.utilities.snackbar
+import com.mawared.update.AppUtils
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
+import java.io.File
 
 class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
-
+    //var filePath: File? = null
     override val kodein by kodein()
     private val factory : AuthViewModelFactory by instance()
-    var user : User = User(1, "Ali Bawi", "ali.bawi@hadetha.com", "ali.bawi", "a12345", "",
-        null, null, null, "", null, null, null, null, null)
+
+    val viewModel by lazy {
+        ViewModelProviders.of(this, factory).get(AuthViewModel::class.java)
+    }
+
+    var user : User = User(
+        1, "Ali Bawi", "ali.bawi@hadetha.com", "ali.bawi", "a12345", "",
+        null, null, null, "", null, null, null, null, null, null,
+        null
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding : ActivityLoginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-        val viewModel = ViewModelProviders.of(this, factory).get(AuthViewModel::class.java)
+        val binding : ActivityLoginBinding = DataBindingUtil.setContentView(
+            this,
+            R.layout.activity_login
+        )
+
         binding.viewmodel = viewModel
+        binding.lifecycleOwner = this
         viewModel.activity = this
         llProgressBar?.visibility = View.GONE
 
         //viewModel.saveUser(user)
         viewModel.authListener = this
-
+        val serial = Build.SERIAL
+        //AppUtils.getVersionCode(context)
+        //deleteCache(this)
         if(App.prefs.isLoggedIn){
             Intent(this, HomeActivity::class.java).also {
                 it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -47,24 +69,39 @@ class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
         }
         else{
             viewModel.getLoggedInUser().observe(this, Observer { user ->
-                if(user != null){
+                if (user != null) {
                     Intent(this, HomeActivity::class.java).also {
                         it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(it)
                     }
+                    App.prefs.app_version = AppUtils.getVersionName(this)
                 }
             })
         }
+        bindUI()
     }
 
-    override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet
-    ): View? {
-//        val packageName = getPackageName();
-//        val resId: Int = getResources().getIdentifier("login_page_title", "string", packageName)
-//        supportActionBar!!.title = getString(resId)
-//        supportActionBar!!.subtitle = ""
-        return super.onCreateView(parent, name, context, attrs)
+    fun bindUI()= GlobalScope.launch(Dispatchers.Main){
+//        viewModel.client.observe(this@LoginActivity, Observer {
+//            viewModel.clientName.postValue(it.name)
+//        })
+
+        viewModel.networkState.observe(this@LoginActivity, Observer {
+            progress_bar_login.visibility =
+                if (it == NetworkState.LOADING) View.VISIBLE else View.GONE
+
+            if ((it == NetworkState.ERROR || it == NetworkState.NODATA)) {
+                val pack = packageName
+                val id = resources.getIdentifier(it.msg, "string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                txt_error_login.visibility = View.VISIBLE
+            } else {
+                txt_error_login.visibility = View.GONE
+            }
+
+        })
     }
+
     override fun onStarted() {
         llProgressBar?.visibility = View.VISIBLE
     }

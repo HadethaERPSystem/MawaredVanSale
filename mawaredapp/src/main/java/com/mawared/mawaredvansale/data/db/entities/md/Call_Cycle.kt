@@ -2,9 +2,12 @@ package com.mawared.mawaredvansale.data.db.entities.md
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity
 data class Call_Cycle (
+    var cy_clientId: Int?,
+    var cy_orgId: Int?,
     var cy_cu_Id: Int?,    // Customer Code
     var cy_sm_Id: Int?,    // Salesman Code
     var cy_routeId: Int?,       // Call Cycle Code
@@ -19,10 +22,14 @@ data class Call_Cycle (
     var updated_at: String?,        // Updated datetime
     var updated_by: String?         // Updated user
 
-){
+): Serializable{
     @PrimaryKey(autoGenerate = false)
     var cy_id:  Int = 0
     var cy_cu_name: String? = null
+    var cy_cu_code: String? = null
     var cy_sm_name: String? = null
     var cy_route_name: String? = null
+    var cy_status_name: String? = null
+    var cy_color_code: String? = null
+    var totalPages: Int? = null
 }

@@ -40,47 +40,50 @@
 
                 <!-- Invoice date label and data-->
                 <EditText
-                        android:id="@+id/etxt_doc_no"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:gravity="center"
-                        android:hint="@string/lbl_doc_no"
-                        android:enabled="false"
-                        android:inputType="text"
-                        android:text="@={viewmodel.doc_no}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:id="@+id/etxt_doc_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="center"
+                    android:hint="@string/lbl_doc_no"
+                    android:inputType="text"
+                    android:text="@={viewmodel.doc_no}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <EditText
-                        android:id="@+id/etxt_date"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:gravity="center"
-                        android:hint="@string/lbl_doc_date"
-                        android:inputType="date"
-                        android:text="@={viewmodel.doc_date}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:id="@+id/etxt_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="center"
+                    android:hint="@string/lbl_doc_date"
+                    android:inputType="date"
+                    android:text="@={viewmodel.doc_date}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <!-- Customer Info -->
                 <ImageButton
-                        android:id="@+id/btn_date"
-                        android:layout_width="38dp"
-                        android:layout_height="38dp"
-                        android:background="@android:color/transparent"
-                        android:contentDescription="@string/btn_delete_caption"
-                        android:onClick="@{viewmodel::onDatePicker}"
-                        app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
-                        app:layout_constraintEnd_toEndOf="@+id/etxt_date"
-                        app:layout_constraintTop_toTopOf="@+id/etxt_date"
-                        app:srcCompat="@drawable/ic_datepicker" />
+                    android:id="@+id/btn_date"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/btn_delete_caption"
+                    android:onClick="@{viewmodel::onDatePicker}"
+                    app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
+                    app:layout_constraintEnd_toEndOf="@+id/etxt_date"
+                    app:layout_constraintTop_toTopOf="@+id/etxt_date"
+                    app:srcCompat="@drawable/ic_calendar"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <AutoCompleteTextView
                     android:id="@+id/atc_customer"
@@ -93,126 +96,148 @@
                     android:textSize="14sp"
                     app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/etxt_doc_no" />
+                    app:layout_constraintTop_toBottomOf="@+id/etxt_doc_no"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <ImageButton
+                    android:id="@+id/btn_openCustomer"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
+                    app:layout_constraintTop_toTopOf="@+id/atc_customer"
+                    app:srcCompat="@drawable/ic_arrow_drop_down"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <ImageButton
                     android:id="@+id/btn_cancelCustomer"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_marginBottom="5dp"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
                     android:background="@null"
                     android:contentDescription="@string/btn_add_item_caption"
                     android:onClick="@{()-> viewmodel.clear(`cu`)}"
                     app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/atc_customer"
-                    app:srcCompat="@drawable/ic_action_close" />
+                    app:srcCompat="@drawable/btn_close"
+                    tools:ignore="TouchTargetSizeCheck" />
                 <!-- Amount USD -->
                 <EditText
-                        android:id="@+id/edtxt_amount_usd"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/lbl_paid_amount"
-                        android:inputType="numberDecimal"
-                        android:text="@={viewmodel.bc_amount}"
-                        android:textSize="12sp"
+                    android:id="@+id/edtxt_amount_sc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_paid_amount"
+                    android:inputType="numberDecimal"
+                    android:text="@={viewmodel.bc_amount}"
+                    android:textSize="12sp"
 
-                        app:layout_constraintEnd_toStartOf="@+id/lbl_usd"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+                    app:layout_constraintEnd_toStartOf="@+id/lbl_sc"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_customer"
+                    tools:ignore="TouchTargetSizeCheck" />
                 <!-- Amount IQD -->
 
                 <TextView
-                        android:id="@+id/lbl_usd"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/lbl_sc"
+                        android:layout_width="35dp"
                         android:layout_height="wrap_content"
+                        android:textAlignment="center"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:padding="4dp"
-                        android:text="@string/lbl_usd_symbol"
-                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_amount_usd"
+                        android:text="@{viewmodel.scr_symbol}"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_amount_sc"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toTopOf="@+id/edtxt_amount_usd" />
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_amount_sc" />
 
                 <EditText
-                        android:id="@+id/edtxt_amount_iqd"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:gravity="start"
-                        android:hint="@string/lbl_paid_amount"
-                        android:inputType="numberDecimal"
-                        android:text="@={viewmodel.lc_amount}"
-                        android:textSize="12sp"
-                        app:layout_constraintEnd_toStartOf="@+id/lbl_iqd"
-                        app:layout_constraintStart_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toTopOf="@+id/edtxt_amount_usd" />
+                    android:id="@+id/edtxt_amount_fc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_paid_amount"
+                    android:inputType="numberDecimal"
+                    android:text="@={viewmodel.lc_amount}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/lbl_fc"
+                    app:layout_constraintStart_toStartOf="@+id/guideline"
+                    app:layout_constraintTop_toTopOf="@+id/edtxt_amount_sc"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
-                        android:id="@+id/lbl_iqd"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/lbl_fc"
+                        android:layout_width="35dp"
                         android:layout_height="wrap_content"
+                        android:textAlignment="center"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:padding="4dp"
-                        android:text="@string/lbl_iqd_cr_symbol"
-                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_amount_iqd"
+                        android:text="@{viewmodel.fcr_symbol}"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_amount_fc"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/edtxt_amount_iqd" />
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_amount_fc" />
 
                 <EditText
-                        android:id="@+id/edtxt_change_usd"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/lbl_change_amount"
-                        android:inputType="numberDecimal"
-                        android:text="@={viewmodel.bc_change}"
-                        android:textSize="12sp"
-                        app:layout_constraintEnd_toStartOf="@+id/lbl_usd1"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/edtxt_amount_usd" />
+                    android:id="@+id/edtxt_change_sc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_change_amount"
+                    android:inputType="numberDecimal"
+                    android:text="@={viewmodel.bc_change}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/lbl_sc1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edtxt_amount_sc"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <!-- Amount IQD -->
 
                 <TextView
-                        android:id="@+id/lbl_usd1"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/lbl_sc1"
+                        android:layout_width="35dp"
                         android:layout_height="wrap_content"
+                        android:textAlignment="center"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:padding="4dp"
-                        android:text="@string/lbl_usd_symbol"
+                        android:text="@{viewmodel.scr_symbol}"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toTopOf="@+id/edtxt_change_usd" />
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_change_sc" />
 
                 <EditText
-                        android:id="@+id/edtxt_change_iqd"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:gravity="start"
-                        android:hint="@string/lbl_change_amount"
-                        android:text="@={viewmodel.lc_change}"
-                        android:textSize="12sp"
-                        android:inputType="numberDecimal"
-                        app:layout_constraintEnd_toStartOf="@+id/lbl_iqd1"
-                        app:layout_constraintStart_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toTopOf="@+id/lbl_usd1" />
+                    android:id="@+id/edtxt_change_fc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_change_amount"
+                    android:inputType="numberDecimal"
+                    android:text="@={viewmodel.lc_change}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/lbl_fc1"
+                    app:layout_constraintStart_toStartOf="@+id/guideline"
+                    app:layout_constraintTop_toTopOf="@+id/lbl_sc1"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
-                        android:id="@+id/lbl_iqd1"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/lbl_fc1"
+                        android:layout_width="35dp"
+                        android:textAlignment="center"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/droid_kufi_regular"
                         android:padding="4dp"
-                        android:text="@string/lbl_iqd_cr_symbol"
-                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_change_iqd"
+                        android:text="@{viewmodel.fcr_symbol}"
+                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_change_fc"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/edtxt_change_iqd" />
+                        app:layout_constraintTop_toTopOf="@+id/edtxt_change_fc" />
                 <!--Comment-->
                 <EditText
                         android:id="@+id/edtxt_comment"
@@ -226,7 +251,7 @@
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/edtxt_change_usd" />
+                        app:layout_constraintTop_toBottomOf="@+id/edtxt_change_sc" />
 
                 <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideline"
@@ -234,6 +259,13 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         app:layout_constraintGuide_percent="0.5" />
+
+                <include
+                    android:id="@+id/llProgressBar"
+                    layout="@layout/layout_progress_bar_with_text"
+                    android:visibility="gone"
+                    tools:layout_editor_absoluteX="-10dp"
+                    tools:layout_editor_absoluteY="-10dp" />
                 <!-- Image button for add item -->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -241,10 +273,5 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <include
-            android:id="@+id/llProgressBar"
-            android:visibility="visible"
-            layout="@layout/layout_progress_bar_with_text"
-            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

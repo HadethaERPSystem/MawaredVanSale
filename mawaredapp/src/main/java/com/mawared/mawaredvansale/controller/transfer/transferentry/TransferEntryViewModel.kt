@@ -28,6 +28,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
     private val _wr_id: Int = if(App.prefs.savedSalesman?.sm_warehouse_id != null)  App.prefs.savedSalesman!!.sm_warehouse_id!! else 0
     var mode: String = "Add"
     var msgListener: IMessageListener? = null
+    var visible = View.VISIBLE
 
     var addNavigator: IAddNavigator<Transfer_Items>? = null
     var resources: Resources? = null
@@ -48,7 +49,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
     var selectToWarehouse: Warehouse? = null
     var selectedProduct: Product? = null
 
-    private var rowNo: Int = 0
+    var rowNo: Int = 0
     var docNo = MutableLiveData<String>()
     var docDate = MutableLiveData<String>()
 
@@ -105,7 +106,9 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
         if(items != null && _items == items){
             return
         }
-        _items.value = items
+        _items.value = items ?: arrayListOf()
+        if(items != null)
+            tmpItems.addAll(items)
     }
 
     //---------------------
@@ -129,7 +132,9 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
 
                 }
                 baseEo.items.addAll(tmpItems)
-
+                if(tmpDeletedItems.count() > 0){
+                    baseEo.items_deleted.addAll(tmpDeletedItems)
+                }
                 Coroutines.main {
                     try {
                         val response = repository.upsert(baseEo)
@@ -156,7 +161,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
 
     private fun isValid(): Boolean {
         var isSuccess = true
-        var msg: String? = null
+        var msg: String? = ""
         if (docDate.value == null) {
             msg =  resources!!.getString(R.string.msg_error_invalid_date)
         }
@@ -185,7 +190,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
         docDate.value = returnDateString(strDate.toString())
         selectedProduct = null
         selectToWarehouse = null
-        searchBarcode.value = null
+        searchBarcode.value = ""
         searchQty.value = "1"
 
         tmpItems.clear()
@@ -200,7 +205,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
 
         if (isValidRow()) {
             try {
-                createRow(){ complete ->
+                createRow { complete ->
                     if(complete){
                         // reset item
                         selectedProduct = null
@@ -220,7 +225,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
 
     private fun createRow(complete:(Boolean) -> Unit) {
         try {
-            rowNo++
+
             val strDate = LocalDateTime.now()
             val mItem = tmpItems.find { it.trd_prod_Id == selectedProduct!!.pr_Id }
             val qty = searchQty.value!!.toDouble() + (if(mItem?.trd_pack_qty != null)   mItem.trd_pack_qty!! else 0.00)
@@ -228,6 +233,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
             val user = App.prefs.saveUser
 
             if (mItem == null) {
+                rowNo++
                 val item = Transfer_Items(0, rowNo, selectedProduct!!.pr_Id,
                     selectedProduct!!.pr_uom_Id, qty, 1.00, qty,
                      "$strDate", "${user?.id}", "$strDate", "${user?.id}"
@@ -283,6 +289,8 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
                 tmpDeletedItems.add(item)
             }
         }
+        // delete from tmp
+        tmpItems.remove(baseEo)
         // delete from current list
         _items.value = _items.value?.filter { it.trd_rowNo != baseEo.trd_rowNo }
     }

@@ -16,18 +16,21 @@
 
         <!--    <include layout="@layout/sale_header"/>-->
         <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="6dp"
-                app:cardMaxElevation="6dp"
-                app:contentPadding="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/materialCardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            app:cardMaxElevation="6dp"
+            app:contentPadding="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -67,115 +70,180 @@
                         app:layout_constraintTop_toTopOf="@+id/sale_doc_no" />
 
                 <ImageButton
-                        android:id="@+id/btn_date"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@android:color/transparent"
-                        android:contentDescription="@string/lbl_doc_date"
-                        android:onClick="@{viewmodel::onDatePicker}"
-                        app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/etxt_date"
-                        app:srcCompat="@drawable/ic_datepicker" />
+                    android:id="@+id/btn_date"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/lbl_doc_date"
+                    android:onClick="@{viewmodel::onDatePicker}"
+                    app:layout_constraintBottom_toBottomOf="@+id/etxt_date"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/etxt_date"
+                    app:srcCompat="@drawable/ic_calendar" />
 
                 <!-- Customer Info -->
                 <AutoCompleteTextView
-                        android:id="@+id/atc_customer"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="2dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/lbl_customer_name"
-                        android:gravity="start"
-                        android:textSize="12sp"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
+                    android:id="@+id/atc_customer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_customer_name"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_openCustomer"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
+                <ImageButton
+                    android:id="@+id/btn_openCustomer"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelCustomer"
+                    app:layout_constraintTop_toTopOf="@+id/atc_customer"
+                    app:srcCompat="@drawable/ic_arrow_drop_down" />
 
                 <ImageButton
-                        android:id="@+id/btn_cancelCustomer"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@null"
-                        android:contentDescription="@string/btn_add_item_caption"
-                        android:onClick="@{()-> viewmodel.clear(`cu`)}"
-                        app:layout_constraintBottom_toBottomOf="@+id/atc_customer"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/atc_customer"
-                        app:srcCompat="@drawable/ic_action_close" />
+                    android:id="@+id/btn_cancelCustomer"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.clear(`cu`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/btn_openCustomer"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/btn_openCustomer"
+                    app:srcCompat="@drawable/btn_close" />
+                <!-- Customer Name -->
+                <EditText
+                    android:id="@+id/edtxt_ccustomer_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_customer_name"
+                    android:inputType="text"
+                    android:text="@={viewmodel.cCustomer_Name}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
+            app:cardBackgroundColor="@color/lightgray"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            app:cardMaxElevation="6dp"
+            app:contentPadding="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="?listPreferredItemHeightLarge"
+                android:padding="2dp">
+
                 <!-- Item Name-->
                 <AutoCompleteTextView
-                        android:id="@+id/atc_product"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="2dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="2dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/lbl_prod_name"
-                        android:textSize="12sp"
-                        android:gravity="start"
-                        android:enabled="@{viewmodel.allowed_select_prod}"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_cancelProduct"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+                    android:id="@+id/atc_product"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_prod_name"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_openItems"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                        android:id="@+id/btn_cancelProduct"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@null"
-                        android:contentDescription="@string/btn_add_item_caption"
-                        android:onClick="@{()-> viewmodel.clear(`prod`)}"
-                        android:enabled="@{viewmodel.allowed_select_prod}"
-                        app:layout_constraintBottom_toBottomOf="@+id/atc_product"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/atc_product"
-                        app:srcCompat="@drawable/ic_action_close" />
+                    android:id="@+id/btn_openItems"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_product"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelProduct"
+                    app:layout_constraintTop_toTopOf="@+id/atc_product"
+                    app:srcCompat="@drawable/ic_arrow_drop_down"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <ImageButton
+                    android:id="@+id/btn_cancelProduct"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
+                    android:onClick="@{()-> viewmodel.clear(`prod`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/btn_openItems"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/btn_openItems"
+                    app:srcCompat="@drawable/btn_close" />
                 <!-- Barcode -->
                 <EditText
-                        android:id="@+id/edtxt_barcode"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/lbl_barcode"
-                        android:inputType="text"
-                        android:text="@={viewmodel.searchBarcode}"
-                        android:textSize="12sp"
-                        android:enabled="@{viewmodel.allowed_select_prod}"
-                        app:layout_constraintEnd_toStartOf="@+id/edtxt_Qty"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/atc_product" />
+                    android:id="@+id/edtxt_barcode"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_barcode"
+                    android:inputType="text"
+                    android:text="@={viewmodel.searchBarcode}"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/edtxt_Qty"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_product" />
 
                 <!-- Qty -->
                 <EditText
-                        android:id="@+id/edtxt_Qty"
-                        android:layout_width="95dp"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:hint="@string/lbl_qty"
-                        android:text="@={viewmodel.searchQty}"
-                        android:textAlignment="center"
-                        android:textSize="12sp"
-                        android:enabled="@{viewmodel.allowed_select_prod}"
-                        android:inputType="numberDecimal"
-                        app:layout_constraintEnd_toStartOf="@+id/btn_AddItem"
-                        app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
+                    android:id="@+id/edtxt_Qty"
+                    android:layout_width="95dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_qty"
+                    android:inputType="numberDecimal"
+                    android:text="@={viewmodel.searchQty}"
+                    android:textAlignment="center"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_AddItem"
+                    app:layout_constraintTop_toTopOf="@+id/edtxt_barcode" />
                 <!-- Image button for add item -->
                 <ImageButton
-                        android:id="@+id/btn_AddItem"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:contentDescription="@string/btn_add_item_caption"
-                        android:onClick="@{()-> viewmodel.onAddItem()}"
-                        android:enabled="@{viewmodel.allowed_select_prod}"
-                        app:layout_constraintBottom_toBottomOf="@+id/edtxt_Qty"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/edtxt_Qty"
-                        app:srcCompat="@drawable/ic_keyboard_return" />
+                    android:id="@+id/btn_AddItem"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
+                    android:onClick="@{()-> viewmodel.onAddItem()}"
+                    app:layout_constraintBottom_toBottomOf="@+id/edtxt_Qty"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/edtxt_Qty"
+                    app:srcCompat="@drawable/ic_keyboard_return" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>
@@ -187,7 +255,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/total_discount_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialCardView"
+                app:layout_constraintTop_toBottomOf="@+id/materialCardView1"
                 tools:listitem="@layout/order_item_row" />
 
         <androidx.constraintlayout.widget.Guideline
@@ -205,10 +273,11 @@
             app:layout_constraintGuide_percent="0.65" />
 
         <include
-            android:id="@+id/llProgressBar"
-            android:visibility="visible"
+            android:id="@+id/progress_bar"
+            android:visibility="gone"
             layout="@layout/layout_progress_bar_with_text"
             />
+
         <TextView
             android:id="@+id/total_name"
             android:layout_width="0dp"
@@ -219,8 +288,8 @@
             android:layout_marginBottom="2dp"
             android:background="@color/inputbackcolor"
             android:fontFamily="@font/droid_kufi_regular"
-            android:gravity="start"
-            android:text="@{String.valueOf(viewmodel.totalAmount)}"
+            android:gravity="center"
+            android:text="@{viewmodel.numberFormat(viewmodel.totalAmount)}"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="12sp"
@@ -242,8 +311,8 @@
             android:layout_marginBottom="2dp"
             android:background="@color/inputbackcolor"
             android:fontFamily="@font/droid_kufi_regular"
-            android:gravity="start"
-            android:text="@{String.valueOf(viewmodel.totalDiscount)}"
+            android:gravity="center"
+            android:text="@{viewmodel.numberFormat(viewmodel.totalDiscount)}"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="12sp"
@@ -265,8 +334,8 @@
             android:layout_marginBottom="2dp"
             android:background="@color/inputbackcolor"
             android:fontFamily="@font/droid_kufi_regular"
-            android:gravity="start"
-            android:text="@{String.valueOf(viewmodel.netTotal)}"
+            android:gravity="center"
+            android:text="@{viewmodel.numberFormat(viewmodel.netTotal)}"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="12sp"

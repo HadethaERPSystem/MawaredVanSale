@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale.controller.sales.order.addorder
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
@@ -49,13 +50,14 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.add_order_fragment, container, false)
-        viewModel.ctx = activity!!
+        viewModel.ctx = requireActivity()
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.docDate.value = "${LocalDate.now()}"
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
-
+        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_order_entry_title)
+        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
         bindUI()
 
         return binding.root
@@ -63,11 +65,11 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_order_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
+
         if(arguments != null){
-            val args = AddOrderFragmentArgs.fromBundle(arguments!!)
+            val args = AddOrderFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
+            if(viewModel.mode == "View") viewModel.visible = View.GONE else viewModel.visible = View.VISIBLE
             if(viewModel.mode != "Add"){
                 viewModel.setOrderId(args.orderId)
             }
@@ -81,7 +83,11 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.add_menu, menu)
+        if(viewModel.mode == "View"){
+            inflater.inflate(R.menu.view_menu, menu)
+        }else{
+            inflater.inflate(R.menu.add_menu, menu)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -90,28 +96,32 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         when(item.itemId){
             R.id.save_btn ->{
                 if(!viewModel.isRunning){
+                    viewModel.isRunning = true
                     hideKeyboard()
-                    showDialog(context!!, getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ){
+                    showDialog(requireContext(), getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null ,{
                         onStarted()
                         viewModel.location = getLocationData()
                         viewModel.onSave()
-                    }
+                    },{
+                        viewModel.isRunning = false
+                    })
                 }
             }
             R.id.close_btn -> {
                 hideKeyboard()
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     fun bindUI() = GlobalScope.launch(Main){
 
         viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
-                activity!!.onBackPressed()
+                requireActivity().onBackPressed()
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }
@@ -123,8 +133,11 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
                 viewModel._entityEo = it
                 viewModel.docNo.value = it.so_no?.toString()
                 viewModel.docDate.value = viewModel.returnDateString(it.so_date!!)
-                viewModel.selectedCustomer?.cu_ref_Id = it.so_customerId!!
-                viewModel.selectedCustomer?.cu_name = it.so_customer_name
+                viewModel.oCu_Id = it.so_customerId!!
+                viewModel.allowed_select_prod.value = true
+                viewModel.cCustomer_Name.value = it.so_ccustomer_name
+                viewModel.rowNo = it.items.maxByOrNull { it.sod_rowNo!! }?.sod_rowNo ?: 0
+                viewModel.price_cat_code = it.so_price_cat_code!!
                 binding.atcCustomer.setText("${it.so_customer_name}", true)
                 viewModel.setItems(it.items)
             }
@@ -137,24 +150,19 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         })
 
         // Customer autocomplete settings
-        val adapter = CustomerAdapter1(context!!, R.layout.support_simple_spinner_dropdown_item )
+        val adapter = CustomerAdapter1(requireContext(), R.layout.support_simple_spinner_dropdown_item )
 
         binding.atcCustomer.threshold = 0
-        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 50
+        binding.atcCustomer.dropDownWidth = resources.displayMetrics.widthPixels - 10
         binding.atcCustomer.setAdapter(adapter)
-        binding.atcCustomer.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcCustomer.showDropDown()
-        }
-
-        binding.atcCustomer.setOnTouchListener(View.OnTouchListener { v, event ->
+        binding.btnOpenCustomer.setOnClickListener {
             binding.atcCustomer.showDropDown()
-            false
-        })
+        }
 
         binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
             viewModel.allowed_select_prod.value = true
             viewModel.selectedCustomer = adapter.getItem(position)
-            if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_Id){
+            if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_ref_Id){
                 viewModel.clearItems()
             }
             viewModel.setPriceCategory()
@@ -171,13 +179,17 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
             }
             override fun afterTextChanged(s: Editable?) {
-                viewModel.term.value = s.toString()
+                if(viewModel.selectedCustomer == null) viewModel.term.value = s.toString() else binding.atcCustomer.dismissDropDown()
             }
         })
         // bind customer to autocomplete
         viewModel.customerList.observe(viewLifecycleOwner, Observer { cu ->
             adapter.setCustomers(cu)
-            binding.atcCustomer.showDropDown()
+            if(viewModel.mode != "Add" && cu.isNotEmpty() && viewModel.entityEo.value != null){
+                viewModel.selectedCustomer = cu.find { it.cu_ref_Id == viewModel.entityEo.value?.so_customerId}
+            }else{
+                binding.atcCustomer.showDropDown()
+            }
         })
 
         viewModel.networkState.observe(viewLifecycleOwner, Observer {
@@ -185,6 +197,19 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         })
 
 
+        binding.atcProduct.addTextChangedListener(object: TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+            override fun afterTextChanged(s: Editable?) {
+                if(viewModel.selectedProduct == null) viewModel._term.value = s.toString() else binding.atcProduct.dismissDropDown()
+            }
+        })
         // bind products to autocomplete
         viewModel.productList.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
@@ -205,12 +230,17 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         })
 
         viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
-            viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.00
+            viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.0
         })
 
         viewModel.setVoucherCode("SaleOrder")
         viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
-        viewModel.setItems(null)
+        viewModel.setItems(arrayListOf())
+        if(viewModel.mode != "Add") {
+            viewModel.setTerm("")
+        }else{
+            viewModel.term.value = ""
+        }
     }
 
     // init invoices items
@@ -235,27 +265,33 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = atc_prod_expiry_Adapter(context!!,
+        val adapter = atc_prod_expiry_Adapter(requireContext(),
             R.layout.support_simple_spinner_dropdown_item,
             products
         )
         binding.atcProduct.threshold = 0
         binding.atcProduct.dropDownWidth = resources.displayMetrics.widthPixels
         binding.atcProduct.setAdapter(adapter)
-        binding.atcProduct.setOnFocusChangeListener { _, b ->
-            if(b) binding.atcProduct.showDropDown()
+        binding.btnOpenItems.setOnClickListener {
+            binding.atcProduct.showDropDown()
         }
+//        binding.atcProduct.setOnFocusChangeListener { _, b ->
+//            if(b) binding.atcProduct.showDropDown()
+//        }
         binding.atcProduct.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedProduct = adapter.getItem(position)
             viewModel.unitPrice = viewModel.selectedProduct!!.pr_unit_price ?: 0.00
             viewModel.setProductId(viewModel.selectedProduct!!.pr_Id)
+            viewModel.allowed_enter_gift_qty.value = false
+            if(App.prefs.saveUser!!.hasGift != null && App.prefs.saveUser!!.hasGift == "Y") viewModel.allowed_enter_gift_qty.value = true
         }
+
     }
 
     override fun onDelete(baseEo: Sale_Order_Items) {
-        showDialog(context!!, getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo){
+        showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             viewModel.deleteItem(it)
-        }
+        })
     }
 
     override fun onShowDatePicker(v: View) {
@@ -264,9 +300,9 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val dpd = DatePickerDialog(context!!, DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
+        val dpd = DatePickerDialog(requireContext(), DatePickerDialog.OnDateSetListener { _, yr, monthOfYear, dayOfMonth ->
 
-            viewModel.docDate.value = "${dayOfMonth}-${monthOfYear + 1}-${yr}"
+            viewModel.docDate.value = "${yr}-${monthOfYear + 1}-${dayOfMonth}"//"${dayOfMonth}-${monthOfYear + 1}-${yr}"
 
         }, year, month, day)
         dpd.show()

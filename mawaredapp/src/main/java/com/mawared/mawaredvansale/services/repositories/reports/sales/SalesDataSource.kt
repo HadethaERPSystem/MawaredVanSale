@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class SalesDataSource(private val api: ApiService, private val userId: Int, private val dtFrom: String, private val  dtTo: String): PageKeyedDataSource<Int, SalesStatement>() {
+class SalesDataSource(private val api: ApiService, private val userId: Int, private val dtFrom: String?, private val  dtTo: String?): PageKeyedDataSource<Int, SalesStatement>() {
 
     private var page = FIRST_PAGE
     val networkState: MutableLiveData<NetworkState> = MutableLiveData()
@@ -28,8 +28,16 @@ class SalesDataSource(private val api: ApiService, private val userId: Int, priv
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {
-                        if(result.data != null){
+                        if(result.data != null && result.data.isNotEmpty()){
                             val data: MutableList<SalesStatement> = result.data as MutableList<SalesStatement>
+                            data.add(0, SalesStatement(0, "Header", "", "", null,null,
+                                null, null, null, null, null, null, null,
+                                null ))
+                            if(result.totalPages == 1){
+                                data.add(data.size, SalesStatement(data.size, "Footer", "", "", null,null,
+                                    null, null, null, null, null, null, null,
+                                    null ))
+                            }
                             callback.onResult(data, null, page + 1)
                             networkState.postValue(NetworkState.LOADED)
                         }else{
@@ -65,13 +73,16 @@ class SalesDataSource(private val api: ApiService, private val userId: Int, priv
                         if(result.data != null){
                             if(result.totalPages >= params.key){
                                 val data: MutableList<SalesStatement> = result.data as MutableList<SalesStatement>
+                                if(result.totalPages < params.key +1){
+                                    data.add(data.size, SalesStatement(data.size, "Footer", "", "", null,null,
+                                        null, null, null, null, null, null, null,
+                                        null ))
+                                }
                                 callback.onResult(data, params.key + 1)
                                 networkState.postValue(NetworkState.LOADED)
                             }else{
                                 networkState.postValue(NetworkState.ENDOFLIST)
                             }
-                        }else{
-                            networkState.postValue(NetworkState.NODATA)
                         }
                     } else {
                         networkState.postValue(NetworkState.ERROR)

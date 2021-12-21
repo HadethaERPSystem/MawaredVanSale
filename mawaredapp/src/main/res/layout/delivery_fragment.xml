@@ -10,58 +10,72 @@
                 type="com.mawared.mawaredvansale.controller.sales.delivery.deliverylist.DeliveryViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/delivery_list_lc"
+    <LinearLayout
+        android:id="@+id/delivery_list_lc"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".controller.sales.delivery.deliverylist.DeliveryFragment">
+
+        <include
+            android:id="@+id/progress_bar"
+            android:visibility="gone"
+            layout="@layout/layout_progress_bar_with_text"
+            />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".controller.sales.delivery.deliverylist.DeliveryFragment">
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center"
+            android:id="@+id/ll_error">
 
-        <androidx.constraintlayout.widget.Group
-                android:id="@+id/gp_loading_dl"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/txt_error_msg"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                app:constraint_referenced_ids="progressBar_loading,tv_loading"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:fontFamily="@font/droid_kufi_bold"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="@{viewmodel.errorMessage}"
+                android:hint="@string/lbl_error"
+                android:visibility="visible"/>
 
-        <ProgressBar
-                android:id="@+id/progressBar_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:indeterminate="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_reload"
+                android:layout_width="110dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_gray"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:padding="0dp"
+                android:text="@string/btn_reload"
+                android:textAllCaps="false"
+                android:textColor="@drawable/white"
+                android:textSize="13sp"
+                android:visibility="visible"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
 
-        <TextView
-                android:id="@+id/tv_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/lbl_loading"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressBar_loading"
-                app:layout_constraintVertical_bias="0.0" />
-
-        <androidx.recyclerview.widget.RecyclerView
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/pullToRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:listitem="@layout/delivery_row"
                 android:id="@+id/rcv_delivery"/>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
 
 </layout>
