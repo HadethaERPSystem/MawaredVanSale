@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+                name="doc"
+                type="com.mawared.mawaredvansale.data.db.entities.dms.Document" />
+        <variable
+            name="viewmodel"
+            type="com.mawared.mawaredvansale.controller.mnt.entry.MntEntryViewModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="6dp"
+        app:cardMaxElevation="6dp"
+        app:contentPadding="5dp"
+        app:cardBackgroundColor="@android:color/white"
+        android:layout_margin="5dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp">
+
+            <ImageView
+                android:id="@+id/card_img"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:bitmapImage="@{doc.bmp}"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@color/colorPrimary" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

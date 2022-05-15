@@ -224,7 +224,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
         })
 
         viewModel.setVoucherCode("PSOrder")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
         viewModel.setItems(null)
         if(viewModel.mode != "Add") viewModel.setTerm("") else viewModel.term.value = ""
     }

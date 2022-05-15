@@ -1,5 +1,7 @@
 package com.mawared.mawaredvansale.utilities
 
+import android.Manifest
+
 /*
  * Created by alibawi on 2019-07-02
  */
@@ -26,8 +28,8 @@ const val API_KEY = ""
 //const val BASE_URL = "http://185.80.42.138:6615/"
 
 // IIF Demo
-const val BASE_URL_API = "http://185.80.42.138:6555/api/"
-const val BASE_URL = "http://185.80.42.138:6555/"
+//const val BASE_URL_API = "http://185.80.42.138:6555/api/"
+//const val BASE_URL = "http://185.80.42.138:6555/"
 
 //===========================================================================
 // KR LIVE 192.168.111.2
@@ -46,9 +48,16 @@ const val BASE_URL = "http://185.80.42.138:6555/"
 //const val BASE_URL_API = "http://172.20.0.100:6115/api/"
 //const val BASE_URL = "http://172.20.0.100:6115/"
 
+//===========================================================================
+//===================  Unimedica  ===========================================
+// Unimedica live
+//const val BASE_URL_API = "http://195.133.221.131:7777/api/"
+//const val BASE_URL = "http://195.133.221.131:7777/"
+
 // DEMO
-//const val BASE_URL_API = "http://10.10.100.100:7272/api/"
-//const val BASE_URL = "http://10.10.100.100:7272/"
+//const val BASE_URL_API = "http://195.133.221.131:6666/api/"
+//const val BASE_URL = "http://195.133.221.131:6666/"
+
 
 //===========================================================================
 // For local test
@@ -72,6 +81,9 @@ const val BASE_URL = "http://185.80.42.138:6555/"
 //const val BASE_URL_API = "http://185.80.42.118:1882/api/"
 //const val BASE_URL = "http://185.80.42.118:1882/"
 
+// new
+//const val BASE_URL_API = "http://185.80.42.118:5009/api/"
+//const val BASE_URL = "http://185.80.42.118:5009/"
 //===========================================================================
 //====================== Diwan ==============================================
 // Live //7667
@@ -80,6 +92,17 @@ const val BASE_URL = "http://185.80.42.138:6555/"
 // Demo
 //const val BASE_URL_API = "http://185.80.42.100:7586/api/"
 //const val BASE_URL = "http://185.80.42.100:7586/"
+
+//===========================================================================
+//====================== AL-Manara AL-Khadhra'a  ============================
+// Live //7667
+//const val BASE_URL_API = "http://185.80.42.51:7722/api/"
+//const val BASE_URL = "http://185.80.42.51:7722/"
+// Demo
+const val BASE_URL_API = "http://185.80.42.51:7711/api/"
+const val BASE_URL = "http://185.80.42.51:7711/"
+//const val BASE_URL_API = "http://10.200.0.22:7711/api/"
+//const val BASE_URL = "http://10.200.0.22:7711/"
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 
@@ -94,14 +117,18 @@ const val URL_PRODUCTS_ON_INVOICES = "${BASE_URL_API}PDAMasterData/Product_GeInv
 const val URL_PRODUCTS_GET_WAREHOUSE_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetByWarehouseOnPages"
 const val URL_PRODUCTS_GET_USER_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetByUserOnPages"
 const val URL_PRODUCTS_GET_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetOnPages"
-
+const val URL_PRODUCTS_GET_BY_CONTRACT = "${BASE_URL_API}PDAMasterData/Product_GetByContract"
+const val URL_PRODUCTS_GET_FOR_MARKET_PLACE= "${BASE_URL_API}PDAMasterData/Product_GetForMarketPlace"
+const val URL_PRODUCTS_GET_FOR_OFFERS = "${BASE_URL_API}PDAMasterData/pda_Product_GetOffers"
 // Get All Product Url
 const val URL_PRODUCT_BY_BARCODE = "${BASE_URL_API}PDAMasterData/Product_GetByBarcode"
 
 // Get All Brand for all products Url
-const val URL_ALL_PRODUCTS_BRAND = "${BASE_URL_API}PDAMasterData/Product_BrandGetByTerm"
+const val URL_BRAND_GET_BY_TERM = "${BASE_URL_API}PDAMasterData/Product_BrandGetByTerm"
+const val URL_BRNAD_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_BrandGetOnPages"
 // Get all product categories URL
-const val URL_ALL_PRODUCTS_CATEGORY = "${BASE_URL_API}PDAMasterData/Product_CategoryGetByTerm"
+const val URL_CATEGORY_GET_BY_TERM = "${BASE_URL_API}PDAMasterData/Product_CategoryGetByTerm"
+const val URL_CATEGORY_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_CategoryGetOnPages"
 
 // Get all products price list URL
 const val URL_PRODUCT_PRICE = "${BASE_URL_API}PDAMasterData/Product_Price_ListGetByProductId"
@@ -130,6 +157,7 @@ const val URL_ALL_CURRENCIES_RATE = "${BASE_URL_API}PDAMasterData/Currency_RateG
 const val URL_CURRENT_CURRENCY_RATE = "${BASE_URL_API}PDAMasterData/Currency_RateLatest"
 
 // Get all customers for specific salesman URL
+const val URL_GET_ALL_CUSTOMERS_BY_TERM = "${BASE_URL_API}PDAMasterData/CustomerGetByTerm"
 const val URL_ALL_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_BySalesmanTerm"
 const val URL_SCHEDULE_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_ScheduleTerm"
 const val URL_PLACES_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Customers_Places"
@@ -150,12 +178,16 @@ const val URL_GET_SALESMAN_BY_USER = "${BASE_URL_API}PDAMasterData/Salesman_GetB
 const val URL_ALL_SALESMAN = "${BASE_URL_API}PDAMasterData/Salesman_GetAll"
 const val URL_ALL_SALESMAN_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Salesman_CustomerGetByTerm"
 const val URL_SALESMAN_SUMMARY = "${BASE_URL_API}PDAMasterData/Salesman_GetSummary"
+const val URL_SALESMAN_HSA_SALES_PLAN = "${BASE_URL_API}PDAMasterData/Salesman_hasSalesPlan"
 
+const val URL_UOM_PRODUCT = "${BASE_URL_API}PDAMasterData/Uom_GetByProduct"
 // Get Client
 const val URL_GET_CLIENT = "${BASE_URL_API}PDAMasterData/Client_Get"
 // Warehouse URL
 const val URL_WAREHOUSE_GET_ALL = "${BASE_URL_API}PDAMasterData/Warehouse_GetAll"
 const val URL_WAREHOUSE_GET_BY_SALESMAN = "${BASE_URL_API}PDAMasterData/Warehouse_GetSalesmanId"
+// Get Location
+const val URL_LOCATION_GET_BY_WHS = "${BASE_URL_API}PDAMasterData/Location_GetByWhs"
 // Get delivery URL
 const val URL_DELIVERY_UPDATE = "${BASE_URL_API}Delivery/Delivery_SaveOrUpdate"
 const val URL_DELIVERY_BY_ID = "${BASE_URL_API}Delivery/Delivery_GetById"
@@ -173,7 +205,17 @@ const val URL_LOOKUP_GET_BY_ENTITY = "${BASE_URL_API}PDAMasterData/Lookup_GetByE
 // check load URL
 const val URL_ALL_CHECK_LOAD = "${BASE_URL_API}Check_Load/GetBySalesmanId"
 const val URL_ALL_CHECK_LOAD_DETAILS = "${BASE_URL_API}Check_Load/GetDetailBySalesmanId"
+// Maintenance
+const val URL_SAVE_MNTS = "${BASE_URL_API}Maintenance/SaveMaintenance"
+const val URL_MNTS_PAGES = "${BASE_URL_API}Maintenance/Mnt_GetOnPages"
+const val URL_MNTS_GET_BY_ID = "${BASE_URL_API}Maintenance/Mnt_GetById"
 
+const val URL_MNTS_TYPE = "${BASE_URL_API}PDAMasterData/MntType_GetAll"
+const val URL_MNTS_STATUS = "${BASE_URL_API}PDAMasterData/MntStatus_GetByAll"
+const val URL_MNTS_REG = "${BASE_URL_API}PDAMasterData/RegMnt_GetWaiting"
+const val URL_MNTS_INV = "${BASE_URL_API}Sale/Invoices_GetByTerm"
+const val URL_MNTS_WARRANTY = "${BASE_URL_API}PDAMasterData/Warranty_GetByTerm"
+const val URL_SERVICES="${BASE_URL_API}PDAMasterData/Services_GetByTerm"
 // Sales URL
 const val URL_ADD_SALE = "${BASE_URL_API}Sale/AddInvoice"
 const val URL_SALE_BY_ID = "${BASE_URL_API}Sale/Invoice_GetById"
@@ -258,8 +300,12 @@ const val URL_DASHBOARD_TOTAL_CUSTOMER = "${BASE_URL_API}PDAMasterData/Dashboard
 const val URL_DASHBOARD_SALES_PLAN = "${BASE_URL_API}PDAMasterData/DashboardPlan_GetBySalesman"
 // Sales Plan
 const val URL_SALES_PLAN = "${BASE_URL_API}PDAMasterData/SalesPlan_Get"
+// Upload file URL
+const val URL_UPLOAD_FILE = "${BASE_URL_API}PDAMasterData/UploadFile"
 // Image URL
 const val URL_IMAGE = "${BASE_URL}wwwroot/uploads/Products/"
+const val URL_IMAGE_BRAND = "${BASE_URL}wwwroot/uploads/Brand/"
+const val URL_IMAGE_CATEGORY = "${BASE_URL}wwwroot/uploads/Category/"
 const val URL_LOGO = "${BASE_URL}wwwroot/CompanyInfo/"
 
 const val EXTRA_DATA_LOCATIONS = "extra_data_locations"
@@ -267,7 +313,7 @@ const val EXTRA_CURRENT_LOCATION = "extra_current_location"
 const val EXTRA_DEVICE_ADDRESS = "device_address"
 
 const val FIRST_PAGE = 1
-const val POST_PER_PAGE = 20
+const val POST_PER_PAGE = 25
 
 const val MY_PERMISSION_ACCESS_COARSE_LOCATION = 1
 
@@ -299,3 +345,11 @@ private const val CHINESE = "GBK"
 private const val THAI = "CP874"
 private const val KOREAN = "EUC-KR"
 private const val BIG5 = "BIG5"
+
+// For Camera
+object Constants {
+    const val TAG = "cameraX"
+    const val FILE_NAME_FORMAT = "yy-MM-dd-HH-mm-ss-SSS"
+    const val REQUEST_CODE_PERMISSIONS = 123
+    val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+}

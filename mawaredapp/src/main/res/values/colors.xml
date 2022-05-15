@@ -6,5 +6,14 @@
     <drawable name="white">#FFFFFF</drawable>
     <color name="amber">#FFC107</color>
     <color name="colorCandyApple">#FF0800</color>
-
+    <color name="white">#FFFFFF</color>
+    <color name="hintTextColor">#787878</color>
+    <color name="gray">#f5f5f5</color>
+    <color name="darkGray">#3A3939</color>
+    <color name="black">#FF000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="yellow">#FF9A00</color>
+    <color name="green">#CDDC39</color>
+    <color name="brown">#433232</color>
+    <color name="danger">#d73d32</color>
 </resources>

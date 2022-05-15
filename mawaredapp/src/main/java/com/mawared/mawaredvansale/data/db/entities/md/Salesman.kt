@@ -21,4 +21,7 @@ data class Salesman (
 ){
     @PrimaryKey(autoGenerate = false)
     var sm_id:  Int = 0
+
+    var sm_phone_no: String? = null
+    var hasSalePlan: String? = null
 }

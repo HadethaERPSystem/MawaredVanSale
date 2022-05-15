@@ -1,6 +1,7 @@
 package com.mawared.mawaredvansale.services.repositories
 
 import android.content.Context
+import android.content.res.Resources
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -9,6 +10,7 @@ import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.HttpException
 import com.bumptech.glide.request.RequestOptions
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.AppDatabase
@@ -116,16 +118,21 @@ class MenuRepository(
         return  menuList
     }
 
-    object loadImage{
+    object loadImage {
         @JvmStatic
         @BindingAdapter("android:imageUrl")
-        fun loadImage(view: View, iconName: String){
-            val ctx = view.context
-            val iconId = ctx.resources.getIdentifier(iconName, "drawable", ctx.packageName)
-            if(iconId != 0){
-                val imgView: ImageView = view as ImageView
-                imgView.setImageDrawable(ContextCompat.getDrawable(imgView.context, iconId))
+        fun loadImage(view: View, iconName: String) {
+            try {
+                val ctx = view.context
+                val iconId = ctx.resources.getIdentifier(iconName, "drawable", ctx.packageName)
+                if (iconId != 0) {
+                    val imgView: ImageView = view as ImageView
+                    imgView.setImageDrawable(ContextCompat.getDrawable(imgView.context, iconId))
+                }
             }
+            catch (e: Exception){}
+            catch (e: Resources.NotFoundException){}
+            catch (e: HttpException){  }
         }
     }
 
@@ -133,9 +140,14 @@ class MenuRepository(
         @JvmStatic
         @BindingAdapter("android:urlRemoteLogo")
         fun loadImage(view: ImageView, imgeUrl: String){
-            Glide.with(view.context)
-                .load(URL_LOGO + imgeUrl).apply(RequestOptions().fitCenter())
-                .into(view)
+            try {
+                Glide.with(view.context)
+                    .load(URL_LOGO + imgeUrl).apply(RequestOptions().fitCenter())
+                    .into(view)
+            }
+            catch (e: Exception){}
+            catch (e: Resources.NotFoundException){}
+            catch (e: HttpException){  }
         }
     }
 }

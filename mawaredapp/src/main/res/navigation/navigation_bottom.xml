@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_bottom"
+    app:startDestination="@id/itemsFragment">
+
+    <fragment
+        android:id="@+id/itemsFragment"
+        android:name="com.mawared.mawaredvansale.controller.marketplace.items.ItemsFragment"
+        android:label="@string/layout_market_place_title"
+        tools:layout="@layout/items_fragment" >
+        <argument
+            android:name="categoryId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="categoryName"
+            app:argType="string"
+            android:defaultValue="" />
+        <argument
+            android:name="brandId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="brandName"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.mawared.mawaredvansale.controller.marketplace.category.CategoryFragment"
+        android:label="@string/layout_market_place_title"
+        tools:layout="@layout/category_fragment">
+        <action
+            android:id="@+id/action_categoryFragment_to_itemsFragment"
+            app:destination="@id/itemsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/brandFragment"
+        android:name="com.mawared.mawaredvansale.controller.marketplace.brand.BrandFragment"
+        android:label="@string/layout_market_place_title"
+        tools:layout="@layout/brand_fragment">
+        <action
+            android:id="@+id/action_brandFragment_to_itemsFragment"
+            app:destination="@id/itemsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/offersFragment"
+        android:name="com.mawared.mawaredvansale.controller.marketplace.offers.OffersFragment"
+        android:label="@string/layout_market_place_title"
+        tools:layout="@layout/offers_fragment">
+    </fragment>
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.mawared.mawaredvansale.controller.marketplace.cart.CartFragment"
+        android:label="@string/layout_market_place_title"
+        tools:layout="@layout/cart_fragment" >
+        <argument
+            android:name="customer"
+            app:argType="com.mawared.mawaredvansale.data.db.entities.md.Customer"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="vocode"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
+</navigation>

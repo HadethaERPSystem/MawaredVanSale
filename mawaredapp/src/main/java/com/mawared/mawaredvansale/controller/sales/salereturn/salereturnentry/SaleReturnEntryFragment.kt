@@ -226,7 +226,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
         })
 
         viewModel.setVoucherCode("SaleReturn")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
         viewModel.setItems(null)
 
         if(viewModel.mode != "Add") {

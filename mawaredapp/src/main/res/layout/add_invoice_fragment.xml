@@ -213,20 +213,21 @@
                     android:inputType="text"
                     android:text="@={viewmodel.searchBarcode}"
                     android:textSize="12sp"
+
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/atc_product"
                     tools:ignore="TouchTargetSizeCheck" />
                 <!-- Is Gift -->
-                <!--                <CheckBox-->
-                <!--                    android:id="@+id/checkbox_cheese"-->
-                <!--                    android:layout_width="90dp"-->
-                <!--                    android:layout_height="35dp"-->
-                <!--                    android:checked="@={viewmodel.isGift}"-->
-                <!--                    android:text="@string/lbl_IsGift"-->
-                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-                <!--                    app:layout_constraintTop_toTopOf="@+id/edtxt_barcode"-->
-                <!--                    tools:ignore="TouchTargetSizeCheck" />-->
+<!--                <CheckBox-->
+<!--                    android:id="@+id/checkbox_cheese"-->
+<!--                    android:layout_width="90dp"-->
+<!--                    android:layout_height="35dp"-->
+<!--                    android:checked="@={viewmodel.isGift}"-->
+<!--                    android:text="@string/lbl_IsGift"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="@+id/edtxt_barcode"-->
+<!--                    tools:ignore="TouchTargetSizeCheck" />-->
                 <!-- Qty -->
                 <EditText
                     android:id="@+id/edtxt_Qty"
@@ -267,7 +268,6 @@
                     android:id="@+id/edtxt_DisPer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:autofillHints="@string/lbl_discount_per"
                     android:enabled="@{viewmodel.allowed_discount}"
@@ -279,7 +279,7 @@
                     android:textSize="12sp"
                     app:layout_constraintEnd_toStartOf="@+id/btn_AddItem"
                     app:layout_constraintStart_toEndOf="@+id/edtxt_GQty"
-                    app:layout_constraintTop_toTopOf="@+id/edtxt_GQty"
+                    app:layout_constraintTop_toTopOf="@+id/edtxt_Qty"
                     tools:ignore="TouchTargetSizeCheck" />
                 <!-- Image button for add item -->
                 <ImageButton
@@ -289,9 +289,9 @@
                     android:contentDescription="@string/btn_add_item_caption"
                     android:enabled="@{viewmodel.allowed_select_prod}"
                     android:onClick="@{()-> viewmodel.onAddItem()}"
-                    app:layout_constraintBottom_toBottomOf="@+id/edtxt_GQty"
+                    app:layout_constraintBottom_toBottomOf="@+id/edtxt_DisPer"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/edtxt_GQty"
+                    app:layout_constraintTop_toTopOf="@+id/edtxt_DisPer"
                     app:layout_constraintVertical_bias="0.714"
                     app:srcCompat="@drawable/ic_keyboard_return" />
             </androidx.constraintlayout.widget.ConstraintLayout>

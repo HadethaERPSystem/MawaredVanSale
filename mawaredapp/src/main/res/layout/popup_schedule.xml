@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageButton
+        android:id="@+id/closeBtn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/custom_red_button"
+        android:fontFamily="@font/droid_kufi_regular"
+        app:srcCompat="@drawable/ic_close_32"
+        tools:ignore="SpeakableTextPresentCheck"
+        app:layout_constraintBottom_toTopOf="@+id/gl_h_1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/orderBtn"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/button_gray"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:paddingStart="40dp"
+        android:paddingEnd="30dp"
+        android:text="@string/menu_sale_order"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+        app:layout_constraintStart_toStartOf="@+id/gl_v_1"
+        app:layout_constraintTop_toTopOf="@+id/gl_h_1" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/psorderBtn"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/button_gray"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:paddingStart="40dp"
+        android:paddingEnd="30dp"
+        android:text="@string/menu_ps_order"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+        app:layout_constraintStart_toStartOf="@+id/gl_v_1"
+        app:layout_constraintTop_toBottomOf="@+id/orderBtn"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/invoiceBtn"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/button_gray"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:paddingStart="40dp"
+        android:paddingEnd="30dp"
+        android:text="@string/menu_sale"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+        app:layout_constraintStart_toStartOf="@+id/gl_v_1"
+        app:layout_constraintTop_toBottomOf="@+id/psorderBtn"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/deliveryBtn"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/button_gray"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:paddingStart="40dp"
+        android:paddingEnd="30dp"
+        android:text="@string/menu_delivery"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+        app:layout_constraintStart_toStartOf="@+id/gl_v_1"
+        app:layout_constraintTop_toBottomOf="@+id/invoiceBtn"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/visitBtn"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/custom_red_button"
+        android:fontFamily="@font/droid_kufi_regular"
+        android:paddingStart="40dp"
+        android:paddingEnd="30dp"
+        android:text="@string/menu_visit"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+        app:layout_constraintStart_toStartOf="@+id/gl_v_1"
+        app:layout_constraintTop_toBottomOf="@+id/deliveryBtn"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_v_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_v_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_h_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_h_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.90" />
+</androidx.constraintlayout.widget.ConstraintLayout>

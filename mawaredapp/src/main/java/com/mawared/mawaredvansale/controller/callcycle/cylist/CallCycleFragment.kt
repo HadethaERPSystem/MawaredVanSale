@@ -163,7 +163,7 @@ class CallCycleFragment : ScopedFragment(), KodeinAware, IMessageListener, IMain
     }
 
     override fun onItemEditClick(baseEo: Call_Cycle) {
-        val action = CallCycleFragmentDirections.actionCallCycleFragmentToCallCycleEntryFragment(baseEo)
+        val action = CallCycleFragmentDirections.actionCallCycleFragmentToCallCycleEntryFragment()
         action.baseBO = baseEo
 
         navController.navigate(action)

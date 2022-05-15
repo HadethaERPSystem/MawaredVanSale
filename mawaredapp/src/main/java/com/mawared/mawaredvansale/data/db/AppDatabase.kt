@@ -5,14 +5,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
 import com.mawared.mawaredvansale.data.db.dao.md.*
+import com.mawared.mawaredvansale.data.db.dao.sales.OrderDao
+import com.mawared.mawaredvansale.data.db.dao.sales.OrderItemsDao
 import com.mawared.mawaredvansale.data.db.dao.sales.SaleDao
 import com.mawared.mawaredvansale.data.db.dao.sales.Sale_DetailsDao
 import com.mawared.mawaredvansale.data.db.dao.security.MenuDao
 import com.mawared.mawaredvansale.data.db.dao.security.UserDao
 import com.mawared.mawaredvansale.data.db.entities.md.*
-import com.mawared.mawaredvansale.data.db.entities.sales.Delivery
+import com.mawared.mawaredvansale.data.db.entities.sales.Order
+import com.mawared.mawaredvansale.data.db.entities.sales.OrderItems
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
@@ -21,8 +23,9 @@ import com.mawared.mawaredvansale.data.db.entities.security.User
 @Database(
     entities = [User::class, Sale::class, Sale_Items::class, Menu::class, Call_Cycle::class, Currency::class, Currency_Rate::class,
                 Customer::class, Customer_Group::class, Customer_Price_List::class, Product::class, Product_Brand::class, Product_Category::class,
-                Product_Price_List::class, Region::class, Salesman::class, Salesman_Customer::class],
-    version = 28, exportSchema = false
+                Product_Price_List::class, Region::class, Salesman::class, Salesman_Customer::class, OrderItems::class, Order::class],
+//    entities = [User::class, Menu::class, OrderItems::class, Order::class],
+    version = 33, exportSchema = false
 )
 @TypeConverters(LocalDateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -35,6 +38,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getSaleDetailDao(): Sale_DetailsDao
     // Delivery DAO
 
+    // Order DAO
+    abstract fun getOrderItemsDao() : OrderItemsDao
+    abstract fun getOrderDao() : OrderDao
     //abstract fun getDeliveryDao(): DeliveryDao
     // Master Data DAO
     abstract fun getCall_CycleDao(): Call_CycleDao

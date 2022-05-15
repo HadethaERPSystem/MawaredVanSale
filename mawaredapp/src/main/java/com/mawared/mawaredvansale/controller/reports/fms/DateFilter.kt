@@ -10,3 +10,5 @@ class SearchFilter(
     val dtFrom: String?,
     val dtTo: String?
 )
+
+class ItemFilter(val cat_id: Int?, val br_id: Int?, val term: String?)

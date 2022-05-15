@@ -23,6 +23,7 @@ data class User (
     var sf_cr_Id: Int?,
     var sf_cr_code: String?,
     var token: String?,
+    var empId: Int?,
     var created_at: String? = null,
     var updated_at: String? = null
 ){

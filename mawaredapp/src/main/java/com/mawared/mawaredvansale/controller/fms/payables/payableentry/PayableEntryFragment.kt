@@ -187,7 +187,7 @@ class PayableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigato
         })
 
         viewModel.setVoucherCode("Payable")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
         llProgressBar?.visibility = View.GONE
     }
 

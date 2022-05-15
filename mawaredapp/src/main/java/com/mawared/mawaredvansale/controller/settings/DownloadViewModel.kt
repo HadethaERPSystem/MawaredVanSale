@@ -16,8 +16,8 @@ class DownloadViewModel(private val downloadRepository: DownloadRepository): Vie
     fun onDownloadClick(){
         try {
             GlobalScope.launch {
-                downloadRepository.downloadProductBrand()
-                downloadRepository.downloadProductCategory()
+                downloadRepository.downloadProductBrand("")
+                downloadRepository.downloadProductCategory("")
                 downloadRepository.downloadProduct("", null, "POS")
                 downloadRepository.downloadProductPriceList()
 

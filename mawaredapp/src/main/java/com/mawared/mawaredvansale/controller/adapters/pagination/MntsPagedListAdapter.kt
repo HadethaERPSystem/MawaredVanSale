@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale.controller.adapters.pagination
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -9,14 +10,15 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.md.customerlist.CustomerViewModel
-import com.mawared.mawaredvansale.data.db.entities.md.Customer
-import com.mawared.mawaredvansale.databinding.CustomerRowBinding
+import com.mawared.mawaredvansale.controller.mnt.mntlist.MntsViewModel
+import com.mawared.mawaredvansale.data.db.entities.mnt.Mnts
+import com.mawared.mawaredvansale.databinding.MntsRowBinding
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import kotlinx.android.synthetic.main.network_state_item.view.*
 
-class CustomerPagedListAdapter(private val viewModel: CustomerViewModel, val context: Context):
-    PagedListAdapter<Customer, RecyclerView.ViewHolder>(CustomerDiffCallBack()) {
+
+class MntsPagedListAdapter(private val viewModel: MntsViewModel, val context: Context):
+    PagedListAdapter<Mnts, RecyclerView.ViewHolder>(DiffCallBack()) {
 
     val MAIN_VIEW_TYPE = 1
     val NETWORK_VIEW_TYPE = 2
@@ -28,7 +30,7 @@ class CustomerPagedListAdapter(private val viewModel: CustomerViewModel, val con
         val inflater = LayoutInflater.from(parent.context)
 
         if(viewType == MAIN_VIEW_TYPE){
-            val bind : CustomerRowBinding = DataBindingUtil.inflate(inflater, R.layout.customer_row, parent, false)
+            val bind : MntsRowBinding = DataBindingUtil.inflate(inflater, R.layout.mnts_row, parent, false)
             return ItemViewHolder(bind.root, bind )
         }else {
             val view = inflater.inflate(R.layout.network_state_item, parent, false)
@@ -61,19 +63,20 @@ class CustomerPagedListAdapter(private val viewModel: CustomerViewModel, val con
         }
     }
 
-    class CustomerDiffCallBack: DiffUtil.ItemCallback<Customer>(){
-        override fun areItemsTheSame(oldItem: Customer, newItem: Customer): Boolean {
-            return oldItem.cu_Id == newItem.cu_Id
+    class DiffCallBack: DiffUtil.ItemCallback<Mnts>(){
+        override fun areItemsTheSame(oldItem: Mnts, newItem: Mnts): Boolean {
+            return oldItem.mntId == newItem.mntId
         }
 
-        override fun areContentsTheSame(oldItem: Customer, newItem: Customer): Boolean {
-            return oldItem.equals(newItem)
+        @SuppressLint("DiffUtilEquals")
+        override fun areContentsTheSame(oldItem: Mnts, newItem: Mnts): Boolean {
+            return oldItem == newItem
         }
     }
 
-    class ItemViewHolder(view: View, private val viewBinding: CustomerRowBinding): RecyclerView.ViewHolder(view){
-        fun bind(baseEo: Customer?, viewModel: CustomerViewModel){
-            viewBinding.entityEo = baseEo
+    class ItemViewHolder(view: View, private val viewBinding: MntsRowBinding): RecyclerView.ViewHolder(view){
+        fun bind(baseEo: Mnts?, viewModel: MntsViewModel){
+            viewBinding.baseEo = baseEo
             viewBinding.viewmodel = viewModel
         }
     }
@@ -86,7 +89,7 @@ class CustomerPagedListAdapter(private val viewModel: CustomerViewModel, val con
                 itemView.progress_bar_item?.visibility = View.GONE
             }
 
-            if(networkState != null){// && networkState == NetworkState.ERROR){
+            if(networkState == NetworkState.ENDOFLIST || networkState == NetworkState.NODATA){// && networkState == NetworkState.ERROR){
                 val pack = context.packageName
                 val id = context.resources.getIdentifier(networkState.msg,"string", pack)
                 itemView.error_msg_item.visibility = View.VISIBLE

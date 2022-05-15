@@ -219,7 +219,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
         })
 
         viewModel.setVoucherCode("Recievable")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
         if(viewModel.mode == "Add") viewModel.term.value = ""
         llProgressBar?.visibility = View.GONE
     }

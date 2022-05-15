@@ -78,11 +78,11 @@ class SalesStatementPagedListAdapter(private val viewModel: SalesStatementViewMo
     }
 
     override fun getItemViewType(position: Int): Int {
-        if(hasExtraRow() && position == itemCount -1) // Network type
+        if(hasExtraRow() && position == itemCount) // Network type
             return NETWORK_VIEW_TYPE
         else if(position == 0)   // Header Type
             return HEADER_VIEW_TYPE
-        else if(position == itemCount - 2) // Footer Type
+        else if(position == itemCount - 1) // Footer Type
             return FOOTER_VIEW_TYPE
         // Item Type
         return  MAIN_VIEW_TYPE

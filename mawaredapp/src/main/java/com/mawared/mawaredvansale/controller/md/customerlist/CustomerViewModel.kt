@@ -11,6 +11,7 @@ import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 
 class CustomerViewModel(private val repository:IMDataRepository) : BaseViewModel() {
 
@@ -19,25 +20,39 @@ class CustomerViewModel(private val repository:IMDataRepository) : BaseViewModel
     var navigator: IMainNavigator<Customer>? = null
     var msgListener: IMessageListener? = null
     var errorMessage: MutableLiveData<String> = MutableLiveData()
-
+    var term: String? = ""
     //val _cu_Id: MutableLiveData<Int> = MutableLiveData()
-    var searchFilter: MutableLiveData<CustomerFilter> = MutableLiveData()
-    val baseEoList: LiveData<PagedList<Customer>> = Transformations
-        .switchMap(searchFilter){
-            repository.fetchCustomerOnPages(_sm_id, it.org_Id, it.term)
+    //var searchFilter: MutableLiveData<CustomerFilter> = MutableLiveData()
+//    val baseEoList: LiveData<PagedList<Customer>> = Transformations
+//        .switchMap(searchFilter){
+//            repository.fetchCustomerOnPages(_sm_id, it.org_Id, it.term)
+//        }
+//
+//    val networkStateRV: LiveData<NetworkState> by lazy {
+//        repository.getCustomerNetworkState()
+//    }
+//
+//    val networkState: LiveData<NetworkState> by lazy {
+//        repository.networkState
+//    }
+
+    fun loadData(list: MutableList<Customer>, term: String,pageCount: Int, loadMore: (List<Customer>?, Int)->Unit){
+        try {
+            Coroutines.ioThenMain({
+                val cu = repository.getCustomersOnPages(_sm_id, null, term, pageCount)
+                if(cu != null){
+                    list.addAll(cu)
+                }
+            },
+                {loadMore(list, pageCount)})
+        }catch (e: Exception){
+            e.printStackTrace()
         }
-
-    val networkStateRV: LiveData<NetworkState> by lazy {
-        repository.getCustomerNetworkState()
     }
 
-    val networkState: LiveData<NetworkState> by lazy {
-        repository.networkState
-    }
-
-    fun listIsEmpty():Boolean{
-        return baseEoList.value?.isEmpty() ?: true
-    }
+//    fun listIsEmpty():Boolean{
+//        return baseEoList.value?.isEmpty() ?: true
+//    }
 
     fun onItemEdit(baseEo: Customer)
     {
@@ -53,7 +68,7 @@ class CustomerViewModel(private val repository:IMDataRepository) : BaseViewModel
         repository.cancelJob()
     }
 
-    fun doSearch(org_Id: Int?, term: String){
-        searchFilter.value = CustomerFilter(org_Id, term)
-    }
+//    fun doSearch(org_Id: Int?, term: String){
+//        searchFilter.value = CustomerFilter(org_Id, term)
+//    }
 }

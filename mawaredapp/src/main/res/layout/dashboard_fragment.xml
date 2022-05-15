@@ -209,7 +209,7 @@
                 tools:listitem="@layout/item_menu"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:id="@+id/menurecyclerview"/>
+                android:id="@+id/rv_menu"/>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 

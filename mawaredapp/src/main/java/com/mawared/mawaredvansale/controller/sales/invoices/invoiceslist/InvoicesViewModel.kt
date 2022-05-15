@@ -128,6 +128,7 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
     fun onPrintTicket(entityEo: Sale) {
         if (App.prefs.printing_type == "R") {
             //PrintReciept(entityEo)
+                entityEo.sl_salesman_phone = App.prefs.savedSalesman?.sm_phone_no ?: ""
             try {
                 val lang = Locale.getDefault().toString().toLowerCase()
                 val tickets = GenerateTicket(ctx!!, lang).create(
@@ -555,7 +556,7 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
             tbl.put(
                 5,
                 TCell(
-                    ctx!!.resources!!.getString(R.string.rpt_customer_phone),
+                    ctx!!.resources!!.getString(R.string.rpt_phone),
                     9F,
                     false,
                     12F,

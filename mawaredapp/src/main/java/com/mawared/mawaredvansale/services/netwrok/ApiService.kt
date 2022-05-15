@@ -10,6 +10,7 @@ import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout
 import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout_Items
 import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.md.Currency
+import com.mawared.mawaredvansale.data.db.entities.mnt.Mnts
 import com.mawared.mawaredvansale.data.db.entities.reports.customer.CustomerStatement
 import com.mawared.mawaredvansale.data.db.entities.reports.customer.CustomerStatus
 import com.mawared.mawaredvansale.data.db.entities.reports.dashboard.sm_dash1
@@ -23,8 +24,7 @@ import com.mawared.mawaredvansale.services.netwrok.responses.AuthResponse
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseList
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
 import com.mawared.mawaredvansale.utilities.*
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
+import okhttp3.*
 import org.threeten.bp.LocalDate
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -54,6 +54,22 @@ interface ApiService {
     suspend fun products_GetByTerm(@Query("Term") term: String,
                                    @Query("WarehouseId") warehouseId: Int?,
                                    @Query("PriceCode") priceCode: String) : Response<ResponseList<Product>>
+
+    @GET(URL_PRODUCTS_GET_FOR_MARKET_PLACE)
+    suspend fun products_GetForMarket(@Query("WarehouseId") warehouseId: Int?,
+                                      @Query("PriceCode") priceCode: String,
+                                      @Query("currentDate") currentDate: LocalDate,
+                                      @Query("org_Id") org_Id: Int?,
+                                      @Query("cat_Id") cat_Id: Int?,
+                                      @Query("brand_Id") br_Id: Int?,
+                                      @Query("Term") Term: String?) : Response<ResponseList<Product>>
+
+    @GET(URL_PRODUCTS_GET_FOR_OFFERS)
+    suspend fun products_GetForOffers(@Query("WarehouseId") warehouseId: Int?,
+                                      @Query("PriceCode") priceCode: String,
+                                      @Query("currentDate") currentDate: LocalDate,
+                                      @Query("org_Id") org_Id: Int?,
+                                      @Query("Term") Term: String?) : Response<ResponseList<Product>>
 
     @GET(URL_PRODUCTS_GET_WAREHOUSE_ON_PAGES)
     suspend fun products_GetByWareOnPages(@Query("Term") term: String,
@@ -85,6 +101,9 @@ interface ApiService {
 
     @GET(URL_PRODUCTS_BY_SEARCH)
     suspend fun products_GetBySearch(@Query("Term") term: String) : Response<ResponseList<Product>>
+    @GET(URL_PRODUCTS_GET_BY_CONTRACT)
+    suspend fun products_GetByContract(@Query("contId") contId: Int?, @Query("term") term: String): Response<ResponseList<Product>>
+
     @GET(URL_ALL_PRODUCTS)
     suspend fun product_GetByBarcode(@Query("Barcode") barcode: String,
                                @Query("WarehouseId") warehouseId: Int?,
@@ -93,6 +112,11 @@ interface ApiService {
     suspend fun product_GetInvoicessByCustomer(@Query("cu_Id") cu_Id: Int,
                                                @Query("prod_Id") prod_Id: Int,
                                                @Query("term") term: String): Response<ResponseList<Product>>
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    @GET(URL_SERVICES)
+    suspend fun getServicesByTerm(@Query("term") term: String, @Query("priceCode") priceCode: String): Response<ResponseList<Servs>>
+
     //////////////////////////////////////////////////////////////////////////////////////////
     //// PRICES
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -102,13 +126,17 @@ interface ApiService {
     @GET(URL_PRODUCT_PRICE)
     suspend fun getProductPrice(@Query("prod_Id") prod_Id: Int): Response<ResponseSingle<Product_Price_List>>
     @GET(URL_PRODUCT_LAST_PRICE)
-    suspend fun product_getLastPrice(@Query("prod_id") prod_Id: Int, @Query("PriceCode") priceCode: String): Response<ResponseSingle<Product_Price_List>>
+    suspend fun product_getLastPrice(@Query("prod_id") prod_Id: Int, @Query("PriceCode") priceCode: String,
+                                     @Query("uomId") uomId: Int, @Query("curCode") curCode: String): Response<ResponseSingle<Product_Price_List>>
 
     //////////////////////////////////////////////////////////////////////////////////////////
     ///// CUSTOMERS
     //////////////////////////////////////////////////////////////////////////////////////////
     @GET(URL_ALL_CUSTOMERS)
     suspend fun getAllCustomers(@Query("sm_Id") sm_Id: Int, @Query("term") term: String): Response<ResponseList<Customer>>
+
+    @GET(URL_GET_ALL_CUSTOMERS_BY_TERM)
+    suspend fun getCustomers_ByTerm(@Query("sm_Id") sm_Id: Int, @Query("Term") term: String, @Query("mntTypeCode") mntTypeCode: String): Response<ResponseList<Customer>>
 
     @GET(URL_CUSTOMERS_ON_PAGES)
     suspend fun customers_OnPages(@Query("sm_Id") sm_Id: Int?,
@@ -167,12 +195,19 @@ interface ApiService {
     @GET(URL_CURRENT_CURRENCY_RATE)
     suspend fun getCurrencyLatestRate(@Query("cr_Id") cr_Id: Int): Response<ResponseSingle<Currency_Rate>>
 
-    @GET(URL_ALL_PRODUCTS_BRAND)
-    suspend fun getAllBrand(): Response<ResponseList<Product_Brand>>
+    @GET(URL_BRAND_GET_BY_TERM)
+    suspend fun getBrandByTerm(@Query("Term") term: String?): Response<ResponseList<Product_Brand>>
 
-    @GET(URL_ALL_PRODUCTS_CATEGORY)
-    suspend fun getAllCategories(): Response<ResponseList<Product_Category>>
-
+    @GET(URL_BRNAD_ON_PAGES)
+    suspend fun brand_OnPages(@Query("Term") term: String?,
+                              @Query("page") page: Int,
+                              @Query("pageSize") pageSize: Int): Response<ResponseList<Product_Brand>>
+    @GET(URL_CATEGORY_GET_BY_TERM)
+    suspend fun getCategoriesByTerm(@Query("Term") term: String?): Response<ResponseList<Product_Category>>
+    @GET(URL_CATEGORY_ON_PAGES)
+    suspend fun getCategoriesOnPages(@Query("Term") term: String?,
+                                     @Query("page") page: Int,
+                                     @Query("pageSize") pageSize: Int): Response<ResponseList<Product_Category>>
     @GET(URL_ALL_REGION)
     suspend fun getAllRegions(): Response<ResponseList<Region>>
 
@@ -191,6 +226,12 @@ interface ApiService {
     @GET(URL_SALESMAN_SUMMARY)
     suspend fun getSalesmanSummary(@Query("sm_Id") sm_Id: Int?,
                                    @Query("selDate") selDate: String): Response<ResponseSingle<SalesmanSummary>>
+
+    @GET(URL_SALESMAN_HSA_SALES_PLAN)
+    suspend fun salesmanHasSalesPlan(@Query("sm_Id") sm_Id: Int): Response<ResponseSingle<Salesman>>
+
+    @GET(URL_UOM_PRODUCT)
+    suspend fun uom_GetByProduct(@Query("prod_Id") prod_Id: Int): Response<ResponseList<UnitConvertion>>
     //////////////////////////////////////////////////////////////////////////////////////////
     // VOUCHER
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -219,6 +260,8 @@ interface ApiService {
     @GET(URL_WAREHOUSE_GET_BY_SALESMAN)
     suspend fun warehouse_GetSalesman(@Query("sm_Id") sm_Id: Int) : Response<ResponseList<Warehouse>>
 
+    @GET(URL_LOCATION_GET_BY_WHS)
+    suspend fun location_GetByWhs(@Query("whsId") whsId: Int) : Response<ResponseList<Loc>>
     //////////////////////////////////////////////////////////////////////////////////////////
     //// DELIVERY
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -247,6 +290,28 @@ interface ApiService {
     @GET(URL_ALL_CHECK_LOAD_DETAILS)
     suspend fun getAllCheckLoadDetails(@Query("sm_Id") sm_Id: Int): Response<ResponseList<Check_Load_Details>>
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    ///// Maintenance
+    //////////////////////////////////////////////////////////////////////////////////////////
+    @POST(URL_SAVE_MNTS)
+    suspend fun insertMnts(@Body baseEo: Mnts) : Response<ResponseSingle<Mnts>>
+    @GET(URL_MNTS_GET_BY_ID)
+    suspend fun getMntById(@Query("id") id: Int) : Response<ResponseSingle<Mnts>>
+    @GET(URL_MNTS_PAGES)
+    suspend fun mnts_OnPages(@Query("sm_Id") sm_Id: Int,
+                              @Query("cu_Id") cu_Id: Int?,
+                              @Query("page") page: Int,
+                              @Query("pageSize") pageSize: Int) : Response<ResponseList<Mnts>>
+    @GET(URL_MNTS_TYPE)
+    suspend fun getMntTyps() : Response<ResponseList<MntType>>
+    @GET(URL_MNTS_STATUS)
+    suspend fun getMntStatus() : Response<ResponseList<MntStatus>>
+    @GET(URL_MNTS_REG)
+    suspend fun getRegMnt(@Query("term") term: String) : Response<ResponseList<RegMnt>>
+    @GET(URL_MNTS_INV)
+    suspend fun getInvoicesForMnt(@Query("cu_Id") cu_Id: Int?, @Query("term") term: String) : Response<ResponseList<Sale>>
+    @GET(URL_MNTS_WARRANTY)
+    suspend fun getWarranty(@Query("cu_Id") cu_Id: Int?, @Query("term") term: String) : Response<ResponseList<Warranty>>
     //////////////////////////////////////////////////////////////////////////////////////////
     ///// SALES
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -473,6 +538,10 @@ interface ApiService {
 
     @GET(URL_SALES_PLAN)
     suspend fun getSalesPlan(): Response<ResponseList<Lookups>>
+
+    @Multipart
+    @POST(URL_UPLOAD_FILE)
+    suspend fun uploadFile(@Part description : RequestBody, @Part photo : MultipartBody.Part) : Response<ResponseBody>
 
     companion object{
         operator fun invoke(connectivityInterceptor: ConnectivityInterceptor) : ApiService{

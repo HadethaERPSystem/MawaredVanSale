@@ -40,8 +40,8 @@ class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
     var user : User = User(
         1, "Ali Bawi", "ali.bawi@hadetha.com", "ali.bawi", "a12345", "",
         null, null, null, "", null, null, null, null, null, null,
-        null
-    )
+        null,0
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -234,7 +234,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         })
 
         viewModel.setVoucherCode("SaleOrder")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
         viewModel.setItems(arrayListOf())
         if(viewModel.mode != "Add") {
             viewModel.setTerm("")

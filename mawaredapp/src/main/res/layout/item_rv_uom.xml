@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            app:cardMaxElevation="6dp"
+            app:contentPadding="2dp"
+            app:cardBackgroundColor="@android:color/white"
+            android:layout_margin="5dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minHeight="?listPreferredItemHeight"
+            android:padding="2dp">
+
+            <!-- Qty Label -->
+            <TextView
+                android:id="@+id/lbl_uom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center_horizontal"
+                android:text="@string/unit_name"
+                android:textAlignment="center"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="SmallSp" />
+
+            <!-- Gift Qty -->
+            <TextView
+                android:id="@+id/tv_uom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/arial"
+                android:textAlignment="center"
+                android:textSize="13sp"
+                android:paddingTop="@dimen/_3dp"
+                android:paddingBottom="@dimen/_3dp"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/black"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_uom"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/lbl_uom_num"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:background="#e7e7e7"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center_horizontal"
+                android:text="@string/unit_num"
+                android:textAlignment="center"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/lbl_uom"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/tv_uom_num"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/arial"
+                android:textAlignment="center"
+                android:textSize="13sp"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/black"
+                android:paddingTop="@dimen/_3dp"
+                android:paddingBottom="@dimen/_3dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/tv_uom"
+                tools:ignore="SmallSp" />
+
+            <!-- Batch and Expiry Date -->
+            <TextView
+                android:id="@+id/lbl_uom_rate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:background="#e7e7e7"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:text="@string/unit_rate"
+                android:textAlignment="center"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline11"
+                app:layout_constraintTop_toTopOf="@+id/lbl_uom_num"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/tv_uom_rate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:fontFamily="@font/arial"
+                android:paddingTop="@dimen/_3dp"
+                android:paddingBottom="@dimen/_3dp"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/black"
+                android:textSize="13sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline11"
+                app:layout_constraintTop_toTopOf="@+id/tv_uom_num"
+                tools:ignore="SmallSp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.45" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.70" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</RelativeLayout>

@@ -9,18 +9,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <uses-feature android:name="android.hardware.usb.host" />
+    <uses-feature android:name="android.hardware.camera.any" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
 
@@ -33,16 +33,18 @@
     <application
         android:name=".App"
         android:allowBackup="true"
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
         android:icon="@drawable/mderp_app_logo"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/mderp_app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:requestLegacyExternalStorage="true"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-<!--        <activity android:name=".controller.common.printing.PrintingActivity"></activity>-->
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
+        android:hardwareAccelerated="true">
+
+        <!-- <activity android:name=".controller.common.printing.PrintingActivity"></activity> -->
         <activity android:name=".controller.common.PdfActivity" />
         <activity android:name=".controller.map.MapsActivity" />
         <activity android:name=".controller.map.RealLocationActivity" />
@@ -57,15 +59,14 @@
             tools:replace="screenOrientation" />
         <activity
             android:name=".controller.home.SplashScreenActivity"
-            android:noHistory="true"
-            android:theme="@style/SplashTheme">
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.auth.LoginActivity"></activity>
+        <activity android:name=".controller.auth.LoginActivity" />
         <activity
             android:name=".controller.home.HomeActivity"
             android:label="@string/home_page_title" />

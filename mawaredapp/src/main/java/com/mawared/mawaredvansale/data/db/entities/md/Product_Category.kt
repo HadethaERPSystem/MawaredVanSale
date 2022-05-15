@@ -8,7 +8,8 @@ data class Product_Category(
     var pg_code: String?,           // Category Code
     var pg_clientId: Int?,          // Client Identifier
     var pg_description: String?,    // Category Latin Name
-    var pg_description_ar: String?  // Category Arabic name
+    var pg_description_ar: String?,  // Category Arabic name
+    var pg_image_name: String?
 ) {
     @PrimaryKey(autoGenerate = false)
     var pg_Id:  Int = 0

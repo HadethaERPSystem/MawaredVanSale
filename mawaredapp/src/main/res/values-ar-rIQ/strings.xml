@@ -87,6 +87,8 @@
     <string name="lbl_doc_no">رقم المستند</string>
     <string name="lbl_doc_date">التاريخ</string>
     <string name="lbl_customer_name">الزبون</string>
+    <string name="lbl_salesman_name">المندوب</string>
+    <string name="lbl_salesman_no">رقم المندوب</string>
     <string name="lbl_customer_name_en">اسم الزبون الانكليزي</string>
     <string name="lbl_customer_name_ar">اسم الزبون العربي</string>
     <string name="lbl_region_name">المنطقة</string>
@@ -102,13 +104,13 @@
     <string name="hint_unit_price">5.95</string>
     <string name="lbl_usd_cr_symbol">$</string>
     <string name="lbl_line_total">المجموع</string>
-    <string name="hint_line_total">119.00</string>
+    <string name="hint_line_total">0.00</string>
     <string name="lbl_discount_per">نسبة الخصم</string>
     <string name="lbl_discount">مبلغ الخصم</string>
     <string name="hint_zero">0.00</string>
-    <string name="tag_qty">20.00</string>
+    <string name="tag_qty">0.00</string>
     <string name="lbl_net_total">الصافي</string>
-    <string name="tag_net_total">119.00</string>
+    <string name="tag_net_total">0.00</string>
     <string name="btn_new_caption">جديد</string>
     <string name="btn_save_caption">حفظ</string>
     <string name="lbl_ref_no">اختر الفاتورة</string>
@@ -149,6 +151,7 @@
     <string name="lbl_sign">التوقيع</string>
     <!-- system messages -->
     <string name="msg_confirm_delete">هل انت متاكد من الغاء القيد الحالي؟</string>
+    <string name="msg_confirm_deleteAll">هل انت متاكد من الغاء جميع البيانات؟</string>
     <string name="msg_success_delete">تم الغاء القيد الحالي بنجاح </string>
     <string name="msg_failure_delete">فشل في عملية الغاء القيد الحالي</string>
     <string name="msg_user_not_authorize">ليس لديك صلاحية للدخول لهذه الواجهة.\n\r لم يتم تسجيل المستخدم الحالي من ضمن مندوبي المبيعات</string>
@@ -170,6 +173,8 @@
     <string name="msg_error_invalid_qty">يجب ادخال الكمية</string>
     <string name="msg_error_invalid_product">يجب اختيار مادة او قراءة الباركود</string>
     <string name="msg_error_invalid_price">لايوجد تسعير لهذه المادة</string>
+
+    <string name="msg_error_invalid_service">يجب اختيار خدمة</string>
 
     <string name="msg_error_qty_has_digit">الكمية يجب ان تكون عدد صحيح</string>
     <string name="msg_error_gift_qty_has_digit">كمية الهدية يجب ان تكون عدد صحيح</string>
@@ -261,6 +266,7 @@
     <string name="lbl_total_qty">مجموع الكمية:</string>
     <string name="lbl_total_gift">مجموع الهدايا:</string>
     <string name="lbl_net_amount">صافي الفاتورة:</string>
+    <string name="lbl_invoice_amount">المبلغ</string>
     <string name="lbl_is_delivered">تم التوصيل</string>
     <string name="lbl_batch_no">رقم الوجبة</string>
 
@@ -313,7 +319,7 @@
     <string name="rpt_user_name">اسم المستخدم</string>
     <string name="rpt_list_name">قائمة</string>
     <string name="rpt_contact_name">اسم صاحب المحل</string>
-    <string name="rpt_customer_phone">هاتف</string>
+    <string name="rpt_phone">الهاتف</string>
     <string name="rpt_cr_name">العملة</string>
     <string name="rpt_Ref_No">الرقم</string>
     <string name="rpt_Ref_Date">التأريخ</string>
@@ -450,4 +456,55 @@
     <string name="paid_usd">المدفوع دولار</string>
     <string name="remain_amount">المبلغ المتبقي</string>
     <string name="btn_reload">اعادة تحميل</string>
+    <string name="maintenance_type">نوع الصيانة</string>
+    <string name="invoice_no">اختر الفاتورة</string>
+    <string name="select_device">اختر الجهاز</string>
+    <string name="first_description">الوصف الاولي</string>
+    <string name="serial_number">الرقم التسلسلي</string>
+    <string name="date_of_warranty">تأريخ الضمان</string>
+    <string name="select_maintenance_status">اختر الحالة</string>
+    <string name="final_description">الوصف النهائي</string>
+    <string name="select_warranty">اختر الضمان</string>
+    <string name="maintenance_no">رقم الصيانة</string>
+    <string name="select_warehouse">اختر المخزن</string>
+    <string name="select_item_location">موقع الخزن</string>
+    <string name="free_items">مواد مجانية</string>
+    <string name="item_location">موقع المواد</string>
+    <string name="service_name">الخدمة</string>
+    <string name="work_cost">كلفة العمل</string>
+    <string name="items_cost">كلفة المواد</string>
+    <string name="total_cost">الكلفة الكلية</string>
+    <string name="lbl_mnt_type">نوع الصيانة</string>
+    <string name="layout_mnt_list_title">الصيانة</string>
+    <string name="layout_mnt_entry_title">الصيانة</string>
+    <string name="warranty_no">رقم الضمان</string>
+    <string name="select_regular_maintenance">اختر الصيانة الدورية</string>
+    <string name="contract_no">رقم العقد</string>
+    <string name="btn_attachment">ارفاق</string>
+    <string name="ic_home">الصفحة الرئيسية</string>
+    <string name="ic_categories">الاصناف</string>
+    <string name="ic_products">المواد</string>
+    <string name="ic_brand">العلامةالتجارية</string>
+    <string name="ic_offers">العروض</string>
+    <string name="layout_market_place_title">السوق</string>
+    <string name="search_view_item">بحث عن مادة</string>
+    <string name="search_view_category">بحث عن صنف</string>
+    <string name="search_view_brand">بحث عن علامة تجارية</string>
+    <string name="layout_brand_title">العلامة التجارية</string>
+    <string name="layout_items_title">المواد</string>
+    <string name="layout_categories_title">الاصناف</string>
+    <string name="layout_offers_title">العروض</string>
+    <string name="layout_cart_title">السلة</string>
+    <string name="btn_add_to_cart">اضافة مادة</string>
+    <string name="lbl_prom">عرض كمية</string>
+    <string name="hint_enter_qty">ادخل الكمية</string>
+    <string name="radio_sale_invoice">فاتورة بيع</string>
+    <string name="radio_sale_order">امر بيع</string>
+    <string name="layout_select_customer_title">جدولة الزبائن</string>
+    <string name="menu_visit">زيارة الزبون</string>
+    <string name="select_unit">اختر وحدة البيع</string>
+    <string name="btn_ok">موافق</string>
+    <string name="unit_name">الوحدة</string>
+    <string name="unit_rate">النسبة</string>
+    <string name="unit_num">العدد</string>
 </resources>

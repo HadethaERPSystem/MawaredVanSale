@@ -123,7 +123,7 @@
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/txt_uprice"
+                    android:id="@+id/tview_unit_price"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/droid_kufi_regular"
@@ -147,7 +147,7 @@
                     android:text="@string/lbl_usd_cr_symbol"
                     android:textSize="13sp"
                     app:layout_constraintEnd_toStartOf="@+id/guideline11"
-                    app:layout_constraintTop_toTopOf="@+id/txt_uprice"
+                    app:layout_constraintTop_toTopOf="@+id/tview_unit_price"
                     tools:ignore="SmallSp" />
             <!-- Total Price Label-->
 
@@ -160,7 +160,7 @@
                     android:text="@string/lbl_line_total"
                     android:textSize="13sp"
                     app:layout_constraintStart_toStartOf="@+id/guideline11"
-                    app:layout_constraintTop_toTopOf="@+id/txt_uprice"
+                    app:layout_constraintTop_toTopOf="@+id/tview_unit_price"
                     tools:ignore="SmallSp" />
 
             <TextView

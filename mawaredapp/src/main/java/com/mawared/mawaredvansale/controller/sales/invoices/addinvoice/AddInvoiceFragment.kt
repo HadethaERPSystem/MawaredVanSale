@@ -1,6 +1,5 @@
 package com.mawared.mawaredvansale.controller.sales.invoices.addinvoice
 
-import HPRTAndroidSDK.HPRTPrinterHelper
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
@@ -8,7 +7,6 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.res.AssetManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -51,10 +49,8 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 import org.threeten.bp.LocalDate
-import print.Print
 import java.io.IOException
 import java.io.InputStream
-import java.net.URL
 import java.text.DecimalFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -78,7 +74,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
         savedInstanceState: Bundle?
     ): View? {
         //loadLocale()
-        val view = inflater.inflate(R.layout.add_invoice_fragment, container, false)
+        //val view = inflater.inflate(R.layout.add_invoice_fragment, container, false)
 
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.add_invoice_fragment, container, false)
@@ -405,7 +401,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
         })
 
         viewModel.setVoucherCode("SaleInvoice")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.sl_cr_Id!!)
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
         viewModel.setItems(null)
         if(viewModel.mode != "Add") viewModel.setTerm("") else viewModel.term.value = ""
     }
@@ -534,6 +530,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
         if(App.prefs.printing_type == "R") {
             try {
                 val lang = Locale.getDefault().toString().toLowerCase()
+                entityEo.sl_salesman_phone = App.prefs.savedSalesman?.sm_phone_no ?: ""
                 val tickets = GenerateTicket(requireContext(), lang).create(
                     entityEo,
                     URL_LOGO + "co_black_logo.png",//R.drawable.ic_logo_black,
@@ -789,7 +786,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
                 tbl.put(
                     5,
                     TCell(
-                        requireActivity().resources!!.getString(R.string.rpt_customer_phone),
+                        requireActivity().resources!!.getString(R.string.rpt_phone),
                         9F,
                         false,
                         12F,

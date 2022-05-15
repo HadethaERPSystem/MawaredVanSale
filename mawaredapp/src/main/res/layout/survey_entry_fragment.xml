@@ -228,27 +228,27 @@
             </LinearLayout>
 
             <LinearLayout
-                    android:id="@+id/spinner_box"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:gravity="end"
-                    android:orientation="horizontal">
+                android:id="@+id/spinner_box"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="end"
+                android:orientation="horizontal">
 
                 <Button
-                        android:id="@+id/prev_qn_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/colorAccent"
-                        android:padding="12dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="12dp"
-                        android:text="@string/previous_btn"
-                        android:visibility="gone"
-                        android:textColor="@android:color/white" />
+                    android:id="@+id/prev_qn_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@color/colorAccent"
+                    android:padding="12dp"
+                    android:text="@string/previous_btn"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/next_qn_btn"

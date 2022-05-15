@@ -35,15 +35,15 @@ class DownloadRepository(
 
     // Product Brand
     //===========================================================
-    private suspend fun getAllBrand(): ResponseList<Product_Brand>{
-        return apiRequest { api.getAllBrand() }
+    private suspend fun getAllBrand(term: String?): ResponseList<Product_Brand>{
+        return apiRequest { api.getBrandByTerm(term) }
     }
 
     private suspend fun insertBrand(baseEoList: List<Product_Brand>) = db.getProductBrandDao().insert(baseEoList)
 
-    suspend fun downloadProductBrand(){
+    suspend fun downloadProductBrand(term: String?){
         withContext(Dispatchers.IO){
-            val response = getAllBrand()
+            val response = getAllBrand(term)
             if(response.isSuccessful){
                 if(response.data != null){
                     insertBrand(response.data)
@@ -54,15 +54,15 @@ class DownloadRepository(
 
     // Product Category
     //===========================================================
-    private suspend fun getAllCategories(): ResponseList<Product_Category>{
-        return apiRequest { api.getAllCategories() }
+    private suspend fun getAllCategories(term: String?): ResponseList<Product_Category>{
+        return apiRequest { api.getCategoriesByTerm(term) }
     }
 
     private suspend fun insertCategory(baseEoList: List<Product_Category>) = db.getProductCategoryDao().insert(baseEoList)
 
-    suspend fun downloadProductCategory(){
+    suspend fun downloadProductCategory(term: String?){
         withContext(Dispatchers.IO){
-            val response = getAllBrand()
+            val response = getAllBrand(term)
             if(response.isSuccessful){
                 if(response.data != null){
                     insertBrand(response.data)

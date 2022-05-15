@@ -391,7 +391,7 @@ class MapFragment : Fragment(), KodeinAware, IMainNavigator<Call_Cycle>, IDatePi
 
     override fun onItemEditClick(baseEo: Call_Cycle) {
 
-        val action = MapFragmentDirections.actionMapFragmentToCallCycleEntryFragment(baseEo)
+        val action = MapFragmentDirections.actionMapFragmentToCallCycleEntryFragment()
         action.baseBO = baseEo
 
         navController.navigate(action)

@@ -36,6 +36,7 @@ class SharedPrefs(context: Context) {
     val gson = Gson()
     val KEY_PRINTING_TYPE = "Key_priting_type"
     val KEY_APP_VERSION = "key_app_verion"
+    val KEY_APP_HAS_PLAN = "key_app_has_plan"
     var isLoggedIn: Boolean
         get() = prefs.getBoolean(IS_LOGGED_IN, false)
         set(value) = prefs.edit().putBoolean(IS_LOGGED_IN, value).apply()
@@ -110,4 +111,9 @@ class SharedPrefs(context: Context) {
     var app_version: String?
         get() = prefs.getString(KEY_APP_VERSION, null)
         set(value) = prefs.edit().putString(KEY_APP_VERSION, value).apply()
+
+    //hasSalesPlan
+    var hasSalesPlan: String?
+        get() = prefs.getString(KEY_APP_HAS_PLAN, null)
+        set(value) = prefs.edit().putString(KEY_APP_HAS_PLAN, value).apply()
 }

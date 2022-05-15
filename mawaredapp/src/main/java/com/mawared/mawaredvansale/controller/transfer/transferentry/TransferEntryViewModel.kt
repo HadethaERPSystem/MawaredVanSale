@@ -139,7 +139,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
                     try {
                         val response = repository.upsert(baseEo)
                         if(response.isSuccessful){
-                            _baseEo.value = response.data
+                            _baseEo.value = response.data!!
                             isRunning = false
                         }
                         else{

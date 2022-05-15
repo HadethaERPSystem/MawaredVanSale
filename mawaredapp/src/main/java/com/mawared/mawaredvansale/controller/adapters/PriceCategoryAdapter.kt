@@ -2,6 +2,7 @@ package com.mawared.mawaredvansale.controller.adapters
 
 import android.app.Activity
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -32,7 +33,7 @@ class PriceCategoryAdapter(context: Context, @LayoutRes private val layoutResour
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
-        val layoutInflater = (context as Activity).layoutInflater
+        val layoutInflater = LayoutInflater.from(parent.context)
         val binding: PriceCategoryRowBinding = DataBindingUtil.inflate(layoutInflater, R.layout.price_category_row, parent, false)
         binding.entityEo = getItem(position)
         return binding.root

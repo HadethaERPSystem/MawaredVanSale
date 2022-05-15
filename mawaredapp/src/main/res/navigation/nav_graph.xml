@@ -24,9 +24,7 @@
         <action
                 android:id="@+id/action_dashboardFragment_to_saleReturnFragment"
                 app:destination="@id/saleReturnFragment" />
-        <action
-                android:id="@+id/action_dashboardFragment_to_customerFragment"
-                app:destination="@id/customerFragment" />
+
         <action
                 android:id="@+id/action_dashboardFragment_to_settingsFragment"
                 app:destination="@id/settingsFragment" />
@@ -54,6 +52,18 @@
         <action
             android:id="@+id/action_dashboardFragment_to_kpiFragment"
             app:destination="@id/kpiFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_mntsFragment"
+            app:destination="@id/mntsFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_selectCustomerFragment"
+            app:destination="@id/selectCustomerFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_marketPlaceFragment"
+            app:destination="@id/marketPlaceFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_customerFragment"
+            app:destination="@id/customerFragment" />
     </fragment>
     <fragment
             android:id="@+id/invoicesFragment"
@@ -162,18 +172,11 @@
                 app:argType="string"
                 android:defaultValue="Add" />
     </fragment>
-    <fragment
-        android:id="@+id/customerFragment"
-        android:name="com.mawared.mawaredvansale.controller.md.customerlist.CustomerFragment"
-        android:label="@string/layout_customer_list_title">
-        <action
-            android:id="@+id/action_customerFragment_to_customerEntryFragment"
-            app:destination="@id/customerEntryFragment" />
-    </fragment>
+
     <fragment
             android:id="@+id/customerEntryFragment"
             android:name="com.mawared.mawaredvansale.controller.md.customerentry.CustomerEntryFragment"
-            android:label="CustomerEntryFragment" >
+            android:label="@string/layout_customer_entry_title" >
         <argument
                 android:name="mode"
                 app:argType="string"
@@ -197,6 +200,10 @@
             android:id="@+id/deliveryFragment"
             android:name="com.mawared.mawaredvansale.controller.sales.delivery.deliverylist.DeliveryFragment"
             android:label="@string/layout_delivery_list_title" >
+        <argument
+            android:name="cuId"
+            app:argType="integer"
+            android:defaultValue="0" />
         <action
                 android:id="@+id/action_deliveryFragment_to_deliveryEntryFragment"
                 app:destination="@id/deliveryEntryFragment" />
@@ -295,6 +302,10 @@
         android:id="@+id/callCycleFragment"
         android:name="com.mawared.mawaredvansale.controller.callcycle.cylist.CallCycleFragment"
         android:label="@string/layout_call_cycle_title" >
+        <argument
+            android:name="cuId"
+            app:argType="integer"
+            android:defaultValue="0" />
         <action
             android:id="@+id/action_callCycleFragment_to_callCycleEntryFragment"
             app:destination="@id/callCycleEntryFragment" />
@@ -306,7 +317,8 @@
         <argument
             android:name="baseBO"
             app:argType="com.mawared.mawaredvansale.data.db.entities.md.Call_Cycle"
-            app:nullable="true" />
+            app:nullable="true"
+            android:defaultValue="@null"/>
     </fragment>
     <fragment
         android:id="@+id/customerStatementFragment"
@@ -325,4 +337,67 @@
         android:id="@+id/kpiFragment"
         android:name="com.mawared.mawaredvansale.controller.reports.kpi.KpiFragment"
         android:label="@string/layout_kpi_title" />
+    <fragment
+        android:id="@+id/mntsFragment"
+        android:name="com.mawared.mawaredvansale.controller.mnt.mntlist.MntsFragment"
+        android:label="@string/layout_mnt_list_title"
+        tools:layout="@layout/mnts_fragment" >
+        <action
+            android:id="@+id/action_mntsFragment_to_mntEntryFragment"
+            app:destination="@id/mntEntryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mntEntryFragment"
+        android:name="com.mawared.mawaredvansale.controller.mnt.entry.MntEntryFragment"
+        android:label="@string/layout_mnt_entry_title" >
+        <argument
+            android:name="mntId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="mode"
+            app:argType="string"
+            android:defaultValue="Add" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/marketPlaceFragment"
+        android:name="com.mawared.mawaredvansale.controller.marketplace.MarketPlaceFragment"
+        android:label="@string/layout_market_place_title"
+        tools:layout="@layout/fragment_market_place" >
+        <argument
+            android:name="customer"
+            app:argType="com.mawared.mawaredvansale.data.db.entities.md.Customer"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="vocode"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
+    <fragment
+        android:id="@+id/selectCustomerFragment"
+        android:name="com.mawared.mawaredvansale.controller.marketplace.schedulecustomer.SelectCustomerFragment"
+        android:label="@string/layout_select_customer_title"
+        tools:layout="@layout/select_customer_fragment" >
+        <action
+            android:id="@+id/action_selectCustomerFragment_to_marketPlaceFragment"
+            app:destination="@id/marketPlaceFragment" />
+        <action
+            android:id="@+id/action_selectCustomerFragment_to_deliveryFragment"
+            app:destination="@id/deliveryFragment" />
+        <action
+            android:id="@+id/action_selectCustomerFragment_to_callCycleFragment"
+            app:destination="@id/callCycleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerFragment"
+        android:name="com.mawared.mawaredvansale.controller.md.customerlist.CustomerFragment"
+        android:label="@string/layout_customer_list_title" >
+        <action
+            android:id="@+id/action_customerFragment_to_customerEntryFragment"
+            app:destination="@id/customerEntryFragment" />
+    </fragment>
+
 </navigation>

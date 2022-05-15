@@ -1,14 +1,6 @@
 package com.mawared.mawaredvansale.data.db.dao
 
-import android.content.ClipData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Update
-import com.mawared.mawaredvansale.data.db.entities.security.User
-import androidx.room.OnConflictStrategy
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
+import androidx.room.*
 
 
 @Dao

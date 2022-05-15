@@ -1,7 +1,10 @@
 package com.mawared.mawaredvansale.utilities
 
 
+import android.content.ContentResolver
 import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -37,4 +40,25 @@ fun View.snackbar(message: String){
             snackbar.dismiss()
         }
     }.show()
+}
+
+fun View.confirmSnackbar(message: String){
+    Snackbar.make(this,
+        message,
+        Snackbar.LENGTH_LONG
+    ).also { snackbar ->
+        snackbar.setAction("Ok"){
+            snackbar.dismiss()
+        }
+    }
+}
+
+fun ContentResolver.getFileName(uri: Uri): String{
+    var name = ""
+    val cursor = query(uri, null, null, null, null)
+    cursor?.use {
+        it.moveToFirst()
+        name = cursor.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+    }
+    return name
 }

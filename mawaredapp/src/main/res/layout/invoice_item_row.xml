@@ -60,6 +60,7 @@
                 android:text="@{viewmodel.getProductName(saleitem)}"
                 android:textAlignment="textStart"
                 android:textColor="@android:color/black"
+                android:textColorHint="@android:color/black"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/btn_delete"
@@ -116,7 +117,7 @@
                 android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="center_horizontal"
-                android:text="@string/lbl_gift_qty"
+                android:text="@string/lbl_IsGift"
                 android:textAlignment="center"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline11"
@@ -140,7 +141,19 @@
                 app:layout_constraintStart_toStartOf="@+id/guideline10"
                 app:layout_constraintTop_toTopOf="@+id/textView"
                 tools:ignore="SmallSp" />
+<!--            <CheckBox-->
+<!--                android:id="@+id/checkbox_cheese"-->
+<!--                android:layout_width="30dp"-->
+<!--                android:layout_height="30dp"-->
+<!--                android:gravity="center_vertical|center_horizontal"-->
+<!--                android:checked="@={saleitem.sld_isGift}"-->
+<!--                android:text=""-->
+<!--                android:enabled="false"-->
 
+<!--                app:layout_constraintEnd_toStartOf="@+id/guideline11"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/guideline10"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/textView"-->
+<!--                tools:ignore="TouchTargetSizeCheck" />-->
             <!-- Batch and Expiry Date -->
             <TextView
                 android:id="@+id/lbl_batch"
@@ -172,9 +185,10 @@
                 android:textColor="@android:color/black"
                 android:textSize="13sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/lbl_discount"
                 app:layout_constraintEnd_toStartOf="@+id/guideline24"
                 app:layout_constraintStart_toStartOf="@+id/guideline11"
-                app:layout_constraintTop_toTopOf="@+id/txtvGQty"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_GQty"
                 tools:ignore="SmallSp" />
 
             <TextView
@@ -194,7 +208,7 @@
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/txt_expirty"
+                android:id="@+id/tview_expirty"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
@@ -232,7 +246,7 @@
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/txt_uprice"
+                android:id="@+id/tview_unit_price"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
@@ -260,7 +274,7 @@
                 android:hint="@string/lbl_iqd_cr_symbol"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline10"
-                app:layout_constraintTop_toTopOf="@+id/txt_uprice"
+                app:layout_constraintTop_toTopOf="@+id/tview_unit_price"
                 tools:ignore="SmallSp" />
             <!-- Total Price Label-->
 
@@ -293,7 +307,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/lbl_cur"
                 app:layout_constraintStart_toStartOf="@+id/guideline10"
-                app:layout_constraintTop_toTopOf="@+id/txt_uprice"
+                app:layout_constraintTop_toTopOf="@+id/tview_unit_price"
                 tools:ignore="SmallSp" />
 
             <!--Discount -->

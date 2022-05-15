@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".controller.marketplace.cart.CartFragment">
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.mawared.mawaredvansale.controller.marketplace.cart.CartViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cart_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcv_invoices"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="2dp"
+            app:cardBackgroundColor="@color/lightgray"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="1dp"
+            app:cardMaxElevation="1dp"
+            app:contentPadding="2dp"
+            android:padding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="?listPreferredItemHeightLarge"
+                android:padding="2dp">
+                <!-- Customer Info -->
+                <EditText
+                    android:id="@+id/atc_customer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="2dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_customer_name"
+                    android:textSize="12sp"
+                    android:text="@{viewmodel.customer_name}"
+                    app:layout_constraintEnd_toStartOf="@+id/saveBtn"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/saveBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="2dp"
+                    android:height="60dp"
+                    android:drawableStart="@drawable/ic_save"
+                    android:drawablePadding="4dp"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:padding="6dp"
+                    android:text="@string/btn_save_caption"
+                    android:textAllCaps="false"
+                    android:textColor="#000"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/atc_customer" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_cart"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            app:layout_constraintBottom_toTopOf="@+id/total_discount_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mcv_invoices"
+            tools:listitem="@layout/item_rv_cart" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.35" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.65" />
+
+        <TextView
+            android:id="@+id/total_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/inputbackcolor"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:gravity="center"
+            android:text="@{viewmodel.numberFormat(viewmodel.totalAmount)}"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline20"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_cart"
+            tools:ignore="SmallSp"
+            tools:text="" />
+
+        <TextView
+            android:id="@+id/total_discount_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/inputbackcolor"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:gravity="center"
+            android:text="@{viewmodel.numberFormat(viewmodel.totalDiscount)}"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline21"
+            app:layout_constraintStart_toStartOf="@+id/guideline20"
+            app:layout_constraintTop_toBottomOf="@+id/rv_cart"
+            tools:ignore="SmallSp"
+            tools:text="" />
+
+        <TextView
+            android:id="@+id/net_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/inputbackcolor"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:gravity="center"
+            android:text="@{viewmodel.numberFormat(viewmodel.netTotal)}"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.4"
+            app:layout_constraintStart_toStartOf="@+id/guideline21"
+            app:layout_constraintTop_toBottomOf="@+id/rv_cart"
+            tools:ignore="SmallSp"
+            tools:text="" />
+
+        <include
+            android:id="@+id/progress_bar_cart"
+            layout="@layout/layout_progress_bar_with_text"
+            android:visibility="gone"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

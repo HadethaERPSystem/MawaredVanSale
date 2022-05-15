@@ -334,8 +334,19 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
 //            }
 //        }
 
+
         val qty : Double = if(searchQty.value.isNullOrEmpty()) 0.0 else searchQty.value!!.toDouble()
-        if(qty > invQty){
+        if(qty <= 0.0){
+            msg += (if (msg!!.length > 0) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_qty)
+        }
+        var tQty = qty
+        val mItem =
+            tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id && it.srd_ref_rowNo == ref_rowNo && it.srd_Id == ref_Id }
+        if (mItem != null) {
+            tQty += mItem.srd_unit_qty!!
+        }
+
+        if(tQty > invQty){
             msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_return_qty_greater_invqty)
         }
 

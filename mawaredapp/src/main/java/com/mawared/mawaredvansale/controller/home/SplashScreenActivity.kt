@@ -1,6 +1,7 @@
 package com.mawared.mawaredvansale.controller.home
 
 import android.content.Intent
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.mawared.mawaredvansale.App
@@ -17,7 +18,7 @@ class SplashScreenActivity : AppCompatActivity() {
         val background = object: Thread(){
             override fun run() {
                 try {
-                    Thread.sleep(4000)
+                    Thread.sleep(2000)
                     if(App.prefs.isLoggedIn){
                         Intent(baseContext, HomeActivity::class.java).also {
                             it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

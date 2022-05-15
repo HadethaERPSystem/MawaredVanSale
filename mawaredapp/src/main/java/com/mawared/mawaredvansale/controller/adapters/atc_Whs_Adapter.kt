@@ -77,9 +77,10 @@ class atc_Whs_Adapter(context: Context, @LayoutRes private val layoutResource: I
 
         @Suppress("UNCHECKED_CAST")
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            val whs : ArrayList<Warehouse> = results?.values as ArrayList<Warehouse>
-            if(results.count > 0){
+
+            if(results != null && results.count > 0){
                 clear()
+                val whs : ArrayList<Warehouse> = results.values as ArrayList<Warehouse>
                 for (w in whs){
                     add(w)
                     notifyDataSetChanged()

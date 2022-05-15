@@ -69,6 +69,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var paidIQD= MutableLiveData<String>()
     var changeIQD= MutableLiveData<String>()
     var remainAmount = MutableLiveData<Double>()
+    var fc_remainAmount = MutableLiveData<Double>()
     var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.ss_cr_code!!)
     var fcr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sf_cr_code!!)
     var fc_amount: MutableLiveData<Double> = MutableLiveData()
@@ -196,7 +197,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 val amountIQD = if(paidIQD.value == null) 0.0 else paidIQD.value!!.toDouble()
                 val change_IQD = if(changeIQD.value == null) 0.0 else changeIQD.value!!.toDouble()
                 val baseEo = Sale(
-                    doc_num, dtFull, "${voucher?.vo_prefix}","", user.cl_Id, user.org_Id, mVoucher.value!!.vo_Id,  cu_Id,
+                    doc_num, dtFull, "${voucher?.vo_prefix}","", user.cl_Id, user.org_Id, voucher!!.vo_Id,  cu_Id,
                     _sm_id, null, totalAmount, totalDiscount, netAmount, user.ss_cr_Id, user.sf_cr_Id, rate,false,
                     location?.latitude, location?.longitude, price_cat_Id, amountUSD, change_USD, amountIQD, change_IQD,
                     "$strDate", "${user.id}", "$strDate", "${user.id}"
@@ -266,7 +267,12 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
            paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
        }
        remainAmount.value = (netAmount - paidAmount)
-
+       if(rate != 0.0){
+           if(user.cr_Id == user.ss_cr_Id)
+               fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
+           else
+               fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
+       }
    }
 
     private fun isValid(): Boolean {
@@ -488,53 +494,65 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
         var isSuccessful = true
         var msg: String? = ""
         var tQty = 0.0
-        val mItem = tmpInvoiceItems.find { it.sld_prod_Id == selectedProduct!!.pr_Id && it.sld_batch_no == selectedProduct!!.pr_batch_no && it.sld_expiry_date == selectedProduct!!.pr_expiry_date }
-        if(mItem != null){
-            tQty += mItem.sld_gift_qty!! + mItem.sld_unit_qty!!
-        }
 
-        val gQty: Double = (if(!giftQty.value.isNullOrEmpty()) giftQty.value!!.toDouble() else 0.0) +  (if(mItem != null) mItem.sld_gift_qty!!.toDouble() else 0.0)
-        val qty: Double = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0
-
-        tQty += qty + gQty
-
-        val pr_qty: Int = if(selectedProduct?.pr_qty != null) selectedProduct?.pr_qty!!.toInt()  else 0
-        if (selectedProduct == null && searchBarcode.value != "") {
+        if (selectedProduct == null) {
             msg = ctx!!.resources!!.getString(R.string.msg_error_invalid_product)
-        }
-        if(disPer.value != null && disPer.value!!.length > 0){
-            val tmpDisPer =  disPer.value!!.toDouble()
-            val disPerLimit = App.prefs.saveUser!!.dis_Per ?: 0.0
+        }else {
 
-            if(tmpDisPer > disPerLimit) {
-                val str: String = ctx!!.resources!!.getString(R.string.msg_error_discount_overflow)
-                msg += (if (msg!!.length > 0) "\n\r" else "") + String.format(str, App.prefs.saveUser!!.dis_Per!!)
+
+            val mItem =
+                tmpInvoiceItems.find { it.sld_prod_Id == selectedProduct!!.pr_Id && it.sld_batch_no == selectedProduct!!.pr_batch_no && it.sld_expiry_date == selectedProduct!!.pr_expiry_date }
+            if (mItem != null) {
+                tQty += mItem.sld_unit_qty!! //mItem.sld_gift_qty!! + mItem.sld_unit_qty!!
+            }
+
+            val gQty: Double =
+                (if (!giftQty.value.isNullOrEmpty()) giftQty.value!!.toDouble() else 0.0) + (if (mItem != null) mItem.sld_gift_qty!!.toDouble() else 0.0)
+            val qty: Double =
+                if (!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0
+
+            tQty += qty + gQty
+
+            val pr_qty: Int =
+                if (selectedProduct?.pr_qty != null) selectedProduct?.pr_qty!!.toInt() else 0
+
+            if (disPer.value != null && disPer.value!!.length > 0) {
+                val tmpDisPer = disPer.value!!.toDouble()
+                val disPerLimit = App.prefs.saveUser!!.dis_Per ?: 0.0
+
+                if (tmpDisPer > disPerLimit) {
+                    val str: String =
+                        ctx!!.resources!!.getString(R.string.msg_error_discount_overflow)
+                    msg += (if (msg!!.length > 0) "\n\r" else "") + String.format(
+                        str,
+                        App.prefs.saveUser!!.dis_Per!!
+                    )
+                }
+            }
+            if (pr_qty <= 0) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_available_product_qty)
+            }
+
+            if (qty <= 0 && gQty <= 0) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_qty)
+            }
+
+            if (tQty > pr_qty) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_required_qty_less_product_qty)
+            }
+
+            if (unitPrice == 0.00) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_price)
+            }
+
+            if ((qty % 1) != 0.0) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_qty_has_digit)
+            }
+
+            if ((gQty % 1) != 0.0) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_gift_qty_has_digit)
             }
         }
-        if(pr_qty <= 0){
-            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_available_product_qty)
-        }
-
-        if (qty <= 0 && gQty <= 0) {
-            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_invalid_qty)
-        }
-
-        if(tQty > pr_qty ){
-            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_required_qty_less_product_qty)
-        }
-
-        if (unitPrice == 0.00) {
-            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_invalid_price)
-        }
-
-        if((qty % 1) != 0.0){
-            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_qty_has_digit)
-        }
-
-        if((gQty % 1) != 0.0){
-            msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_gift_qty_has_digit)
-        }
-
         if (!msg.isNullOrEmpty()) {
             isSuccessful = false
             msgListener?.onFailure(msg)

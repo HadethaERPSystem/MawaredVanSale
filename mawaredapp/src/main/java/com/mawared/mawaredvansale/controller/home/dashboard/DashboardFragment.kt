@@ -15,6 +15,9 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.adapters.MenuAdapter
+import com.mawared.mawaredvansale.controller.base.BaseAdapter
+import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.databinding.DashboardFragmentBinding
 import com.mawared.mawaredvansale.services.repositories.Status
@@ -37,6 +40,10 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
 
     val viewModel by lazy{
         ViewModelProviders.of(this, factory).get(DashboardViewModel::class.java)
+    }
+
+    private val adapter = MenuAdapter(R.layout.item_menu){ m ->
+        showFragment(m)
     }
 
     lateinit var navController: NavController
@@ -69,7 +76,17 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var cols = 2
+        val currentOrientation = resources.configuration.orientation
+        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            cols = 3
+        }
+        @Suppress("UNCHECKED_CAST")
+        rv_menu.setupGrid(requireContext(), adapter as BaseAdapter<Any>, cols)
+
         navController = Navigation.findNavController(view)
+
+        viewModel.salesmanHasPlan()
     }
 
     private fun bindUI() = Coroutines.main {
@@ -78,10 +95,10 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
             //progress_bar.hide()
             if(it != null) {
                 viewModel.menusCount = it.count()
-                initRecyclerView(it.toMenuItem())
+                adapter.setList(it)
             }else{
                 viewModel.menusCount = 0
-                menurecyclerview.removeAllViews()
+                rv_menu.removeAllViews()
             }
         })
 
@@ -93,47 +110,16 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
                 val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
                 viewModel.errorMessage.value = resources.getString(id)
                 ll_error.visibility = View.VISIBLE
-                menurecyclerview.visibility = View.GONE
+                rv_menu.visibility = View.GONE
             } else {
-                menurecyclerview.visibility = View.VISIBLE
+                rv_menu.visibility = View.VISIBLE
                 ll_error.visibility = View.GONE
             }
 
         })
-
-        //viewModel.loadMenus()
     }
 
-    private fun initRecyclerView(menuItem: List<MenuItem>) {
-        val mAdapter = GroupAdapter<ViewHolder>().apply {
-            addAll(menuItem)
-        }
-        var cols = 2
-        val currentOrientation = resources.configuration.orientation
-        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
-            cols = 3
-        }
-        menurecyclerview.apply {
-            layoutManager = GridLayoutManager(context, cols)
-            setHasFixedSize(true)
-            adapter = mAdapter
-        }
-
-        mAdapter.setOnItemClickListener { item, _ ->
-            (item as? MenuItem)?.let {
-                showFragment(it.getMenu())
-            }
-        }
-    }
-
-    // extension method to List<Menu>
-    private fun List<Menu>.toMenuItem() : List<MenuItem>{
-        return this.map {
-            MenuItem(it, viewModel)
-        }
-    }
-
-    fun showFragment(menu: Menu){
+    private fun showFragment(menu: Menu){
 
         when (menu.menu_code){
             "Invoice" -> {
@@ -218,6 +204,15 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
             }
             "KPI" ->{
                 navController.navigate(R.id.action_dashboardFragment_to_kpiFragment)
+            }
+            "Mnt"->{
+                navController.navigate(R.id.action_dashboardFragment_to_mntsFragment)
+            }
+            "DailyPlan"->{
+               navController.navigate(R.id.action_dashboardFragment_to_selectCustomerFragment)
+            }
+            "ItemCatalogue" ->{
+                navController.navigate(R.id.action_dashboardFragment_to_marketPlaceFragment)
             }
         }
     }

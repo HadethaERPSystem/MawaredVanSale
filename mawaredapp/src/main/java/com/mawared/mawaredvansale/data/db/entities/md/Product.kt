@@ -22,9 +22,14 @@ data class Product (
     var pr_brandId: Int?,             //Product Brand Name
     var pr_vat: Double?,              //Porduct Value Added Tax
     var pr_uom_Id: Int?,               //Unit of measurement
+    var pr_SUoMEntry: Int?,
+    var pr_SalUnitMsr: String?,
+    var pr_NumInSale: Double?,
+    var pr_SUoMQty: Double?,
     var pr_image_name: String?,
     var pr_qty: Double?,
     var pr_unit_price: Double?,
+    var pr_price_AfD: Double?,
     var pr_batch_no: String?,
     var pr_expiry_date: String?,
     var pr_mfg_date: String?,
@@ -40,7 +45,10 @@ data class Product (
     var pr_wr_name: String? = null
     var prom_qty: Double? = null
     var prom_ex_qty: Double? = null
-
+    var pr_dis_value: Double? = null
+    var pr_dis_type: String? = null
+    var pr_uom_code: String? = null
+    var addQty: Double? = null
     fun returnDateString(isoString: String?) : String{
         try {
             if(isoString == null) return ""

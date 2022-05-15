@@ -46,10 +46,22 @@ class Constants {
     // Demo
     //static final String UPDATE_URL = "http://185.80.42.100:7586/wwwroot/android-auto-update/extras/update.json";
     // Live
-    static final String UPDATE_URL = "http://185.80.42.100:7667/wwwroot/android-auto-update/extras/update.json";
+    //static final String UPDATE_URL = "http://185.80.42.100:7667/wwwroot/android-auto-update/extras/update.json";
 
     // AL-RaQQI
     //static final String UPDATE_URL = "http://185.80.42.118:1882/wwwroot/android-auto-update/extras/update.json";
+    //static final String UPDATE_URL = "http://185.80.42.118:5009/wwwroot/android-auto-update/extras/update.json";
    // demo
    // static final String UPDATE_URL = "http://185.80.42.118:1881/wwwroot/android-auto-update/extras/update.json";
+    // Uni-menica
+    //Demo
+    //static final String UPDATE_URL = "http://195.133.221.131:6666/wwwroot/android-auto-update/extras/update.json";
+    // Live
+    //static final String UPDATE_URL = "http://195.133.221.131:7777/wwwroot/android-auto-update/extras/update.json";
+
+    // Manara
+    // Demo //
+    static final String UPDATE_URL = "http://185.80.42.51:7711/wwwroot/android-auto-update/extras/update.json";
+    // Live
+    //static final String UPDATE_URL = "http://185.80.42.51:7722/wwwroot/android-auto-update/extras/update.json";
 }

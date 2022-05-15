@@ -43,6 +43,7 @@ data class Sale(
     var sl_org_phone: String? = null
     var sl_customer_name: String? = null
     var sl_salesman_name: String? = null
+    var sl_salesman_phone: String? = null
     var sl_region_name: String? = null
     var sl_cr_symbol: String? = null
     var sl_cr_name: String? = null

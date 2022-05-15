@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale
 
+//import com.mazenrashed.printooth.Printooth
 import android.app.Application
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.mawared.mawaredvansale.controller.auth.AuthViewModelFactory
@@ -13,8 +14,17 @@ import com.mawared.mawaredvansale.controller.home.HomeViewModelFactory
 import com.mawared.mawaredvansale.controller.home.dashboard.DashboardViewModelFactory
 import com.mawared.mawaredvansale.controller.home.reportsdashboard.ReportViewModelFactory
 import com.mawared.mawaredvansale.controller.map.MapViewModelFactory
+import com.mawared.mawaredvansale.controller.marketplace.MarketPlaceViewModelFactory
+import com.mawared.mawaredvansale.controller.marketplace.brand.BrandViewModelFactory
+import com.mawared.mawaredvansale.controller.marketplace.cart.CartViewModelFactory
+import com.mawared.mawaredvansale.controller.marketplace.category.CategoryViewModelFactory
+import com.mawared.mawaredvansale.controller.marketplace.items.ItemsViewModelFactory
+import com.mawared.mawaredvansale.controller.marketplace.offers.OffersViewModelFactory
+import com.mawared.mawaredvansale.controller.marketplace.schedulecustomer.SelectCustomerViewModelFactory
 import com.mawared.mawaredvansale.controller.md.customerentry.CustomerEntryViewModelFactory
 import com.mawared.mawaredvansale.controller.md.customerlist.CustomerViewModelFactory
+import com.mawared.mawaredvansale.controller.mnt.entry.MntEntryViewModelFactory
+import com.mawared.mawaredvansale.controller.mnt.mntlist.MntsVieModelFactory
 import com.mawared.mawaredvansale.controller.reports.customer.CustomerStatementViewModelFactory
 import com.mawared.mawaredvansale.controller.reports.fms.CashbookStatementViewModelFactory
 import com.mawared.mawaredvansale.controller.reports.kpi.KpiViewModelFactory
@@ -38,9 +48,8 @@ import com.mawared.mawaredvansale.controller.transfer.transferlist.TransferViewM
 import com.mawared.mawaredvansale.data.db.AppDatabase
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.ConnectivityInterceptor
-import com.mawared.mawaredvansale.services.netwrok.INetworkDataSource
-import com.mawared.mawaredvansale.services.netwrok.NetworkDataSourceImp
 import com.mawared.mawaredvansale.services.repositories.MenuRepository
+import com.mawared.mawaredvansale.services.repositories.OrderRepository
 import com.mawared.mawaredvansale.services.repositories.UserRepository
 import com.mawared.mawaredvansale.services.repositories.callcycle.CallCycleRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.callcycle.ICallCycleRepository
@@ -56,6 +65,8 @@ import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataReposit
 import com.mawared.mawaredvansale.services.repositories.masterdata.MDataRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.md.DownloadRepository
 import com.mawared.mawaredvansale.services.repositories.md.MasterDataRepository
+import com.mawared.mawaredvansale.services.repositories.mnt.IMaintenanceRepository
+import com.mawared.mawaredvansale.services.repositories.mnt.MaintenanceRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.order.IOrderRepository
 import com.mawared.mawaredvansale.services.repositories.order.OrderRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.reports.customer.CuStatementRepositoryImp
@@ -74,7 +85,6 @@ import com.mawared.mawaredvansale.services.repositories.srv.SurveyRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.transfer.ITransferRepository
 import com.mawared.mawaredvansale.services.repositories.transfer.TransferRepositoryImp
 import com.mawared.mawaredvansale.utilities.SharedPrefs
-//import com.mazenrashed.printooth.Printooth
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.androidXModule
@@ -98,10 +108,10 @@ class App : Application(), KodeinAware {
         bind() from singleton { ApiService(instance()) }
         bind() from singleton { AppDatabase(instance()) }
 
-        bind<INetworkDataSource>() with  singleton { NetworkDataSourceImp(instance()) }
+        //bind<INetworkDataSource>() with  singleton { NetworkDataSourceImp(instance()) }
 
         bind() from singleton { UserRepository(instance(), instance()) }
-
+        bind() from singleton { OrderRepository(instance()) }
         bind() from singleton { MenuRepository(instance(), instance()) }
 
         bind() from singleton { MasterDataRepository(instance(), instance()) }
@@ -130,12 +140,13 @@ class App : Application(), KodeinAware {
         bind<ISalesRepository>() with singleton { SalesRepositoryImp(instance()) }
         bind<IStockRepository>() with singleton { StockRepositoryImp(instance()) }
         bind<IDashboardRepository>() with singleton { DashboardRepositoryImp(instance()) }
+        bind<IMaintenanceRepository>() with singleton { MaintenanceRepositoryImp(instance())}
 
         bind() from singleton { SurveyRepositoryImp(instance()) }
         // no singleton for below because we need more than one instance for view model
         bind() from provider { AuthViewModelFactory(instance()) }
         bind() from provider { HomeViewModelFactory(instance()) }
-        bind() from provider { DashboardViewModelFactory(instance()) }
+        bind() from provider { DashboardViewModelFactory(instance(), instance()) }
         bind() from provider { ReportViewModelFactory(instance()) }
         // invoice view model factory
         bind() from provider { InvoicesViewModelFactory(instance()) }
@@ -185,7 +196,9 @@ class App : Application(), KodeinAware {
         // Cashbook statement report
         bind() from provider { CashbookStatementViewModelFactory(instance()) }
         bind() from provider { MapViewModelFactory(instance()) }
-
+        // Maintenance
+        bind() from provider { MntsVieModelFactory(instance()) }
+        bind() from provider { MntEntryViewModelFactory(instance(), instance()) }
         // Sales statement report
         bind() from provider { SalesStatementViewModelFactory(instance()) }
         // Stock statement report
@@ -194,6 +207,14 @@ class App : Application(), KodeinAware {
         bind() from provider { SettingsViewModelFactory(instance()) }
 
         bind() from provider { KpiViewModelFactory(instance(), instance()) }
+
+        bind() from provider { ItemsViewModelFactory(instance(), instance()) }
+        bind() from provider { OffersViewModelFactory(instance(), instance()) }
+        bind() from provider { CategoryViewModelFactory(instance()) }
+        bind() from provider { BrandViewModelFactory(instance()) }
+        bind() from provider { MarketPlaceViewModelFactory(instance()) }
+        bind() from provider { CartViewModelFactory(instance(), instance(), instance(), instance()) }
+        bind() from provider { SelectCustomerViewModelFactory(instance(), instance()) }
     }
 
     companion object{

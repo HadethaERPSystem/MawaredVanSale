@@ -17,16 +17,11 @@ import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return_Items
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer_Items
-import com.mawared.mawaredvansale.utilities.URL_LOGO
-import kotlinx.coroutines.channels.ticker
 import org.threeten.bp.LocalTime
-import java.net.URL
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.math.exp
-import kotlin.math.log
 
 
 class GenerateTicket(val ctx: Context, val lang: String){
@@ -197,14 +192,28 @@ class GenerateTicket(val ctx: Context, val lang: String){
         }
         // number and date
         lines.add(Ticket("${res.getString(R.string.lbl_no)}: ${baseEo.sl_refNo.toString().padEnd(24, ' ')}", LineType.Text))
-        val s = "${res.getString(R.string.lbl_doc_date)}: ${returnDateString(baseEo.sl_doc_date!!).padEnd(18,' ')} ${res.getString(R.string.lbl_time)} ${LocalTime.now()}"
+        val s = "${res.getString(R.string.lbl_doc_date)}: ${returnDateString(baseEo.sl_doc_date!!).padEnd(18,' ')} ${res.getString(R.string.lbl_time)} ${LocalTime.now().hour}:${LocalTime.now().minute}:${LocalTime.now().second}"
         lines.add(Ticket(s, LineType.Text))
+        var phone: String = ""
+        if(!baseEo.sl_customer_phone.isNullOrEmpty()){
+            phone = baseEo.sl_customer_phone!!.trim()
+        }
+        if(baseEo.sl_customer_name!!.length >= 18){
+            val pos = baseEo.sl_customer_name!!.substring(0,18).lastIndexOf(' ')
+            val cu_name1 = baseEo.sl_customer_name!!.substring(0,pos)
+            val cu_name2 = baseEo.sl_customer_name!!.substring(pos)
 
-        lines.add(Ticket("${res.getString(R.string.lbl_customer_name)}: ${baseEo.sl_customer_name!!.padEnd(20, ' ')}", LineType.Text))
+            lines.add(Ticket("${res.getString(R.string.lbl_customer_name)}: ${cu_name1.padEnd(18, ' ')} ${res.getString(R.string.rpt_phone)}:${phone}", LineType.Text))
+            lines.add(Ticket("${cu_name2}", LineType.Text))
+        }else{
+            lines.add(Ticket("${res.getString(R.string.lbl_customer_name)}: ${baseEo.sl_customer_name!!.padEnd(18, ' ')} ${res.getString(R.string.rpt_phone)}:${phone}", LineType.Text))
+        }
+
+        lines.add(Ticket("${res.getString(R.string.lbl_salesman_name)}: ${baseEo.sl_salesman_name!!.padEnd(18, ' ')}${res.getString(R.string.rpt_phone)}:${baseEo.sl_salesman_phone}", LineType.Text))
 
         lines.add(Ticket("".padEnd(48, 'ـ'), LineType.Text))
         // Lines title
-        lines.add(Ticket(res.getString(R.string.lbl_prod_name).padEnd(30, ' ') + res.getString(R.string.lbl_qty).padEnd(10, ' ') + res.getString(R.string.lbl_line_total), LineType.Text))
+        lines.add(Ticket(res.getString(R.string.lbl_prod_name).padEnd(20, ' ') + res.getString(R.string.lbl_qty).padEnd(10, ' ')+ res.getString(R.string.lbl_unit_price).padEnd(10, ' ') + res.getString(R.string.lbl_line_total), LineType.Text))
 
         lines.add(Ticket("".padEnd(48, 'ـ'), LineType.Text))
 
@@ -217,21 +226,22 @@ class GenerateTicket(val ctx: Context, val lang: String){
             }
             val prod = prod_name.trim()//.padEnd(34, ' ')
             val qty = d.sld_unit_qty!!.toString().padEnd(6, ' ').padStart(4,' ')
+            val up = d.sld_unit_price!!.toString().padEnd(8, ' ').padStart(4,' ')
             val net = d.sld_net_total!!.toString()//.padEnd(7, ' ')
 
 
-            if(prod.length > 30){
-                val cpos = prod.substring(0,30).lastIndexOf(' ')
+            if(prod.length > 22){
+                val cpos = prod.substring(0,22).lastIndexOf(' ')
                 val pr_name1 = prod.substring(0,cpos)
-                val num = pr_name1.length + qty.length + net.length
-                val line = pr_name1.padEnd(34, ' ') + qty + net// + if(num < 47) "".padEnd(47-num) else ""
+                val num = pr_name1.length + qty.length + up.length + net.length
+                val line = pr_name1.padEnd(22, ' ') + qty + up + net// + if(num < 47) "".padEnd(47-num) else ""
                 lines.add(Ticket(line, LineType.Text, AlignText.LEFT))
                 val pr_name2 = prod.substring(cpos)
                 val line1 = pr_name2.padEnd(47)
                 lines.add(Ticket(line1, LineType.Text, AlignText.LEFT))
             }else{
                 val num = prod.length + qty.length + net.length
-                val line = prod.padEnd(34, ' ')  + qty + net// + if(num < 47) "".padEnd(47-num) else ""
+                val line = prod.padEnd(22, ' ')  + qty + up + net// + if(num < 47) "".padEnd(47-num) else ""
                 lines.add(Ticket(line, LineType.Text, AlignText.LEFT))
             }
         }
@@ -241,10 +251,10 @@ class GenerateTicket(val ctx: Context, val lang: String){
         var tgqty = baseEo.items.sumByDouble { x->x.sld_gift_qty ?: 0.0 }
         val tgqty1= baseEo.items.sumByDouble { if(it.sld_isGift == false) 0.0 else it.sld_unit_qty ?: 0.0 }
         tgqty += tgqty1
-        lines.add(Ticket("${res.getString(R.string.lbl_total_qty)}".padStart(35, ' ') + tqty.toString().padStart(10,' ') , LineType.Text))
-        lines.add(Ticket("${res.getString(R.string.lbl_total_gift)}".padStart(35, ' ') + tgqty.toString().padStart(10,' ') , LineType.Text))
+        lines.add(Ticket("${res.getString(R.string.lbl_total_qty)}".padStart(34, ' ') + tqty.toString().padStart(10,' ') , LineType.Text))
+        lines.add(Ticket("${res.getString(R.string.lbl_total_gift)}".padStart(34, ' ') + tgqty.toString().padStart(10,' ') , LineType.Text))
 
-        lines.add(Ticket("${res.getString(R.string.lbl_total)} ".padStart(35, ' ') + if(baseEo.sl_total_amount == null) "0.00".padStart(10,' ') else baseEo.sl_total_amount.toString().padStart(10,' '), LineType.Text))
+        lines.add(Ticket("${res.getString(R.string.lbl_total)} ".padStart(36, ' ') + if(baseEo.sl_total_amount == null) "0.00".padStart(10,' ') else baseEo.sl_total_amount.toString().padStart(10,' '), LineType.Text))
 
         lines.add(Ticket("${res.getString(R.string.lbl_total_discount)} ".padStart(35, ' ') + if(baseEo.sl_total_discount == null) "0.00".padStart(10,' ') else baseEo.sl_total_discount.toString().padStart(10,' '), LineType.Text))
 

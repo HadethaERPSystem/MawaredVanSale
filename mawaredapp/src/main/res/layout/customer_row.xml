@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-    <data>
-        <variable name="entityEo"
-                type="com.mawared.mawaredvansale.data.db.entities.md.Customer"/>
-        <variable
-                name="viewmodel"
-                type="com.mawared.mawaredvansale.controller.md.customerlist.CustomerViewModel" />
-    </data>
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,7 +39,7 @@
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/tv_cu_code"
+                    android:id="@+id/tv_customerNo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -51,7 +47,6 @@
                     android:paddingEnd="2dp"
                     android:layout_marginEnd="2dp"
                     android:gravity="start"
-                    android:text="@{entityEo.cu_code}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -85,13 +80,12 @@
                     android:gravity="start"
                     android:paddingStart="2dp"
                     android:paddingEnd="2dp"
-                    android:text="@{entityEo.cu_payment_name}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/guideline8"
-                    app:layout_constraintTop_toTopOf="@+id/tv_cu_code"
+                    app:layout_constraintTop_toTopOf="@+id/tv_customerNo"
                     />
             <!-- Invoice customer label and data-->
             <TextView
@@ -107,7 +101,7 @@
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="@+id/guideline8"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_cu_code"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_customerNo"
                     tools:ignore="SmallSp" />
 
             <TextView
@@ -120,7 +114,6 @@
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:gravity="start"
-                    android:text="@{entityEo.cu_name_ar}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -157,7 +150,6 @@
                     android:gravity="start"
                     android:paddingStart="2dp"
                     android:paddingEnd="2dp"
-                    android:text="@{entityEo.cu_rg_name}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -178,7 +170,7 @@
                 tools:layout_editor_absoluteX="0dp" />
 
             <ImageButton
-                    android:id="@+id/btn_edit"
+                    android:id="@+id/editBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -186,23 +178,21 @@
                     android:layout_marginBottom="4dp"
                     android:background="@null"
                     android:contentDescription="@string/btn_edit_caption"
-                    android:onClick="@{()-> viewmodel.onItemEdit(entityEo)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/view"
                     app:srcCompat="@drawable/ic_edit" />
 
             <ImageButton
-                    android:id="@+id/btn_view"
+                    android:id="@+id/viewBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:background="@null"
                     android:contentDescription="@string/btn_view_caption"
-                    android:onClick="@{()-> viewmodel.onItemView(entityEo)}"
-                    app:layout_constraintBottom_toBottomOf="@+id/btn_edit"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_edit"
-                    app:layout_constraintTop_toTopOf="@+id/btn_edit"
+                    app:layout_constraintBottom_toBottomOf="@+id/editBtn"
+                    app:layout_constraintEnd_toStartOf="@+id/editBtn"
+                    app:layout_constraintTop_toTopOf="@+id/editBtn"
                     app:srcCompat="@drawable/ic_view1" />
 
             <androidx.constraintlayout.widget.Guideline
@@ -215,4 +205,4 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-</layout>
+</RelativeLayout>

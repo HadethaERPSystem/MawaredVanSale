@@ -2,6 +2,7 @@ package com.mawared.mawaredvansale.data.db.entities.md
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity
 data class Customer(
@@ -35,7 +36,7 @@ data class Customer(
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime
     var updated_by: String?         // Updated user
-){
+): Serializable {
     @PrimaryKey(autoGenerate = false)
     var cu_Id:  Int = 0
     var cu_cg_name: String? = null
@@ -48,4 +49,5 @@ data class Customer(
     var cu_visit_code: String? = null
     var cu_credit_age:Int = 0
     var cu_cr_code: String? = null
+    var totalPages: Int = 0
 }

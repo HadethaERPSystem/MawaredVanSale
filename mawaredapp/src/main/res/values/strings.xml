@@ -85,6 +85,8 @@
     <string name="lbl_doc_no">Invoice No</string>
     <string name="lbl_doc_date">Date</string>
     <string name="lbl_customer_name">Customer Name</string>
+    <string name="lbl_salesman_name">Salesman</string>
+    <string name="lbl_salesman_no">Salesman No</string>
     <string name="lbl_customer_name_en">Customer English Name</string>
     <string name="lbl_customer_name_ar">Customer Arabic Name</string>
     <string name="lbl_region_name">Region Name</string>
@@ -104,9 +106,9 @@
     <string name="lbl_discount_per">Dis. Per.</string>
     <string name="lbl_discount">Discount</string>
     <string name="hint_zero">0.00</string>
-    <string name="tag_qty">20.00</string>
+    <string name="tag_qty">0.00</string>
     <string name="lbl_net_total">Net Total</string>
-    <string name="tag_net_total">119.00</string>
+    <string name="tag_net_total">0.00</string>
     <string name="btn_new_caption">New</string>
     <string name="btn_save_caption">Save</string>
     <string name="lbl_ref_no">Select Invoice</string>
@@ -149,6 +151,7 @@
     <string name="lbl_sign">Signature</string>
     <!-- system messages -->
     <string name="msg_confirm_delete">Are you sure to delete current record?</string>
+    <string name="msg_confirm_deleteAll">Are you sure to delete all data?</string>
     <string name="msg_success_delete">Successfully deleted current selected record </string>
     <string name="msg_failure_delete">Failure deleted current selected record</string>
     <string name="msg_user_not_authorize">You donnt have permission to view this activity. This customer dosnt set him as Salesman </string>
@@ -194,6 +197,7 @@
     <string name="msg_notify_no_paired_bluetooth_device">no paired bluetooth devices found</string>
     <string name="msg_return_qty_greater_invqty">Return quantity greater than invoice quantity</string>
 
+    <string name="msg_error_invalid_service">Select Service</string>
 
     <string name="msg_notify_bluetooth_enabled">Bluetooth has been enabled</string>
     <string name="msg_notify_bluetooth_disabled">Bluetooth has been disabled</string>
@@ -258,6 +262,7 @@
     <string name="lbl_total_qty">Total Qty</string>
     <string name="lbl_total_gift">Total Gifts</string>
     <string name="lbl_net_amount">Net Amount:</string>
+    <string name="lbl_invoice_amount">Amount</string>
     <string name="lbl_is_delivered">Is Delivered</string>
     <string name="lbl_batch_no">Batch No.</string>
 
@@ -285,7 +290,7 @@
     <string name="lbl_to_warehouse">To Warehouse</string>
     <string name="lbl_from_warehouse">From Warehouse</string>
     <string name="lbl_transfer_no">Transfer No.</string>
-    <string name="lbl_warehouse_name">Warehouse Name</string>
+    <string name="lbl_warehouse_name">Warehouse</string>
     <string name="lbl_price_category">Price Category</string>
     <!--Report part string name -->
     <string name="rpt_invoice_no">No.</string>
@@ -311,7 +316,7 @@
     <string name="rpt_user_name">User Name </string>
     <string name="rpt_list_name">Invoice</string>
     <string name="rpt_contact_name">Contact Name </string>
-    <string name="rpt_customer_phone">Phone</string>
+    <string name="rpt_phone">Phone</string>
     <string name="rpt_cr_name">Currency</string>
     <string name="rpt_Ref_No">Ref. no</string>
     <string name="rpt_Ref_Date">Date</string>
@@ -447,5 +452,55 @@
     <string name="paid_usd">Paid USD</string>
     <string name="remain_amount">Remain Amount</string>
     <string name="btn_reload">Reload</string>
-
+    <string name="maintenance_type">Maintenance Type</string>
+    <string name="invoice_no">Invoice No</string>
+    <string name="select_device">Select Device</string>
+    <string name="first_description">First Description</string>
+    <string name="serial_number">Serial Number</string>
+    <string name="date_of_warranty">Date of warranty</string>
+    <string name="select_maintenance_status">Maintenance Status</string>
+    <string name="final_description">Final Description</string>
+    <string name="select_warranty">Select Warranty</string>
+    <string name="maintenance_no">Maintenance No.</string>
+    <string name="select_warehouse">Select Warehouse</string>
+    <string name="select_item_location">Select Item Location</string>
+    <string name="free_items">Free Items</string>
+    <string name="item_location">Item Location</string>
+    <string name="service_name">Service Name</string>
+    <string name="work_cost">Work cost</string>
+    <string name="items_cost">Items cost</string>
+    <string name="total_cost">Total Cost</string>
+    <string name="lbl_mnt_type">Maintenance type</string>
+    <string name="layout_mnt_list_title">Maintenance</string>
+    <string name="layout_mnt_entry_title">Maintenance</string>
+    <string name="warranty_no">Warranty No</string>
+    <string name="select_regular_maintenance">Select Regular Maintenance</string>
+    <string name="contract_no">Contract No</string>
+    <string name="btn_attachment">Attachment</string>
+    <string name="ic_home">Home</string>
+    <string name="ic_categories">Categories</string>
+    <string name="ic_products">Products</string>
+    <string name="ic_brand">Brand</string>
+    <string name="ic_offers">Offers</string>
+    <string name="layout_market_place_title">Market Place</string>
+    <string name="search_view_item">Search for Item</string>
+    <string name="search_view_category">Search for category</string>
+    <string name="search_view_brand">Search for brand</string>
+    <string name="layout_brand_title">Brand</string>
+    <string name="layout_items_title">Products</string>
+    <string name="layout_categories_title">Categories</string>
+    <string name="layout_offers_title">Offers</string>
+    <string name="layout_cart_title">Cart</string>
+    <string name="btn_add_to_cart">Add Item</string>
+    <string name="lbl_prom">Qty Offer</string>
+    <string name="hint_enter_qty">Enter Qty</string>
+    <string name="radio_sale_invoice">Sale Invoice</string>
+    <string name="radio_sale_order">Sale Order</string>
+    <string name="layout_select_customer_title">Customers Schedule</string>
+    <string name="menu_visit">Visit</string>
+    <string name="select_unit">Select Sale Unit</string>
+    <string name="btn_ok">OK</string>
+    <string name="unit_name">Unit Name</string>
+    <string name="unit_rate">Unit Rate</string>
+    <string name="unit_num">Unit Num</string>
 </resources>
