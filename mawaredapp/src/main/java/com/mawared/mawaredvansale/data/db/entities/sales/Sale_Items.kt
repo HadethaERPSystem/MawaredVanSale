@@ -1,7 +1,9 @@
 package com.mawared.mawaredvansale.data.db.entities.sales
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.mawared.mawaredvansale.data.db.entities.md.Loc
 
 @Entity
 data class Sale_Items (
@@ -38,7 +40,7 @@ data class Sale_Items (
 ){
     @PrimaryKey(autoGenerate = true)
     var sld_Id: Int = 0
-
+    var sld_cost_price: Double? = null
     var sld_warehouse_name: String? = null
     var sld_uom_name: String? = null
     var sld_prod_name_ar: String? = null
@@ -46,5 +48,10 @@ data class Sale_Items (
     var sld_barcode: String? = null
     var sld_unit_weight: Double? = null
     var sld_total_weight: Double? = null
+    var itemLocations: String? = null
 
+    @Ignore
+    var itemLoc: ArrayList<Loc>? = arrayListOf()
+    @Ignore
+    var itemSelectedLoc: ArrayList<Loc>? = arrayListOf()
 }

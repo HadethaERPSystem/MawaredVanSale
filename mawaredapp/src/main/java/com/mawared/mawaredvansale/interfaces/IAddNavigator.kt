@@ -7,3 +7,6 @@ interface IAddNavigator<T> {
     fun onShowDatePicker(v: View)
     fun clear(code: String)
 }
+interface INavigator{
+    fun onShowDatePicker(v: View)
+}

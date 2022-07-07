@@ -18,7 +18,7 @@
         <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:listitem="@layout/invoice_row"
+                tools:listitem="@layout/item_rv_stockin_row"
                 android:id="@+id/rcv_stockin"/>
 
     </LinearLayout>

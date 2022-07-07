@@ -111,6 +111,16 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
             masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id)
         }
 
+    var ageDebit: Customer ?= null
+    fun loadAgeDebit(cu_Id: Int){
+        try {
+            Coroutines.ioThenMain({ageDebit = masterDataRepository.customer_getAgeDebit(cu_Id)},{})
+
+        }catch (e: java.lang.Exception){
+            e.printStackTrace()
+        }
+    }
+
     // set function
     fun setOrderId(id: Int){
         if(so_id.value == id){
@@ -234,6 +244,24 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
 
         if (App.prefs.saveUser == null) {
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_currency)
+        }
+
+        val netAmount: Double = tmpSOItems.sumByDouble { it.sod_net_total!! }
+
+        if (selectedCustomer!!.cu_credit_limit!! < netAmount) {
+            msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
+                R.string.msg_error_credit_limit)
+        }
+
+        var cu_AgeDebit : Int = 0
+        if(ageDebit != null){
+            cu_AgeDebit = ageDebit!!.cu_DebitAge ?: 0
+        }
+        if (selectedCustomer?.cu_credit_days != null && selectedCustomer?.cu_credit_days != 0) {
+            if (cu_AgeDebit > selectedCustomer!!.cu_credit_days!!) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
+                    R.string.msg_error_credit_limit)
+            }
         }
 
         if (!msg.isNullOrEmpty()) {

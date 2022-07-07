@@ -4,38 +4,36 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 data class Stockout(
-    var sot_clientId: Int?,         // client Id
-    var sot_orgId: Int?,            // organization Id
+    var doc_clientId: Int?,         // client Id
+    var doc_orgId: Int?,            // organization Id
 
-    var sot_doc_no: Int?,
-    var sot_doc_date: String?,
-    var sot_prefix: String?,
-    var sot_vo_Id: Int?,
-
-    var sot_entry_Id: Int?,
-
-    var sot_inv_status: String?,
-
-    var sot_warehouse_Id: Int?,
-
-    var sot_isDeleted: Boolean?,
+    var doc_no: Int?,
+    var doc_date: String?,
+    var prefix: String?,
+    var vo_Id: Int?,
+    var vo_name: String?,
+    var vo_code: String?,
+    var bp_Id: Int?,
+    var baseDocEntry: Int?,
+    var baseRefno: String?,
+    var invStatus: String?,
+    var whsId: Int?,
+    var whsName: String?,
+    var isDeleted: Boolean?,
+    var notes: String?,
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime
     var updated_by: String?         // Updated user
 ) {
     @PrimaryKey(autoGenerate = false)
-    var sot_Id: Int = 0
-    var sot_itemsno = 0
-    var sot_entry_refno: String?= null
+    var docEntry: Int = 0
+    var org_name: String? = null
+    var refNo: String? = null
+    var bpName: String? = null
+    var invStatusName: String? = null
     @Ignore
-    var sot_org_name: String? = null
+    var docLines: ArrayList<Stockout_Items> = arrayListOf()
     @Ignore
-    var sot_vo_name: String?=null
-    @Ignore
-    var sot_ref_no: String? = null
-    @Ignore
-    var sot_inv_status_name: String? = null
-    @Ignore
-    var sot_warehouse_name: String? = null
+    var docDelLines: ArrayList<Stockout_Items> = arrayListOf()
 }

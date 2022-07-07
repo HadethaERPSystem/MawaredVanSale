@@ -75,7 +75,7 @@ class OrderPagedListAdapter(private val viewModel: OrdersViewModel, val context:
         fun bind(order: Sale_Order?, viewModel: OrdersViewModel){
             viewBinding.order = order
             viewBinding.viewmodel = viewModel
-            viewBinding.btnEdit.visibility = if(order?.sod_status_code == "Invoice") View.GONE else View.VISIBLE
+            viewBinding.btnEdit.visibility = if(order?.so_status_code == "Invoice") View.GONE else View.VISIBLE
         }
     }
 

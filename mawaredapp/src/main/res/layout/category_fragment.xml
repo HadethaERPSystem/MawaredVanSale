@@ -40,19 +40,6 @@
 
             </androidx.cardview.widget.CardView>
 
-<!--            <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:fontFamily="@font/droid_kufi_regular"-->
-<!--                android:paddingStart="@dimen/_10dp"-->
-<!--                android:paddingEnd="@dimen/_10dp"-->
-<!--                android:layout_marginStart="@dimen/_10dp"-->
-<!--                android:layout_marginTop="@dimen/_10dp"-->
-<!--                android:layout_marginEnd="@dimen/_10dp"-->
-<!--                android:text="@string/ic_categories"-->
-<!--                android:id="@+id/tvCategory"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="@dimen/_15ssp" />-->
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_category"

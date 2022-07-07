@@ -203,9 +203,9 @@ class DownloadRepository(
 //        return apiRequest { api.getInvoiceByCustomerId(cu_Id) }
 //    }
 
-    suspend fun getSaleItemsByMasterId(sl_Id: Int): ResponseList<Sale_Items>{
-        return apiRequest { api.getInvoiceItemsByInvoiceId(sl_Id) }
-    }
+//    suspend fun getSaleItemsByMasterId(sl_Id: Int): ResponseList<Sale_Items>{
+//        return apiRequest { api.getInvoiceItemsByInvoiceId(sl_Id) }
+//    }
 
     // Sales Order Management api
     suspend fun insertOrder(order: Sale_Order): ResponseSingle<Sale_Order>{

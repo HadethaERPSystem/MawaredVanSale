@@ -1,6 +1,8 @@
 package com.mawared.mawaredvansale.controller.marketplace.cart
 
 import android.app.AlertDialog
+import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,16 +14,24 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.itextpdf.text.BaseColor
+import com.itextpdf.text.Element
+import com.itextpdf.text.Font
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.CartAdapter
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
+import com.mawared.mawaredvansale.controller.common.GenerateTicket
+import com.mawared.mawaredvansale.controller.common.TicketPrinting
+import com.mawared.mawaredvansale.controller.common.printing.*
 import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.sales.OrderItems
+import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.databinding.CartFragmentBinding
 import com.mawared.mawaredvansale.databinding.CartPaymentBinding
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.utilities.URL_LOGO
 import com.mawared.mawaredvansale.utilities.snackbar
 import kotlinx.android.synthetic.main.cart_fragment.*
 import kotlinx.android.synthetic.main.invoice_payment.*
@@ -31,6 +41,10 @@ import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
+import java.io.IOException
+import java.io.InputStream
+import java.text.DecimalFormat
+import java.util.*
 
 class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
     override val kodein by kodein()
@@ -58,6 +72,7 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
         viewModel.ctx = requireContext()
+        viewModel.msgListener = this
         bindUI()
 
         binding.saveBtn.setOnClickListener {
@@ -67,7 +82,6 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
                 "PSOrder" ->{ saveSaleOrder()}
             }
         }
-        (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle =  getString(R.string.layout_cart_title)
         return binding.root
     }
 
@@ -77,6 +91,7 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
             val args = CartFragmentArgs.fromBundle(requireArguments())
             if(args.customer != null && !args.vocode.isNullOrEmpty()){
                 viewModel.customer = args.customer
+                viewModel.loadAgeDebit(viewModel.customer!!.cu_ref_Id!!)
                 viewModel.setVoucherCode(args.vocode!!)
                 viewModel.customer_name.value = args.customer?.cu_name_ar
             }
@@ -97,6 +112,11 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
                 viewModel.customer_name.value = args.customer?.cu_name_ar
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle =  getString(R.string.layout_cart_title)
     }
 
     fun bindUI() = GlobalScope.launch(Dispatchers.Main){
@@ -190,9 +210,12 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
                 showDialog(requireContext(), getString(R.string.save_dialog_title), getString(R.string.msg_save_confirm),null, {
                     onStarted()
                     viewModel.location = getLocationData()
-                    viewModel.onSaveInvoice ({// On Success
+                    viewModel.onSaveInvoice ({ o ->// On Success
                         mAlertDialog.dismiss()
                         viewModel.isRunning = false
+                        if(o != null) {
+                            doPrint(o)
+                        }
                         viewModel.deleteAll(
                             {
                                 loadData()
@@ -293,6 +316,721 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
             },{
                 viewModel.isRunning = false
             })
+        }
+    }
+
+    // Print
+    private fun doPrint(entityEo: Sale){
+        if(App.prefs.printing_type == "R") {
+            try {
+                val lang = Locale.getDefault().toString().toLowerCase()
+                entityEo.sl_salesman_phone = App.prefs.savedSalesman?.sm_phone_no ?: ""
+                val tickets = GenerateTicket(requireContext(), lang).create(
+                    entityEo,
+                    URL_LOGO + "co_black_logo.png",//R.drawable.ic_logo_black,
+                    "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION",
+                    null,
+                    null
+                )
+
+                TicketPrinting(requireContext(), tickets).run()
+            }catch (e: Exception){
+                onFailure("Error Exception ${e.message}")
+                e.printStackTrace()
+            }
+
+        }else {
+            //val lang = Locale.getDefault().toString().toLowerCase()
+            val config = requireActivity().resources.configuration
+            val isRTL = config.layoutDirection != View.LAYOUT_DIRECTION_LTR
+            var bmp: Bitmap? =
+                null // BitmapFactory.decodeResource(ctx!!.resources, R.drawable.ic_logo_black)
+
+            val mngr: AssetManager = requireContext().assets
+            var `is`: InputStream? = null
+            try {
+                //`is` = mngr.open("images/co_logo.bmp")
+                //bmp = BitmapFactory.decodeStream(`is`)
+                //URL_LOGO + "co_black_logo.png"
+                //`is` = mngr.open("images/co_logo.bmp")
+                //bmp = BitmapFactory.decodeStream(`is`)
+            } catch (e1: IOException) {
+                e1.printStackTrace()
+            }
+            val fontNameEn = "assets/fonts/arial.ttf"
+            val fontNameAr = "assets/fonts/arial.ttf"// "assets/fonts/droid_kufi_regular.ttf"
+            try {
+
+                val imgLogo = RepLogo(bmp, 10F, 800F)
+                val header: ArrayList<HeaderFooterRow> = arrayListOf()
+                var tbl: HashMap<Int, TCell> = hashMapOf()
+                val rws: ArrayList<CTable> = arrayListOf()
+                val phones = if (entityEo.sl_org_phone != null) entityEo.sl_org_phone!!.replace(
+                    "|",
+                    "\n\r"
+                ) else ""
+
+                header.add(
+                    HeaderFooterRow(
+                        0,
+                        null,
+                        App.prefs.saveUser!!.client_name,
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        1,
+                        null,
+                        "${entityEo.sl_org_name}",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        2,
+                        null,
+                        phones,
+                        11F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                //header.add(HeaderFooterRow(3, null, "Asia: 0770-6502228", 20F, Element.ALIGN_CENTER, Font.BOLD, fontNameEn))
+                header.add(
+                    HeaderFooterRow(
+                        3,
+                        null,
+                        "",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameAr
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        4,
+                        null,
+                        "",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        5,
+                        null,
+                        "",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+
+                tbl.put(0, TCell("", 9F, false, 2f, "", Element.ALIGN_CENTER, 0))
+                tbl.put(
+                    1,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_list_name),
+                        9f,
+                        false,
+                        15F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+                tbl.put(
+                    2,
+                    TCell(
+                        entityEo.sl_vo_name!!,
+                        9F,
+                        false,
+                        30F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+
+                tbl.put(
+                    3,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_invoice_no),
+                        9F,
+                        false,
+                        15F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+                tbl.put(
+                    4,
+                    TCell(
+                        entityEo.sl_refNo!!,
+                        9F,
+                        false,
+                        30F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+
+                tbl.put(
+                    5,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_invoice_date),
+                        9F,
+                        false,
+                        10F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    6,
+                    TCell(
+                        viewModel.returnDateString(entityEo.sl_doc_date!!),
+                        9F,
+                        false,
+                        25F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+
+                tbl.put(7, TCell("", 9F, false, 15F, "", Element.ALIGN_CENTER, 0))
+                tbl.put(8, TCell("", 9F, false, 10F, "", Element.ALIGN_CENTER, 0))
+                tbl.put(9, TCell("", 9F, false, 2F, "", Element.ALIGN_CENTER, 0))
+                rws.add(CTable(tbl))
+                tbl = hashMapOf()
+
+                tbl.put(0, TCell("", 9F, false, 12F, "", Element.ALIGN_CENTER, 0))
+                tbl.put(
+                    1,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_customer),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    2,
+                    TCell(
+                        entityEo.sl_customer_name!!,
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+
+                tbl.put(
+                    3,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_contact_name),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontNameAr
+                    )
+                )
+                tbl.put(
+                    4,
+                    TCell(
+                        "${entityEo.sl_contact_name}",
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontNameAr
+                    )
+                )
+
+                tbl.put(
+                    5,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_phone),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+                tbl.put(
+                    6,
+                    TCell(
+                        if (entityEo.sl_customer_phone == null) "" else entityEo.sl_customer_phone!!,
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+
+                tbl.put(
+                    7,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_cr_name),
+                        9F,
+                        false,
+                        18F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+                tbl.put(
+                    8,
+                    TCell(
+                        if (entityEo.sl_cr_name == null) "" else entityEo.sl_cr_name!!,
+                        9F,
+                        false,
+                        18F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+
+                tbl.put(9, TCell("", 9F, false, 12F, "", Element.ALIGN_CENTER, 0))
+                rws.add(CTable(tbl))
+
+                val cw: ArrayList<Int> = arrayListOf(5, 15, 25, 10, 30, 25, 15, 15, 10, 5)
+                header.add(HeaderFooterRow(8, rws, null, cellsWidth = cw))
+
+                val footer: ArrayList<HeaderFooterRow> = arrayListOf()
+                footer.add(
+                    HeaderFooterRow(
+                        0,
+                        null,
+                        "موارد",
+                        fontSize = 9F,
+                        align = Element.ALIGN_LEFT,
+                        fontName = fontNameAr
+                    )
+                )
+                footer.add(
+                    HeaderFooterRow(
+                        1,
+                        null,
+                        "الشركة الحديثة للبرامجيات الاتمتة المحدودة",
+                        fontSize = 9F,
+                        align = Element.ALIGN_LEFT,
+                        fontName = fontNameAr
+                    )
+                )
+                footer.add(
+                    HeaderFooterRow(
+                        2,
+                        null,
+                        requireActivity().resources!!.getString(R.string.rpt_user_name) + ": ${App.prefs.saveUser!!.name}",
+                        fontSize = 9F,
+                        align = Element.ALIGN_LEFT,
+                        fontName = fontNameAr
+                    )
+                )
+                val rowHeader: HashMap<Int, RowHeader> = hashMapOf()
+                rowHeader.put(0, RowHeader("#", 9.0F, false, 4, "", 0, 0F))
+                rowHeader.put(
+                    1,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_barcode),
+                        9.0F,
+                        false,
+                        15,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    2,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_prod_name),
+                        9.0F,
+                        false,
+                        30,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    3,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_qty),
+                        9.0F,
+                        false,
+                        5,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    4,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.unit_name),
+                        9.0F,
+                        false,
+                        5,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    5,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_gift),
+                        9.0F,
+                        false,
+                        5,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    6,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_unit_price),
+                        9.0F,
+                        false,
+                        11,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    7,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_dis_value),
+                        9.0F,
+                        false,
+                        7,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    8,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_net_total),
+                        9.0F,
+                        false,
+                        11,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    9,
+                    RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_notes),
+                        9.0F,
+                        false,
+                        13,
+                        "Total",
+                        0,
+                        0F
+                    )
+                )
+
+                // Summary part
+                val df1 = DecimalFormat("#,###")
+                val df2 = DecimalFormat("#,###,###.#")
+                val summary: ArrayList<HeaderFooterRow> = arrayListOf()
+                tbl = hashMapOf()
+                var srows: ArrayList<CTable> = arrayListOf()
+                val tQty = entityEo.items.sumByDouble { it.sld_pack_qty!! }
+                tbl.put(
+                    0,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_total_qty),
+                        9F,
+                        false,
+                        25F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(1, TCell("${df1.format(tQty)}", 9F, false, 80F, "", Element.ALIGN_RIGHT, 1))
+                srows.add(CTable(tbl))
+
+                tbl = hashMapOf()
+                val tweight =
+                    entityEo.items.sumByDouble { if (it.sld_total_weight == null) 0.00 else it.sld_total_weight!! }
+                tbl.put(
+                    0,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_total_weight),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    1,
+                    TCell("${df2.format(tweight)}", 9F, false, 80F, "", Element.ALIGN_RIGHT, 1)
+                )
+                srows.add(CTable(tbl))
+                // row 2
+                tbl = hashMapOf()
+                tbl.put(
+                    0,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_total_amount),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    1,
+                    TCell(
+                        "${df2.format(entityEo.sl_total_amount)}",
+                        9F,
+                        false,
+                        80F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1
+                    )
+                )
+                srows.add(CTable(tbl))
+                // row 3
+                val tDiscount =
+                    if (entityEo.sl_total_discount == null) 0.00 else entityEo.sl_total_discount
+                tbl = hashMapOf()
+                tbl.put(
+                    0,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_total_discount),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    1,
+                    TCell("${df2.format(tDiscount)}", 9F, false, 80F, "", Element.ALIGN_RIGHT, 1)
+                )
+                srows.add(CTable(tbl))
+                // row 4
+                tbl = hashMapOf()
+                tbl.put(
+                    0,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_net_amount),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    1,
+                    TCell(
+                        "${df2.format(entityEo.sl_net_amount)}",
+                        9F,
+                        false,
+                        80F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1
+                    )
+                )
+                srows.add(CTable(tbl))
+
+                //sl_customer_balance
+                var balance: Double = 0.00
+                if (entityEo.sl_customer_balance != null) balance = entityEo.sl_customer_balance!!
+                tbl = hashMapOf()
+                tbl.put(
+                    0,
+                    TCell(
+                        requireActivity().resources!!.getString(R.string.rpt_cu_balance),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    1,
+                    TCell(
+                        "${df2.format(balance)}  ${entityEo.sl_cr_name}",
+                        9F,
+                        false,
+                        80F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        1
+                    )
+                )
+                srows.add(CTable(tbl))
+
+                val scw: java.util.ArrayList<Int> = arrayListOf(80, 20)
+                summary.add(HeaderFooterRow(0, srows, null, cellsWidth = scw))
+
+                summary.add(
+                    HeaderFooterRow(
+                        1,
+                        null,
+                        "T",
+                        fontSize = 20F,
+                        fontColor = BaseColor.WHITE
+                    )
+                )
+                summary.add(
+                    HeaderFooterRow(
+                        2,
+                        null,
+                        "T",
+                        fontSize = 20F,
+                        fontColor = BaseColor.WHITE
+                    )
+                )
+                summary.add(
+                    HeaderFooterRow(
+                        3,
+                        null,
+                        "T",
+                        fontSize = 20F,
+                        fontColor = BaseColor.WHITE
+                    )
+                )
+                summary.add(
+                    HeaderFooterRow(
+                        4,
+                        null,
+                        "T",
+                        fontSize = 20F,
+                        fontColor = BaseColor.WHITE
+                    )
+                )
+                srows = arrayListOf()
+                tbl = hashMapOf()
+                tbl.put(
+                    0,
+                    TCell(
+                        requireActivity().resources.getString(R.string.rpt_person_reciever_sig),
+                        10F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_CENTER,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    1,
+                    TCell(
+                        requireActivity().resources.getString(R.string.rpt_storekeeper_sig),
+                        10F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_CENTER,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    2,
+                    TCell(
+                        requireActivity().resources.getString(R.string.rpt_sales_manager_sig),
+                        10F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_CENTER,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+                srows.add(CTable(tbl))
+
+                summary.add(HeaderFooterRow(5, srows, null, cellsWidth = arrayListOf(35, 35, 34)))
+                val act = requireActivity()
+                GeneratePdf().createPdf(
+                    act,
+                    imgLogo,
+                    entityEo.items,
+                    rowHeader,
+                    header,
+                    footer,
+                    null,
+                    summary,
+                    isRTL
+                ) { _, path ->
+                    onSuccess("Pdf Created Successfully")
+                    GeneratePdf().printPDF(act, path)
+                }
+            } catch (e: Exception) {
+                onFailure("Error Exception ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 }

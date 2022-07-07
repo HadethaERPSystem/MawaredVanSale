@@ -25,8 +25,8 @@ android {
         applicationId "com.mawared.mawaredvansale"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 51
-        versionName "V1.11.51"
+        versionCode 58
+        versionName "V1.11.58"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -207,4 +207,7 @@ dependencies {
     def appCenterSdkVersion = '4.1.0'
     implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
     implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
+
+    //barcode
+    implementation 'com.google.android.gms:play-services-vision:20.1.3'
 }

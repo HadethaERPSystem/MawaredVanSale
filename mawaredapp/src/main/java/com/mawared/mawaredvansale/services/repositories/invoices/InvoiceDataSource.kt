@@ -25,7 +25,7 @@ class InvoiceDataSource(private val api: ApiService, private val sm_Id: Int, pri
         networkState.postValue(NetworkState.LOADING)
         CoroutineScope(IO).launch {
             try {
-                val response = api.sales_OnPages(sm_Id, cu_Id, page, POST_PER_PAGE)
+                val response = api.sales_OnPages(sm_Id, "", page, POST_PER_PAGE)
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {
@@ -63,7 +63,7 @@ class InvoiceDataSource(private val api: ApiService, private val sm_Id: Int, pri
         networkState.postValue(NetworkState.LOADING)
         CoroutineScope(IO).launch {
             try {
-                val response = api.sales_OnPages(sm_Id, cu_Id, params.key, POST_PER_PAGE)
+                val response = api.sales_OnPages(sm_Id, "", params.key, POST_PER_PAGE)
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {

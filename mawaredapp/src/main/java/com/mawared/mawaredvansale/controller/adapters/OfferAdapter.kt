@@ -1,6 +1,8 @@
 package com.mawared.mawaredvansale.controller.adapters
 
 import android.annotation.SuppressLint
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.annotation.LayoutRes
 import com.bumptech.glide.Glide
@@ -17,9 +19,9 @@ import kotlinx.android.synthetic.main.item_rv_product.view.*
 class OfferAdapter(@LayoutRes private val layoutResource: Int, private val clickFunc1: (Product) -> Unit, private val clickFunc2: (Product) -> Unit, private val clickFunc3: (Product, Success: (UnitConvertion?, Product_Price_List?) -> Unit) -> Unit) : BaseAdapter<Product>(null, layoutResource) {
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val item = items[position]
-
+        var isOnTextChanged = false
         with(holder.itemView){
             productName.text = item.pr_description_ar
 
@@ -59,10 +61,14 @@ class OfferAdapter(@LayoutRes private val layoutResource: Int, private val click
             if(extraParameter == "Y"){
                 addBtn.visibility = View.GONE
                 addQty.visibility = View.GONE
+                minusBtn.visibility = View.GONE
+                plusBtn.visibility = View.GONE
             }
             else{
                 addBtn.visibility = View.VISIBLE
                 addQty.visibility = View.VISIBLE
+                minusBtn.visibility = View.VISIBLE
+                plusBtn.visibility = View.VISIBLE
             }
 
             this.tag = item
@@ -71,55 +77,58 @@ class OfferAdapter(@LayoutRes private val layoutResource: Int, private val click
                 clickFunc1(data)
             }
 
-            productQty.tag = item
-            productQty.setOnClickListener { v ->
-                val data = v.tag as Product
-                clickFunc3(data) { u, price ->
-                    if (u != null && data.pr_SUoMEntry != u.uom) {
-                        val pr_SUoMQty = data.pr_qty!! / u.qty!!
-                        productQty.setText("${pr_SUoMQty.toFormatNumber()} ${u.uom_code ?: ""}")
+            if(extraParameter == "N"){
+                productQty.tag = item
+                productQty.setOnClickListener { v ->
+                    val data = v.tag as Product
+                    clickFunc3(data) { u, price ->
+                        if (u != null && data.pr_SUoMEntry != u.uom) {
+                            val pr_SUoMQty = data.pr_qty!! / u.qty!!
+                            productQty.setText("${pr_SUoMQty.toFormatNumber()} ${u.uom_code ?: ""}")
 
-                        var unit_price: Double = 0.0
-                        if (price != null) {
-                            unit_price = price.pl_unitPirce!!
-                        } else {
-                            if (data.pr_NumInSale!! > u.qty2!!) {
-                                unit_price = data.pr_unit_price!! / data.pr_NumInSale!!
+                            var unit_price: Double = 0.0
+                            if (price != null) {
+                                unit_price = price.pl_unitPirce!!
                             } else {
-                                unit_price = data.pr_unit_price!! * u.qty2!!
+                                if (data.pr_NumInSale!! > u.qty2!!) {
+                                    unit_price = data.pr_unit_price!! / data.pr_NumInSale!!
+                                } else {
+                                    unit_price = data.pr_unit_price!! * u.qty2!!
+                                }
                             }
-                        }
-                        items[position].pr_SalUnitMsr = u.uom_code
-                        items[position].pr_NumInSale = u.qty
-                        items[position].pr_unit_price = unit_price
-                        items[position].pr_SUoMEntry = u.uom
+                            items[position].pr_SalUnitMsr = u.uom_code
+                            items[position].pr_NumInSale = u.qty
+                            items[position].pr_unit_price = unit_price
+                            items[position].pr_SUoMEntry = u.uom
 
-                        if (item.pr_dis_type != null) {
-                            var price_AfD: Double = 0.0
-                            var prefix = "%"
-                            if (item.pr_dis_type == "F") prefix = App.prefs.saveUser!!.ss_cr_code!!
-                            if (prefix == "%") {
-                                price_AfD =
-                                    items[position].pr_unit_price!! * (1 - (items[position].pr_dis_value!! / 100))
+                            if (item.pr_dis_type != null) {
+                                var price_AfD: Double = 0.0
+                                var prefix = "%"
+                                if (item.pr_dis_type == "F") prefix = App.prefs.saveUser!!.ss_cr_code!!
+                                if (prefix == "%") {
+                                    price_AfD =
+                                        items[position].pr_unit_price!! * (1 - (items[position].pr_dis_value!! / 100))
 
+                                } else {
+                                    price_AfD =
+                                        items[position].pr_unit_price!! - items[position].pr_dis_value!!
+                                }
+                                items[position].pr_price_AfD = price_AfD
+
+                                new_price.setText("${price_AfD}  ${App.prefs.saveUser!!.ss_cr_code!!}")
+                                //old_price.visibility = View.VISIBLE
+                                //old_price.strike = true
+                                old_price.setText("${item.pr_unit_price.toString()}  ${App.prefs.saveUser!!.ss_cr_code!!}")
                             } else {
-                                price_AfD =
-                                    items[position].pr_unit_price!! - items[position].pr_dis_value!!
+                                new_price.setText("${item.pr_unit_price.toString()}  ${App.prefs.saveUser!!.ss_cr_code!!}")
                             }
-                            items[position].pr_price_AfD = price_AfD
 
-                            new_price.setText("${price_AfD}  ${App.prefs.saveUser!!.ss_cr_code!!}")
-                            //old_price.visibility = View.VISIBLE
-                            //old_price.strike = true
-                            old_price.setText("${item.pr_unit_price.toString()}  ${App.prefs.saveUser!!.ss_cr_code!!}")
-                        } else {
-                            new_price.setText("${item.pr_unit_price.toString()}  ${App.prefs.saveUser!!.ss_cr_code!!}")
+
                         }
-
-
                     }
                 }
             }
+
 
             item.addQty = if(!addQty.text.isNullOrEmpty()) addQty.text!!.toString().toDouble() else 0.0
             addBtn.tag = item
@@ -148,6 +157,32 @@ class OfferAdapter(@LayoutRes private val layoutResource: Int, private val click
                 }
 
             }
+
+            // for add qty
+            addQty.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int ) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    isOnTextChanged = true
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    if(isOnTextChanged){
+                        isOnTextChanged = false
+                        try {
+                            val qty: Double = s.toString().toDouble()
+                            items[position].addQty = qty
+                        }catch (e: NumberFormatException){
+
+                        }
+                    }
+                }
+
+            })
         } // End with
+
+
     }
 }

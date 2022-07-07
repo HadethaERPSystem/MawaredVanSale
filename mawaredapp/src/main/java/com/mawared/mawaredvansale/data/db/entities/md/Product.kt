@@ -46,6 +46,7 @@ data class Product (
     var prom_qty: Double? = null
     var prom_ex_qty: Double? = null
     var pr_dis_value: Double? = null
+    var pr_dis_per: Double? = null
     var pr_dis_type: String? = null
     var pr_uom_code: String? = null
     var addQty: Double? = null

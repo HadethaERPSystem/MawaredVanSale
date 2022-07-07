@@ -60,8 +60,6 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_delivery_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
         if(arguments != null){
             val args = DeliveryEntryFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
@@ -76,8 +74,13 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         setHasOptionsMenu(true)
 
         super.onCreate(savedInstanceState)
-
     }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = getString(R.string.layout_entry_sub_title)
+    }
+
     fun initBarcode() {
         // this for activity
         // val scanner = IntentIntegrator(activity)

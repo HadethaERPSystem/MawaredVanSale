@@ -71,7 +71,7 @@ class OrdersViewModel(private val orderRepository: IOrderRepository) : BaseViewM
     }
 
     fun checkStatus(baseEo: Sale_Order): Boolean{
-        val value = (baseEo.sod_status_code != "Invoice")
+        val value = (baseEo.so_status_code != "Invoice")
         return  value
     }
 

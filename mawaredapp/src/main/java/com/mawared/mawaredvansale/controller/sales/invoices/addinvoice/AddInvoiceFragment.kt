@@ -88,9 +88,6 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
 
         bindUI()
 
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_invoice_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
-
         return binding.root
     }
 
@@ -113,6 +110,11 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
 
         super.onCreate(savedInstanceState)
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = getString(R.string.layout_entry_sub_title)
     }
     fun initBarcode() {
         // this for activity
@@ -911,7 +913,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
                 rowHeader.put(
                     4,
                     RowHeader(
-                        requireActivity().resources!!.getString(R.string.rpt_gift),
+                        requireActivity().resources!!.getString(R.string.unit_name),
                         9.0F,
                         false,
                         5,
@@ -923,6 +925,18 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
                 rowHeader.put(
                     5,
                     RowHeader(
+                        requireActivity().resources!!.getString(R.string.rpt_gift),
+                        9.0F,
+                        false,
+                        5,
+                        "",
+                        0,
+                        0F
+                    )
+                )
+                rowHeader.put(
+                    6,
+                    RowHeader(
                         requireActivity().resources!!.getString(R.string.rpt_unit_price),
                         9.0F,
                         false,
@@ -933,7 +947,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
                     )
                 )
                 rowHeader.put(
-                    6,
+                    7,
                     RowHeader(
                         requireActivity().resources!!.getString(R.string.rpt_dis_value),
                         9.0F,
@@ -945,7 +959,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
                     )
                 )
                 rowHeader.put(
-                    7,
+                    8,
                     RowHeader(
                         requireActivity().resources!!.getString(R.string.rpt_net_total),
                         9.0F,
@@ -957,7 +971,7 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
                     )
                 )
                 rowHeader.put(
-                    8,
+                    9,
                     RowHeader(
                         requireActivity().resources!!.getString(R.string.rpt_notes),
                         9.0F,

@@ -84,7 +84,7 @@
 
     <string name="lbl_doc_no">Invoice No</string>
     <string name="lbl_doc_date">Date</string>
-    <string name="lbl_customer_name">Customer Name</string>
+    <string name="lbl_customer_name">Customer</string>
     <string name="lbl_salesman_name">Salesman</string>
     <string name="lbl_salesman_no">Salesman No</string>
     <string name="lbl_customer_name_en">Customer English Name</string>
@@ -95,7 +95,7 @@
     <string name="btn_edit_caption">Edit</string>
     <string name="btn_delete_caption">Delete</string>
     <string name="lbl_barcode">Barcode</string>
-    <string name="lbl_prod_name">Product Name</string>
+    <string name="lbl_prod_name">Product</string>
     <string name="lbl_qty">Qty</string>
     <string name="lbl_gift_qty">Gift Qty</string>
     <string name="lbl_unit_price">Unit Price</string>
@@ -214,6 +214,14 @@
     <string name="msg_error_not_select_status">Should select status for this call cycle</string>
     <string name="msg_error_not_fill_notes">Should fill notes for this call cycle</string>
     <string name="msg_error_discount_overflow">User Discount on Item should be less than or equal [%s]</string>
+    <string name="msg_error_stockout_qty_greater_than_loc_qty">Required stock out quantity greater than avialable quantity in current selected location</string>
+    <string name="msg_error_stockout_qty_greater_than_sale_qty">Required stock out quantity greater than sale quantity</string>
+    <string name="msg_error_stockout_select_invoice">You should select invoice for stock out</string>
+    <string name="msg_error_stockout_no_item_selected">You should select item for stock out</string>
+
+    <string name="msg_error_stockin_qty_greater_than_purchase_qty">Required stock-in quantity greater than purchase quantity</string>
+    <string name="msg_error_stockin_qty_greater_than_transfer_qty">Required stock-in quantity greater than stock-out transfer quantity</string>
+    <string name="msg_error_stockin_qty_greater_than_sale_qty">Required stock-in quantity greater than stock-out sale invoice quantity</string>
 
     <string name="lbl_error">Connection Problem!!</string>
     <string name="connecting">Connecting...</string>
@@ -290,7 +298,7 @@
     <string name="lbl_to_warehouse">To Warehouse</string>
     <string name="lbl_from_warehouse">From Warehouse</string>
     <string name="lbl_transfer_no">Transfer No.</string>
-    <string name="lbl_warehouse_name">Warehouse</string>
+    <string name="lbl_warehouse_name">Whs.</string>
     <string name="lbl_price_category">Price Category</string>
     <!--Report part string name -->
     <string name="rpt_invoice_no">No.</string>
@@ -503,4 +511,31 @@
     <string name="unit_name">Unit Name</string>
     <string name="unit_rate">Unit Rate</string>
     <string name="unit_num">Unit Num</string>
+    <string name="lbl_inv_status">Inv. Status</string>
+    <string name="layout_stock_in_list_title">Stock in</string>
+    <string name="layout_stock_out_list_title">Stock out</string>
+    <string name="layout_select_invoice_title">Select Invoice Or Transfer</string>
+    <string name="select_invoice_items_title">select_invoice_items_fragment</string>
+    <string name="hit_doc_no">Doc No</string>
+    <string name="lbl_add_line">Add Line</string>
+    <string name="hint_type_of_stock_in">type of stock in</string>
+    <string name="hint_sale_invoice">Sale invoice</string>
+    <string name="lbl_store_location">Location</string>
+    <string name="lbl_picker_name">Picker</string>
+    <string name="lbl_sale_qty">Sale Qty</string>
+    <string name="lbl_ref_doc_no">Doc. No</string>
+    <string name="lbl_vendor">Vendor</string>
+    <string name="lbl_order_qty">Order Qty</string>
+    <string name="lbl_type_of_stock_out">Out Type</string>
+    <string name="lbl_type_of_stock_in">In Type</string>
+    <string name="lbl_selected_locations">Selected Locations</string>
+    <string name="lbl_items_no">Items No</string>
+    <string name="lbl_pack_qty">Pack Qty</string>
+    <string name="lbl_pack_size">Pack Size</string>
+    <string name="lbl_whs_no">Whs. no</string>
+    <string name="lbl_items">items</string>
+    <string name="layout_select_type_of_stock_out">Select Type of Stock-out</string>
+    <string name="layout_select_type_of_stock_in">select type of stock-in</string>
+    <string name="layout_select_items_for_stock_in">Select items for stock-in</string>
+    <string name="layout_select_invoice_for_stock_in">Select Invoice for stock-in</string>
 </resources>

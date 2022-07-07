@@ -76,9 +76,6 @@ class SettingsFragment : ScopedFragment(), KodeinAware, IMessageListener {
         et_PrinterPort = binding.root.findViewById(R.id.et_printer_port)
         //et_ServerUrl = binding.root.findViewById(R.id.et_server_url)
 
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_settings_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = ""
-
         arrCodepageLatin = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item)
         arrCodepageLatin = ArrayAdapter.createFromResource(requireContext(), R.array.codepage, android.R.layout.simple_spinner_item)
         arrCodepageLatin!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -123,6 +120,10 @@ class SettingsFragment : ScopedFragment(), KodeinAware, IMessageListener {
         requireActivity().onBackPressed()
     }
 
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = ""
+    }
     fun iniSetting(){
 
         try {

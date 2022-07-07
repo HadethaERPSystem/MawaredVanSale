@@ -157,20 +157,21 @@ class SurveyEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator
 
         bindUI()
 
-
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_survey_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
-
         return binding.root
     }
 
     // enable options menu in this fragment
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
-
         super.onCreate(savedInstanceState)
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = getString(R.string.layout_entry_sub_title)
+    }
+
     fun initBarcode() {
         // this for activity
         // val scanner = IntentIntegrator(activity)

@@ -13,6 +13,14 @@ import com.mawared.mawaredvansale.controller.fms.receivables.receivablelist.Rece
 import com.mawared.mawaredvansale.controller.home.HomeViewModelFactory
 import com.mawared.mawaredvansale.controller.home.dashboard.DashboardViewModelFactory
 import com.mawared.mawaredvansale.controller.home.reportsdashboard.ReportViewModelFactory
+import com.mawared.mawaredvansale.controller.inventory.stockin.addstockin.SelectDocForStockinItemsViewModelFactory
+import com.mawared.mawaredvansale.controller.inventory.stockin.addstockin.SelectDocForStockinViewModelFactory
+import com.mawared.mawaredvansale.controller.inventory.stockin.detail.AddStockInViewModelFactory
+import com.mawared.mawaredvansale.controller.inventory.stockin.stockinlist.StockInViewModelFactory
+import com.mawared.mawaredvansale.controller.inventory.stockout.detail.AddStockOutViewModelFactory
+import com.mawared.mawaredvansale.controller.inventory.stockout.addstockout.SelectInvoiceItemsViewModelFactory
+import com.mawared.mawaredvansale.controller.inventory.stockout.addstockout.SelectInvoiceViewModelFactory
+import com.mawared.mawaredvansale.controller.inventory.stockout.stockoutlist.StockOutViewModelFactory
 import com.mawared.mawaredvansale.controller.map.MapViewModelFactory
 import com.mawared.mawaredvansale.controller.marketplace.MarketPlaceViewModelFactory
 import com.mawared.mawaredvansale.controller.marketplace.brand.BrandViewModelFactory
@@ -82,6 +90,10 @@ import com.mawared.mawaredvansale.services.repositories.reports.stock.StockRepos
 import com.mawared.mawaredvansale.services.repositories.salereturn.ISaleReturnRepository
 import com.mawared.mawaredvansale.services.repositories.salereturn.SaleReturnRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.srv.SurveyRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.stockin.IStockInRepository
+import com.mawared.mawaredvansale.services.repositories.stockin.StockinRepositoryImp
+import com.mawared.mawaredvansale.services.repositories.stockout.IStockOutRepository
+import com.mawared.mawaredvansale.services.repositories.stockout.StockoutRepositoryImp
 import com.mawared.mawaredvansale.services.repositories.transfer.ITransferRepository
 import com.mawared.mawaredvansale.services.repositories.transfer.TransferRepositoryImp
 import com.mawared.mawaredvansale.utilities.SharedPrefs
@@ -141,7 +153,9 @@ class App : Application(), KodeinAware {
         bind<IStockRepository>() with singleton { StockRepositoryImp(instance()) }
         bind<IDashboardRepository>() with singleton { DashboardRepositoryImp(instance()) }
         bind<IMaintenanceRepository>() with singleton { MaintenanceRepositoryImp(instance())}
-
+        // Inventory repository
+        bind<IStockInRepository>() with singleton { StockinRepositoryImp(instance()) }
+        bind<IStockOutRepository>() with singleton { StockoutRepositoryImp(instance()) }
         bind() from singleton { SurveyRepositoryImp(instance()) }
         // no singleton for below because we need more than one instance for view model
         bind() from provider { AuthViewModelFactory(instance()) }
@@ -159,6 +173,19 @@ class App : Application(), KodeinAware {
         // Pre-Sale order
         bind() from provider { PSOrdersViewModelFactory(instance()) }
         bind() from provider { PSOrderEntryViewModelFactory(instance(), instance()) }
+
+        // Inventory
+        bind() from provider { StockOutViewModelFactory(instance())}
+
+        bind() from provider { SelectDocForStockinViewModelFactory(instance())}
+        bind() from provider { SelectDocForStockinItemsViewModelFactory(instance(), instance()) }
+        bind() from provider { AddStockOutViewModelFactory(instance(), instance()) }
+
+        bind() from provider{ SelectInvoiceViewModelFactory(instance())}
+        bind() from provider{ SelectInvoiceItemsViewModelFactory(instance(), instance()) }
+        bind() from provider { StockInViewModelFactory(instance())}
+        bind() from provider { AddStockInViewModelFactory(instance(), instance()) }
+
 
         // Sale return view model factory
         bind() from provider { SaleReturnViewModelFactory(instance()) }

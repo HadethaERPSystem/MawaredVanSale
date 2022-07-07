@@ -219,6 +219,14 @@
     <string name="msg_error_not_select_status">يجب اختيار حالة خط السير</string>
     <string name="msg_error_not_fill_notes">يجب ادخال الملاحظات</string>
     <string name="msg_error_discount_overflow">الخصم المدخل يجب ان يكون اقل او يساوي الخصم الممنوح للمستخدم [%s]</string>
+    <string name="msg_error_stockout_qty_greater_than_loc_qty">كمية الاخراج المطلوبة اكبر من الكمية المتوفرة في موقع الخزن</string>
+    <string name="msg_error_stockout_qty_greater_than_sale_qty">كمية الاخراج المطلوبة اكبر من كمية البيع</string>
+    <string name="msg_error_stockout_select_invoice">لايمكن حفظ الاخراج بدون اختيار فاتورة بيع</string>
+    <string name="msg_error_stockout_no_item_selected">لايمكن حفظ الاخراج بدون اضافة مواد للاخراج</string>
+
+    <string name="msg_error_stockin_qty_greater_than_purchase_qty">كمية الادخال المطلوبة اكبر من كمية فاتورة الشراء</string>
+    <string name="msg_error_stockin_qty_greater_than_transfer_qty">كمية الادخال المطلوبة اكبر من كمية اخراج فاتورة المناقلة</string>
+    <string name="msg_error_stockin_qty_greater_than_sale_qty">كمية الادخال المطلوبة اكبر من كمية اخراج فاتورة البيع</string>
     <string name="lbl_error">مشكلة في الاتصال!!</string>
     <string name="connecting">اتصال...</string>
 
@@ -507,4 +515,31 @@
     <string name="unit_name">الوحدة</string>
     <string name="unit_rate">النسبة</string>
     <string name="unit_num">العدد</string>
+    <string name="lbl_inv_status">حالة الادخال</string>
+    <string name="layout_stock_in_list_title">الادخال المخزني</string>
+    <string name="layout_stock_out_list_title">الاخراج المخزني</string>
+    <string name="layout_select_invoice_title">اختر فاتورة او مناقلة</string>
+    <string name="select_invoice_items_title">اختر المواد للاخراج</string>
+    <string name="hit_doc_no">رقم المستند</string>
+    <string name="lbl_add_line">أضف سطر</string>
+    <string name="hint_type_of_stock_in">نوع الادخال</string>
+    <string name="hint_sale_invoice">فاتورة البيع</string>
+    <string name="lbl_store_location">موقع الخزن</string>
+    <string name="lbl_vendor">المورد</string>
+    <string name="lbl_picker_name">مجهز</string>
+    <string name="lbl_sale_qty">كمية البيع</string>
+    <string name="lbl_ref_doc_no">الرقم</string>
+    <string name="lbl_order_qty">كمية الطلب</string>
+    <string name="lbl_type_of_stock_out">نوع الاخراج</string>
+    <string name="lbl_type_of_stock_in">نوع الادخال</string>
+    <string name="lbl_selected_locations">مواقع الخزن المختارة</string>
+    <string name="lbl_items_no">عدد المواد</string>
+    <string name="lbl_pack_qty">كمية العبوة</string>
+    <string name="lbl_pack_size">حجم العبوة</string>
+    <string name="lbl_whs_no">عدد المخازن</string>
+    <string name="lbl_items">المواد</string>
+    <string name="layout_select_type_of_stock_out">اختر نوع الاخراج المخزني</string>
+    <string name="layout_select_type_of_stock_in">اختر نوع الادخال المخزني</string>
+    <string name="layout_select_items_for_stock_in">اختر المواد للادخال المخزني</string>
+    <string name="layout_select_invoice_for_stock_in">اختر فاتورة للادخال المخزني</string>
 </resources>

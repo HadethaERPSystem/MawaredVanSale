@@ -1,6 +1,7 @@
 package com.mawared.mawaredvansale.controller.helpers.extension
 
 import android.content.Context
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +20,15 @@ fun RecyclerView.setup(context: Context?, adapter: BaseAdapter<Any>, isInvert: B
     setHasFixedSize(false)
 
     layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, isInvert)
+    val decoration = DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+    addItemDecoration(decoration)
+}
+
+fun RecyclerView.setupHorz(context: Context?, adapter: BaseAdapter<Any>, isInvert: Boolean = false){
+    this.adapter = adapter
+    layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+    val decoration = DividerItemDecoration(context, DividerItemDecoration.HORIZONTAL)
+    addItemDecoration(decoration)
 }
 
 fun RecyclerView.setLoadMoreFunction(reverse: Boolean = false, loadMore: () -> Unit) {

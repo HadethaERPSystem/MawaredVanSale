@@ -3,6 +3,7 @@ package com.mawared.mawaredvansale.data.db.entities.sales
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity
 data class Sale(
@@ -35,8 +36,7 @@ data class Sale(
     var updated_at: String?,        // Updated datetime
     var updated_by: String?         // Updated user
 
-
-) {
+): Serializable {
     @PrimaryKey(autoGenerate = true)
     var sl_Id:  Int = 0
     var sl_org_name: String? = null
@@ -55,6 +55,9 @@ data class Sale(
     var sl_customer_phone: String? = null
     var sl_customer_balance: Double? = null
     var sl_price_cat_code: String? = null
+    var sl_status_name: String? = null
+    var sl_items_count: Int? = 0
+    var whs_count: Int? = 0
     @Ignore
     var items: ArrayList<Sale_Items> = arrayListOf()
     @Ignore

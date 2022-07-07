@@ -21,11 +21,13 @@ import com.mawared.mawaredvansale.controller.common.GenerateTicket
 import com.mawared.mawaredvansale.controller.common.LineType
 import com.mawared.mawaredvansale.controller.common.TicketPrinting
 import com.mawared.mawaredvansale.controller.common.printing.*
+import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.invoices.IInvoiceRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.URL_LOGO
 import org.threeten.bp.LocalTime
 import print.Print
@@ -44,26 +46,27 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
     var activity: AppCompatActivity? = null
     var navigator: IMainNavigator<Sale>? = null
     var msgListener: IMessageListener? = null
-
+    var term: String? = ""
     var isPrint = false
     private val cuId: MutableLiveData<Int> = MutableLiveData()
     var errorMessage: MutableLiveData<String> = MutableLiveData()
 
-    val sales: LiveData<PagedList<Sale>> = Transformations
-        .switchMap(cuId) {
-            repository.fetchLivePagedList(_sm_id, it)
+    fun loadData(list: MutableList<Sale>, term: String, pageCount: Int, loadMore: (List<Sale>?, Int) -> Unit){
+        try {
+            Coroutines.ioThenMain({
+                val tmp = repository.invoices_OnPages(_sm_id, term, pageCount)
+                if(tmp != null){
+                    list.addAll(tmp)
+                }
+            }, {loadMore(list, pageCount)})
+        }catch (e: Exception){
+            e.printStackTrace()
         }
-
-    val networkStateRV: LiveData<NetworkState> by lazy {
-        repository.getSaleNetworkState()
     }
+
 
     val networkState: LiveData<NetworkState> by lazy {
         repository.networkState
-    }
-
-    fun listIsEmpty():Boolean{
-        return sales.value?.isEmpty() ?: true
     }
 
     private val _sl_Id: MutableLiveData<Int> = MutableLiveData()

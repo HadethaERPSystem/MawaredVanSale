@@ -103,7 +103,7 @@
                 android:layout_marginStart="2dp"
                 android:background="#e7e7e7"
                 android:fontFamily="@font/droid_kufi_regular"
-                android:text="@string/unit_rate"
+                android:text="@string/lbl_unit_price"
                 android:textAlignment="center"
                 android:textSize="13sp"
                 app:layout_constraintEnd_toEndOf="parent"

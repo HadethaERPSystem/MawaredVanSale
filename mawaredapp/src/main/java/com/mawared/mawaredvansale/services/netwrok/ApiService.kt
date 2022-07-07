@@ -4,10 +4,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.mawared.mawaredvansale.data.db.entities.reports.fms.CashbookStatement
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
-import com.mawared.mawaredvansale.data.db.entities.inventory.Stockin
-import com.mawared.mawaredvansale.data.db.entities.inventory.Stockin_Items
-import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout
-import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout_Items
+import com.mawared.mawaredvansale.data.db.entities.inventory.*
 import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.md.Currency
 import com.mawared.mawaredvansale.data.db.entities.mnt.Mnts
@@ -165,6 +162,9 @@ interface ApiService {
     suspend fun customer_GetByOrg(@Query("sm_Id") sm_Id: Int?, @Query("org_Id") org_Id: Int?, @Query("term") term: String): Response<ResponseList<Customer>>
     @GET(URL_CUSTOMER_BY_Id)
     suspend fun getCustomer_ById(@Query("cu_Id") cu_Id: Int): Response<ResponseSingle<Customer>>
+
+    @GET(URL_CUSTOMER_AgeDebit)
+    suspend fun customer_getAgeDebit(@Query("cu_Id") cu_Id: Int?) : Response<ResponseSingle<Customer>>
 
     @POST(URL_INSERT_CUSTOMER)
     suspend fun insertCustomer(@Body baseEo: Customer): Response<ResponseSingle<Customer>>
@@ -326,12 +326,37 @@ interface ApiService {
 
     @GET(URL_SALES_ON_PAGES)
     suspend fun sales_OnPages(@Query("sm_Id") sm_Id: Int,
-                              @Query("cu_Id") cu_Id: Int?,
+                              @Query("term") term: String,
                               @Query("page") page: Int,
                               @Query("pageSize") pageSize: Int) : Response<ResponseList<Sale>>
+    @GET(URL_INVENTORY_ON_SEARCH)
+    suspend fun InvDoc_SearchOnPages(@Query("term") term: String,
+                                    @Query("whsId") whsId: Int,
+                                    @Query("sotType") sotType: String,
+                                    @Query("page") page: Int,
+                                    @Query("pageSize") pageSize: Int) : Response<ResponseList<InventoryDoc>>
+    @GET(URL_INVENTORY_LINES_ITEMS)
+    suspend fun InvDocLinessByDocEntry(@Query("docEntry") docEntry: Int,
+                                       @Query("term") term: String,
+                                       @Query("whsId") whsId: Int,
+                                       @Query("sotType") sotType: String,
+                                       @Query("page") page: Int,
+                                       @Query("pageSize") pageSize: Int) : Response<ResponseList<InventoryDocLines>>
 
-    @GET(URL_SALES_ITEMS)
-    suspend fun getInvoiceItemsByInvoiceId(@Query("sl_Id") sl_Id: Int) : Response<ResponseList<Sale_Items>>
+    //For Stock-in
+    @GET(URL_INVENTORY_IN_ON_SEARCH)
+    suspend fun InvDocIn_SearchOnPages(@Query("term") term: String,
+                                     @Query("whsId") whsId: Int,
+                                     @Query("sotType") sotType: String,
+                                     @Query("page") page: Int,
+                                     @Query("pageSize") pageSize: Int) : Response<ResponseList<InventoryDoc>>
+    @GET(URL_INVENTORY_IN_LINES_ITEMS)
+    suspend fun InvDocInLinessByDocEntry(@Query("docEntry") docEntry: Int,
+                                       @Query("term") term: String,
+                                       @Query("whsId") whsId: Int,
+                                       @Query("sotType") sotType: String,
+                                       @Query("page") page: Int,
+                                       @Query("pageSize") pageSize: Int) : Response<ResponseList<InventoryDocLines>>
 
     @GET(URL_SALES_DELETE)
     suspend fun deleteInvoice(@Query("sl_Id") sl_Id: Int) : Response<ResponseSingle<String>>
@@ -431,33 +456,28 @@ interface ApiService {
     @POST(URL_ADD_STOCK_IN)
     suspend fun insertStockIn(@Body baseEo: Stockin) : Response<ResponseSingle<Stockin>>
 
-    @POST(URL_UPDATE_STOCK_IN)
-    suspend fun updateStockIn(@Body baseEo: Stockin) : Response<ResponseSingle<Stockin>>
-
     @GET(URL_STOCK_IN_BY_ID)
     suspend fun getStockInById(@Query("sin_Id") sin_Id: Int) : Response<ResponseSingle<Stockin>>
 
-    @GET(URL_STOCK_IN_BY_CUSTOMERS)
-    suspend fun getStockInByUserId(@Query("user_Id") user_Id: Int) : Response<ResponseList<Stockin>>
-
-    @GET(URL_STOCK_IN_ITEMS)
-    suspend fun getStockInItemsById(@Query("sin_Id") sin_Id: Int) : Response<ResponseList<Stockin_Items>>
+    @GET(URL_STOCK_IN_ON_PAGES)
+    suspend fun getStockInOnPages(@Query("sm_Id") sm_Id: Int,
+                                  @Query("term") term: String,
+                                  @Query("page") page: Int,
+                                  @Query("pageSize") pageSize: Int) : Response<ResponseList<Stockin>>
 
     // Inventory Stock-out
     @POST(URL_ADD_STOCK_OUT)
-    suspend fun insertStockOut(@Body baseEo: Stockout) : Response<ResponseSingle<Stockout>>
+    suspend fun saveStockOut(@Body baseEo: Stockout) : Response<ResponseSingle<Stockout>>
 
-    @POST(URL_UPDATE_STOCK_OUT)
-    suspend fun updateStockOut(@Body baseEo: Stockout) : Response<ResponseSingle<Stockout>>
+    @GET(URL_STOCK_OUT_BY_ID)
+    suspend fun getStockOutById(@Query("sout_Id") sout_Id: Int) : Response<ResponseSingle<Stockout>>
 
-    @GET(URL_STOCK_IN_BY_ID)
-    suspend fun getStockOutById(@Query("sot_Id") sot_Id: Int) : Response<ResponseSingle<Stockout>>
+    @GET(URL_STOCK_OUT_ON_PAGES)
+    suspend fun getStockOutOnPages(@Query("sm_Id") sm_Id: Int,
+                                   @Query("term") term: String,
+                                   @Query("page") page: Int,
+                                   @Query("pageSize") pageSize: Int) : Response<ResponseList<Stockout>>
 
-    @GET(URL_STOCK_OUT_BY_CUSTOMERS)
-    suspend fun getStockOutByUserId(@Query("user_Id") user_Id: Int) : Response<ResponseList<Stockout>>
-
-    @GET(URL_STOCK_OUT_ITEMS)
-    suspend fun getStockOutItemsById(@Query("sot_Id") sot_Id: Int) : Response<ResponseList<Stockout_Items>>
     /////////////////////////////////////////////////////
     ///////////////////// Lookup ////////////////////
     /////////////////////////////////////////////////////

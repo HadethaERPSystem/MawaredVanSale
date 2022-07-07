@@ -28,6 +28,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
     var msgListener: IMessageListener? = null
     var ctx: Context? = null
     var customer : Customer? = null
+    val price_cat : String = customer?.cu_price_cat_code ?: "POS"
     var vocode: String = ""
     val curCode: String = App.prefs.saveUser?.ss_cr_code ?: ""
     //var orders: List<OrderItems> = arrayListOf()
@@ -36,7 +37,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
     val productList: LiveData<List<Product>> = Transformations.switchMap(_term) {
         repository.getProductForOffers(
             App.prefs.savedSalesman?.sm_warehouse_id,
-            customer!!.cu_price_cat_code!!,
+            price_cat,
             LocalDate.now(),
             App.prefs.saveUser!!.org_Id,
             it
@@ -117,7 +118,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                 val pcs = (addQty * p.pr_NumInSale!!)
 
                 var giftQty: Double = 0.0
-                if (p.prom_qty != null && p.prom_qty != 0.0) {
+                if (p.prom_qty != null && p.prom_qty != 0.0 && p.pr_NumInSale == 1.0) {
                     var vector: Int = 0
                     vector = (pcs / p.prom_qty!!).toInt()
                     giftQty = vector * p.prom_ex_qty!!
@@ -129,6 +130,9 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                 val rowNo: Int =
                     (if (orders.count() == 0) 1 else orders.maxOf { x -> x.od_rowNo!! } + 1)
                 val qty = pcs + giftQty
+                if(p.pr_NumInSale!! == 1.0){
+                    addQty += giftQty
+                }
                 val lineTotal = addQty * p.pr_unit_price!!
 
                 val gdisValue = p.pr_unit_price!! * giftQty
@@ -142,7 +146,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                         lDisPer = p.pr_dis_value!!
                         disValue = (lDisPer / 100) * lineTotal
                     } else {
-                        lDisPer = (p.pr_dis_value!! / lineTotal) * 100
+                        lDisPer = (p.pr_dis_value!! / p.pr_unit_price!!) * 100
                         disValue = p.pr_dis_value!! * addQty
                     }
                 }
@@ -153,7 +157,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                 }
 
                 val netTotal = (lineTotal - disValue)
-                val price_afd = (lDisPer / 100) * p.pr_unit_price!!
+                val price_afd = (1 - (lDisPer / 100)) * p.pr_unit_price!!
                 val isNew : Boolean = baseEo == null
                 if (baseEo == null) {
                     baseEo = OrderItems(
@@ -165,7 +169,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                         p.pr_SalUnitMsr,
                         addQty,
                         p.pr_NumInSale,
-                        pcs,
+                        qty,
                         giftQty,
                         p.pr_unit_price,
                         price_afd,

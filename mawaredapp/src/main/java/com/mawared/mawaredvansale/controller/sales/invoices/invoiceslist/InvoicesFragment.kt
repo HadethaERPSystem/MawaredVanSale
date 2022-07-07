@@ -1,6 +1,6 @@
 package com.mawared.mawaredvansale.controller.sales.invoices.invoiceslist
 
-import android.graphics.BitmapFactory
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -12,16 +12,17 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.pagination.SalesPagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.InvoicesAdapter
+import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFunction
+import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.databinding.FragmentInvoicesBinding
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.services.repositories.NetworkState
-import com.mawared.mawaredvansale.services.repositories.Status
-import com.mawared.mawaredvansale.utilities.URL_LOGO
 import com.mawared.mawaredvansale.utilities.snackbar
+import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.fragment_invoices.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -29,8 +30,6 @@ import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
-import java.io.InputStream
-import java.net.URL
 
 
 class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainNavigator<Sale> {
@@ -40,6 +39,15 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     private val factory: InvoicesViewModelFactory by instance()
 
     private lateinit var binding: FragmentInvoicesBinding
+
+    private var adapter = InvoicesAdapter(R.layout.invoice_row){ e, t->
+        when(t){
+            "E" -> onItemEditClick(e)
+            "V" -> onItemViewClick(e)
+            "D" -> onItemDeleteClick(e)
+            "P" -> viewModel.onPrint(e.sl_Id)
+        }
+    }
 
     val viewModel by lazy {
         ViewModelProviders.of(this, factory).get(InvoicesViewModel::class.java)
@@ -73,6 +81,15 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         removeObservers()
         super.onViewCreated(view, savedInstanceState)
+        var cols = 1
+        val currentOrientation = resources.configuration.orientation
+        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            cols = 2
+        }
+        @Suppress("UNCHECKED_CAST")
+        rcv_invoices.setupGrid(requireContext(), adapter as BaseAdapter<Any>, cols)
+        rcv_invoices.setLoadMoreFunction { loadList(viewModel.term ?: "") }
+        loadList(viewModel.term ?: "")
         navController = Navigation.findNavController(view)
 
     }
@@ -90,7 +107,7 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     private fun removeObservers(){
         viewModel.baseEo.removeObservers(this)
-        viewModel.sales.removeObservers(this)
+        //viewModel.sales.removeObservers(this)
         viewModel.deleteRecord.removeObservers(this)
     }
 
@@ -127,49 +144,49 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     private fun bindUI()= GlobalScope.launch(Main) {
         try {
 
-            val pagedAdapter = SalesPagedListAdapter(viewModel, requireActivity())
-            val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
-            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int {
-                    val viewType = pagedAdapter.getItemViewType(position)
-                    if (viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
-                    else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
-                }
-            }
-            rcv_invoices.apply {
-                layoutManager = gridLayoutManager
-                setHasFixedSize(true)
-                adapter = pagedAdapter
-            }
+//            val pagedAdapter = SalesPagedListAdapter(viewModel, requireActivity())
+//            val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
+//            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+//                override fun getSpanSize(position: Int): Int {
+//                    val viewType = pagedAdapter.getItemViewType(position)
+//                    if (viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
+//                    else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
+//                }
+//            }
+//            rcv_invoices.apply {
+//                layoutManager = gridLayoutManager
+//                setHasFixedSize(true)
+//                adapter = pagedAdapter
+//            }
 
-            viewModel.sales.observe(viewLifecycleOwner, Observer {
-                if (it != null) {
-                    pagedAdapter.submitList(it)
-                }
-            })
-            viewModel.setCustomer(null)
+//            viewModel.sales.observe(viewLifecycleOwner, Observer {
+//                if (it != null) {
+//                    pagedAdapter.submitList(it)
+//                }
+//            })
+            //viewModel.setCustomer(null)
 
-            viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-                progress_bar.visibility =
-                    if (viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
-                if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
-                    val pack = requireContext().packageName
-                    val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
-                    viewModel.errorMessage.value = resources.getString(id)
-                    ll_error.visibility = View.VISIBLE
-                } else {
-                    ll_error.visibility = View.GONE
-                }
-
-                if (!viewModel.listIsEmpty()) {
-                    pagedAdapter.setNetworkState(it)
-                }
-            })
-
-            viewModel.networkState.observe(viewLifecycleOwner, Observer {
-                progress_bar.visibility =
-                    if (viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-            })
+//            viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
+//                progress_bar.visibility =
+//                    if (viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
+//                if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
+//                    val pack = requireContext().packageName
+//                    val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+//                    viewModel.errorMessage.value = resources.getString(id)
+//                    ll_error.visibility = View.VISIBLE
+//                } else {
+//                    ll_error.visibility = View.GONE
+//                }
+//
+//                if (!viewModel.listIsEmpty()) {
+//                    pagedAdapter.setNetworkState(it)
+//                }
+//            })
+//
+//            viewModel.networkState.observe(viewLifecycleOwner, Observer {
+//                progress_bar.visibility =
+//                    if (viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
+//            })
 
             viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
                 if (it == "Successful") {
@@ -246,6 +263,19 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 ////            }
 ////        }
 //    }
+
+    private fun loadList(term : String){
+        val list = adapter.getList().toMutableList()
+        if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            viewModel.loadData(list, term,adapter.pageCount + 1){data, pageCount ->
+                showResult(data!!, pageCount)
+            }
+        }
+    }
+
+    fun showResult(list: List<Sale>, pageCount: Int) = HandlerUtils.runOnUiThread {
+        adapter.setList(list, pageCount)
+    }
 
     override fun onDestroy() {
         super.onDestroy()

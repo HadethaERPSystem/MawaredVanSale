@@ -49,6 +49,7 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
     private lateinit var binding: ItemsFragmentBinding
     private var isFilter: String = "N"
     private var onlyBrowsing: String = "N"
+    private var subtitle: String = ""
     val viewModel by lazy {
         ViewModelProviders.of(this, factory).get(ItemsViewModel::class.java)
     }
@@ -123,7 +124,7 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
                 return false
             }
         })
-        (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_items_title)
+        //(requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_items_title)
         return binding.root
     }
 
@@ -136,19 +137,21 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
         }
         @Suppress("UNCHECKED_CAST")
         rv_product.setupGrid(requireContext(), adapter as BaseAdapter<Any>, cols)
-
+        subtitle = getString(R.string.layout_items_title)
         if(arguments != null){
             val args = ItemsFragmentArgs.fromBundle(requireArguments())
             if(args.categoryId != 0){
                 isFilter = "Y"
                 searchFilter = ItemFilter(args.categoryId, null, null)
                 viewModel.doSearch(args.categoryId, null, null)
-                (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = "${getString(R.string.layout_items_title)} (${args.categoryName})"
+                subtitle = args.categoryName
+                //(requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = "${getString(R.string.layout_items_title)} (${args.categoryName})"
             }else if(args.brandId != 0){
                 isFilter = "Y"
                 searchFilter = ItemFilter(null, args.brandId, null)
                 viewModel.doSearch(null,args.brandId, null)
-                (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = "${getString(R.string.layout_items_title)} (${args.brandName})"
+                subtitle = args.brandName
+                //(requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = "${getString(R.string.layout_items_title)} (${args.brandName})"
             }
         }
 
@@ -164,9 +167,10 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
 
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         (requireActivity() as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = subtitle
     }
 
     private fun bindUI()= GlobalScope.launch(Dispatchers.Main){

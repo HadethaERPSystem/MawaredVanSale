@@ -56,8 +56,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         viewModel.docDate.value = "${LocalDate.now()}"
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_order_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
+
         bindUI()
 
         return binding.root
@@ -80,6 +79,11 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = getString(R.string.layout_entry_sub_title)
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

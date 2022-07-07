@@ -61,6 +61,16 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         }
     }
 
+    var ageDebit: Customer ?= null
+    fun loadAgeDebit(cu_Id: Int){
+        try {
+            Coroutines.ioThenMain({ageDebit = repository.customer_getAgeDebit(cu_Id)},{})
+
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+    }
+
     fun refresh(){
         loadOrders(){
             setTotals()
@@ -80,6 +90,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
             repository.getRate(it)
         }
 
+
     fun setPriceCategory(){
         price_cat_code = if(customer != null && customer?.cu_price_cat_code != null) customer!!.cu_price_cat_code!! else "POS"
     }
@@ -98,7 +109,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         _vo_code.value = vo_code
     }
 
-    fun onSaveInvoice(Success:(() -> Unit) = {}, Fail:((String?) -> Unit) = {}) {
+    fun onSaveInvoice(Success:((Sale?) -> Unit) = {}, Fail:((String?) -> Unit) = {}) {
         if (isValidInvoice()) {
             try {
                 isRunning = true
@@ -112,10 +123,10 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                 val cu_Id = customer?.cu_ref_Id
                 val price_cat_Id = customer?.cu_price_cat_Id
                 // paid
-                val amountUSD = if(paidUSD.value == null) 0.0 else paidUSD.value!!.toDouble()
-                val change_USD = if(changeUSD.value == null) 0.0 else changeUSD.value!!.toDouble()
-                val amountIQD = if(paidIQD.value == null) 0.0 else paidIQD.value!!.toDouble()
-                val change_IQD = if(changeIQD.value == null) 0.0 else changeIQD.value!!.toDouble()
+                val amountUSD = if(paidUSD.value.isNullOrEmpty()) 0.0 else paidUSD.value!!.toDouble()
+                val change_USD = if(changeUSD.value.isNullOrEmpty()) 0.0 else changeUSD.value!!.toDouble()
+                val amountIQD = if(paidIQD.value.isNullOrEmpty()) 0.0 else paidIQD.value!!.toDouble()
+                val change_IQD = if(changeIQD.value.isNullOrEmpty()) 0.0 else changeIQD.value!!.toDouble()
                 val baseEo = Sale(
                     doc_num, "${dtFull}", "${voucher?.vo_prefix}","", user.cl_Id, user.org_Id, voucher!!.vo_Id,  cu_Id,
                     _sm_id, null, totalAmount, totalDiscount, netAmount, user.ss_cr_Id, user.sf_cr_Id, rate,false,
@@ -124,6 +135,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                 )
                 baseEo.sl_price_cat_code = price_cat_code
                 val tmpInvoiceItems = arrayListOf<Sale_Items>()
+
                for (o in orders){
                    val item = Sale_Items(0, o.od_rowNo, null, o.od_prod_Id,
                        o.od_uom_Id, o.od_pack_qty, o.od_pack_size, o.od_unit_qty, o.od_gift_qty,
@@ -145,7 +157,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                 },
                     {
                         if(it != null && it.isSuccessful){
-                            Success()
+                            Success(it.data)
                         }else{
                             Fail("Error message when try to save sale invoice. Error is ${it?.message}")
                         }
@@ -165,7 +177,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         val net = orders.sumByDouble { it.od_net_total ?: 0.0 }
         netTotal.postValue(net)
         if(rate != 0.0){
-            if(user.cr_Id == user.ss_cr_Id)
+            if(user.ss_cr_code == "$")
                 fc_amount.postValue(net * rate)
             else
                 fc_amount.postValue(net / rate)
@@ -189,7 +201,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         }
         remainAmount.value = (netAmount - paidAmount)
         if(rate != 0.0){
-            if(user.cr_Id == user.ss_cr_Id)
+            if(user.ss_cr_code == "$")
                 fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
             else
                 fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
@@ -211,10 +223,10 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         if (App.prefs.saveUser == null) {
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_currency)
         }
-        val amountUSD = if(paidUSD.value == null) 0.0 else paidUSD.value!!.toDouble()
-        val change_USD = if(changeUSD.value == null) 0.0 else changeUSD.value!!.toDouble()
-        val amountIQD = if(paidIQD.value == null) 0.0 else paidIQD.value!!.toDouble()
-        val change_IQD = if(changeIQD.value == null) 0.0 else changeIQD.value!!.toDouble()
+        val amountUSD = if(paidUSD.value.isNullOrEmpty()) 0.0 else paidUSD.value!!.toDouble()
+        val change_USD = if(changeUSD.value.isNullOrEmpty()) 0.0 else changeUSD.value!!.toDouble()
+        val amountIQD = if(paidIQD.value.isNullOrEmpty()) 0.0 else paidIQD.value!!.toDouble()
+        val change_IQD = if(changeIQD.value.isNullOrEmpty()) 0.0 else changeIQD.value!!.toDouble()
         val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
 
         if(netAmount > 0){
@@ -241,9 +253,12 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                                 R.string.msg_error_credit_limit)
                         }
                     }
-
+                    var cu_AgeDebit : Int = 0
+                    if(ageDebit != null){
+                        cu_AgeDebit = ageDebit!!.cu_DebitAge ?: 0
+                    }
                     if (customer?.cu_credit_days != null && customer?.cu_credit_days != 0) {
-                        if (customer!!.cu_credit_age > customer!!.cu_credit_days!!) {
+                        if (cu_AgeDebit > customer!!.cu_credit_days!!) {
                             msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
                                 R.string.msg_error_credit_limit)
                         }
@@ -349,6 +364,23 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
 
         if (App.prefs.saveUser == null) {
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_currency)
+        }
+        val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
+
+        if (customer!!.cu_credit_limit!! < netAmount) {
+            msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
+                R.string.msg_error_credit_limit)
+        }
+
+        var cu_AgeDebit : Int = 0
+        if(ageDebit != null){
+            cu_AgeDebit = ageDebit!!.cu_DebitAge ?: 0
+        }
+        if (customer?.cu_credit_days != null && customer?.cu_credit_days != 0) {
+            if (cu_AgeDebit > customer!!.cu_credit_days!!) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
+                    R.string.msg_error_credit_limit)
+            }
         }
 
         if (!msg.isNullOrEmpty()) {

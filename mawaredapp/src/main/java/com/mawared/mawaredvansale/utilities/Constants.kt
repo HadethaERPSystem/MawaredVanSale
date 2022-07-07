@@ -65,8 +65,8 @@ const val API_KEY = ""
 //const val BASE_URL = "http://10.200.0.34/mderp.WebAPI/"
 
 //192.168.1.14
-//const val BASE_URL_API = "http://192.168.1.14/mderp.WebAPI/api/"
-//const val BASE_URL = "http://192.168.1.14/mderp.WebAPI/"
+//const val BASE_URL_API = "http://192.168.1.230/mderp.WebAPI/api/"
+//const val BASE_URL = "http://192.168.1.230/mderp.WebAPI/"
 
 //const val BASE_URL_API = "http://192.168.1.18/mderp.WebAPI/api/"
 //const val BASE_URL = "http://192.168.1.18/mderp.WebAPI/"
@@ -74,12 +74,12 @@ const val API_KEY = ""
 //===========================================================================
 //=================== AL-RAAQI live =========================================
 // AL-RAAQI live
-// DEMO
-//const val BASE_URL_API = "http://185.80.42.118:1881/api/"
-//const val BASE_URL = "http://185.80.42.118:1881/"
-// LIVE
-//const val BASE_URL_API = "http://185.80.42.118:1882/api/"
-//const val BASE_URL = "http://185.80.42.118:1882/"
+// Live
+//const val BASE_URL_API = "http://185.80.42.51:1818/api/"
+//const val BASE_URL = "http://185.80.42.51:1818/"
+// Demo
+//const val BASE_URL_API = "http://185.80.42.51:1717/api/"
+//const val BASE_URL = "http://185.80.42.51:1717/"
 
 // new
 //const val BASE_URL_API = "http://185.80.42.118:5009/api/"
@@ -103,6 +103,16 @@ const val BASE_URL_API = "http://185.80.42.51:7711/api/"
 const val BASE_URL = "http://185.80.42.51:7711/"
 //const val BASE_URL_API = "http://10.200.0.22:7711/api/"
 //const val BASE_URL = "http://10.200.0.22:7711/"
+
+//=============================================================================
+//====================== AL-SAJI ==============================================
+// Live //7667
+//const val BASE_URL_API = "http://185.80.42.50:8855/api/"
+//const val BASE_URL = "http://185.80.42.50:8855/"
+// Demo
+//const val BASE_URL_API = "http://185.80.42.50:8844/api/"
+//const val BASE_URL = "http://185.80.42.50:8844/"
+
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 
@@ -167,7 +177,7 @@ const val URL_CUSTOMERS_ON_PAGES = "${BASE_URL_API}PDAMasterData/Customers_GetOn
 const val URL_SCHEDULE_CUSTOMERS_ON_PAGES = "${BASE_URL_API}PDAMasterData/Customers_ScheduleOnPages"
 const val URL_CUSTOMER_BY_Id = "${BASE_URL_API}PDAMasterData/Customer_GetById"
 const val URL_INSERT_CUSTOMER = "${BASE_URL_API}PDAMasterData/Customer_SaveOrUpdate"
-
+const val URL_CUSTOMER_AgeDebit = "${BASE_URL_API}PDAMasterData/Customer_GetAgeDebit"
 const val URL_ALL_CUSTOMER_GROUP = "${BASE_URL_API}PDAMasterData/CG_GetByTerm"
 const val URL_ALL_CUSTOMER_CATEGORY = "${BASE_URL_API}PDAMasterData/CustomerCategory_GetByTerm"
 const val URL_ALL_CPT = "${BASE_URL_API}PDAMasterData/CPT_GetByTerm"
@@ -223,7 +233,11 @@ const val URL_SALES_FOR_SALESMAN = "${BASE_URL_API}Sale/Invoice_GetBySalesmanId"
 const val URL_SALES_ON_PAGES = "${BASE_URL_API}Sale/Invoice_GetOnPages"
 const val URL_SALES_DELETE = "${BASE_URL_API}Sale/Invoice_DeleteById"
 
-const val URL_SALES_ITEMS = "${BASE_URL_API}Sale/SaleItem_GetByMasterId"
+const val URL_INVENTORY_LINES_ITEMS = "${BASE_URL_API}PDAMasterData/InvLines_GetForStockOutByMasterId"
+const val URL_INVENTORY_ON_SEARCH = "${BASE_URL_API}PDAMasterData/InvDoc_GetByTermOnPages"
+
+const val URL_INVENTORY_IN_LINES_ITEMS = "${BASE_URL_API}PDAMasterData/InvInLines_GetForStockOutByMasterId"
+const val URL_INVENTORY_IN_ON_SEARCH = "${BASE_URL_API}PDAMasterData/InvDocIn_GetByTermOnPages"
 
 // Sale Return URL
 const val URL_ADD_SALE_RETURN = "${BASE_URL_API}Sale_Return/AddSaleReturn"
@@ -260,18 +274,15 @@ const val URL_ORDER_DELETE = "${BASE_URL_API}Sale_Order/Order_DeleteById"
 const val URL_ORDER_ITEMS = "${BASE_URL_API}Sale_Order/GetByMasterId"
 
 // INVENTORY STOCK-IN URL
-const val URL_ADD_STOCK_IN = "${BASE_URL_API}StockIn/Insert"
-const val URL_UPDATE_STOCK_IN = "${BASE_URL_API}StockIn/Update"
-const val URL_STOCK_IN_BY_ID = "${BASE_URL_API}StockIn/GetById"
-const val URL_STOCK_IN_BY_CUSTOMERS = "${BASE_URL_API}StockIn/GetByCustomerId"
-const val URL_STOCK_IN_ITEMS = "${BASE_URL_API}StockIn/GetByMasterId"
+const val URL_ADD_STOCK_IN = "${BASE_URL_API}Stockin/AddStockin"
+const val URL_STOCK_IN_ON_PAGES = "${BASE_URL_API}Stockin/Stockin_GetOnPages"
+const val URL_STOCK_IN_BY_ID = "${BASE_URL_API}Stockin/Stockin_GetById"
+
 
 // INVENTORY STOCK-OUT URL
-const val URL_ADD_STOCK_OUT = "${BASE_URL_API}StockOut/Insert"
-const val URL_UPDATE_STOCK_OUT = "${BASE_URL_API}StockOut/Update"
-const val URL_STOCK_OUT_BY_ID = "${BASE_URL_API}StockOut/GetById"
-const val URL_STOCK_OUT_BY_CUSTOMERS = "${BASE_URL_API}StockOut/GetByCustomerId"
-const val URL_STOCK_OUT_ITEMS = "${BASE_URL_API}StockOut/GetByMasterId"
+const val URL_ADD_STOCK_OUT = "${BASE_URL_API}Stockout/AddStockout"
+const val URL_STOCK_OUT_BY_ID = "${BASE_URL_API}Stockout/Stockout_GetById"
+const val URL_STOCK_OUT_ON_PAGES = "${BASE_URL_API}Stockout/Stockout_GetOnPages"
 
 // Transfer URL
 const val URL_ADD_TRANSFER = "${BASE_URL_API}Transfer/transfer_SaveOrUpdate"

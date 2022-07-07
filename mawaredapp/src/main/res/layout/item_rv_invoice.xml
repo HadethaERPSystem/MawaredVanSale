@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        app:cardCornerRadius="@dimen/_10dp"
+        app:cardElevation="6dp"
+        app:cardMaxElevation="6dp"
+        app:contentPadding="5dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/lbl_refNo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:hint="@string/lbl_ref_doc_no"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_ref_no"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_refNo"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_1"
+                app:layout_constraintTop_toTopOf="@+id/lbl_refNo" />
+
+            <TextView
+                android:id="@+id/lbl_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:hint="@string/lbl_doc_date"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="@+id/doc_ref_no"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_3"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_2"
+                app:layout_constraintTop_toTopOf="@+id/doc_ref_no"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_ref_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_date"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_3"
+                app:layout_constraintTop_toTopOf="@+id/lbl_date" />
+
+            <TextView
+                android:id="@+id/lbl_whsNo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:hint="@string/lbl_whs_no"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_refNo"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_whs_no"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_whsNo"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_1"
+                app:layout_constraintTop_toTopOf="@+id/lbl_whsNo" />
+
+            <TextView
+                android:id="@+id/lbl_count"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:hint="@string/lbl_items_no"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="@+id/doc_whs_no"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_3"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_2"
+                app:layout_constraintTop_toTopOf="@+id/doc_whs_no"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_items_no"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_count"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_3"
+                app:layout_constraintTop_toTopOf="@+id/lbl_count" />
+
+            <TextView
+                android:id="@+id/lbl_bpName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:hint="@string/lbl_customer_name"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toTopOf="@+id/view2"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_whsNo"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_entry_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_bpName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_1"
+                app:layout_constraintTop_toTopOf="@+id/lbl_bpName" />
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:foreground="@color/yellow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl_v_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.18" />
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl_v_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.62" />
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl_v_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.78" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</RelativeLayout>

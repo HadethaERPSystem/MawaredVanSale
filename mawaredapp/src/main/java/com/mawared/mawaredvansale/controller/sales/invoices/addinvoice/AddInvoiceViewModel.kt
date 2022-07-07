@@ -125,6 +125,15 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
             masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id)
         }
 
+    var ageDebit: Customer ?= null
+    fun loadAgeDebit(cu_Id: Int){
+        try {
+            Coroutines.ioThenMain({ageDebit = masterDataRepository.customer_getAgeDebit(cu_Id)},{})
+
+        }catch (e: java.lang.Exception){
+            e.printStackTrace()
+        }
+    }
     //------------- set function
     fun setInvoiceId(id: Int){
         if(sl_id.value == id){
@@ -244,7 +253,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
         val net = invoiceItems.value!!.sumByDouble { it.sld_net_total ?: 0.0 }
         netTotal.postValue(net)
         if(rate != 0.0){
-            if(user.cr_Id == user.ss_cr_Id)
+            if(user.ss_cr_code == "$")
                 fc_amount.postValue(net * rate)
             else
                 fc_amount.postValue(net / rate)
@@ -268,7 +277,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
        }
        remainAmount.value = (netAmount - paidAmount)
        if(rate != 0.0){
-           if(user.cr_Id == user.ss_cr_Id)
+           if(user.ss_cr_code == "$")
                fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
            else
                fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
@@ -321,8 +330,12 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                         }
                     }
 
+                    var cu_AgeDebit : Int = 0
+                    if(ageDebit != null){
+                        cu_AgeDebit = ageDebit!!.cu_DebitAge ?: 0
+                    }
                     if (selectedCustomer?.cu_credit_days != null && selectedCustomer?.cu_credit_days != 0) {
-                        if (selectedCustomer!!.cu_credit_age > selectedCustomer!!.cu_credit_days!!) {
+                        if (cu_AgeDebit > selectedCustomer!!.cu_credit_days!!) {
                             msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_credit_limit)
                         }
                     }

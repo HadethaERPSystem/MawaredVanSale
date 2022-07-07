@@ -33,6 +33,9 @@ import kotlinx.coroutines.Dispatchers.Main
 import org.threeten.bp.LocalDate
 
 import android.graphics.Bitmap
+import com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDoc
+import com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDocLines
+import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
 
 
 private val MINIMUM_INTERVAL = 6
@@ -409,6 +412,20 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                     }
                 }
             }
+        }
+    }
+
+    override suspend fun customer_getAgeDebit(cu_Id: Int): Customer? {
+        try {
+            val response =
+                apiRequest { api.customer_getAgeDebit(cu_Id) }
+            if (response.isSuccessful) {
+                return response.data
+            }
+            return null
+        } catch (e: NoConnectivityException) {
+            Log.e("Connectivity", "No internat connection", e)
+            return null
         }
     }
 
@@ -1544,6 +1561,104 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                     }
                 }
             }
+        }
+    }
+
+    // Get Document for stock-out
+    override suspend fun saleItemsForStockout(sl_Id: Int, term: String,  whsId: Int, sotType: String, page: Int): List<InventoryDocLines>?{
+        _networkState.postValue(NetworkState.LOADING)
+        try {
+            val response = apiRequest { api.InvDocLinessByDocEntry(sl_Id, term, whsId, sotType, page, POST_PER_PAGE) }
+            if(response.isSuccessful){
+                return response.data
+            }
+            return emptyList()
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }catch (e: java.lang.Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Connectivity", "Exception", e)
+            return emptyList()
+        }
+    }
+
+    override suspend fun invoices_SearchOnPages(term: String, whsId: Int, sotType: String, page: Int): List<InventoryDoc>? {
+        _networkState.postValue(NetworkState.LOADING)
+        try {
+            val response = apiRequest { api.InvDoc_SearchOnPages(term, whsId, sotType, page, POST_PER_PAGE) }
+            if(response.isSuccessful){
+                return response.data
+            }
+            return emptyList()
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("ApiError", "No internat connection", e)
+            return emptyList()
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }catch (e: java.lang.Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Error", "Exception", e)
+            return emptyList()
+        }
+    }
+
+    // Get Document for stock-in
+    override suspend fun doclinesForStockin(sl_Id: Int, term: String,  whsId: Int, sotType: String, page: Int): List<InventoryDocLines>?{
+        _networkState.postValue(NetworkState.LOADING)
+        try {
+            val response = apiRequest { api.InvDocInLinessByDocEntry(sl_Id, term, whsId, sotType, page, POST_PER_PAGE) }
+            if(response.isSuccessful){
+                return response.data
+            }
+            return emptyList()
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }catch (e: java.lang.Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Connectivity", "Exception", e)
+            return emptyList()
+        }
+    }
+
+    override suspend fun docforStockin_SearchOnPages(term: String, whsId: Int, sotType: String, page: Int): List<InventoryDoc>? {
+        _networkState.postValue(NetworkState.LOADING)
+        try {
+            val response = apiRequest { api.InvDocIn_SearchOnPages(term, whsId, sotType, page, POST_PER_PAGE) }
+            if(response.isSuccessful){
+                return response.data
+            }
+            return emptyList()
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("ApiError", "No internat connection", e)
+            return emptyList()
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }catch (e: java.lang.Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Error", "Exception", e)
+            return emptyList()
         }
     }
 

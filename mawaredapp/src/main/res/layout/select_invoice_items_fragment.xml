@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_selectedItems"
+    tools:context=".controller.inventory.stockout.addstockout.SelectInvoiceItemsFragment">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/search_cv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            app:cardCornerRadius="@dimen/_10dp"
+            app:cardElevation="@dimen/_10dp">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/search_bg"
+                android:iconifiedByDefault="false"
+                android:queryBackground="@color/transparent"
+                android:queryHint="Type here to search"
+                app:queryHint="Type here to Search"
+                android:theme="@style/ThemeOverlay.Search" />
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_selectInvoiceItems"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_below="@id/search_cv"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_rv_invoice_item" />
+
+    <include
+        android:id="@+id/progress_bar_si"
+        layout="@layout/layout_progress_bar_with_text"
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+</RelativeLayout>

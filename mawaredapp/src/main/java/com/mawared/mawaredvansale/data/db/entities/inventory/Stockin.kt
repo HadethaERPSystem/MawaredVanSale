@@ -2,35 +2,42 @@ package com.mawared.mawaredvansale.data.db.entities.inventory
 
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
 
 data class Stockin(
-    var sin_clientId: Int?,         // client Id
-    var sin_orgId: Int?,            // organization Id
-    @Ignore
-    var sin_org_name: String,
-    var sin_doc_no: Int?,
-    var sin_doc_date: String?,
-    var sin_prefix: String?,
-    var sin_vo_Id: Int?,
-    @Ignore
-    var sin_vo_name: String?,
-    var sin_entry_Id: Int?,
-    var sin_entry_refno: String?,
-    @Ignore
-    var sin_ref_no: String?,
-    var sin_inv_status: String?,
-    @Ignore
-    var sin_inv_status_name: String?,
-    var sin_warehouse_Id: Int?,
-    @Ignore
-    var sin_warehouse_name: String?,
-    var sin_isDeleted: Boolean?,
+    var doc_clientId: Int?,         // client Id
+    var doc_orgId: Int?,            // organization Id
+
+    var doc_no: Int?,
+    var doc_date: String?,
+    var prefix: String?,
+    var vo_Id: Int?,
+    var vo_name: String?,
+    var vo_code: String?,
+    var bp_Id: Int?,
+    var baseDocEntry: Int?,
+    var baseRefno: String?,
+    var invStatus: String?,
+
+    var whsId: Int?,
+    var whsName: String?,
+    var isDeleted: Boolean?,
+    var notes: String?,
+
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime
     var updated_by: String?         // Updated user
 ) {
     @PrimaryKey(autoGenerate = false)
-    var sin_Id: Int = 0
-    var sin_itemsno = 0
+    var docEntry: Int = 0
+    var org_name: String? = null
+    var refNo: String? = null
+    var bpName: String? = null
+    var invStatusName: String? = null
+
+    @Ignore
+    var docLines: ArrayList<Stockin_Items> = arrayListOf()
+    @Ignore
+    var docDelLines: ArrayList<Stockin_Items> = arrayListOf()
 }

@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        app:cardCornerRadius="@dimen/_10dp"
+        app:cardElevation="6dp"
+        app:cardMaxElevation="6dp"
+        app:contentPadding="2dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/lbl_prod_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="@string/lbl_prod_name"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_prod_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:padding="2dp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_11ssp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_prod_name"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_3"
+                app:layout_constraintTop_toTopOf="@+id/lbl_prod_name" />
+
+
+            <TextView
+                android:id="@+id/lbl_qty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="@string/lbl_qty"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="@+id/doc_prod_name"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_2"
+                app:layout_constraintTop_toTopOf="@+id/doc_prod_name"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_qty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:padding="2dp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_11ssp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_qty"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/lbl_qty" />
+
+            <TextView
+                android:id="@+id/lbl_pack"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="@string/lbl_pack_qty"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/doc_prod_name"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_pack_qty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:padding="2dp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_11ssp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_pack"
+                app:layout_constraintEnd_toStartOf="@+id/gl_v_2"
+                app:layout_constraintStart_toEndOf="@+id/lbl_pack"
+                app:layout_constraintTop_toTopOf="@+id/lbl_pack" />
+
+            <TextView
+                android:id="@+id/lbl_pack_size"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center_vertical|center_horizontal"
+                android:hint="@string/lbl_pack_size"
+                android:textSize="11sp"
+                app:layout_constraintBottom_toBottomOf="@+id/doc_pack_qty"
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintStart_toStartOf="@+id/gl_v_2"
+                app:layout_constraintTop_toTopOf="@+id/doc_pack_qty"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/doc_pack_size"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start|center_vertical"
+                android:padding="2dp"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_pack_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline10"
+                app:layout_constraintTop_toTopOf="@+id/lbl_pack_size" />
+
+            <!-- Parent layout -->
+            <LinearLayout
+                android:id="@+id/layout_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="2dp"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:background="@color/gray"
+                app:layout_constraintBottom_toTopOf="@+id/view2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/doc_pack_qty">
+                <!-- Child layout -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/lbl_loc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:hint="@string/item_location"
+                        android:textSize="11sp"
+                        tools:ignore="SmallSp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rcv_items_loc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="5dp"
+                        tools:listitem="@layout/item_lv_locations" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/lbl_sloc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:fontFamily="@font/droid_kufi_regular"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:hint="@string/lbl_selected_locations"
+                        android:textSize="11sp"
+                        tools:ignore="SmallSp"
+                        android:background="@color/inputbackcolor"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rcv_items_selectedLoc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@color/inputbackcolor"
+                        tools:listitem="@layout/item_lv_locations" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:foreground="@color/yellow"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.85" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl_v_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.69" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl_v_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.17" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl_v_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

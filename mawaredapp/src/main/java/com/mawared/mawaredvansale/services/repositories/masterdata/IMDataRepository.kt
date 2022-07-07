@@ -2,6 +2,8 @@ package com.mawared.mawaredvansale.services.repositories.masterdata
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
+import com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDoc
+import com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDocLines
 import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.md.Currency
 import com.mawared.mawaredvansale.data.db.entities.reports.customer.CustomerStatus
@@ -36,7 +38,7 @@ interface IMDataRepository {
     fun insertCustomer(baseEo: Customer): LiveData<Customer>
     fun getCustomerStatus(cu_Id: Int): LiveData<CustomerStatus>
     suspend fun customerSaveOrUpdate(baseEo: Customer): ResponseSingle<Customer>
-
+    suspend fun customer_getAgeDebit(cu_Id: Int): Customer?
     // Customer Payment Type
     fun getCptAll(term: String): LiveData<List<Customer_Payment_Type>>
 
@@ -101,4 +103,11 @@ interface IMDataRepository {
     fun getInvoicsByTerm(cu_Id: Int?, term: String): LiveData<List<Sale>>
     fun getWarrantyByTerm(cu_Id: Int?, term: String): LiveData<List<Warranty>>
     fun cancelJob()
+
+    // functions for get document for stockout
+    suspend fun invoices_SearchOnPages(term: String, whsId: Int, sotType: String, page: Int): List<InventoryDoc>?
+    suspend fun saleItemsForStockout(sl_Id: Int, term: String,  whsId: Int, sotType: String, page: Int): List<InventoryDocLines>?
+
+    suspend fun docforStockin_SearchOnPages(term: String, whsId: Int, sotType: String, page: Int): List<InventoryDoc>?
+    suspend fun doclinesForStockin(sl_Id: Int, term: String,  whsId: Int, sotType: String, page: Int): List<InventoryDocLines>?
 }

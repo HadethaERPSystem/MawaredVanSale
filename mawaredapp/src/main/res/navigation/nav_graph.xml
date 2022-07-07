@@ -64,6 +64,18 @@
         <action
             android:id="@+id/action_dashboardFragment_to_customerFragment"
             app:destination="@id/customerFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_stockInFragment"
+            app:destination="@id/stockInFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_stockOutFragment"
+            app:destination="@id/stockOutFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_selectStockOutTypeFragment"
+            app:destination="@id/selectStockOutTypeFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_selectStockInTypeFragment"
+            app:destination="@id/selectStockInTypeFragment" />
     </fragment>
     <fragment
             android:id="@+id/invoicesFragment"
@@ -399,5 +411,126 @@
             android:id="@+id/action_customerFragment_to_customerEntryFragment"
             app:destination="@id/customerEntryFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/stockInFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockin.stockinlist.StockInFragment"
+        android:label="@string/layout_stock_in_list_title" >
+        <action
+            android:id="@+id/action_stockInFragment_to_addStockInFragment"
+            app:destination="@id/addStockInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/stockOutFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockout.stockoutlist.StockOutFragment"
+        android:label="@string/layout_stock_out_list_title" >
+        <action
+            android:id="@+id/action_stockOutFragment_to_addStockOutFragment"
+            app:destination="@id/addStockOutFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectInvoiceFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockout.addstockout.SelectInvoiceFragment"
+        android:label="@string/layout_select_invoice_title"
+        tools:layout="@layout/select_invoice_fragment" >
+        <action
+            android:id="@+id/action_selectInvoiceFragment_to_selectInvoiceItemsFragment"
+            app:destination="@id/selectInvoiceItemsFragment" />
+        <argument
+            android:name="sotType"
+            app:argType="string"
+            android:defaultValue="Sale" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectInvoiceItemsFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockout.addstockout.SelectInvoiceItemsFragment"
+        android:label="@string/select_invoice_items_title"
+        tools:layout="@layout/select_invoice_items_fragment" >
+        <argument
+            android:name="sale"
+            app:argType="com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDoc"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="sotType"
+            app:argType="string"
+            android:defaultValue="Sale" />
+    </fragment>
+    <fragment
+        android:id="@+id/addStockOutFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockout.detail.AddStockOutFragment"
+        android:label="@string/layout_stock_out_list_title"
+        tools:layout="@layout/add_stock_out_fragment" >
+        <argument
+            android:name="docId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="mode"
+            app:argType="string"
+            android:defaultValue="Add" />
+    </fragment>
+    <fragment
+        android:id="@+id/addStockInFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockin.detail.AddStockInFragment"
+        android:label="@string/layout_stock_in_list_title"
+        tools:layout="@layout/add_stock_in_fragment">
+
+        <argument
+            android:name="docId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="mode"
+            app:argType="string"
+            android:defaultValue="Add" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectStockOutTypeFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockout.addstockout.SelectStockOutTypeFragment"
+        android:label="@string/layout_select_type_of_stock_out"
+        tools:layout="@layout/select_stock_out_type_fragment" >
+        <action
+            android:id="@+id/action_selectStockOutTypeFragment_to_selectInvoiceFragment"
+            app:destination="@id/selectInvoiceFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/selectStockInTypeFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockin.addstockin.SelectStockInTypeFragment"
+        android:label="@string/layout_select_type_of_stock_in"
+        tools:layout="@layout/select_stock_in_type_fragment" >
+        <action
+            android:id="@+id/action_selectStockInTypeFragment_to_selectDocForStockinFragment"
+            app:destination="@id/selectDocForStockinFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectDocForStockinFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockin.addstockin.SelectDocForStockinFragment"
+        android:label="@string/layout_select_invoice_for_stock_in"
+        tools:layout="@layout/select_doc_for_stockin_fragment" >
+        <argument
+            android:name="sinType"
+            app:argType="string"
+            android:defaultValue="Sale" />
+        <action
+            android:id="@+id/action_selectDocForStockinFragment_to_selectDocForStockinItemsFragment"
+            app:destination="@id/selectDocForStockinItemsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectDocForStockinItemsFragment"
+        android:name="com.mawared.mawaredvansale.controller.inventory.stockin.addstockin.SelectDocForStockinItemsFragment"
+        android:label="@string/layout_select_items_for_stock_in"
+        tools:layout="@layout/select_doc_for_stockin_items_fragment" >
+        <argument
+            android:name="sale"
+            app:argType="com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDoc"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="sinType"
+            app:argType="string"
+            android:defaultValue="Purchase" />
+    </fragment>
+
 
 </navigation>

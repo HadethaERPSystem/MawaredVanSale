@@ -23,6 +23,7 @@ import com.mawared.mawaredvansale.utilities.Coroutines
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import kotlin.math.exp
 
 class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, private val masterdataRepository: IMDataRepository) : BaseViewModel() {
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
@@ -285,20 +286,48 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         try {
             val strDate = LocalDate.now()
             val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id && it.srd_ref_rowNo == ref_rowNo && it.srd_Id == ref_Id }//&& it.srd_batch_no == selectedInvoice!!.pr_batch_no && it.srd_expiry_date == selectedInvoice!!.pr_expiry_date }
-            val qty = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0 + (if(mItem?.srd_pack_qty != null)   mItem.srd_pack_qty!! else 0.0)
-            val lineTotal = unitPrice * qty
+            val pQty = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0 + (if(mItem?.srd_pack_qty != null)   mItem.srd_pack_qty!! else 0.0)
+            //unitPrice = if(selectedInvoice != null) selectedInvoice!!.pr_unit_price!! else unitPrice
+            var unitPrice_afd = unitPrice
+            if(selectedInvoice != null) {
+                if(selectedInvoice?.pr_price_AfD!! > 0.0){
+                    unitPrice_afd = selectedInvoice!!.pr_price_AfD!!
+                }else{
+                    unitPrice_afd = selectedInvoice!!.pr_unit_price!!
+                }
+            }
+            else{ unitPrice_afd = unitPrice }
+
+            val lineTotal = unitPrice_afd * pQty
+            var qty: Double = pQty // if(selectedInvoice != null) selectedInvoice!!.pr_NumInSale!! else 1.0
+            var paksize: Double = 1.0
             val netTotal = lineTotal
+            var disPer: Double = 0.0
+            var disValue : Double = 0.0
+            var pr_expiry_date: String? = null
+            var pr_mfg_date: String? = null
+            var pr_batch_no: String? = null
+
+            if(selectedInvoice != null){
+                paksize = selectedInvoice!!.pr_NumInSale!!
+                qty = pQty * paksize
+                disPer = selectedInvoice!!.pr_dis_per ?: 0.0
+                disValue = if(disPer > 0.0) lineTotal * (1-(disPer / 100)) else 0.0
+                pr_expiry_date = selectedInvoice!!.pr_expiry_date
+                pr_mfg_date = selectedInvoice!!.pr_mfg_date
+                pr_batch_no = selectedInvoice!!.pr_batch_no
+            }
             val user = App.prefs.saveUser
 
             if(mItem == null){
                 rowNo++
-                val itemEo = Sale_Return_Items(0, rowNo, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, qty, 1.00, qty, unitPrice,
-                    lineTotal, 0.0, 0.0, netTotal, null, null, null, _wr_id, ref_rowNo, ref_Id, ref_no,
-                    selectedInvoice!!.pr_batch_no, selectedInvoice!!.pr_expiry_date,  selectedInvoice!!.pr_mfg_date,"$strDate",
+                val itemEo = Sale_Return_Items(0, rowNo, selectedProduct!!.pr_Id, selectedInvoice!!.pr_uom_Id, pQty, paksize, qty, unitPrice_afd,
+                    lineTotal, disPer, disValue, netTotal, null, null, null, _wr_id, ref_rowNo, ref_Id, ref_no,
+                    pr_batch_no, pr_expiry_date,  pr_mfg_date,"$strDate",
                     "${user?.id}", "$strDate", "${user?.id}")
 
-                itemEo.srd_prod_name = selectedProduct!!.pr_description_ar
-                itemEo.srd_barcode = selectedProduct!!.pr_barcode
+                itemEo.srd_prod_name = selectedProduct?.pr_description_ar ?: ""
+                itemEo.srd_barcode = selectedProduct?.pr_barcode ?: ""
 
                 tmpSRItems.add(itemEo)
             }
@@ -354,7 +383,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_product)
         }
 
-        if (unitPrice == 0.0 || unitPrice.toInt() == 0) {
+        if (unitPrice == 0.0) {
             msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_price)
         }
 

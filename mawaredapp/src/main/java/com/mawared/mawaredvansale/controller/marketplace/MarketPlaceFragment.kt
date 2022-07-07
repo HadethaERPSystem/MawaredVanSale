@@ -67,10 +67,16 @@ class MarketPlaceFragment : ScopedFragment(), KodeinAware {
 
         try {
             if (navController != null) {
+                binding.cartCard.setOnClickListener {
+                    val bundle = Bundle()
+                    bundle.putSerializable("customer", viewModel.customer)
+                    bundle.putString("vocode", viewModel.vocode)
+                    navController!!.navigate(R.id.cartFragment, bundle)
+                }
                 //bottomNavigationView.setupWithNavController(navController)
                 //val navController = Navigation.findNavController(requireActivity(), R.id.container_fragment)
                 NavigationUI.setupWithNavController(bottomNavView!!, navController)
-                NavigationUI.setupActionBarWithNavController(requireActivity() as AppCompatActivity, navController, null)
+                //NavigationUI.setupActionBarWithNavController(requireActivity() as AppCompatActivity, navController, null)
                 bottomNavView!!.setupWithNavController(navController)
 
                 val appBarConfiguration = AppBarConfiguration(setOf(R.id.itemsFragment, R.id.categoryFragment, R.id.brandFragment, R.id.offersFragment, R.id.cartFragment))
@@ -78,12 +84,7 @@ class MarketPlaceFragment : ScopedFragment(), KodeinAware {
 
             }
 
-            binding.cartCard.setOnClickListener {
-                val bundle = Bundle()
-                bundle.putSerializable("customer", viewModel.customer)
-                bundle.putString("vocode", viewModel.vocode)
-                navController!!.navigate(R.id.cartFragment, bundle)
-            }
+
 
         }catch (e: Exception){
             e.printStackTrace()

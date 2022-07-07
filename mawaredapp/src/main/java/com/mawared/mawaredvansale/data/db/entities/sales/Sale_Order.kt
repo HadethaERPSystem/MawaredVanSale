@@ -55,8 +55,8 @@ data class Sale_Order (
     @Ignore
     var so_region_name: String? = null
     var so_price_cat_code: String? = null
-    var sod_status_code: String? = null
-
+    var so_status_code: String? = null
+    var so_status_name: String? = null
     @Ignore
     var items: ArrayList<Sale_Order_Items> = arrayListOf()
     @Ignore

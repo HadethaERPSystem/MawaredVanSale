@@ -24,30 +24,30 @@ import java.lang.Exception
 class InvoiceRepositoryImp(private val api: ApiService): IInvoiceRepository, SafeApiRequest() {
     var job: CompletableJob? = null
 
-    lateinit var pagedList: LiveData<PagedList<Sale>>
-    lateinit var saleDataSourceFactory: InvoiceDataSourceFactory
+    //lateinit var pagedList: LiveData<PagedList<Sale>>
+    //lateinit var saleDataSourceFactory: InvoiceDataSourceFactory
 
     private val _networkState = MutableLiveData<NetworkState>()
     override val networkState: LiveData<NetworkState>
         get() = _networkState
 
-    override fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Sale>> {
-        saleDataSourceFactory = InvoiceDataSourceFactory(api, sm_Id, cu_Id)
+//    override fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Sale>> {
+//        saleDataSourceFactory = InvoiceDataSourceFactory(api, sm_Id, cu_Id)
+//
+//
+//        val config: PagedList.Config = PagedList.Config.Builder()
+//            .setEnablePlaceholders(false)
+//            .setPageSize(POST_PER_PAGE)
+//            .build()
+//
+//        pagedList = LivePagedListBuilder(saleDataSourceFactory, config).build()
+//
+//        return pagedList
+//    }
 
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        pagedList = LivePagedListBuilder(saleDataSourceFactory, config).build()
-
-        return pagedList
-    }
-
-    override fun getSaleNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<InvoiceDataSource, NetworkState>(saleDataSourceFactory.saleLiveDataSource, InvoiceDataSource::networkState)
-    }
+//    override fun getSaleNetworkState(): LiveData<NetworkState> {
+//        return Transformations.switchMap<InvoiceDataSource, NetworkState>(saleDataSourceFactory.saleLiveDataSource, InvoiceDataSource::networkState)
+//    }
 
     override fun insert(baseEo: Sale): LiveData<Sale> {
         job = Job()
@@ -93,6 +93,8 @@ class InvoiceRepositoryImp(private val api: ApiService): IInvoiceRepository, Saf
             throw e
         }
     }
+
+
     override fun getInvoices(sm_Id: Int, cu_Id: Int?): LiveData<List<Sale>> {
         job = Job()
         _networkState.postValue(NetworkState.LOADING)
@@ -181,33 +183,27 @@ class InvoiceRepositoryImp(private val api: ApiService): IInvoiceRepository, Saf
         }
     }
 
-    override fun getItemByInvoiceId(sl_Id: Int): LiveData<List<Sale_Items>>{
-        job = Job()
-        _networkState.postValue(NetworkState.LOADING)
-        return object : LiveData<List<Sale_Items>>() {
-            override fun onActive() {
-                super.onActive()
-                job?.let {
-                    CoroutineScope(IO).launch {
-                        try {
-                            val response = apiRequest { api.getInvoiceItemsByInvoiceId(sl_Id) }
-                            withContext(Main) {
-                                value = response.data
-                                _networkState.postValue(NetworkState.LOADED)
-                                job?.complete()
-                            }
-                        }catch (e: ApiException){
-                            _networkState.postValue(NetworkState.ERROR_CONNECTION)
-                            Log.e("Connectivity", "No internat connection", e)
-                            return@launch
-                        }catch (e: Exception){
-                            _networkState.postValue(NetworkState.ERROR)
-                            Log.e("Exception", "Error exception when call getItemByInvoiceId", e)
-                            return@launch
-                        }
-                    }
-                }
+
+    override suspend fun invoices_OnPages(sm_Id: Int, term: String, page: Int): List<Sale>? {
+        try {
+            val response = apiRequest { api.sales_OnPages(sm_Id, term, page, POST_PER_PAGE) }
+            if(response.isSuccessful){
+                return response.data
             }
+            return emptyList()
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("ApiError", "No internat connection", e)
+            return emptyList()
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }catch (e: Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Error", "Exception", e)
+            return emptyList()
         }
     }
 

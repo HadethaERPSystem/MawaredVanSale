@@ -56,9 +56,6 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
         savedInstanceState: Bundle?
     ): View? {
 
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_transfer_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
-
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.transfer_entry_fragment, container, false)
         viewModel.addNavigator = this
@@ -99,6 +96,11 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
 
         super.onCreate(savedInstanceState)
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = getString(R.string.layout_entry_sub_title)
     }
     fun initBarcode() {
         // this for activity

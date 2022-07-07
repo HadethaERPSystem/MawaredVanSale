@@ -153,6 +153,20 @@ class MawaredPdf: PdfPageEventHelper(){
                 cell.verticalAlignment = Element.ALIGN_TOP
                 table.addCell(cell)
 
+                // Uom
+
+                cell = PdfPCell(Phrase(9F, r.sld_uom_name, fontStyle))
+                cell.setPadding(5F)
+                if(isRTL){
+                    cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+                    cell.horizontalAlignment = Element.ALIGN_LEFT
+                }else{
+                    cell.horizontalAlignment = Element.ALIGN_LEFT
+                }
+
+                cell.verticalAlignment = Element.ALIGN_TOP
+                table.addCell(cell)
+
                 cell = PdfPCell(Phrase(9F, df1.format(r.sld_gift_qty), fontStyle))
                 cell.setPadding(5F)
                 cell.runDirection = PdfWriter.RUN_DIRECTION_RTL

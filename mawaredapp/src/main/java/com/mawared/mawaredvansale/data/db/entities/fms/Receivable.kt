@@ -43,6 +43,6 @@ data class Receivable(
     var rcv_cr_name: String? = null
     var rcv_lc_cr_symbol: String? = null
     var rcv_lc_cr_name: String? = null
-
     var rcv_cu_balance: Double? = null
+
 }

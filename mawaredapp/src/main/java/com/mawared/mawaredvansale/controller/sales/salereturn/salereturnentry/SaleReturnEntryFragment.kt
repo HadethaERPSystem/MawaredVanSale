@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -73,8 +74,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_salereturn_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
+
         if(arguments != null){
             val args = SaleReturnEntryFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
@@ -83,6 +83,11 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
                 viewModel.setId(args.returnId)
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = getString(R.string.layout_entry_sub_title)
     }
     // enable options menu in this fragment
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -300,6 +305,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
             viewModel.ref_rowNo = viewModel.selectedInvoice!!.ref_rowNo
             viewModel.ref_Id = viewModel.selectedInvoice!!.ref_Id
             viewModel.ref_no = viewModel.selectedInvoice!!.ref_no
+
             //viewModel.doc_expiry.value =viewModel.returnDateString(viewModel.selectedInvoice!!.pr_expiry_date ?: "")
             //viewModel.doc_unit_price.value = viewModel.numberFormat(viewModel.selectedInvoice!!.pr_unit_price ?: 0.0)
             //viewModel.setProductId(viewModel.selectedProduct!!.pr_Id)

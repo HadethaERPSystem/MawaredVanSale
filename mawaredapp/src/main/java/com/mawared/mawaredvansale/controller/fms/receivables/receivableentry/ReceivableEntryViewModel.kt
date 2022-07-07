@@ -37,6 +37,7 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
     var location: Location? = null
     var doc_no: MutableLiveData<String> = MutableLiveData()
     var doc_date: MutableLiveData<String> = MutableLiveData()
+    var pbBalance: MutableLiveData<String> = MutableLiveData()
     var bc_amount: MutableLiveData<String> = MutableLiveData()
     var bc_change: MutableLiveData<String> = MutableLiveData()
     var lc_amount: MutableLiveData<String> = MutableLiveData()
@@ -76,6 +77,21 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
             masterDataRepository.getVoucherByCode(it)
         }
 
+    var ageDebit: Customer ?= null
+    fun loadAgeDebit(cu_Id: Int){
+        try {
+            Coroutines.ioThenMain({
+                ageDebit = masterDataRepository.customer_getAgeDebit(cu_Id)
+                return@ioThenMain ageDebit
+                },
+                {
+                    pbBalance.value = numberFormat(it?.cu_balance)
+            })
+
+        }catch (e: java.lang.Exception){
+            e.printStackTrace()
+        }
+    }
     // set function
     fun setReceivableId(id: Int){
         if(rcv_Id.value == id){

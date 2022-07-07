@@ -33,7 +33,7 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:hint="@string/lbl_doc_no"
+                android:hint="@string/lbl_order_no"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
                 android:textSize="12sp"
@@ -330,6 +330,28 @@
                 app:layout_constraintEnd_toStartOf="@+id/btn_edit"
                 app:layout_constraintTop_toBottomOf="@+id/view"
                 app:srcCompat="@drawable/ic_view1" />
+
+            <TextView
+                android:id="@+id/sale_status"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="center_vertical|center_horizontal"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:text="@{order.so_status_name}"
+                android:textColor="@color/yellow"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/btn_view"
+                tools:text="" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline7"

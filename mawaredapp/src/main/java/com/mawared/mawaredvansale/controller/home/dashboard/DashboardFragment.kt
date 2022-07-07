@@ -70,7 +70,7 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (requireActivity() as AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setHasOptionsMenu(true)
     }
@@ -181,11 +181,17 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
             "Survey" -> {
                 navController.navigate(R.id.action_dashboardFragment_to_surveyEntryFragment)
             }
-            "StockIn"->{
-
+            "DocStock-In"->{
+                navController.navigate(R.id.action_dashboardFragment_to_stockInFragment)
             }
-            "StockOut"->{
-
+            "DocStock-Out"->{
+                navController.navigate(R.id.action_dashboardFragment_to_stockOutFragment)
+            }
+            "Stock-In"->{
+                navController.navigate(R.id.action_dashboardFragment_to_selectStockInTypeFragment)
+            }
+            "Stock-Out"->{
+                navController.navigate(R.id.action_dashboardFragment_to_selectStockOutTypeFragment)
             }
             "Customer"->{
                 navController.navigate(R.id.action_dashboardFragment_to_customerFragment)

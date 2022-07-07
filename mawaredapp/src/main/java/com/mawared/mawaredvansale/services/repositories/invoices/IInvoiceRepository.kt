@@ -10,14 +10,14 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 interface IInvoiceRepository {
     // invoice method
     val networkState: LiveData<NetworkState>
-    fun getSaleNetworkState(): LiveData<NetworkState>
-    fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Sale>>
+    //fun getSaleNetworkState(): LiveData<NetworkState>
+    //fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Sale>>
 
     fun insert(baseEo: Sale) : LiveData<Sale>
     suspend fun SaveOrUpdate(baseEo: Sale) : ResponseSingle<Sale>
     fun getInvoices(sm_Id: Int, cu_Id: Int?) : LiveData<List<Sale>>
     fun getInvoice(sl_Id: Int): LiveData<Sale>
     fun delete(sl_Id: Int): LiveData<String>
-    fun getItemByInvoiceId(sl_Id: Int): LiveData<List<Sale_Items>>
+    suspend fun invoices_OnPages(sm_Id: Int, term: String, page: Int) : List<Sale>?
     fun cancelJob()
 }

@@ -12,6 +12,7 @@ open class BaseAdapter<T>(private val clickFunc: ((Int) -> Unit)?, private val l
 
     class ViewHolder(var view: View): RecyclerView.ViewHolder(view)
 
+    protected  var baseEo:T? = null
     protected var items = listOf<T>()
     protected var parent: ViewGroup? = null
     protected var extraParameter: String? = null

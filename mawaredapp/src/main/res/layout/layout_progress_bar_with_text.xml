@@ -8,9 +8,11 @@
         android:layout_height="match_parent">
 
     <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:outlineAmbientShadowColor="@color/colorPrimary"
+        android:indeterminateTint="@color/colorPrimary"/>
 
     <TextView
             android:id="@+id/pbText"

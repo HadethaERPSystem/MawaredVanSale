@@ -72,8 +72,6 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_receivable_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
         if(arguments != null){
             val args = ReceivableEntryFragmentArgs.fromBundle(requireArguments())
             viewModel.mode = args.mode
@@ -87,6 +85,11 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = getString(R.string.layout_receivable_entry_title)
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -163,7 +166,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
                 viewModel.lc_amount.value = it.rcv_lc_amount.toString()
                 viewModel.bc_change.value = it.rcv_change.toString()
                 viewModel.lc_change.value = it.rcv_lc_change.toString()
-
+                viewModel.pbBalance.value = it.rcv_cu_balance.toString()
                 viewModel.comment.value = it.rcv_comment
                 binding.atcCustomer.setText("${it.rcv_cu_name}", true)
 
