@@ -14,6 +14,8 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.itextpdf.text.BaseColor
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
@@ -51,6 +53,7 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
     private val factory: CartViewModelFactory by instance()
     private lateinit var binding: CartFragmentBinding
     lateinit var binding1: CartPaymentBinding
+    lateinit var navController: NavController
 
     val viewModel by lazy {
         ViewModelProviders.of(this, factory).get(CartViewModel::class.java)
@@ -82,6 +85,35 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
                 "PSOrder" ->{ saveSaleOrder()}
             }
         }
+        binding.etDiscPrcnt.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val discPrcnt : Double = if(s.isNullOrEmpty()) 0.0 else s.toString().toDouble()
+                viewModel.discPrcnt = discPrcnt
+                viewModel.recalculateTotal({
+                    //loadData()
+                    viewModel.setTotals()
+                    viewModel.updateRemain()
+                    adapter.setList(viewModel.orders)
+                    //val result = "result"
+                    // Use the Kotlin extension in the fragment-ktx artifact
+                    //requireActivity().supportFragmentManager.setFragmentResult("requestKey", bundleOf("bundleKey" to result))
+                },
+                    {
+                        binding.etDiscPrcnt.setText(it?.toInt().toString())
+                    })
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
+
+
         return binding.root
     }
 
@@ -112,6 +144,9 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
                 viewModel.customer_name.value = args.customer?.cu_name_ar
             }
         }
+        //binding.etDiscPrcnt.setText(viewModel.discPrcnt.toString())
+
+        navController = Navigation.findNavController(view)
     }
 
     override fun onStart() {
@@ -127,8 +162,12 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
         viewModel.currencyRate.observe(viewLifecycleOwner, Observer {
             viewModel.rate = if(it.cr_rate != null) it.cr_rate!! else 0.0
         })
-
-        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
+        var cr_id = App.prefs.saveUser!!.sl_cr_Id
+        if(App.prefs.saveUser!!.sl_cr_Id == App.prefs.saveUser!!.ss_cr_Id){
+            cr_id = App.prefs.saveUser!!.sf_cr_Id
+        }
+        viewModel.setCurrencyId(cr_id!!)
+        viewModel.fcr_symbol.value = if(App.prefs.saveUser!!.sl_cr_code!! == App.prefs.saveUser!!.ss_cr_code!!) App.prefs.saveUser!!.sf_cr_code!! else App.prefs.saveUser!!.ss_cr_code!!
     }
 
     fun delete(item: OrderItems, Success: () -> Unit) {
@@ -168,6 +207,7 @@ class CartFragment : ScopedFragmentLocation(), KodeinAware, IMessageListener {
     fun loadData(){
         viewModel.loadOrders(){
             viewModel.setTotals()
+            viewModel.updateRemain()
             adapter.setList(viewModel.orders)
         }
     }

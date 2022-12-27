@@ -451,14 +451,14 @@ class MntEntryViewModel(private val mntRepository: IMaintenanceRepository,
 
             if (disPer.value != null && disPer.value!!.length > 0) {
                 val tmpDisPer = disPer.value!!.toDouble()
-                val disPerLimit = App.prefs.saveUser!!.dis_Per ?: 0.0
+                val disPerLimit = App.prefs.saveUser!!.iDiscPrcnt ?: 0.0
 
                 if (tmpDisPer > disPerLimit) {
                     val str: String =
                         ctx!!.resources!!.getString(R.string.msg_error_discount_overflow)
                     msg += (if (msg!!.length > 0) "\n\r" else "") + String.format(
                         str,
-                        App.prefs.saveUser!!.dis_Per!!
+                        App.prefs.saveUser!!.iDiscPrcnt!!
                     )
                 }
             }

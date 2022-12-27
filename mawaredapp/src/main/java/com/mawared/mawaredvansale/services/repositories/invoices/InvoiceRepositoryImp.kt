@@ -183,7 +183,6 @@ class InvoiceRepositoryImp(private val api: ApiService): IInvoiceRepository, Saf
         }
     }
 
-
     override suspend fun invoices_OnPages(sm_Id: Int, term: String, page: Int): List<Sale>? {
         try {
             val response = apiRequest { api.sales_OnPages(sm_Id, term, page, POST_PER_PAGE) }

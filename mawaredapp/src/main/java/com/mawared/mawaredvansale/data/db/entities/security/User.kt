@@ -22,6 +22,8 @@ data class User (
     var ss_cr_code: String?,
     var sf_cr_Id: Int?,
     var sf_cr_code: String?,
+    var isDirectRate: String?,
+    var dropAmnt: Double?,
     var token: String?,
     var empId: Int?,
     var created_at: String? = null,
@@ -31,6 +33,7 @@ data class User (
     var id: Int = 0
     var client_name: String? = null
     var org_name: String? = null
-    var dis_Per: Double? = null
+    var iDiscPrcnt: Double = 0.0
+    var dDiscPrcnt: Double = 0.0
     var hasGift: String? = null
 }

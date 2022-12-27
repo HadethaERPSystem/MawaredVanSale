@@ -18,4 +18,5 @@
     <color name="danger">#d73d32</color>
     <color name="lightdanger">#fb6e52</color>
     <color name="lightgreen">#F9FDCF</color>
+    <color name="darkorange">#ff8c00</color>
 </resources>

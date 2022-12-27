@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-    <data>
-        <variable name="order"
-                type="com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order"/>
-        <variable
-                name="viewmodel"
-                type="com.mawared.mawaredvansale.controller.sales.order.orderslist.OrdersViewModel" />
-    </data>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="12dp"
@@ -43,14 +41,13 @@
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/sale_doc_no"
+                android:id="@+id/order_no"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="2dp"
                 android:gravity="start"
                 android:padding="2dp"
-                android:text="@{``+ order.so_refNo}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -81,14 +78,13 @@
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/txtv_doc_date"
+                android:id="@+id/order_date"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="4dp"
                 android:gravity="start"
                 android:padding="2dp"
-                android:text="@{viewmodel.returnDateString(order.so_date)}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -111,18 +107,17 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline7"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sale_doc_no"
+                app:layout_constraintTop_toBottomOf="@+id/order_no"
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/sale_customer_name"
+                android:id="@+id/bp_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{order.so_customer_name}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -147,18 +142,17 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline7"
-                app:layout_constraintTop_toBottomOf="@+id/txtv_doc_date"
+                app:layout_constraintTop_toBottomOf="@+id/order_date"
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/sale_region_name"
+                android:id="@+id/region_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{order.so_region_name}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -184,7 +178,7 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline12"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sale_customer_name"
+                app:layout_constraintTop_toBottomOf="@+id/bp_name"
                 tools:ignore="SmallSp" />
 
             <TextView
@@ -196,7 +190,6 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{viewmodel.numberFormat(order.so_total_amount)}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -216,7 +209,6 @@
                 android:gravity="start"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
-
                 android:text="@string/lbl_total_discount"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline18"
@@ -232,9 +224,7 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{viewmodel.numberFormat(order.so_total_discount)}"
                 android:textColor="@android:color/black"
-
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/guideline18"
@@ -252,7 +242,6 @@
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
                 android:paddingStart="2dp"
-
                 android:paddingEnd="2dp"
                 android:text="@string/lbl_total"
                 android:textSize="12sp"
@@ -269,9 +258,7 @@
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
-                android:text="@{viewmodel.numberFormat(order.so_net_amount)}"
                 android:textColor="@android:color/black"
-
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -290,34 +277,32 @@
                 tools:layout_editor_absoluteX="0dp" />
 
             <ImageButton
-                android:id="@+id/btn_delete"
+                android:id="@+id/deleteBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:background="@null"
                 android:visibility="gone"
                 android:contentDescription="@string/btn_delete_caption"
-                android:onClick="@{()-> viewmodel.onItemDelete(order)}"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/editBtn"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/btn_edit"
+                app:layout_constraintTop_toTopOf="@+id/editBtn"
                 app:srcCompat="@drawable/ic_delete" />
 
             <ImageButton
-                android:id="@+id/btn_edit"
+                android:id="@+id/editBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_edit_caption"
-                android:onClick="@{()-> viewmodel.onItemEdit(order)}"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_view"
-                app:layout_constraintEnd_toStartOf="@+id/btn_delete"
-                app:layout_constraintTop_toTopOf="@+id/btn_view"
+                app:layout_constraintBottom_toBottomOf="@+id/viewBtn"
+                app:layout_constraintEnd_toStartOf="@+id/deleteBtn"
+                app:layout_constraintTop_toTopOf="@+id/viewBtn"
                 app:srcCompat="@drawable/ic_edit" />
 
             <ImageButton
-                android:id="@+id/btn_view"
+                android:id="@+id/viewBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -325,9 +310,8 @@
                 android:layout_marginBottom="4dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_view_caption"
-                android:onClick="@{()-> viewmodel.onItemView(order)}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_edit"
+                app:layout_constraintEnd_toStartOf="@+id/editBtn"
                 app:layout_constraintTop_toBottomOf="@+id/view"
                 app:srcCompat="@drawable/ic_view1" />
 
@@ -348,9 +332,9 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_view"
+                app:layout_constraintEnd_toStartOf="@+id/viewBtn"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/btn_view"
+                app:layout_constraintTop_toTopOf="@+id/viewBtn"
                 tools:text="" />
 
             <androidx.constraintlayout.widget.Guideline
@@ -377,4 +361,4 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-</layout>
+</RelativeLayout>

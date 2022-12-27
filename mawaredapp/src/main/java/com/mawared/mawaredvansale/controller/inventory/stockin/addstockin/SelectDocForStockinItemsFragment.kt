@@ -6,13 +6,14 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.InvoiceItemsAdapter
+import com.mawared.mawaredvansale.controller.adapters.DocStockinItemsAdapter
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.controller.common.dialog.GenericDialog.showDialog
 import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFunction
@@ -22,6 +23,7 @@ import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.select_doc_for_stockin_items_fragment.*
+import kotlinx.android.synthetic.main.select_doc_for_stockin_items_fragment.search_view
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -35,9 +37,12 @@ class SelectDocForStockinItemsFragment: Fragment(), KodeinAware, IMessageListene
 
         private val factory: SelectDocForStockinItemsViewModelFactory by instance()
 
-        private var adapter = InvoiceItemsAdapter(R.layout.item_rv_stockin_doc_item,{item, loc, qty , Success ->
+        //var selectedLocAdapter : ItemLocsAdapter? = null
+
+        private var adapter = DocStockinItemsAdapter(R.layout.item_rv_stockin_doc_item,{item, loc, qty , Success ->
             viewModel.removeLine(item, loc, qty, Success)
         },  { item, loc, qty, isadap ->
+            //selectedLocAdapter = isadap
             viewModel.addLine(item, loc, qty, isadap)
         })
 
@@ -76,13 +81,33 @@ class SelectDocForStockinItemsFragment: Fragment(), KodeinAware, IMessageListene
 
                 loadList(viewModel.term ?: "")
             }
+
+            search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+                android.widget.SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(p0: String?): Boolean {
+                    viewModel.term = p0 ?: ""
+                    adapter.setList(null, 0)
+                    loadList(viewModel.term!!)
+                    return false
+                }
+
+                override fun onQueryTextChange(p0: String?): Boolean {
+                    viewModel.term = p0 ?: ""
+                    adapter.setList(null, 0)
+                    loadList(viewModel.term!!)
+                    return false
+                }
+            })
+
             navController = Navigation.findNavController(view)
         }
 
 
         private fun loadList(term : String){
+
             val list = adapter.getList().toMutableList()
             if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+                onStarted()
                 viewModel.loadData(list, viewModel.doc_id, term,adapter.pageCount + 1){data, pageCount ->
                     showResult(data!!, pageCount)
                 }
@@ -90,7 +115,11 @@ class SelectDocForStockinItemsFragment: Fragment(), KodeinAware, IMessageListene
         }
 
         fun showResult(list: List<InventoryDocLines>, pageCount: Int) = HandlerUtils.runOnUiThread {
+
+           viewModel.setLoc(list)
+
             adapter.setList(list, pageCount)
+            progress_bar?.visibility = View.GONE
         }
 
     // enable options menu in this fragment
@@ -140,20 +169,20 @@ class SelectDocForStockinItemsFragment: Fragment(), KodeinAware, IMessageListene
         viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
         })
-        viewModel.setVoucherCode("StockOut")
+        viewModel.setVoucherCode("StockIn")
     }
 
     override fun onStarted() {
-        progress_bar_si?.visibility = View.VISIBLE
+        progress_bar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        progress_bar_si?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         ll_selectedItems?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        progress_bar_si?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         ll_selectedItems?.snackbar(message)
     }
 

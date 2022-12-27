@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.data.db.entities.md.Salesman
+import com.mawared.mawaredvansale.data.db.entities.md.UsersDiscounts
 import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.services.repositories.MenuRepository
@@ -25,6 +26,8 @@ class DashboardViewModel(private val repository: MenuRepository, private val mdR
     var res: Resources? = null
     var ctx: Context? = null
     var userName: String? = if(App.prefs.saveUser?.name.isNullOrEmpty()) App.prefs.saveUser?.user_name else App.prefs.saveUser?.name
+    val u_id : Int = App.prefs.saveUser!!.id
+
     val lang =  App.prefs.systemLanguage!!.substring(0,2)
     var clientName: String? = App.prefs.saveUser?.client_name ?: ""
     var branchName: String? = App.prefs.saveUser?.org_name ?: ""
@@ -51,6 +54,46 @@ class DashboardViewModel(private val repository: MenuRepository, private val mdR
             {App.prefs.hasSalesPlan = sm?.hasSalePlan ?: "N"}
             )
     }
+
+//    fun userInvDisc(){
+//        var disc : UsersDiscounts? = null
+//        try {
+//            Coroutines.ioThenMain({
+//                try {
+//                    disc = mdRepository.getDisc(u_id, "INVOICE")
+//
+//                }catch (e: Exception){
+//                    e.printStackTrace()
+//                }
+//            },{
+//                if(disc != null){
+//                    App.prefs.user_invoice_disc = disc!!.discPrcnt.toString()
+//                }
+//            })
+//        }catch (e: java.lang.Exception){
+//            e.printStackTrace()
+//        }
+//    }
+//
+//    fun userItemDisc(){
+//        var disc : UsersDiscounts? = null
+//        try {
+//            Coroutines.ioThenMain({
+//                try {
+//                    disc = mdRepository.getDisc(u_id, "ITEM")
+//
+//                }catch (e: Exception){
+//                    e.printStackTrace()
+//                }
+//            },{
+//                if(disc != null){
+//                    App.prefs.user_item_disc = disc!!.discPrcnt.toString()
+//                }
+//            })
+//        }catch (e: java.lang.Exception){
+//            e.printStackTrace()
+//        }
+//    }
 
     val networkState: LiveData<NetworkState> by lazy {
         repository.networkState

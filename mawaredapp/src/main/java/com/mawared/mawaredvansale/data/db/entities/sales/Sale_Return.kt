@@ -18,16 +18,20 @@ data class Sale_Return(
     var sr_customerId: Int?,        // Customer Id
     var sr_regionId: Int?,          // region code
     var sr_total_amount: Double?,   // total sale amount
+    var sr_total_disc: Double?,
     var sr_net_amount: Double?,     // net sale amount
+    var sr_discPrcnt: Double,
     var sr_currencyId: Int?,        // Currency code
     var sr_lcurrencyId: Int?,
     var sr_rate: Double?,           // Current Exchange Rate
     var sr_ret_ref_Id : Int?,           // Reference Invoice Id
+    var sr_ret_ref_no: String?,
     var sr_isDeleted: Boolean?,
     var sr_statusId: Int?,
     var sr_latitude: Double?,
     var sr_longitude: Double?,
     var sr_price_cat_Id: Int?,
+
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime
@@ -43,9 +47,9 @@ data class Sale_Return(
     var sr_customer_name: String? = null
     var sr_region_name: String? = null
     var sr_cr_symbol: String? = null
-    var sl_cr_name: String? = null
-    var sl_lcr_symbol: String? = null
-    var sl_lcr_name: String? = null
+    var sr_cr_name: String? = null
+    var sr_lcr_symbol: String? = null
+    var sr_lcr_name: String? = null
     var sr_ret_refNo: String? = null
     var sr_status_name: String? = null
     var sr_status_code: String? = null

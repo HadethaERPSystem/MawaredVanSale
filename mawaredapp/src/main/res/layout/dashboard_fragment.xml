@@ -151,12 +151,11 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </RelativeLayout>
 
-        <ProgressBar
+        <include
             android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            layout="@layout/layout_progress_bar_with_text"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"

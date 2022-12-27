@@ -9,14 +9,13 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 
 interface ITransferRepository {
     val networkState: LiveData<NetworkState>
-    fun getPagedNetworkState(): LiveData<NetworkState>
-    fun fetchLivePagedList(userId: Int): LiveData<PagedList<Transfer>>
 
-    fun saveOrUpdate(baseEo: Transfer) : LiveData<Transfer>
-    suspend fun upsert(baseEo: Transfer) : ResponseSingle<Transfer>
+    suspend fun saveOrUpdate(baseEo: Transfer) : ResponseSingle<Transfer>
+    suspend fun get_OnPages(sm_Id: Int, term: String, page: Int): List<Transfer>?
+
     fun getByUserId(userId: Int) : LiveData<List<Transfer>>
     fun getById(tr_Id: Int): LiveData<Transfer>
-    //fun delete(sr_Id: Int): LiveData<String>
+
     fun getItemsByMasterId(tr_Id: Int): LiveData<List<Transfer_Items>>
 
     fun cancelJob()

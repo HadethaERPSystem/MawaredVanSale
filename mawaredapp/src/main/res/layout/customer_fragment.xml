@@ -63,32 +63,11 @@
                 tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_5sdp"
-            app:cardCornerRadius="@dimen/_10dp"
-            app:cardElevation="@dimen/_10dp">
-
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/search_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/search_bg"
-                android:iconifiedByDefault="false"
-                android:queryBackground="@color/transparent"
-                android:queryHint="@string/search_view_brand"
-                android:theme="@style/ThemeOverlay.Search" />
-
-        </androidx.cardview.widget.CardView>
-
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/pullToRefresh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/cardView"
-            >
+            android:layout_margin="5dp">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcv_customers"

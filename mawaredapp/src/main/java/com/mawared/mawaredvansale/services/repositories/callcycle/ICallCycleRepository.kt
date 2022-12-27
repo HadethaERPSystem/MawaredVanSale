@@ -7,9 +7,8 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 
 interface ICallCycleRepository {
     val networkState: LiveData<NetworkState>
-    fun getCyNetworkState(): LiveData<NetworkState>
-    fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Call_Cycle>>
 
     fun saveOrUpdate(baseEo: Call_Cycle): LiveData<Call_Cycle>
+    suspend fun getOnPages(sm_Id: Int, term: String, page: Int) : List<Call_Cycle>?
     fun cancelJob()
 }

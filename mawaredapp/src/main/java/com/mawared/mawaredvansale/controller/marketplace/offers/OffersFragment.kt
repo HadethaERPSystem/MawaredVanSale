@@ -19,19 +19,19 @@ import com.mawared.mawaredvansale.controller.adapters.OfferAdapter
 import com.mawared.mawaredvansale.controller.adapters.UoMAdapter
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFunction
 import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.controller.marketplace.SharedViewModel
+import com.mawared.mawaredvansale.data.db.entities.md.Product
 import com.mawared.mawaredvansale.data.db.entities.md.Product_Price_List
 import com.mawared.mawaredvansale.data.db.entities.md.UnitConvertion
 import com.mawared.mawaredvansale.databinding.OffersFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.utilities.snackbar
+import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.offers_fragment.*
 import kotlinx.android.synthetic.main.popup_schedule.*
 import kotlinx.android.synthetic.main.popup_uom.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -101,17 +101,19 @@ class OffersFragment : ScopedFragment(), KodeinAware, IMessageListener {
         viewModel.ctx = requireContext()
         viewModel.msgListener = this
 
-        bindUI()
-
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
             android.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 viewModel._term.value = p0
+                adapter.setList(null, 0)
+                loadList(viewModel._term.value ?: "")
                 return false
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 viewModel._term.value = p0
+                adapter.setList(null, 0)
+                loadList(viewModel._term.value ?: "")
                 return false
             }
         })
@@ -129,7 +131,8 @@ class OffersFragment : ScopedFragment(), KodeinAware, IMessageListener {
         }
         @Suppress("UNCHECKED_CAST")
         rv_product.setupGrid(requireContext(), adapter as BaseAdapter<Any>, cols)
-
+        rv_product.setLoadMoreFunction { loadList(viewModel._term.value ?: "") }
+        loadList(viewModel._term.value ?: "")
         model.onlyBrowsing.observe(viewLifecycleOwner, Observer {
             adapter.setExtra(it)
         })
@@ -139,6 +142,7 @@ class OffersFragment : ScopedFragment(), KodeinAware, IMessageListener {
         model.vocode.observe(viewLifecycleOwner, Observer {
             viewModel.vocode = it
         })
+        viewModel.loadOrders()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -146,19 +150,6 @@ class OffersFragment : ScopedFragment(), KodeinAware, IMessageListener {
         (requireActivity() as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    private fun bindUI()= GlobalScope.launch(Dispatchers.Main){
-        try {
-            viewModel.loadOrders()
-
-            viewModel.productList.observe(viewLifecycleOwner, Observer {
-                if(it != null)
-                    adapter.setList(it)
-            })
-            viewModel._term.value = null
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
-    }
 
     private fun loadUom(prod_Id: Int, success: (List<UnitConvertion>?) -> Unit){
         viewModel.loadUom(prod_Id){
@@ -172,17 +163,36 @@ class OffersFragment : ScopedFragment(), KodeinAware, IMessageListener {
         }
     }
 
+    private fun loadList(term : String){
+
+        val list = adapter.getList().toMutableList()
+        if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            onStarted()
+            viewModel.loadData(list, term,adapter.pageCount + 1){data, pageCount ->
+                showResult(data!!, pageCount)
+            }
+        }
+    }
+
+    fun showResult(list: List<Product>, pageCount: Int) = HandlerUtils.runOnUiThread {
+        adapter.setList(list, pageCount)
+        progress_bar?.visibility = View.GONE
+    }
+
     override fun onStarted() {
         //progress_bar_sale?.visibility = View.VISIBLE
+        progress_bar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
         //progress_bar_sale?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         ll_offer?.snackbar(message)
     }
 
     override fun onFailure(message: String) {
         //progress_bar_sale?.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         ll_offer?.snackbar(message)
     }
 }

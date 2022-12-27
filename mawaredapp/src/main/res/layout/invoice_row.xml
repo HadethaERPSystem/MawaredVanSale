@@ -7,14 +7,15 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="6dp"
-            app:cardMaxElevation="6dp"
-            app:contentPadding="5dp"
-            app:cardBackgroundColor="@android:color/white"
-            android:layout_margin="5dp">
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="6dp"
+        app:cardMaxElevation="6dp"
+        app:contentPadding="5dp"
+        app:cardBackgroundColor="@android:color/white"
+        android:layout_margin="5dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -207,7 +208,6 @@
                 android:gravity="start"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
-
                 android:text="@string/lbl_total_discount"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline18"

@@ -29,12 +29,14 @@ data class Sale_Order (
     var so_total_amount: Double?,  // total sale amount
     var so_total_discount: Double?,
     var so_net_amount: Double?,    // net sale amount
+    var so_discPrcnt: Double,
     var so_currencyId: Int?,       // currency code
     var so_rate: Double?,          // Exchange Rate
     var so_isDeleted: Boolean?,
     var so_latitude: Double?,
     var so_longitude: Double?,
     var so_price_cat_Id: Int?,
+    var so_notes: String?,
     var created_at: String?,       // created datetime
     var created_by: String?,       // created user
     var updated_at: String?,       // Updated datetime

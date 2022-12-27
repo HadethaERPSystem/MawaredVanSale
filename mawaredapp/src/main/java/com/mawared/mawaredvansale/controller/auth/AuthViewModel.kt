@@ -49,7 +49,7 @@ class AuthViewModel(private val repository: UserRepository) : BaseViewModel() {
         }
         val ur : User = User(0, "","", userName, password, "", null, null,
             null, null, null, null, null, "",
-            null, null, null, null, null)
+            null, null, null, 0.0,null, null)
         //success
         Coroutines.main{
             try {

@@ -7,6 +7,8 @@ import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Response
+import java.util.concurrent.TimeoutException
+
 
 abstract class SafeApiRequest {
 
@@ -25,7 +27,6 @@ abstract class SafeApiRequest {
                         message.append("\n")
                     } catch (e: JSONException) {
                     }
-
                 }
                 message.append("Error Code: ${response.code()}")
                 throw ApiException(message.toString())
@@ -34,7 +35,10 @@ abstract class SafeApiRequest {
         } catch (e: NoConnectivityException){
             Log.e("Connectivity", "No internet connection", e)
             throw NoConnectivityException(e.message!!)
-        }  catch (e: Exception) {
+        } catch (e: TimeoutException){
+            Log.e("Error API Time Out: ", "${e.message}")
+            throw  Exception(e.message)
+        } catch (e: Exception) {
             Log.e("Error API:", "${e.message}")
             throw  Exception(e.message)
         }catch (e: ApiException){

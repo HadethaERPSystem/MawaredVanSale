@@ -18,6 +18,7 @@ import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDoc
 import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.select_invoice_fragment.*
+import kotlinx.android.synthetic.main.select_invoice_fragment.search_view
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -88,8 +89,10 @@ class SelectInvoiceFragment : Fragment(), KodeinAware {
 
 
     private fun loadList(term : String){
+
         val list = adapter.getList().toMutableList()
         if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            onStarted()
             viewModel.loadData(list, term,adapter.pageCount + 1){data, pageCount ->
                 showResult(data!!, pageCount)
             }
@@ -98,5 +101,18 @@ class SelectInvoiceFragment : Fragment(), KodeinAware {
 
     fun showResult(list: List<InventoryDoc>, pageCount: Int) = HandlerUtils.runOnUiThread {
         adapter.setList(list, pageCount)
+        onSuccess()
+    }
+
+    fun onStarted() {
+        progress_bar?.visibility = View.VISIBLE
+    }
+
+    fun onSuccess() {
+        progress_bar?.visibility = View.GONE
+    }
+
+    fun onFailure() {
+        progress_bar?.visibility = View.GONE
     }
 }

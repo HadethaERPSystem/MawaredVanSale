@@ -24,6 +24,8 @@ import com.mawared.mawaredvansale.databinding.BrandFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.brand_fragment.*
+import kotlinx.android.synthetic.main.brand_fragment.progress_bar
+import kotlinx.android.synthetic.main.select_customer_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -111,8 +113,10 @@ class BrandFragment : ScopedFragment(), KodeinAware {
 //    }
 
     private fun loadList(term : String){
+
         val list = adapter.getList().toMutableList()
         if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            onStarted()
             viewModel.loadData(list, term,adapter.pageCount + 1){data, pageCount ->
                 showResult(data!!, pageCount)
             }
@@ -121,6 +125,18 @@ class BrandFragment : ScopedFragment(), KodeinAware {
 
     fun showResult(list: List<Product_Brand>, pageCount: Int) = HandlerUtils.runOnUiThread {
         adapter.setList(list, pageCount)
+        onSuccess()
     }
 
+    fun onStarted() {
+        progress_bar?.visibility = View.VISIBLE
+    }
+
+    fun onSuccess() {
+        progress_bar?.visibility = View.GONE
+    }
+
+    fun onFailure() {
+        progress_bar?.visibility = View.GONE
+    }
 }

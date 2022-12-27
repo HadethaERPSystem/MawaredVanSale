@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import androidx.paging.PagedList
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
 import com.mawared.mawaredvansale.App
@@ -18,10 +17,9 @@ import com.mawared.mawaredvansale.controller.common.GenerateTicket
 import com.mawared.mawaredvansale.controller.common.TicketPrinting
 import com.mawared.mawaredvansale.controller.common.printing.*
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
-import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.fms.IReceivableRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 import com.mawared.mawaredvansale.utilities.URL_LOGO
 import java.io.InputStream
 import java.util.*
@@ -30,30 +28,25 @@ class ReceivableViewModel(private val repository: IReceivableRepository) : BaseV
     private val _sm_id: Int =
         if (App.prefs.savedSalesman?.sm_user_id != null) App.prefs.savedSalesman!!.sm_user_id!! else 0
 
-    var navigator: IMainNavigator<Receivable>? = null
     var msgListener: IMessageListener? = null
     var ctx: Context? = null
     var activity: AppCompatActivity? = null
+    var term: String? = ""
     var co_black_logo: Bitmap? = null
     var isPrint = false
     var errorMessage: MutableLiveData<String> = MutableLiveData()
-    var lbl_SCAmount: MutableLiveData<String> = MutableLiveData()
-    var lbl_SCChange: MutableLiveData<String> = MutableLiveData()
-    var lbl_FCAmount: MutableLiveData<String> = MutableLiveData()
-    var lbl_FCChange: MutableLiveData<String> = MutableLiveData()
 
-    private val cuId: MutableLiveData<Int> = MutableLiveData()
-
-    val baseEoList: LiveData<PagedList<Receivable>> = Transformations.switchMap(cuId) {
-        repository.fetchLivePagedList(_sm_id, it)
-    }
-
-    val networkStateRV: LiveData<NetworkState> by lazy {
-        repository.getRecNetworkState()
-    }
-
-    fun listIsEmpty(): Boolean {
-        return baseEoList.value?.isEmpty() ?: true
+    fun loadData(list: MutableList<Receivable>, term: String, pageCount: Int, loadMore: (List<Receivable>?, Int) -> Unit){
+        try {
+            Coroutines.ioThenMain({
+                val tmp = repository.get_OnPages(_sm_id, term, pageCount)
+                if(tmp != null){
+                    list.addAll(tmp)
+                }
+            }, {loadMore(list, pageCount)})
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     val networkState by lazy {
@@ -72,17 +65,6 @@ class ReceivableViewModel(private val repository: IReceivableRepository) : BaseV
             repository.getById(it)
         }
 
-    // set functions to refresh data
-    fun setCustomer(cm_Id: Int?) {
-        if (cuId.value == cm_Id && cm_Id != null) {
-            return
-        }
-        cuId.value = cm_Id
-    }
-
-    fun refresh(){
-        setCustomer(cuId.value)
-    }
     fun find(id: Int) {
         if (_rcv_Id.value == id) {
             return
@@ -93,18 +75,6 @@ class ReceivableViewModel(private val repository: IReceivableRepository) : BaseV
     // confirm delete
     fun confirmDelete(baseEo: Receivable) {
         _rcv_Id_for_delete.value = baseEo.rcv_Id
-    }
-
-    fun onItemDelete(baseEo: Receivable) {
-        navigator?.onItemDeleteClick(baseEo)
-    }
-
-    fun onItemEdit(baseEo: Receivable) {
-        navigator?.onItemEditClick(baseEo)
-    }
-
-    fun onItemView(baseEo: Receivable) {
-        navigator?.onItemViewClick(baseEo)
     }
 
     fun onPrint(rcv_Id: Int) {

@@ -9,11 +9,8 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 interface IReceivableRepository {
     val networkState: LiveData<NetworkState>
 
-    fun getRecNetworkState(): LiveData<NetworkState>
-    fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Receivable>>
-
-    fun insert(baseEo: Receivable) : LiveData<Receivable>
     suspend fun SaveOrUpdate(baseEo: Receivable) : ResponseSingle<Receivable>
+    suspend fun get_OnPages(sm_Id: Int, term: String, page: Int): List<Receivable>?
     fun getReceivable(sm_Id: Int, cu_Id: Int?) : LiveData<List<Receivable>>
     fun getById(rcv_Id: Int): LiveData<Receivable>
     fun delete(rcv_Id: Int): LiveData<String>

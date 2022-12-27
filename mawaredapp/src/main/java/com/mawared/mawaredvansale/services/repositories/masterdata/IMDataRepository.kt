@@ -15,25 +15,26 @@ import org.threeten.bp.LocalDate
 interface IMDataRepository {
     val networkState: LiveData<NetworkState>
 
-    fun fetchCustomerOnPages(sm_Id: Int?, org_Id: Int?, term: String): LiveData<PagedList<Customer>>
-    fun getCustomerNetworkState(): LiveData<NetworkState>
-    fun fetchScheduledCustomerOnPages(sm_Id: Int): LiveData<PagedList<Customer>>
-    fun getScheduleCustomerNetworkState(): LiveData<NetworkState>
+//    fun fetchCustomerOnPages(sm_Id: Int?, org_Id: Int?, term: String): LiveData<PagedList<Customer>>
+//    fun getCustomerNetworkState(): LiveData<NetworkState>
+//    fun fetchScheduledCustomerOnPages(sm_Id: Int): LiveData<PagedList<Customer>>
+//    fun getScheduleCustomerNetworkState(): LiveData<NetworkState>
     // Items
-    fun fetchItemsOnPages(term: String, priceCode: String): LiveData<PagedList<Product>>
-    fun getItemNetworkState(): LiveData<NetworkState>
-    fun fetchItemsByUserOnPages(term: String, userId: Int, priceCode: String): LiveData<PagedList<Product>>
-    fun getItemUserNetworkState(): LiveData<NetworkState>
-    fun fetchItemsByWarehouseOnPages(term: String, wr_Id: Int, priceCode: String): LiveData<PagedList<Product>>
-    fun getItemWareNetworkState(): LiveData<NetworkState>
+//    fun fetchItemsOnPages(term: String, priceCode: String): LiveData<PagedList<Product>>
+//    fun getItemNetworkState(): LiveData<NetworkState>
+//    fun fetchItemsByUserOnPages(term: String, userId: Int, priceCode: String): LiveData<PagedList<Product>>
+//    fun getItemUserNetworkState(): LiveData<NetworkState>
+//    fun fetchItemsByWarehouseOnPages(term: String, wr_Id: Int, priceCode: String): LiveData<PagedList<Product>>
+//    fun getItemWareNetworkState(): LiveData<NetworkState>
     // Customer method
     //suspend fun getCustomer(): LiveData<List<Customer>>
     fun getCustomers(sm_Id: Int, term: String): LiveData<List<Customer>>
     fun getCustomers_ByTerm(sm_Id: Int, term: String, mntTypeCode: String): LiveData<List<Customer>>
     suspend fun getCustomersOnPages(sm_Id: Int, org_Id: Int?,  term: String,  page: Int ): List<Customer>?
+    suspend fun getScheduleCustomersOnPages(sm_Id: Int, term: String,  page: Int): List<Customer>?;
     fun customers_getSchedule(sm_Id: Int, term: String): LiveData<List<Customer>>
     fun customers_getPlaces(sm_Id: Int, cyDate: String): LiveData<List<Customer>>
-    fun getCustomersByOrg(org_Id: Int?, term: String): LiveData<List<Customer>>
+    fun getCustomersByOrg(sm_id: Int, org_Id: Int?, term: String): LiveData<List<Customer>>
     fun getCustomerById(cu_Id: Int): LiveData<Customer>
     fun insertCustomer(baseEo: Customer): LiveData<Customer>
     fun getCustomerStatus(cu_Id: Int): LiveData<CustomerStatus>
@@ -48,8 +49,8 @@ interface IMDataRepository {
     fun customersCategory_GetByTerm(term: String): LiveData<List<Customer_Category>>
     // Product method
     fun getProducts(term: String, warehouseId: Int?, priceCode: String): LiveData<List<Product>>
-    fun getProductForMarket(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, cat_Id: Int?, br_Id: Int?, Term: String?): LiveData<List<Product>>
-    fun getProductForOffers(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, Term: String?): LiveData<List<Product>>
+    suspend fun getProductForMarket(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, cat_Id: Int?, br_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>?
+    suspend fun getProductForOffers(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>?
     fun getProductsByPriceTerm(term: String, priceCode: String): LiveData<List<Product>>
     fun getProductsByUserWarehouse(term: String, userId: Int?, priceCode: String): LiveData<List<Product>>
     fun getProductsBySearch(term: String): LiveData<List<Product>>
@@ -77,7 +78,7 @@ interface IMDataRepository {
     fun salesman_GetAll(): LiveData<List<Salesman>>
     fun salesman_getSummary(sm_Id: Int, selDate: String): LiveData<SalesmanSummary>
     suspend fun salesman_hasSalesPlan(sm_Id: Int): Salesman?
-
+    suspend fun getDisc(userId: Int, discRange: String) : UsersDiscounts?
     suspend fun uom_GetByProduct(prod_Id: Int): List<UnitConvertion>?
     // Voucher
     fun getVoucherByCode(vo_code: String): LiveData<Voucher>
@@ -90,7 +91,7 @@ interface IMDataRepository {
     fun warehouse_GetBySalesman(sm_Id: Int): LiveData<List<Warehouse>>
     fun location_GetByWhs(whsId: Int) : LiveData<List<Loc>>
     // Sales plan
-    fun getSalesPaln(): LiveData<List<Lookups>>
+    fun getSalesPaln(sm_Id: Int): LiveData<List<Lookups>>
     // Region
     fun getRegions(): LiveData<List<Region>>
     // Lookup

@@ -25,7 +25,7 @@ import com.mawared.mawaredvansale.data.db.entities.security.User
                 Customer::class, Customer_Group::class, Customer_Price_List::class, Product::class, Product_Brand::class, Product_Category::class,
                 Product_Price_List::class, Region::class, Salesman::class, Salesman_Customer::class, OrderItems::class, Order::class],
 //    entities = [User::class, Menu::class, OrderItems::class, Order::class],
-    version = 33, exportSchema = false
+    version = 36, exportSchema = false
 )
 @TypeConverters(LocalDateConverter::class)
 abstract class AppDatabase : RoomDatabase() {

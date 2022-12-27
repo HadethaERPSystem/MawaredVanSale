@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/drawable-anydpi/ic_enter_w.xml" value="0.37864583333333335" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/drawable-anydpi/ic_minus.xml" value="0.37864583333333335" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/drawable-anydpi/ic_plus.xml" value="0.37864583333333335" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/drawable/alarm.xml" value="0.21875" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/drawable/button_cyan.xml" value="0.2453125" />
@@ -57,11 +58,12 @@
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/activity_pdf.xml" value="0.1984375" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/activity_printing.xml" value="0.1984375" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/activity_real_location.xml" value="0.1984375" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/activity_set_api_address.xml" value="0.3625" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/activity_splash_screen.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/add_invoice_fragment.xml" value="0.2991329479768786" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/add_order_fragment.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/add_stock_in_fragment.xml" value="0.4" />
-        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/add_stock_out_fragment.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/add_stock_out_fragment.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/atc_batchs_row.xml" value="0.1" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/atc_invoices_row.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/autocomplete_cpt_row.xml" value="0.20260416666666667" />
@@ -69,7 +71,7 @@
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/autocomplete_customer_row.xml" value="0.20260416666666667" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/autocomplete_sm_row.xml" value="0.20260416666666667" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/autocomplete_warehouse_row.xml" value="0.20260416666666667" />
-        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/brand_fragment.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/brand_fragment.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/call_cycle_dialog_fragment.xml" value="0.3625" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/call_cycle_entry_fragment.xml" value="0.2546875" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/call_cycle_fragment.xml" value="0.2546875" />
@@ -82,7 +84,7 @@
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/categories_fragment.xml" value="0.3625" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/category_fragment.xml" value="0.26510416666666664" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/control_layout.xml" value="0.20104166666666667" />
-        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_entry_fragment.xml" value="0.2546875" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_entry_fragment.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_fragment.xml" value="0.25677083333333334" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_row.xml" value="0.22916666666666666" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/customer_statement_fragment.xml" value="0.2546875" />
@@ -107,7 +109,7 @@
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/item_rv_invoice.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/item_rv_invoice_item.xml" value="0.3625" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/item_rv_main_category.xml" value="0.3625" />
-        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/item_rv_product.xml" value="0.264" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/item_rv_product.xml" value="0.4" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/item_rv_product_offer.xml" value="0.2791666666666667" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/item_rv_stock_row.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/item_rv_stockin_doc.xml" value="0.3625" />
@@ -150,6 +152,7 @@
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/payable_entry_fragment.xml" value="0.2546875" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/payable_fragment.xml" value="0.25677083333333334" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/payable_row.xml" value="0.22916666666666666" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/popup_disc.xml" value="0.3625" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/popup_schedule.xml" value="0.264" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/popup_uom.xml" value="0.21666666666666667" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/layout/product_autocomplete_row.xml" value="0.3625" />
@@ -203,6 +206,8 @@
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/menu/nav_catalogue_menu.xml" value="0.3625" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/menu/nav_marketplace_menu.xml" value="0.1984375" />
         <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/menu/nav_menu.xml" value="0.17083333333333334" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/menu/search_menu.xml" value="0.3625" />
+        <entry key="..\:/Projects/Android/Projects/MawaredVanSale/mawaredapp/src/main/res/menu/view_menu.xml" value="0.3625" />
       </map>
     </option>
   </component>

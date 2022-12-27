@@ -50,7 +50,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
     var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
-
+    var sr_discPrcnt: Double = 0.0
      var tmpSRItems: ArrayList<Sale_Return_Items> = arrayListOf()
     var tmpDeletedItems: ArrayList<Sale_Return_Items> = arrayListOf()
 
@@ -167,7 +167,8 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 isRunning = true
                 val user = App.prefs.saveUser!!
                 val totalAmount: Double = tmpSRItems.sumByDouble { it.srd_line_total!! }
-                val netAmount: Double = tmpSRItems.sumByDouble { it.srd_line_total!! }
+                val totalDisc: Double = tmpSRItems.sumByDouble { (it.srd_dis_value ?: 0.0) + (it.srd_add_dis_value ?: 0.0) }
+                val netAmount: Double = tmpSRItems.sumByDouble { it.srd_net_total!! }
                 val strDate = LocalDateTime.now()
                 val dtFull = doc_date.value + " " + LocalTime.now()
                 val doc_num = doc_no.value?.toInt() ?: 0
@@ -176,8 +177,8 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 val baseEo = Sale_Return(
                     user.cl_Id, user.org_Id,doc_num, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, cu_Id, null, totalAmount, netAmount, user.ss_cr_Id, user.sf_cr_Id, rate,
-                    null, false,0, location?.latitude, location?.longitude, cu_price_cat_Id,"$strDate",
+                    _sm_id, cu_Id, null, totalAmount,totalDisc, netAmount, sr_discPrcnt, user.ss_cr_Id, user.sf_cr_Id, rate,
+                    ref_Id, ref_no, false,0, location?.latitude, location?.longitude, cu_price_cat_Id,"$strDate",
                     "${user.id}", "$strDate", "${user.id}"
                 )
                 baseEo.sr_price_cat_code = price_cat_code
@@ -210,7 +211,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
 
             }catch (e: Exception){
                 msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
-                isRunning = true
+                isRunning = false
             }
         }
     }
@@ -269,7 +270,6 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                         ref_no = null
                         doc_expiry.value = ""
                         doc_unit_price.value = ""
-                        selectedInvoice = null
                         clear("prod")
                     }else{
                         msgListener?.onFailure(resources!!.getString(R.string.msg_error_fail_add_item))
@@ -288,26 +288,21 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id && it.srd_ref_rowNo == ref_rowNo && it.srd_Id == ref_Id }//&& it.srd_batch_no == selectedInvoice!!.pr_batch_no && it.srd_expiry_date == selectedInvoice!!.pr_expiry_date }
             val pQty = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0 + (if(mItem?.srd_pack_qty != null)   mItem.srd_pack_qty!! else 0.0)
             //unitPrice = if(selectedInvoice != null) selectedInvoice!!.pr_unit_price!! else unitPrice
-            var unitPrice_afd = unitPrice
+            var price = unitPrice
             if(selectedInvoice != null) {
-                if(selectedInvoice?.pr_price_AfD!! > 0.0){
-                    unitPrice_afd = selectedInvoice!!.pr_price_AfD!!
-                }else{
-                    unitPrice_afd = selectedInvoice!!.pr_unit_price!!
-                }
+                price = selectedInvoice!!.pr_unit_price!!
             }
-            else{ unitPrice_afd = unitPrice }
 
-            val lineTotal = unitPrice_afd * pQty
+            val lineTotal = price * pQty
             var qty: Double = pQty // if(selectedInvoice != null) selectedInvoice!!.pr_NumInSale!! else 1.0
             var paksize: Double = 1.0
-            val netTotal = lineTotal
+
             var disPer: Double = 0.0
             var disValue : Double = 0.0
             var pr_expiry_date: String? = null
             var pr_mfg_date: String? = null
             var pr_batch_no: String? = null
-
+            var add_disc_value : Double = 0.0
             if(selectedInvoice != null){
                 paksize = selectedInvoice!!.pr_NumInSale!!
                 qty = pQty * paksize
@@ -316,13 +311,18 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 pr_expiry_date = selectedInvoice!!.pr_expiry_date
                 pr_mfg_date = selectedInvoice!!.pr_mfg_date
                 pr_batch_no = selectedInvoice!!.pr_batch_no
+                add_disc_value = (lineTotal - disValue) * (1-(selectedInvoice!!.pr_d_discPrcnt/100))
+                if(sr_discPrcnt == 0.0)
+                    sr_discPrcnt = selectedInvoice!!.pr_d_discPrcnt
             }
+            val netTotal = (lineTotal - disValue -  add_disc_value)
+
             val user = App.prefs.saveUser
 
             if(mItem == null){
                 rowNo++
-                val itemEo = Sale_Return_Items(0, rowNo, selectedProduct!!.pr_Id, selectedInvoice!!.pr_uom_Id, pQty, paksize, qty, unitPrice_afd,
-                    lineTotal, disPer, disValue, netTotal, null, null, null, _wr_id, ref_rowNo, ref_Id, ref_no,
+                val itemEo = Sale_Return_Items(0, rowNo, selectedProduct!!.pr_Id, selectedInvoice!!.pr_uom_Id, pQty, paksize, qty, price,
+                    lineTotal, disPer, disValue, selectedInvoice!!.pr_d_discPrcnt, add_disc_value, netTotal, null, null, null, _wr_id, ref_rowNo, ref_Id, ref_no,
                     pr_batch_no, pr_expiry_date,  pr_mfg_date,"$strDate",
                     "${user?.id}", "$strDate", "${user?.id}")
 

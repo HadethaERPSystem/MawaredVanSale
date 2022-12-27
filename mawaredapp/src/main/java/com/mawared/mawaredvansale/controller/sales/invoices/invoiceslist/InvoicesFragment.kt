@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.GridLayoutManager
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.InvoicesAdapter
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
@@ -19,11 +19,12 @@ import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFuncti
 import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.databinding.FragmentInvoicesBinding
-import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.utilities.MenuSysPrefs
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.fragment_invoices.*
+import kotlinx.android.synthetic.main.fragment_invoices.progress_bar
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -32,15 +33,15 @@ import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
 
-class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainNavigator<Sale> {
+class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, SearchView.OnQueryTextListener {
 
     override val kodein by kodein()
-
+    private val permission = MenuSysPrefs.getPermission("Invoice")
     private val factory: InvoicesViewModelFactory by instance()
 
     private lateinit var binding: FragmentInvoicesBinding
 
-    private var adapter = InvoicesAdapter(R.layout.invoice_row){ e, t->
+    private var adapter = InvoicesAdapter(R.layout.invoice_row, permission){ e, t->
         when(t){
             "E" -> onItemEditClick(e)
             "V" -> onItemViewClick(e)
@@ -61,7 +62,6 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_invoices, container, false)
 
-        viewModel.navigator = this
         viewModel.msgListener = this
         viewModel.ctx = requireActivity()
         viewModel.activity = activity as AppCompatActivity
@@ -70,11 +70,12 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
         removeObservers()
         bindUI()
+
         binding.pullToRefresh.setOnRefreshListener {
-            viewModel.refresh()
+            loadList(viewModel.term ?: "")
             binding.pullToRefresh.isRefreshing = false
         }
-        binding.btnReload.setOnClickListener { viewModel.refresh() }
+        binding.btnReload.setOnClickListener { loadList(viewModel.term ?: "") }
         return binding.root
     }
 
@@ -123,7 +124,16 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.list_menu, menu)
+        val perm = permission.split("|")
+        if(perm.count() > 0 && perm[0] == "1"){
+            inflater.inflate(R.menu.list_menu, menu)
+        }else{
+            inflater.inflate(R.menu.search_menu, menu)
+        }
+        val search = menu?.findItem(R.id.app_bar_search)
+        val searchView = search?.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -140,58 +150,25 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        viewModel.term = newText
+        adapter.setList(null, 0)
+        loadList(viewModel.term ?: "")
+        return true
+    }
+
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Main) {
         try {
 
-//            val pagedAdapter = SalesPagedListAdapter(viewModel, requireActivity())
-//            val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
-//            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-//                override fun getSpanSize(position: Int): Int {
-//                    val viewType = pagedAdapter.getItemViewType(position)
-//                    if (viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
-//                    else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
-//                }
-//            }
-//            rcv_invoices.apply {
-//                layoutManager = gridLayoutManager
-//                setHasFixedSize(true)
-//                adapter = pagedAdapter
-//            }
-
-//            viewModel.sales.observe(viewLifecycleOwner, Observer {
-//                if (it != null) {
-//                    pagedAdapter.submitList(it)
-//                }
-//            })
-            //viewModel.setCustomer(null)
-
-//            viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-//                progress_bar.visibility =
-//                    if (viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
-//                if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
-//                    val pack = requireContext().packageName
-//                    val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
-//                    viewModel.errorMessage.value = resources.getString(id)
-//                    ll_error.visibility = View.VISIBLE
-//                } else {
-//                    ll_error.visibility = View.GONE
-//                }
-//
-//                if (!viewModel.listIsEmpty()) {
-//                    pagedAdapter.setNetworkState(it)
-//                }
-//            })
-//
-//            viewModel.networkState.observe(viewLifecycleOwner, Observer {
-//                progress_bar.visibility =
-//                    if (viewModel.listIsEmpty() && it == NetworkState.LOADING) View.VISIBLE else View.GONE
-//            })
-
             viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
                 if (it == "Successful") {
                     onSuccess(getString(R.string.msg_success_delete))
-                    viewModel.setCustomer(null)
+                    loadList(viewModel.term ?: "")
                 } else {
                     onFailure(getString(R.string.msg_failure_delete))
                 }
@@ -210,34 +187,34 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     override fun onStarted() {
-        progress_bar.visibility = View.VISIBLE
+        progress_bar?.visibility = View.VISIBLE
     }
 
     override fun onSuccess(message: String) {
-        progress_bar.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         inv_list_lc.snackbar(message)
     }
 
     override fun onFailure(message: String) {
-        progress_bar.visibility = View.GONE
+        progress_bar?.visibility = View.GONE
         inv_list_lc.snackbar(message)
     }
 
-    override fun onItemDeleteClick(baseEo: Sale) {
+    fun onItemDeleteClick(baseEo: Sale) {
         showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             onStarted()
             viewModel.confirmDelete(it)
         })
     }
 
-    override fun onItemEditClick(baseEo: Sale) {
+    fun onItemEditClick(baseEo: Sale) {
         val action = InvoicesFragmentDirections.actionInvoicesFragmentToAddInvoiceFragment()
         action.saleId = baseEo.sl_Id
         action.mode ="Edit"
         navController.navigate(action)
     }
 
-    override fun onItemViewClick(baseEo: Sale) {
+    fun onItemViewClick(baseEo: Sale) {
 
         val action = InvoicesFragmentDirections.actionInvoicesFragmentToAddInvoiceFragment()
         action.saleId = baseEo.sl_Id
@@ -245,28 +222,10 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         navController.navigate(action)
     }
 
-//    fun mPrint(baseEo: Sale){
-//        //viewModel.onPrintTicket(baseEo)
-////        val lang = Locale.getDefault().toString().toLowerCase()
-////        val tickets = GenerateTicket(activity!!, lang).Create(baseEo,R.drawable.ic_logo_black, "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", null, null)
-////
-//////        val intent = Intent(activity, PrintingActivity::class.java)
-//////        val bundle = Bundle()
-//////        bundle.putSerializable("tickets", tickets as Serializable)
-//////        intent.putExtras(bundle)
-//////        startActivity(intent)
-////        TicketPrinting(activity!!, tickets).run(){complete ->
-////            if(complete){
-////                onSuccess("Print Successfully")
-////            }else{
-////                onFailure("Print Failure")
-////            }
-////        }
-//    }
-
     private fun loadList(term : String){
         val list = adapter.getList().toMutableList()
         if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            onStarted()
             viewModel.loadData(list, term,adapter.pageCount + 1){data, pageCount ->
                 showResult(data!!, pageCount)
             }
@@ -275,6 +234,7 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     fun showResult(list: List<Sale>, pageCount: Int) = HandlerUtils.runOnUiThread {
         adapter.setList(list, pageCount)
+        progress_bar?.visibility = View.GONE
     }
 
     override fun onDestroy() {

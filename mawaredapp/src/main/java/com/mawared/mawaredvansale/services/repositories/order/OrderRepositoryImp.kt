@@ -25,31 +25,11 @@ class OrderRepositoryImp(private val api: ApiService): IOrderRepository, SafeApi
 
     var job: CompletableJob? = null
 
-    lateinit var orderPagedList: LiveData<PagedList<Sale_Order>>
-    lateinit var orderDataSourceFactory: OrderDataSourceFactory
 
-    override fun fetchLiveOrdersPagedList(sm_Id: Int, cu_Id: Int?, vo_code: String): LiveData<PagedList<Sale_Order>>{
-        orderDataSourceFactory = OrderDataSourceFactory(api, sm_Id, cu_Id, vo_code)
-
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        orderPagedList = LivePagedListBuilder(orderDataSourceFactory, config).build()
-
-        return orderPagedList
-    }
 
     private val _networkState = MutableLiveData<NetworkState>()
     override val networkState: LiveData<NetworkState>
         get() =  _networkState
-
-
-    override fun getOrderNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<OrderDataSource, NetworkState>(orderDataSourceFactory.orderLiveDataSource, OrderDataSource::networkState)
-    }
 
     override fun insert(baseEo: Sale_Order): LiveData<Sale_Order> {
         job = Job()
@@ -125,13 +105,27 @@ class OrderRepositoryImp(private val api: ApiService): IOrderRepository, SafeApi
         }
     }
 
-    override fun getOrderOnPages(
-        sm_Id: Int,
-        cu_Id: Int?,
-        vo_code: String,
-        page: Int
-    ): LiveData<List<Sale_Order>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override suspend fun getOrderOnPages(sm_Id: Int, cu_Id: Int?,  vo_code: String, term: String, page: Int ): List<Sale_Order>? {
+        try {
+            val response = apiRequest { api.getOrdersOnPages(sm_Id, cu_Id, vo_code, term, page, POST_PER_PAGE) }
+            if(response.isSuccessful){
+                return response.data
+            }
+            return emptyList()
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("ApiError", "No internat connection", e)
+            return emptyList()
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }catch (e: Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Error", "Exception", e)
+            return emptyList()
+        }
     }
 
     override fun getOrderById(so_Id: Int): LiveData<Sale_Order> {

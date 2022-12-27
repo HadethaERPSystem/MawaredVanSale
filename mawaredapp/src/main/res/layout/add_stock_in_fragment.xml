@@ -229,7 +229,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.52" />
+                    app:layout_constraintGuide_percent="0.55" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/gl_v_1"
@@ -247,7 +247,20 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>
-
+        <TextView
+            android:id="@+id/lbl_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:gravity="start|center_vertical"
+            android:text="@string/lbl_items"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:padding="@dimen/_5sdp"
+            android:textColor="@android:color/black"
+            />
         <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

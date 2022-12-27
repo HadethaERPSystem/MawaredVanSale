@@ -23,7 +23,7 @@ class ScheduledCustomerDataSource(private val api: ApiService, private val sm_Id
         networkState.postValue(NetworkState.LOADING)
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = api.customers_getScheduleOnPages(sm_Id, page, POST_PER_PAGE)
+                val response = api.customers_OnPages(sm_Id, null, "", page, POST_PER_PAGE)
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {
@@ -57,7 +57,7 @@ class ScheduledCustomerDataSource(private val api: ApiService, private val sm_Id
         networkState.postValue(NetworkState.LOADING)
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = api.customers_getScheduleOnPages(sm_Id, params.key, POST_PER_PAGE)
+                val response = api.customers_OnPages(sm_Id, null, "", page, POST_PER_PAGE)
                 if (response.isSuccessful) {
                     val result = response.body()!!
                     if (result.isSuccessful) {

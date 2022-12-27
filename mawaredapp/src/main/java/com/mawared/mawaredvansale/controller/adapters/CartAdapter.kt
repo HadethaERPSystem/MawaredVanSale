@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.annotation.LayoutRes
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
+import com.mawared.mawaredvansale.controller.helpers.extension.returnDateString
 import com.mawared.mawaredvansale.controller.helpers.extension.toFormatNumber
 import com.mawared.mawaredvansale.data.db.entities.md.Product
 import com.mawared.mawaredvansale.data.db.entities.sales.OrderItems
@@ -20,14 +21,14 @@ class CartAdapter (@LayoutRes private val layoutResource: Int, private val click
             tview_qty.text = "${item.od_pack_qty?.toFormatNumber()} "
             tview_giftQty.text = "${item.od_gift_qty?.toFormatNumber()} "
             tview_batch.text = "${item.od_batch_no}"
-            tview_expirty.text = "${item.od_expiry_date}"
+            tview_expirty.text = "${item.od_expiry_date?.returnDateString()}"
             tview_unit_price.text = "${item.od_unit_price.toFormatNumber()}"
-            tview_sc.text = App.prefs.saveUser!!.ss_cr_code!!
+            tview_sc.text = App.prefs.saveUser!!.sl_cr_code!!
             tview_line_total.text = "${item.od_line_total.toFormatNumber()}"
-            tview_sc2.text = App.prefs.saveUser!!.ss_cr_code!!
-            tview_disc_value.text = "${item.od_disvalue.toFormatNumber()}"
+            tview_sc2.text = App.prefs.saveUser!!.sl_cr_code!!
+            tview_disc_value.text = "${((item.od_disvalue ?: 0.0) + (item.od_add_dis_value ?: 0.0)).toFormatNumber()}"
             tview_net_total.text = "${item.od_net_total.toFormatNumber()}"
-            tview_sc3.text = App.prefs.saveUser!!.ss_cr_code!!
+            tview_sc3.text = App.prefs.saveUser!!.sl_cr_code!!
 
             deleteBtn.tag = item
             deleteBtn.setOnClickListener{

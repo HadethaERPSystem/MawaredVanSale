@@ -48,6 +48,12 @@ class InvoiceItemsAdapter(@LayoutRes private val layoutResource: Int, private va
                 itemlocAdapter.setList(item.itemLoc!!)
             }
 
+            if(item.itemSelectedLoc != null){
+                @Suppress("UNCHECKED_CAST")
+                val sAdp = view.rcv_items_selectedLoc.adapter as BaseAdapter<Any>
+                sAdp.setList(item.itemSelectedLoc)
+            }
+
             this.tag = item
             this.setOnClickListener {
                 @Suppress("NAME_SHADOWING")

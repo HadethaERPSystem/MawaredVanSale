@@ -119,6 +119,7 @@
 
 
     <string name="tag_search">بحث</string>
+    <string name="search_hint">بحث عن ...</string>
     <string name="add_invoice_button_tag">جديد</string>
     <string name="tag_print">طباعة</string>
     <string name="btn_add_item_caption">اضافة مادة</string>
@@ -201,6 +202,7 @@
     <string name="msg_error_remain_amount">المبلغ المدفوع اكبر من مبلغ الفاتورة</string>
     <string name="msg_error_not_remain_amount">يجب دفع مبلغ الفاتورة كاملا</string>
     <string name="msg_return_qty_greater_invqty">كمية المردود اكبر من كمية الفاتورة</string>
+    <string name="msg_error_disc_limit">الخصم المدخل على الفاتورة اكبر من الخصم المسموح به [%s]</string>
 
     <string name="msg_notify_device_not_support_bluetooth">الجهاز لا يدعم البلوتوث</string>
     <string name="msg_notify_no_paired_bluetooth_device">لم يتم العثور على أجهزة بلوتوث مقترنة</string>
@@ -344,6 +346,7 @@
     <string name="ns_end_list">وصلت الى نهاية القائمة</string>
     <string name="ns_no_data">لا تتوفر بيانات</string>
     <string name="ns_problem_connection">مشكلة في الاتصال</string>
+    <string name="ns_problem_api">مشكلة في مصدر البيانات : ربما نفذ الوقت قبل جلب البيانات</string>
     <string name="to_date">الى تاريخ</string>
     <string name="from_date">من تاريخ</string>
     <string name="hint_status_name">انتظار</string>
@@ -506,6 +509,7 @@
     <string name="btn_add_to_cart">اضافة مادة</string>
     <string name="lbl_prom">عرض كمية</string>
     <string name="hint_enter_qty">ادخل الكمية</string>
+    <string name="hint_enter_disc_prcnt">ادخل نسبة الخصم</string>
     <string name="radio_sale_invoice">فاتورة بيع</string>
     <string name="radio_sale_order">امر بيع</string>
     <string name="layout_select_customer_title">جدولة الزبائن</string>
@@ -542,4 +546,9 @@
     <string name="layout_select_type_of_stock_in">اختر نوع الادخال المخزني</string>
     <string name="layout_select_items_for_stock_in">اختر المواد للادخال المخزني</string>
     <string name="layout_select_invoice_for_stock_in">اختر فاتورة للادخال المخزني</string>
+    <string name="hint_comment">الملاحظات</string>
+    <string name="lbl_api_address">API Address</string>
+    <string name="hint_enter_api_address">Enter Api Address</string>
+    <string name="like_http_192_192_80_200">like: http://192.192.80.200</string>
+    <string name="msg_notempty_api_address">يحب عدم ترك حقل بروتكول الاتصال قارغ</string>
 </resources>

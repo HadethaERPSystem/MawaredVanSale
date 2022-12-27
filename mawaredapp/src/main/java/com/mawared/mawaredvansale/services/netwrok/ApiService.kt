@@ -1,6 +1,7 @@
 package com.mawared.mawaredvansale.services.netwrok
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.data.db.entities.reports.fms.CashbookStatement
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
@@ -59,14 +60,20 @@ interface ApiService {
                                       @Query("org_Id") org_Id: Int?,
                                       @Query("cat_Id") cat_Id: Int?,
                                       @Query("brand_Id") br_Id: Int?,
-                                      @Query("Term") Term: String?) : Response<ResponseList<Product>>
+                                      @Query("Term") Term: String?,
+                                      @Query("objCode") objCode: String,
+                                      @Query("page") page: Int,
+                                      @Query("pageSize") pageSize: Int) : Response<ResponseList<Product>>
 
     @GET(URL_PRODUCTS_GET_FOR_OFFERS)
     suspend fun products_GetForOffers(@Query("WarehouseId") warehouseId: Int?,
                                       @Query("PriceCode") priceCode: String,
                                       @Query("currentDate") currentDate: LocalDate,
                                       @Query("org_Id") org_Id: Int?,
-                                      @Query("Term") Term: String?) : Response<ResponseList<Product>>
+                                      @Query("Term") Term: String?,
+                                      @Query("objCode") objCode: String,
+                                      @Query("page") page: Int,
+                                      @Query("pageSize") pageSize: Int) : Response<ResponseList<Product>>
 
     @GET(URL_PRODUCTS_GET_WAREHOUSE_ON_PAGES)
     suspend fun products_GetByWareOnPages(@Query("Term") term: String,
@@ -146,6 +153,7 @@ interface ApiService {
 
     @GET(URL_SCHEDULE_CUSTOMERS_ON_PAGES)
     suspend fun customers_getScheduleOnPages(@Query("sm_Id") sm_Id: Int,
+                                             @Query("term") term: String,
                                              @Query("page") page: Int,
                                              @Query("pageSize") pageSize: Int): Response<ResponseList<Customer>>
 
@@ -230,6 +238,10 @@ interface ApiService {
     @GET(URL_SALESMAN_HSA_SALES_PLAN)
     suspend fun salesmanHasSalesPlan(@Query("sm_Id") sm_Id: Int): Response<ResponseSingle<Salesman>>
 
+    @GET(URL_USERS_DISC)
+    suspend fun getUserDisc(@Query("userId") userId: Int,
+                            @Query("discRange") discRange: String) : Response<ResponseSingle<UsersDiscounts>>
+
     @GET(URL_UOM_PRODUCT)
     suspend fun uom_GetByProduct(@Query("prod_Id") prod_Id: Int): Response<ResponseList<UnitConvertion>>
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -270,7 +282,7 @@ interface ApiService {
 
     @GET(URL_ALL_DELIVERY_ON_PAGES)
     suspend fun getDelivery_OnPages(@Query("sm_Id") sm_Id: Int,
-                                    @Query("cu_Id") cu_Id: Int?,
+                                    @Query("term") term: String,
                                     @Query("page") page: Int,
                                     @Query("pageSize") pageSize: Int): Response<ResponseList<Delivery>>
 
@@ -299,9 +311,9 @@ interface ApiService {
     suspend fun getMntById(@Query("id") id: Int) : Response<ResponseSingle<Mnts>>
     @GET(URL_MNTS_PAGES)
     suspend fun mnts_OnPages(@Query("sm_Id") sm_Id: Int,
-                              @Query("cu_Id") cu_Id: Int?,
-                              @Query("page") page: Int,
-                              @Query("pageSize") pageSize: Int) : Response<ResponseList<Mnts>>
+                             @Query("term") term: String,
+                             @Query("page") page: Int,
+                             @Query("pageSize") pageSize: Int) : Response<ResponseList<Mnts>>
     @GET(URL_MNTS_TYPE)
     suspend fun getMntTyps() : Response<ResponseList<MntType>>
     @GET(URL_MNTS_STATUS)
@@ -375,7 +387,7 @@ interface ApiService {
 
     @GET(URL_SALE_RETURN_ON_PAGES)
     suspend fun return_OnPages(@Query("sm_Id") sm_Id: Int,
-                               @Query("cu_Id") cu_Id: Int?,
+                               @Query("term") term: String?,
                                @Query("page") page: Int,
                                @Query("pageSize") pageSize: Int) : Response<ResponseList<Sale_Return>>
 
@@ -396,7 +408,7 @@ interface ApiService {
     suspend fun getReceivable(@Query("sm_Id") sm_Id: Int, @Query("cu_Id") cu_Id: Int?) : Response<ResponseList<Receivable>>
     @GET(URL_RECEIVABLE_ON_PAGES)
     suspend fun receipt_OnPages(@Query("sm_Id") sm_Id: Int,
-                                @Query("cu_Id") cu_Id: Int?,
+                                @Query("term") term: String?,
                                 @Query("page") page: Int,
                                 @Query("pageSize") pageSize: Int) : Response<ResponseList<Receivable>>
     @GET(URL_RECEIVABLE_DELETE)
@@ -414,7 +426,7 @@ interface ApiService {
 
     @GET(URL_PAYABLE_ON_PAGES)
     suspend fun payable_OnPages(@Query("sm_Id") sm_Id: Int,
-                                @Query("cu_Id") cu_Id: Int?,
+                                @Query("term") term: String?,
                                 @Query("page") page: Int,
                                 @Query("pageSize") pageSize: Int) : Response<ResponseList<Payable>>
 
@@ -443,6 +455,7 @@ interface ApiService {
     suspend fun getOrdersOnPages(@Query("sm_Id") sm_Id: Int,
                                  @Query("cu_Id") cu_Id: Int?,
                                  @Query("vo_code") vo_code: String,
+                                 @Query("term") term: String,
                                  @Query("page") page: Int,
                                  @Query("pageSize") pageSize: Int) : Response<ResponseList<Sale_Order>>
 
@@ -491,7 +504,7 @@ interface ApiService {
 
     @GET(URL_CALL_CYCLE_GET_ON_PAGES)
     suspend fun call_cycle_GetByOnPages(@Query("sm_Id") sm_Id: Int,
-                                        @Query("cu_Id") cu_Ic: Int?,
+                                        @Query("term") term: String?,
                                         @Query("page") page: Int,
                                         @Query("pageSize") pageSize: Int) : Response<ResponseList<Call_Cycle>>
 
@@ -509,6 +522,7 @@ interface ApiService {
 
     @GET(URL_TRANSFER_GET_ON_PAGES)
     suspend fun transfer_getOnPages(@Query("userId") userId: Int,
+                                    @Query("term") term: String?,
                                     @Query("page") page: Int,
                                     @Query("pageSize") pageSize: Int): Response<ResponseList<Transfer>>
 
@@ -557,7 +571,7 @@ interface ApiService {
                                         @Query("PlanId") planId: Int): Response<ResponseSingle<sm_dash2>>
 
     @GET(URL_SALES_PLAN)
-    suspend fun getSalesPlan(): Response<ResponseList<Lookups>>
+    suspend fun getSalesPlan(@Query("sm_Id") sm_Id: Int): Response<ResponseList<Lookups>>
 
     @Multipart
     @POST(URL_UPLOAD_FILE)

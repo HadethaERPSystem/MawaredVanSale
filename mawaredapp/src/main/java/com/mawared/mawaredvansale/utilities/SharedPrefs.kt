@@ -6,6 +6,7 @@ import com.mawared.mawaredvansale.data.db.entities.security.User
 import com.google.gson.Gson
 import com.mawared.mawaredvansale.data.db.entities.md.Salesman
 import com.mawared.mawaredvansale.data.db.entities.md.Warehouse
+import com.mawared.mawaredvansale.data.db.entities.security.Menu
 
 
 /*
@@ -37,6 +38,11 @@ class SharedPrefs(context: Context) {
     val KEY_PRINTING_TYPE = "Key_priting_type"
     val KEY_APP_VERSION = "key_app_verion"
     val KEY_APP_HAS_PLAN = "key_app_has_plan"
+    var KEY_SYS_MENU = "Key_sys_menu"
+    var KEY_INVOICE_DISC = "Key_invoice_disc"
+    var KEY_ITEM_DISC = "Key_item_disc"
+    var KEY_API_IP = "Key_Api_ip"
+
     var isLoggedIn: Boolean
         get() = prefs.getBoolean(IS_LOGGED_IN, false)
         set(value) = prefs.edit().putBoolean(IS_LOGGED_IN, value).apply()
@@ -116,4 +122,20 @@ class SharedPrefs(context: Context) {
     var hasSalesPlan: String?
         get() = prefs.getString(KEY_APP_HAS_PLAN, null)
         set(value) = prefs.edit().putString(KEY_APP_HAS_PLAN, value).apply()
+
+    var menuPref: String?
+        get() = prefs.getString(KEY_SYS_MENU, null)
+        set(value) = prefs.edit().putString(KEY_SYS_MENU, value).apply()
+
+    var user_invoice_disc : String?
+        get() = prefs.getString(KEY_INVOICE_DISC, "0.0")
+         set(value) = prefs.edit().putString(KEY_INVOICE_DISC, value).apply()
+
+    var user_item_disc : String?
+        get() = prefs.getString(KEY_ITEM_DISC, "0.0")
+        set(value) = prefs.edit().putString(KEY_ITEM_DISC, value).apply()
+
+    var ApiIP : String?
+        get() = prefs.getString(KEY_API_IP, null)
+        set(value) = prefs.edit().putString(KEY_API_IP, value).apply()
 }

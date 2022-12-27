@@ -137,7 +137,7 @@ class TransferEntryViewModel(private val repository: ITransferRepository, privat
                 }
                 Coroutines.main {
                     try {
-                        val response = repository.upsert(baseEo)
+                        val response = repository.saveOrUpdate(baseEo)
                         if(response.isSuccessful){
                             _baseEo.value = response.data!!
                             isRunning = false

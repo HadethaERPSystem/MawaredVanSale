@@ -41,12 +41,13 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     var rowNo: Int = 0
     var docNo: MutableLiveData<String> = MutableLiveData()
     var docDate = MutableLiveData<String>()
+    var notes = MutableLiveData<String>()
     var cCustomer_Name = MutableLiveData<String>()
     var totalAmount : MutableLiveData<Double> = MutableLiveData()
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
     //var isGift: MutableLiveData<Boolean> = MutableLiveData(false)
-    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
 
     var searchQty: MutableLiveData<String> = MutableLiveData("1")
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
@@ -184,9 +185,9 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
                 val cu_Id = selectedCustomer?.cu_ref_Id ?: _entityEo?.so_customerId
                 val price_cat_Id = selectedCustomer?.cu_price_cat_Id ?: _entityEo?.so_price_cat_Id
                 val baseEo = Sale_Order( user.cl_Id, user.org_Id, doc_num, dtFull,
-                    "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, cu_Id, cCustomer_Name.value, null, totalAmount, totalDiscount, netAmount, user.ss_cr_Id, rate,
-                    false, location?.latitude, location?.longitude, price_cat_Id, "$strDate",
+                    "", voucher!!.vo_prefix, voucher!!.vo_Id,
+                    _sm_id, cu_Id, cCustomer_Name.value, null, totalAmount, totalDiscount, netAmount, 0.0, user.ss_cr_Id, rate,
+                    false, location?.latitude, location?.longitude, price_cat_Id, notes.value, "$strDate",
                     "${user.id}", "$strDate", "${user.id}"
                 )
                 baseEo.so_price_cat_code =  price_cat_code
@@ -248,9 +249,11 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
 
         val netAmount: Double = tmpSOItems.sumByDouble { it.sod_net_total!! }
 
-        if (selectedCustomer!!.cu_credit_limit!! < netAmount) {
-            msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
-                R.string.msg_error_credit_limit)
+        if (selectedCustomer?.cu_credit_limit != null && selectedCustomer?.cu_credit_limit!! > 0) {
+           if(selectedCustomer!!.cu_credit_limit!! < netAmount)  {
+               msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
+                   R.string.msg_error_credit_limit)
+           }
         }
 
         var cu_AgeDebit : Int = 0
@@ -367,7 +370,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
             if(mItem == null){
                 rowNo++
                 val itemEo = Sale_Order_Items(rowNo, 0, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, newQty, 1.00, newQty, gift_qty, unitPrice, price_afd,
-                    lineTotal, lDisPer, disValue, netTotal, selectedProduct!!.pr_wr_Id,  selectedProduct!!.pr_batch_no,  selectedProduct!!.pr_expiry_date,
+                    lineTotal, lDisPer, disValue, 0.0, 0.0, netTotal, selectedProduct!!.pr_wr_Id,  selectedProduct!!.pr_batch_no,  selectedProduct!!.pr_expiry_date,
                     selectedProduct!!.pr_mfg_date, null, null, null, false,"${strDate}",
                     "${user.id}", "${strDate}", "${user.id}")
                 itemEo.sod_prod_name = selectedProduct!!.pr_description_ar
@@ -418,11 +421,11 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
 
         if(disPer.value != null && disPer.value!!.length > 0){
             val tmpDisPer =  disPer.value!!.toDouble()
-            val disPerLimit = App.prefs.saveUser!!.dis_Per ?: 0.0
+            val disPerLimit = App.prefs.saveUser!!.iDiscPrcnt
 
             if(tmpDisPer > disPerLimit) {
                 val str: String = ctx!!.resources!!.getString(R.string.msg_error_discount_overflow)
-                msg += (if (msg!!.length > 0) "\n\r" else "") + String.format(str, App.prefs.saveUser!!.dis_Per!!)
+                msg += (if (msg!!.length > 0) "\n\r" else "") + String.format(str, App.prefs.saveUser!!.iDiscPrcnt)
             }
         }
 

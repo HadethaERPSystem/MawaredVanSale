@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -60,6 +61,7 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         val lang = Locale.getDefault().toString()
         App.prefs.systemLanguage = lang
         setContentView(R.layout.activity_home)
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setSupportActionBar(toolbar)
 

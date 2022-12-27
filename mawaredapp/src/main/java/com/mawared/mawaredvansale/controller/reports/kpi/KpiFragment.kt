@@ -132,7 +132,7 @@ class KpiFragment : ScopedFragment(), KodeinAware, IDateRangePicker {
                 setUpPieChartData(it)
             })
             viewModel.kpi_cus.observe(viewLifecycleOwner, Observer {
-                setupBarChartData(it)
+                setBarChartValues(it)
             })
             viewModel.dtFrom.value = viewModel.returnDateString(LocalDate.now().toString())
             viewModel.dtTo.value = viewModel.returnDateString(LocalDate.now().toString())
@@ -202,9 +202,11 @@ class KpiFragment : ScopedFragment(), KodeinAware, IDateRangePicker {
         binding.pieChart.data = data
         //binding.pieChart.centerTextRadiusPercent = 0f
         binding.pieChart.isDrawHoleEnabled = true
+        binding.pieChart.setBackgroundColor(resources.getColor(R.color.lightgreen))
         binding.pieChart.legend.isEnabled = true
         binding.pieChart.description.isEnabled = false
         binding.pieChart.centerText = "Customers"
+        binding.pieChart.setEntryLabelColor(resources.getColor(R.color.brown))
         binding.pieChart.animate()
         binding.pieChart.invalidate()
     }
@@ -226,11 +228,14 @@ class KpiFragment : ScopedFragment(), KodeinAware, IDateRangePicker {
         val yVal6 = (smDash2.ex_time!! / Total3)
         val yVal7 = (smDash2.pl_visit!! / Total4)
         val yVal8 = (smDash2.ex_visit!! / Total4)
-        bargroup.add(BarEntry(0f, floatArrayOf(yVal1, yVal2), "Sales"))
-        bargroup.add(BarEntry(1f, floatArrayOf(yVal3, yVal4), "Collecting"))
-        bargroup.add(BarEntry(2f, floatArrayOf(yVal5, yVal6), "Time"))
-        bargroup.add(BarEntry(3f, floatArrayOf(yVal7, yVal8), "Visit"))
-
+//        bargroup.add(BarEntry(0f, floatArrayOf(yVal1, yVal2), "Sales"))
+//        bargroup.add(BarEntry(1f, floatArrayOf(yVal3, yVal4), "Collecting"))
+//        bargroup.add(BarEntry(2f, floatArrayOf(yVal5, yVal6), "Time"))
+//        bargroup.add(BarEntry(3f, floatArrayOf(yVal7, yVal8), "Visit"))
+        bargroup.add(BarEntry(0f, floatArrayOf(smDash2.pl_sales!!, smDash2.ex_sales!!), "Sales"))
+        bargroup.add(BarEntry(1f, floatArrayOf(smDash2.pl_collected!!, smDash2.ex_collected!!), "Collecting"))
+        bargroup.add(BarEntry(2f, floatArrayOf(smDash2.pl_time!!, smDash2.ex_time!!), "Time"))
+        bargroup.add(BarEntry(3f, floatArrayOf(smDash2.pl_visit!!, smDash2.ex_visit!!), "Visit"))
         val labels: ArrayList<String> = arrayListOf<String>("Planning", "Actual")//, "Collecting", "Time", "Visit")
 
         // creating dataset for Bar Group
@@ -242,6 +247,8 @@ class KpiFragment : ScopedFragment(), KodeinAware, IDateRangePicker {
         )
         barDataSet.colors = getColors().toList()//  ColorTemplate.MATERIAL_COLORS.toList() // ContextCompat.getColor(requireContext(), R.color.amber)
         barDataSet.stackLabels = labels.toArray(arrayOfNulls<String>(0))
+        barDataSet.valueTextSize = 16f
+        barDataSet.valueTextColor = Color.BLACK
 
         val data = BarData(barDataSet)
         data.setDrawValues(true)
@@ -253,8 +260,16 @@ class KpiFragment : ScopedFragment(), KodeinAware, IDateRangePicker {
         binding.barChart.xAxis.setDrawAxisLine(false)
         binding.barChart.xAxis.labelCount = 3
         binding.barChart.xAxis.setDrawLabels(true)
+
+//        binding.barChart.xAxis.granularity = 1f
+//        binding.barChart.xAxis.setCenterAxisLabels(true)
+//        binding.barChart.xAxis.setDrawGridLines(false)
+//        binding.barChart.axisLeft.setDrawGridLines(true)
+//        binding.barChart.axisLeft.spaceTop = 35f
+//        binding.barChart.axisLeft.axisMinimum = 0f
         binding.barChart.xAxis.valueFormatter = MyXAxisFormatter()
         binding.barChart.description.isEnabled = false
+
         binding.barChart.animateY(1000)
         binding.barChart.legend.isEnabled = true
         binding.barChart.setPinchZoom(true)
@@ -267,6 +282,52 @@ class KpiFragment : ScopedFragment(), KodeinAware, IDateRangePicker {
         val colors = IntArray(2)
         System.arraycopy(ColorTemplate.MATERIAL_COLORS, 0, colors, 0, 2)
         return colors
+    }
+
+    fun setBarChartValues(smDash2: sm_dash2){
+        // x axis values
+        val xvalues = ArrayList<String>()
+        xvalues.add("Sales")
+        xvalues.add("Collecting")
+        xvalues.add("Time")
+        xvalues.add("Visit")
+
+        val y1 = (smDash2.ex_sales!! )/// (if(smDash2.pl_sales!! == 0f) 1f else smDash2.pl_sales!!)) * 100;
+        val y2 = (smDash2.ex_collected!!)// / (if(smDash2.pl_collected!! == 0f) 1f else smDash2.pl_collected!!)) * 100;
+        val y3 = (smDash2.ex_time!!)// / (if(smDash2.pl_time!! == 0f) 1f else smDash2.pl_time!!)) * 100;
+        val y4 = (smDash2.ex_visit!!)// / (if(smDash2.pl_visit!! == 0f) 1f else smDash2.pl_visit!!)) * 100;
+        // y axis values
+        val barentries = ArrayList<BarEntry>()
+        barentries.add(BarEntry(0f, y1, xvalues[0]))
+        barentries.add(BarEntry(1f, y2, xvalues[1]))
+        barentries.add(BarEntry(2f, y3, xvalues[2]))
+        barentries.add(BarEntry(3f, y4, xvalues[3]))
+
+        // bardata set
+        val barDataSet = BarDataSet(barentries, "Sales Plan")
+        barDataSet.color = resources.getColor(R.color.darkorange)
+        barDataSet.valueTextSize = 16f
+        // make a bar data
+        val data = BarData(barDataSet)
+        data.setDrawValues(true)
+        binding.barChart.data = data
+        binding.barChart.xAxis.labelCount = 3
+        binding.barChart.xAxis.valueFormatter = MyXAxisFormatter()
+        binding.barChart.setBackgroundColor(resources.getColor(R.color.lightgreen))
+        binding.barChart.animateXY(300,300)
+
+        //binding.barChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        //binding.barChart.xAxis.isEnabled = true
+        //binding.barChart.legend.isEnabled = true
+        //binding.barChart.axisLeft.isEnabled = false
+        //binding.barChart.axisRight.isEnabled = false
+        //binding.barChart.xAxis.setDrawAxisLine(false)
+        //binding.barChart.xAxis.labelCount = 3
+        //binding.barChart.xAxis.setDrawLabels(true)
+//        bargroup.add(BarEntry(0f, floatArrayOf(smDash2.pl_sales!!, smDash2.ex_sales!!), "Sales"))
+//        bargroup.add(BarEntry(1f, floatArrayOf(smDash2.pl_collected!!, smDash2.ex_collected!!), "Collecting"))
+//        bargroup.add(BarEntry(2f, floatArrayOf(smDash2.pl_time!!, smDash2.ex_time!!), "Time"))
+//        bargroup.add(BarEntry(3f, floatArrayOf(smDash2.pl_visit!!, smDash2.ex_visit!!), "Visit"))
     }
 }
 class MyXAxisFormatter : ValueFormatter() {

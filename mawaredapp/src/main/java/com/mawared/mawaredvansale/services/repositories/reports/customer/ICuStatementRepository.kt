@@ -8,4 +8,8 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 interface ICuStatementRepository {
     fun getRecNetworkState(): LiveData<NetworkState>
     fun fetchLivePagedList(userId: Int, cu_Id: Int, dtFrom: String?, dtTo: String?): LiveData<PagedList<CustomerStatement>>
+
+    val networkState: LiveData<NetworkState>
+
+    suspend fun get_OnPages(userId: Int, cu_Id: Int, dtFrom: String?, dtTo: String?, page: Int): List<CustomerStatement>?
 }

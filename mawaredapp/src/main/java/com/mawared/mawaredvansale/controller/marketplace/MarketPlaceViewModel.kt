@@ -42,7 +42,7 @@ class MarketPlaceViewModel(private val orderRepository: OrderRepository) : BaseV
 
             saleQty.postValue(qty.toFormatNumber())
             giftQty.postValue(gqty.toFormatNumber())
-            saleAmount.postValue( "${amount.toFormatNumber()} ${App.prefs.saveUser!!.ss_cr_code!!}")
+            saleAmount.postValue( "${amount.toFormatNumber()} ${App.prefs.saveUser!!.sl_cr_code!!}")
         }
 
     }

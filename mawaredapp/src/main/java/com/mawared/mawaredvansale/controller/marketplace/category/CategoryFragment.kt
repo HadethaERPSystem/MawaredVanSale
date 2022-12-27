@@ -23,7 +23,9 @@ import com.mawared.mawaredvansale.data.db.entities.md.Product_Category
 import com.mawared.mawaredvansale.databinding.CategoryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.microsoft.appcenter.utils.HandlerUtils
+import kotlinx.android.synthetic.main.brand_fragment.*
 import kotlinx.android.synthetic.main.category_fragment.*
+import kotlinx.android.synthetic.main.category_fragment.progress_bar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -66,9 +68,6 @@ class CategoryFragment : ScopedFragment(), KodeinAware {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
             android.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                viewModel.term = p0
-                adapter.setList(null, 0)
-                loadList(viewModel.term ?: "")
                 return false
             }
 
@@ -76,7 +75,7 @@ class CategoryFragment : ScopedFragment(), KodeinAware {
                 viewModel.term = p0
                 adapter.setList(null, 0)
                 loadList(viewModel.term ?: "")
-                return false
+                return true
             }
         })
 
@@ -98,22 +97,11 @@ class CategoryFragment : ScopedFragment(), KodeinAware {
         navController = Navigation.findNavController(view)
     }
 
-//    private fun bindUI()= GlobalScope.launch(Dispatchers.Main){
-//        try {
-//
-//            viewModel.categoryList.observe(viewLifecycleOwner, Observer {
-//                if(it != null)
-//                    adapter.setList(it)
-//            })
-//            viewModel._term.value = null
-//        }catch (e: Exception){
-//            e.printStackTrace()
-//        }
-//    }
 
     private fun loadList(term : String){
         val list = adapter.getList().toMutableList()
         if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            onStarted()
             viewModel.loadData(list, term,adapter.pageCount + 1){data, pageCount ->
                 showResult(data!!, pageCount)
             }
@@ -122,5 +110,18 @@ class CategoryFragment : ScopedFragment(), KodeinAware {
 
     fun showResult(list: List<Product_Category>, pageCount: Int) = HandlerUtils.runOnUiThread {
         adapter.setList(list, pageCount)
+        onSuccess()
+    }
+
+    fun onStarted() {
+        progress_bar?.visibility = View.VISIBLE
+    }
+
+    fun onSuccess() {
+        progress_bar?.visibility = View.GONE
+    }
+
+    fun onFailure() {
+        progress_bar?.visibility = View.GONE
     }
 }

@@ -3,9 +3,6 @@ package com.mawared.mawaredvansale.services.repositories.mnt
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
 import com.mawared.mawaredvansale.data.db.entities.mnt.Mnts
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
@@ -19,30 +16,10 @@ import kotlinx.coroutines.*
 class MaintenanceRepositoryImp(private val api: ApiService) : IMaintenanceRepository, SafeApiRequest() {
     var job: CompletableJob? = null
 
-    lateinit var pagedList: LiveData<PagedList<Mnts>>
-    lateinit var mntDSF: MaintenanceDataSourceFactory
-
     private val _networkState = MutableLiveData<NetworkState>()
     override val networkState: LiveData<NetworkState>
         get() = _networkState
 
-    override fun getOnPages(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Mnts>> {
-        mntDSF = MaintenanceDataSourceFactory(api, sm_Id, cu_Id)
-
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        pagedList = LivePagedListBuilder(mntDSF, config).build()
-
-        return pagedList
-    }
-
-    override fun getSaleNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<MaintenanceDataSource, NetworkState>(mntDSF.mntLiveDataSource, MaintenanceDataSource::networkState)
-    }
 
     override fun getById(id: Int): LiveData<Mnts> {
         job = Job()
@@ -71,6 +48,29 @@ class MaintenanceRepositoryImp(private val api: ApiService) : IMaintenanceReposi
                     }
                 }
             }
+        }
+    }
+
+    override suspend fun get_OnPages(sm_Id: Int, term: String, page: Int): List<Mnts>? {
+        try {
+            val response = apiRequest { api.mnts_OnPages(sm_Id, term, page, POST_PER_PAGE) }
+            if(response.isSuccessful){
+                return response.data
+            }
+            return emptyList()
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("ApiError", "No internat connection", e)
+            return emptyList()
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }catch (e: java.lang.Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Error", "Exception", e)
+            return emptyList()
         }
     }
 

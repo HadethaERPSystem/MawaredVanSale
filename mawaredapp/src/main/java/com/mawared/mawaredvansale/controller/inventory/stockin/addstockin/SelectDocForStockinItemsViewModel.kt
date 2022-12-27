@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.ItemLocsAdapter
+import com.mawared.mawaredvansale.controller.adapters.StockInItemLocsAdapter
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
 import com.mawared.mawaredvansale.data.db.entities.inventory.*
 import com.mawared.mawaredvansale.data.db.entities.md.Loc
@@ -59,7 +59,7 @@ class SelectDocForStockinItemsViewModel (private val stockService: IStockInRepos
         }
     }
 
-    fun addLine(item: InventoryDocLines, loc: Loc, qty: Double, siadap: ItemLocsAdapter){
+    fun addLine(item: InventoryDocLines, loc: Loc, qty: Double, siadap: StockInItemLocsAdapter){
         if(isValidLine(item, loc, qty)){
             val mItem = docLine.find { it.prodId == item.prodId && it.baseEntry == item.docEntry && it.baseLine == item.lineNum && it.locId == loc.loc_Id }
             val rowNo: Int =  (if (docLine.count() == 0) 1 else docLine.maxOf { x -> x.lineNum!! } + 1)
@@ -83,6 +83,40 @@ class SelectDocForStockinItemsViewModel (private val stockService: IStockInRepos
             }
             siadap.setList(item.itemSelectedLoc)
         }
+    }
+
+    fun setLoc(items: List<InventoryDocLines>){
+        for(i in items){
+            val locs = loadItemLocation(i, i.itemLocations!!)
+            for(l in locs){
+                val line = docLine.find { it.prodId == i.prodId && it.baseEntry == i.docEntry && it.baseLine == i.lineNum && it.locId == l.loc_Id  }
+                if(line != null){
+                    if(i.itemSelectedLoc == null) i.itemSelectedLoc = arrayListOf()
+                    val tmpLoc = i.itemSelectedLoc?.find{ it.loc_Id == l.loc_Id}
+                    if(tmpLoc != null){
+                        tmpLoc.qty = line.qty
+
+                    }else{
+                        i.itemSelectedLoc!!.add(Loc(line.locId, line.locName, line.invQty))
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun loadItemLocation(si: InventoryDocLines, strLocs: String) : ArrayList<Loc> {
+        val mLocs : ArrayList<Loc> = arrayListOf()
+        val arr = strLocs.split(";")
+        arr.forEach {
+            val strL = it.split("|")
+            val l = Loc(strL[0].toInt(), strL[1], strL[2].toDouble())
+            l.docLine = si
+            mLocs.add(l)
+        }
+
+
+        return mLocs
     }
 
     fun removeLine(item: InventoryDocLines, loc: Loc, qty: Double, Success: () -> Unit){

@@ -16,17 +16,17 @@ import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.ScheduleCustomerAdapter
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
-import com.mawared.mawaredvansale.controller.callcycle.cylist.CallCycleFragmentDirections
 import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFunction
 import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.databinding.SelectCustomerFragmentBinding
+import com.mawared.mawaredvansale.services.repositories.Status
+import com.mawared.mawaredvansale.utilities.Coroutines
+import com.mawared.mawaredvansale.utilities.MenuSysPrefs
+import com.mawared.mawaredvansale.utilities.snackbar
 import com.microsoft.appcenter.utils.HandlerUtils.runOnUiThread
 import kotlinx.android.synthetic.main.popup_schedule.*
 import kotlinx.android.synthetic.main.select_customer_fragment.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -73,6 +73,17 @@ class SelectCustomerFragment : ScopedFragmentLocation(), KodeinAware {
                 return false
             }
         })
+
+        bindUI()
+        binding.pullToRefresh.setOnRefreshListener {
+            adapter.setList(null, 0)
+            loadList(viewModel.term ?: "")
+            binding.pullToRefresh.isRefreshing = false
+        }
+        binding.btnReload.setOnClickListener {
+            adapter.setList(null, 0)
+            loadList(viewModel.term ?: "")}
+
         return binding.root
     }
 
@@ -90,6 +101,22 @@ class SelectCustomerFragment : ScopedFragmentLocation(), KodeinAware {
         loadList(viewModel.term ?: "")
     }
 
+    private fun bindUI() = Coroutines.main {
+        viewModel.networkState.observe(viewLifecycleOwner, Observer {
+
+            if (it.status == Status.FAILED) {
+                val pack = requireContext().packageName
+                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
+                viewModel.errorMessage.value = resources.getString(id)
+                ll_error.visibility = View.VISIBLE
+                rv_customer.visibility = View.GONE
+            } else {
+                rv_customer.visibility = View.VISIBLE
+                ll_error.visibility = View.GONE
+            }
+
+        })
+    }
 
     private fun schedule(customer: Customer){
         val dialogView = layoutInflater.inflate(R.layout.popup_schedule, null)
@@ -100,7 +127,10 @@ class SelectCustomerFragment : ScopedFragmentLocation(), KodeinAware {
 
         // show dialog
         val mAlertDialog = mBuilder.show()
+        val menus = MenuSysPrefs.getMenu()
+        var menu = menus.find{it.menu_code == "Order"}
 
+        mAlertDialog.orderBtn.visibility = if(menu != null) View.VISIBLE else View.GONE
         mAlertDialog.orderBtn.setOnClickListener{
             val action = SelectCustomerFragmentDirections.actionSelectCustomerFragmentToMarketPlaceFragment()
             action.customer = customer
@@ -108,7 +138,8 @@ class SelectCustomerFragment : ScopedFragmentLocation(), KodeinAware {
             navController.navigate(action)
             mAlertDialog.dismiss()
         }
-
+        menu =  menus.find{it.menu_code == "PSOrder"}
+        mAlertDialog.psorderBtn.visibility = if(menu != null) View.VISIBLE else View.GONE
         mAlertDialog.psorderBtn.setOnClickListener {
             val action = SelectCustomerFragmentDirections.actionSelectCustomerFragmentToMarketPlaceFragment()
             action.customer = customer
@@ -117,14 +148,19 @@ class SelectCustomerFragment : ScopedFragmentLocation(), KodeinAware {
             mAlertDialog.dismiss()
         }
 
-        mAlertDialog.invoiceBtn.setOnClickListener {
-            val action = SelectCustomerFragmentDirections.actionSelectCustomerFragmentToMarketPlaceFragment()
-            action.customer = customer
-            action.vocode = "SaleInvoice"
-            navController.navigate(action)
-            mAlertDialog.dismiss()
-        }
 
+        menu =  menus.find{it.menu_code == "Invoice"}
+        mAlertDialog.invoiceBtn.visibility = if(menu != null) View.VISIBLE else View.GONE
+        mAlertDialog.invoiceBtn.setOnClickListener {
+           val action = SelectCustomerFragmentDirections.actionSelectCustomerFragmentToMarketPlaceFragment()
+           action.customer = customer
+           action.vocode = "SaleInvoice"
+           navController.navigate(action)
+           mAlertDialog.dismiss()
+       }
+
+        menu =  menus.find{it.menu_code == "Delivery"}
+        mAlertDialog.deliveryBtn.visibility = if(menu != null) View.VISIBLE else View.GONE
         mAlertDialog.deliveryBtn.setOnClickListener {
             val action = SelectCustomerFragmentDirections.actionSelectCustomerFragmentToDeliveryFragment()
             action.cuId = customer.cu_ref_Id!!
@@ -132,6 +168,8 @@ class SelectCustomerFragment : ScopedFragmentLocation(), KodeinAware {
             mAlertDialog.dismiss()
         }
 
+        menu =  menus.find{it.menu_code == "CallCycle"}
+        mAlertDialog.visitBtn.visibility = if(menu != null) View.VISIBLE else View.GONE
         mAlertDialog.visitBtn.setOnClickListener {
             val action = SelectCustomerFragmentDirections.actionSelectCustomerFragmentToCallCycleFragment()
             action.cuId = customer.cu_ref_Id!!
@@ -145,19 +183,42 @@ class SelectCustomerFragment : ScopedFragmentLocation(), KodeinAware {
     }
 
     private fun loadList(term : String){
-        val list = adapter.getList().toMutableList()
-        if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
-            viewModel.loadData(list, term, adapter.pageCount + 1){data, pageCount ->
-                showResult(data!!, pageCount)
+        try {
+            if(rv_customer.visibility == View.GONE){
+                rv_customer.visibility = View.VISIBLE
             }
+            val list = adapter.getList().toMutableList()
+            if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+                onStarted()
+                viewModel.loadData(list, term, adapter.pageCount + 1){data, pageCount ->
+                    showResult(data!!, pageCount)
+                }
+            }
+        }catch (e: Exception){
+            onFailure(getString(R.string.lbl_error))
         }
     }
 
     private fun showResult(list: List<Customer>, pageCount: Int) = runOnUiThread {
         adapter.setList(list, pageCount)
+        onSuccess()
     }
 
     private fun deleteAll(){
         viewModel.deleteAll()
+    }
+
+    fun onStarted() {
+        ll_error?.visibility = View.GONE
+        progress_bar?.visibility = View.VISIBLE
+    }
+
+    fun onSuccess() {
+        progress_bar?.visibility = View.GONE
+    }
+
+    fun onFailure(message: String) {
+        ll_customer?.snackbar(message)
+        progress_bar?.visibility = View.GONE
     }
 }

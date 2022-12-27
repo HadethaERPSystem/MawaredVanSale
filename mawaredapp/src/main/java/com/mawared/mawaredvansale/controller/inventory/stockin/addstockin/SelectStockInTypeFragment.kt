@@ -32,10 +32,10 @@ class SelectStockInTypeFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
         val view = inflater.inflate(R.layout.select_stock_in_type_fragment, container, false)
         menu = arrayListOf()
-        menu.add(Menu( 1, "ادخال مشتريات", "Purchase", ""))
-        menu.add(Menu( 2, "ادخال مشتريات محلية", "LocalPurchase", ""))
-        menu.add(Menu( 3, "ادخال مناقلة", "Transfer", ""))
-        menu.add(Menu( 4, "ادخال مردود مبيعات", "SaleReturn", ""))
+        menu.add(Menu( 1, "ادخال مشتريات", "Purchase", "",""))
+        menu.add(Menu( 2, "ادخال مشتريات محلية", "LocalPurchase", "",""))
+        menu.add(Menu( 3, "ادخال مناقلة", "Transfer", "", ""))
+        menu.add(Menu( 4, "ادخال مردود مبيعات", "SaleReturn", "", ""))
 
         return  view
     }

@@ -43,153 +43,153 @@ private val MINIMUM_INTERVAL = 6
 class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabase): IMDataRepository, SafeApiRequest() {
 
     var job: CompletableJob? = null
-    lateinit var customerPagedList: LiveData<PagedList<Customer>>
-    lateinit var customerDSFactory: CustomerDataSourceFactory
-    lateinit var schCustDSFactory: ScheduledCustomerDataSourceFactory
+//    lateinit var customerPagedList: LiveData<PagedList<Customer>>
+//    lateinit var customerDSFactory: CustomerDataSourceFactory
+//    lateinit var schCustDSFactory: ScheduledCustomerDataSourceFactory
 
     //////////////////////
     //// For Product
-    lateinit var itemPagedList: LiveData<PagedList<Product>>
-    lateinit var itemDSFactory: ItemDataSourceFactory
-    lateinit var itemUserDSFactory: ItemOnUserDataSourceFactory
-    lateinit var itemWareDSFactory: ItemOnWareDataSourceFactory
+//    lateinit var itemPagedList: LiveData<PagedList<Product>>
+//    lateinit var itemDSFactory: ItemDataSourceFactory
+//    lateinit var itemUserDSFactory: ItemOnUserDataSourceFactory
+//    lateinit var itemWareDSFactory: ItemOnWareDataSourceFactory
 
-    override fun fetchCustomerOnPages(
-        sm_Id: Int?,
-        org_Id: Int?,
-        term: String
-    ): LiveData<PagedList<Customer>> {
-        customerDSFactory = CustomerDataSourceFactory(api, sm_Id, org_Id, term)
-        //val ns = Transformations.switchMap<CustomerDataSource, NetworkState>(customerDSFactory.customerLiveDS, CustomerDataSource::networkState)
-        //_networkState.postValue(ns.value)
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        customerPagedList = LivePagedListBuilder(customerDSFactory, config).build()
-
-        return customerPagedList
-    }
-
-    override fun getCustomerNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<CustomerDataSource, NetworkState>(
-            customerDSFactory.customerLiveDS,
-            CustomerDataSource::networkState
-        )
-    }
-
-    override fun fetchScheduledCustomerOnPages(sm_Id: Int): LiveData<PagedList<Customer>> {
-        schCustDSFactory = ScheduledCustomerDataSourceFactory(api, sm_Id)
-        val ns = Transformations.switchMap<ScheduledCustomerDataSource, NetworkState>(
-            schCustDSFactory.schCustomerLiveDS,
-            ScheduledCustomerDataSource::networkState
-        )
-        _networkState.postValue(ns.value)
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        customerPagedList = LivePagedListBuilder(schCustDSFactory, config).build()
-
-        return customerPagedList
-    }
-
-    override fun getScheduleCustomerNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<ScheduledCustomerDataSource, NetworkState>(
-            schCustDSFactory.schCustomerLiveDS,
-            ScheduledCustomerDataSource::networkState
-        )
-    }
+//    override fun fetchCustomerOnPages(
+//        sm_Id: Int?,
+//        org_Id: Int?,
+//        term: String
+//    ): LiveData<PagedList<Customer>> {
+//        customerDSFactory = CustomerDataSourceFactory(api, sm_Id, org_Id, term)
+//        //val ns = Transformations.switchMap<CustomerDataSource, NetworkState>(customerDSFactory.customerLiveDS, CustomerDataSource::networkState)
+//        //_networkState.postValue(ns.value)
+//
+//        val config: PagedList.Config = PagedList.Config.Builder()
+//            .setEnablePlaceholders(false)
+//            .setPageSize(POST_PER_PAGE)
+//            .build()
+//
+//        customerPagedList = LivePagedListBuilder(customerDSFactory, config).build()
+//
+//        return customerPagedList
+//    }
+//
+//    override fun getCustomerNetworkState(): LiveData<NetworkState> {
+//        return Transformations.switchMap<CustomerDataSource, NetworkState>(
+//            customerDSFactory.customerLiveDS,
+//            CustomerDataSource::networkState
+//        )
+//    }
+//
+//    override fun fetchScheduledCustomerOnPages(sm_Id: Int): LiveData<PagedList<Customer>> {
+//        schCustDSFactory = ScheduledCustomerDataSourceFactory(api, sm_Id)
+//        val ns = Transformations.switchMap<ScheduledCustomerDataSource, NetworkState>(
+//            schCustDSFactory.schCustomerLiveDS,
+//            ScheduledCustomerDataSource::networkState
+//        )
+//        _networkState.postValue(ns.value)
+//
+//        val config: PagedList.Config = PagedList.Config.Builder()
+//            .setEnablePlaceholders(false)
+//            .setPageSize(POST_PER_PAGE)
+//            .build()
+//
+//        customerPagedList = LivePagedListBuilder(schCustDSFactory, config).build()
+//
+//        return customerPagedList
+//    }
+//
+//    override fun getScheduleCustomerNetworkState(): LiveData<NetworkState> {
+//        return Transformations.switchMap<ScheduledCustomerDataSource, NetworkState>(
+//            schCustDSFactory.schCustomerLiveDS,
+//            ScheduledCustomerDataSource::networkState
+//        )
+//    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
     /////// Product Pages Function
-    override fun fetchItemsOnPages(term: String, priceCode: String): LiveData<PagedList<Product>> {
-        itemDSFactory = ItemDataSourceFactory(api, term, priceCode)
-        val ns = Transformations.switchMap<ItemDataSource, NetworkState>(
-            itemDSFactory.itemLiveDataSource,
-            ItemDataSource::networkState
-        )
-        _networkState.postValue(ns.value)
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        itemPagedList = LivePagedListBuilder(itemDSFactory, config).build()
-
-        return itemPagedList
-    }
-
-    override fun getItemNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<ItemDataSource, NetworkState>(
-            itemDSFactory.itemLiveDataSource,
-            ItemDataSource::networkState
-        )
-    }
-
-    override fun fetchItemsByUserOnPages(
-        term: String,
-        userId: Int,
-        priceCode: String
-    ): LiveData<PagedList<Product>> {
-        itemUserDSFactory = ItemOnUserDataSourceFactory(api, term, userId, priceCode)
-        val ns = Transformations.switchMap<ItemOnUserDataSource, NetworkState>(
-            itemUserDSFactory.itemLiveDataSource,
-            ItemOnUserDataSource::networkState
-        )
-        _networkState.postValue(ns.value)
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        itemPagedList = LivePagedListBuilder(itemUserDSFactory, config).build()
-
-        return itemPagedList
-    }
-
-    override fun getItemUserNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<ItemOnUserDataSource, NetworkState>(
-            itemUserDSFactory.itemLiveDataSource,
-            ItemOnUserDataSource::networkState
-        )
-    }
-
-    override fun fetchItemsByWarehouseOnPages(
-        term: String,
-        wr_Id: Int,
-        priceCode: String
-    ): LiveData<PagedList<Product>> {
-        itemWareDSFactory = ItemOnWareDataSourceFactory(api, term, wr_Id, priceCode)
-        Transformations.switchMap<ItemOnWareDataSource, NetworkState>(
-            itemWareDSFactory.itemLiveDataSource,
-            ItemOnWareDataSource::networkState
-        ).let {
-            _networkState.postValue(it.value)
-        }
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        itemPagedList = LivePagedListBuilder(itemWareDSFactory, config).build()
-
-        return itemPagedList
-    }
-
-    override fun getItemWareNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<ItemOnWareDataSource, NetworkState>(
-            itemWareDSFactory.itemLiveDataSource,
-            ItemOnWareDataSource::networkState
-        )
-    }
+//    override fun fetchItemsOnPages(term: String, priceCode: String): LiveData<PagedList<Product>> {
+//        itemDSFactory = ItemDataSourceFactory(api, term, priceCode)
+//        val ns = Transformations.switchMap<ItemDataSource, NetworkState>(
+//            itemDSFactory.itemLiveDataSource,
+//            ItemDataSource::networkState
+//        )
+//        _networkState.postValue(ns.value)
+//
+//        val config: PagedList.Config = PagedList.Config.Builder()
+//            .setEnablePlaceholders(false)
+//            .setPageSize(POST_PER_PAGE)
+//            .build()
+//
+//        itemPagedList = LivePagedListBuilder(itemDSFactory, config).build()
+//
+//        return itemPagedList
+//    }
+//
+//    override fun getItemNetworkState(): LiveData<NetworkState> {
+//        return Transformations.switchMap<ItemDataSource, NetworkState>(
+//            itemDSFactory.itemLiveDataSource,
+//            ItemDataSource::networkState
+//        )
+//    }
+//
+//    override fun fetchItemsByUserOnPages(
+//        term: String,
+//        userId: Int,
+//        priceCode: String
+//    ): LiveData<PagedList<Product>> {
+//        itemUserDSFactory = ItemOnUserDataSourceFactory(api, term, userId, priceCode)
+//        val ns = Transformations.switchMap<ItemOnUserDataSource, NetworkState>(
+//            itemUserDSFactory.itemLiveDataSource,
+//            ItemOnUserDataSource::networkState
+//        )
+//        _networkState.postValue(ns.value)
+//
+//        val config: PagedList.Config = PagedList.Config.Builder()
+//            .setEnablePlaceholders(false)
+//            .setPageSize(POST_PER_PAGE)
+//            .build()
+//
+//        itemPagedList = LivePagedListBuilder(itemUserDSFactory, config).build()
+//
+//        return itemPagedList
+//    }
+//
+//    override fun getItemUserNetworkState(): LiveData<NetworkState> {
+//        return Transformations.switchMap<ItemOnUserDataSource, NetworkState>(
+//            itemUserDSFactory.itemLiveDataSource,
+//            ItemOnUserDataSource::networkState
+//        )
+//    }
+//
+//    override fun fetchItemsByWarehouseOnPages(
+//        term: String,
+//        wr_Id: Int,
+//        priceCode: String
+//    ): LiveData<PagedList<Product>> {
+//        itemWareDSFactory = ItemOnWareDataSourceFactory(api, term, wr_Id, priceCode)
+//        Transformations.switchMap<ItemOnWareDataSource, NetworkState>(
+//            itemWareDSFactory.itemLiveDataSource,
+//            ItemOnWareDataSource::networkState
+//        ).let {
+//            _networkState.postValue(it.value)
+//        }
+//
+//        val config: PagedList.Config = PagedList.Config.Builder()
+//            .setEnablePlaceholders(false)
+//            .setPageSize(POST_PER_PAGE)
+//            .build()
+//
+//        itemPagedList = LivePagedListBuilder(itemWareDSFactory, config).build()
+//
+//        return itemPagedList
+//    }
+//
+//    override fun getItemWareNetworkState(): LiveData<NetworkState> {
+//        return Transformations.switchMap<ItemOnWareDataSource, NetworkState>(
+//            itemWareDSFactory.itemLiveDataSource,
+//            ItemOnWareDataSource::networkState
+//        )
+//    }
 
     private val _networkState = MutableLiveData<NetworkState>()
     override val networkState: LiveData<NetworkState>
@@ -226,19 +226,56 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
     }
 
     override suspend fun getCustomersOnPages(sm_Id: Int, org_Id: Int?,  term: String,  page: Int): List<Customer>? {
+        _networkState.postValue(NetworkState.LOADING)
         try {
             val response =
                 apiRequest { api.customers_OnPages(sm_Id, org_Id, term, page, POST_PER_PAGE) }
             if (response.isSuccessful) {
+                _networkState.postValue(NetworkState.LOADED)
                 return response.data
             }
+            _networkState.postValue(NetworkState.LOADED)
             return null
         } catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
             Log.e("Connectivity", "No internat connection", e)
+            return null
+        } catch (e: Exception){
+            _networkState.postValue(NetworkState.ERROR)
+            Log.e("Error Exception", "${e.message}", e)
+            return null
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Error API Exception", "${e.message}", e)
             return null
         }
     }
 
+    override suspend fun getScheduleCustomersOnPages(sm_Id: Int, term: String,  page: Int): List<Customer>? {
+        _networkState.postValue(NetworkState.LOADING)
+        try {
+            val response =
+                apiRequest { api.customers_getScheduleOnPages(sm_Id, term, page, POST_PER_PAGE) }
+            if (response.isSuccessful) {
+                _networkState.postValue(NetworkState.LOADED)
+                return response.data
+            }
+            _networkState.postValue(NetworkState.LOADED)
+            return null
+        } catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return null
+        } catch (e: Exception){
+            _networkState.postValue(NetworkState.ERROR)
+            Log.e("Error Exception", "${e.message}", e)
+            return null
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Error API Exception", "${e.message}", e)
+            return null
+        }
+    }
 
     override fun getCustomers_ByTerm(sm_Id: Int,term: String, mntTypeCode: String): LiveData<List<Customer>> {
         job = Job()
@@ -359,7 +396,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
-    override fun getCustomersByOrg(org_Id: Int?, term: String): LiveData<List<Customer>> {
+    override fun getCustomersByOrg(sm_id: Int, org_Id: Int?, term: String): LiveData<List<Customer>> {
         job = Job()
         _networkState.postValue(NetworkState.LOADING)
         return object : LiveData<List<Customer>>() {
@@ -368,7 +405,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                 job?.let {
                     CoroutineScope(IO).launch {
                         try {
-                            val response = apiRequest { api.customer_GetByOrg(null, org_Id, term) }
+                            val response = apiRequest { api.customer_GetByOrg(sm_id, org_Id, term) }
                             withContext(Main) {
                                 value = response.data
                                 _networkState.postValue(NetworkState.LOADED)
@@ -585,57 +622,41 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
     }
 
 
-    override fun getProductForMarket(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, cat_Id: Int?, br_Id: Int?, Term: String?): LiveData<List<Product>> {
-        job = Job()
-        return object : LiveData<List<Product>>() {
-            override fun onActive() {
-                super.onActive()
-                job?.let {
-                    CoroutineScope(IO).launch {
-                        try {
-                            val response =
-                                apiRequest { api.products_GetForMarket(warehouseId, priceCode, currentDate , org_Id, cat_Id, br_Id, Term) }
-                            withContext(Main) {
-                                value = response.data
-                                job?.complete()
-                            }
-                        }catch (e: ApiException){
-                            Log.e("Connectivity", "No internet connection", e)
-                            return@launch
-                        }catch (e: Exception){
-                            Log.e("Exception", "Error exception when call getProducts", e)
-                            return@launch
-                        }
-                    }
-                }
+    override suspend fun getProductForMarket(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, cat_Id: Int?, br_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>? {
+        _networkState.postValue(NetworkState.LOADING)
+        try {
+            val response =  apiRequest { api.products_GetForMarket(warehouseId, priceCode, currentDate , org_Id, cat_Id, br_Id, Term, objCode, page, POST_PER_PAGE) }
+            if (response.isSuccessful) {
+                _networkState.postValue(NetworkState.LOADED)
+                return response.data
             }
+            _networkState.postValue(NetworkState.LOADED)
+            return null
+        } catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return null
+        } catch (e: Exception){
+            _networkState.postValue(NetworkState.ERROR)
+            Log.e("Error Exception", "${e.message}", e)
+            return null
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Error API Exception", "${e.message}", e)
+            return null
         }
     }
 
-    override fun getProductForOffers(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, Term: String?): LiveData<List<Product>> {
-        job = Job()
-        return object : LiveData<List<Product>>() {
-            override fun onActive() {
-                super.onActive()
-                job?.let {
-                    CoroutineScope(IO).launch {
-                        try {
-                            val response =
-                                apiRequest { api.products_GetForOffers(warehouseId, priceCode, currentDate , org_Id, Term) }
-                            withContext(Main) {
-                                value = response.data
-                                job?.complete()
-                            }
-                        }catch (e: ApiException){
-                            Log.e("Connectivity", "No internet connection", e)
-                            return@launch
-                        }catch (e: Exception){
-                            Log.e("Exception", "Error exception when call getProducts", e)
-                            return@launch
-                        }
-                    }
-                }
+    override suspend fun getProductForOffers(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>? {
+        try {
+            val response =  apiRequest { api.products_GetForOffers(warehouseId, priceCode, currentDate , org_Id, Term, objCode, page, POST_PER_PAGE) }
+            if (response.isSuccessful) {
+                return response.data
             }
+            return null
+        } catch (e: NoConnectivityException) {
+            Log.e("Connectivity", "No internat connection", e)
+            return null
         }
     }
 
@@ -1127,6 +1148,19 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override suspend fun getDisc(userId: Int, discRange: String): UsersDiscounts? {
+        try {
+            val response =
+                apiRequest { api.getUserDisc(userId, discRange) }
+            if (response.isSuccessful) {
+                return response.data
+            }
+            return null
+        } catch (e: NoConnectivityException) {
+            Log.e("Connectivity", "No internat connection", e)
+            return null
+        }
+    }
     override suspend fun uom_GetByProduct(prod_Id: Int): List<UnitConvertion>? {
         try {
             val response =
@@ -1373,7 +1407,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
-    override fun getSalesPaln(): LiveData<List<Lookups>> {
+    override fun getSalesPaln(sm_Id: Int): LiveData<List<Lookups>> {
         job = Job()
         _networkState.postValue(NetworkState.LOADING)
         return object : LiveData<List<Lookups>>() {
@@ -1382,7 +1416,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                 job?.let {
                     CoroutineScope(IO).launch {
                         try {
-                            val response = apiRequest { api.getSalesPlan() }
+                            val response = apiRequest { api.getSalesPlan(sm_Id) }
                             withContext(Main) {
                                 value = response.data
                                 _networkState.postValue(NetworkState.LOADED)

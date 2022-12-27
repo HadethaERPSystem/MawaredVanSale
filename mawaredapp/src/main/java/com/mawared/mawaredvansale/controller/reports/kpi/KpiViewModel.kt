@@ -26,7 +26,7 @@ class KpiViewModel(private val repository: IDashboardRepository, private val mas
 
 
     val planList: LiveData<List<Lookups>> by lazy{
-        masterDataRepository.getSalesPaln()
+        masterDataRepository.getSalesPaln(_sm_id)
     }
     val kpi_sm: LiveData<sm_dash1> = Transformations.switchMap(SearchFilter){
         repository.getDashboard_TotalCustomers(_sm_id, it.dtFrom!!, it.dtTo!!)

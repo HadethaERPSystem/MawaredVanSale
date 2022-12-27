@@ -23,6 +23,8 @@ data class Sale_Items (
     var sld_line_total: Double?,    // Line Total
     var sld_dis_per: Double?,      // Percentage Discount
     var sld_dis_value: Double?,      // Fixed Amount Discount
+    var sld_add_dis_per: Double?,
+    var sld_add_dis_value: Double?,
     var sld_net_total: Double?,
 
     var sld_lotno: String?,         // Lot Number

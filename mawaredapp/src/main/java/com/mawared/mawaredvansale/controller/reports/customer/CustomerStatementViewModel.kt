@@ -13,6 +13,7 @@ import com.mawared.mawaredvansale.data.db.entities.reports.customer.CustomerStat
 import com.mawared.mawaredvansale.interfaces.IDateRangePicker
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.services.repositories.reports.customer.ICuStatementRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 
 class CustomerStatementViewModel(private val repository: ICuStatementRepository, private val masterDataRepository:IMDataRepository) : BaseViewModel(){
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
@@ -25,7 +26,20 @@ class CustomerStatementViewModel(private val repository: ICuStatementRepository,
     var selectedCustomer: Customer? = null
     val term : MutableLiveData<String> = MutableLiveData()
     val customerList: LiveData<List<Customer>> = Transformations.switchMap(term){
-        masterDataRepository.getCustomersByOrg(App.prefs.saveUser!!.org_Id, it)
+        masterDataRepository.getCustomersByOrg(_sm_id, App.prefs.saveUser!!.org_Id, it)
+    }
+
+    fun loadData(list: MutableList<CustomerStatement>, cu_Id: Int, dtFrom: String?, dtTo: String?, pageCount: Int, loadMore: (List<CustomerStatement>?, Int) -> Unit){
+        try {
+            Coroutines.ioThenMain({
+                val tmp = repository.get_OnPages(_sm_id, cu_Id, dtFrom, dtTo, pageCount)
+                if(tmp != null){
+                    list.addAll(tmp)
+                }
+            }, {loadMore(list, pageCount)})
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     val csItems: LiveData<PagedList<CustomerStatement>> = Transformations

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import androidx.paging.PagedList
 import com.itextpdf.text.BaseColor
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
@@ -21,9 +20,7 @@ import com.mawared.mawaredvansale.controller.common.GenerateTicket
 import com.mawared.mawaredvansale.controller.common.LineType
 import com.mawared.mawaredvansale.controller.common.TicketPrinting
 import com.mawared.mawaredvansale.controller.common.printing.*
-import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
-import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.invoices.IInvoiceRepository
@@ -44,11 +41,11 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
         if (App.prefs.savedSalesman?.sm_user_id != null) App.prefs.savedSalesman!!.sm_user_id!! else 0
     var ctx: Context? = null
     var activity: AppCompatActivity? = null
-    var navigator: IMainNavigator<Sale>? = null
+
     var msgListener: IMessageListener? = null
     var term: String? = ""
     var isPrint = false
-    private val cuId: MutableLiveData<Int> = MutableLiveData()
+
     var errorMessage: MutableLiveData<String> = MutableLiveData()
 
     fun loadData(list: MutableList<Sale>, term: String, pageCount: Int, loadMore: (List<Sale>?, Int) -> Unit){
@@ -81,17 +78,6 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
             repository.delete(it)
         }
 
-    fun setCustomer(cm_Id: Int?) {
-        if (cuId.value == cm_Id && cm_Id != null) {
-            return
-        }
-        cuId.value = cm_Id
-    }
-
-    fun refresh(){
-        setCustomer(cuId.value)
-    }
-
     fun find(id: Int) {
         if (_sl_Id.value == id) {
             return
@@ -99,24 +85,10 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
         _sl_Id.value = id
     }
 
-    // on press delete invoice
-    fun onItemDelete(sale: Sale) {
-        navigator?.onItemDeleteClick(sale)
-    }
-
     fun confirmDelete(baseEo: Sale) {
         _sl_Id_for_delete.value = baseEo.sl_Id
     }
 
-    // on press edit invoice
-    fun onItemEdit(sale: Sale) {
-        navigator?.onItemEditClick(sale)
-    }
-
-    // on press view invoice
-    fun onItemView(sale: Sale) {
-        navigator?.onItemViewClick(sale)
-    }
 
     fun onPrint(sl_Id: Int) {
         isPrint = true

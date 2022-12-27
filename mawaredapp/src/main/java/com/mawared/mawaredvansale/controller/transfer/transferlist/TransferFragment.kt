@@ -1,32 +1,32 @@
 package com.mawared.mawaredvansale.controller.transfer.transferlist
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.pagination.TransferPagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.TransferAdapter
+import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
 import com.mawared.mawaredvansale.controller.common.GenerateTicket
 import com.mawared.mawaredvansale.controller.common.PdfActivity
+import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFunction
+import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.sales.Transfer
 import com.mawared.mawaredvansale.databinding.TransferFragmentBinding
-import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.interfaces.IPrintNavigator
-import com.mawared.mawaredvansale.services.repositories.NetworkState
-import com.mawared.mawaredvansale.services.repositories.Status
+import com.mawared.mawaredvansale.utilities.MenuSysPrefs
 import com.mawared.mawaredvansale.utilities.snackbar
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
+import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.transfer_fragment.*
+import kotlinx.android.synthetic.main.transfer_fragment.progress_bar
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -37,10 +37,10 @@ import java.io.Serializable
 import java.util.*
 
 
-class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainNavigator<Transfer>, IPrintNavigator<Transfer> {
+class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IPrintNavigator<Transfer>, SearchView.OnQueryTextListener {
 
     override val kodein by kodein()
-
+    private val permission = MenuSysPrefs.getPermission("Transfer")
     private val factory: TransferViewModelFactory by instance()
 
     private lateinit var binding: TransferFragmentBinding
@@ -51,29 +51,45 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     private lateinit var navController: NavController
 
+    private var adapter = TransferAdapter(R.layout.transfer_row, permission){ e, t->
+        when(t){
+            "E" -> onItemEditClick(e)
+            "V" -> onItemViewClick(e)
+            "D" -> onItemDeleteClick(e)
+            "P" -> viewModel.onPrint(e.tr_Id)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.transfer_fragment, container, false)
 
-        viewModel.navigator = this
+
         viewModel.msgListener = this
-        viewModel.printListener = this
         viewModel.ctx = requireActivity()
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
         bindUI()
         binding.pullToRefresh.setOnRefreshListener {
-            viewModel.refresh()
+            loadList(viewModel.term ?: "")
             binding.pullToRefresh.isRefreshing = false
         }
-        binding.btnReload.setOnClickListener { viewModel.refresh() }
+        binding.btnReload.setOnClickListener { loadList(viewModel.term ?: "") }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var cols = 1
+        val currentOrientation = resources.configuration.orientation
+        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            cols = 2
+        }
+        @Suppress("UNCHECKED_CAST")
+        rcv_transfer.setupGrid(requireContext(), adapter as BaseAdapter<Any>, cols)
+        rcv_transfer.setLoadMoreFunction { loadList(viewModel.term ?: "") }
+        loadList(viewModel.term ?: "")
         navController = Navigation.findNavController(view)
 
     }
@@ -86,6 +102,10 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_menu, menu)
+        val search = menu?.findItem(R.id.app_bar_search)
+        val searchView = search?.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -101,48 +121,22 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         }
         return super.onOptionsItemSelected(item)
     }
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
 
+    override fun onQueryTextChange(newText: String?): Boolean {
+        viewModel.term = newText
+        adapter.setList(null, 0)
+        loadList(viewModel.term ?: "")
+        return true
+    }
     // binding recycler view
     private fun bindUI()= GlobalScope.launch(Main) {
 
-        val pagedAdapter = TransferPagedListAdapter(viewModel, requireActivity())
-        val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
-        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
-            override fun getSpanSize(position: Int): Int {
-                val viewType = pagedAdapter.getItemViewType(position)
-                if(viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
-                else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
-            }
-        }
-        rcv_transfer.apply {
-            layoutManager = gridLayoutManager// LinearLayoutManager(this@OrdersFragment.context)
-            setHasFixedSize(true)
-            adapter = pagedAdapter// groupAdapter
-        }
-
-        viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
-            pagedAdapter.submitList(it)
-        })
-
-        viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-            progress_bar.visibility =  if(viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
-            if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
-                val pack = requireContext().packageName
-                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
-                viewModel.errorMessage.value = resources.getString(id)
-                ll_error.visibility = View.VISIBLE
-            } else {
-                ll_error.visibility = View.GONE
-            }
-
-            if(!viewModel.listIsEmpty()){
-                pagedAdapter.setNetworkState(it)
-            }
-        })
-
         viewModel.baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null && viewModel.isPrint) {
-                //mPrint(it)
+                doPrint(it)
                 //viewModel.onPrintTicket(it)
             }
             else{
@@ -152,23 +146,6 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     }
 
-    private fun initRecyclerView(rows: List<TransferRow>){
-        val groupAdapter = GroupAdapter<ViewHolder>().apply {
-            addAll(rows)
-        }
-
-        rcv_transfer.apply {
-            layoutManager = LinearLayoutManager(this@TransferFragment.context)
-            setHasFixedSize(true)
-            adapter = groupAdapter
-        }
-    }
-
-    private fun List<Transfer>.toRow(): List<TransferRow>{
-        return this.map {
-            TransferRow( it, viewModel )
-        }
-    }
 
     override fun onStarted() {
         progress_bar?.visibility = View.VISIBLE
@@ -184,21 +161,21 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         transfer_list_lc.snackbar(message)
     }
 
-    override fun onItemDeleteClick(baseEo: Transfer) {
+    fun onItemDeleteClick(baseEo: Transfer) {
         showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             onStarted()
             viewModel.confirmDelete(it)
         })
     }
 
-    override fun onItemEditClick(baseEo: Transfer) {
+    fun onItemEditClick(baseEo: Transfer) {
         val action = TransferFragmentDirections.actionTransferFragmentToTransferEntryFragment()
         action.transferId = baseEo.tr_Id
         action.mode ="Edit"
         navController.navigate(action)
     }
 
-    override fun onItemViewClick(baseEo: Transfer) {
+    fun onItemViewClick(baseEo: Transfer) {
         val action = TransferFragmentDirections.actionTransferFragmentToTransferEntryFragment()
         action.transferId = baseEo.tr_Id
         action.mode = "View"
@@ -220,6 +197,21 @@ class TransferFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         //intent.putExtraJson(lines)
         startActivity(intent)
         viewModel.isPrint = false
+    }
+
+    private fun loadList(term : String){
+        val list = adapter.getList().toMutableList()
+        if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            onStarted()
+            viewModel.loadData(list, term,adapter.pageCount + 1){data, pageCount ->
+                showResult(data!!, pageCount)
+            }
+        }
+    }
+
+    fun showResult(list: List<Transfer>, pageCount: Int) = HandlerUtils.runOnUiThread {
+        adapter.setList(list, pageCount)
+        progress_bar?.visibility = View.GONE
     }
 
     override fun onDestroy() {

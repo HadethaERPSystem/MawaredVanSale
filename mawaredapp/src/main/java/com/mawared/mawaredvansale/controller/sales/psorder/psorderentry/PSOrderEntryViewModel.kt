@@ -9,10 +9,7 @@ import androidx.lifecycle.Transformations
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
-import com.mawared.mawaredvansale.data.db.entities.md.Currency_Rate
-import com.mawared.mawaredvansale.data.db.entities.md.Customer
-import com.mawared.mawaredvansale.data.db.entities.md.Product
-import com.mawared.mawaredvansale.data.db.entities.md.Voucher
+import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order_Items
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
@@ -35,6 +32,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     var msgListener: IMessageListener? = null
     var addNavigator: IAddNavigator<Sale_Order_Items>? = null
     var allowed_select_prod: MutableLiveData<Boolean> = MutableLiveData(false)
+    var disPer: MutableLiveData<String> = MutableLiveData("")
     var isRunning: Boolean = false
     // google map location GPS
     var location: Location? = null
@@ -42,11 +40,12 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     var rowNo: Int = 0
     var docNo: MutableLiveData<String> = MutableLiveData()
     var docDate = MutableLiveData<String>()
+    var notes = MutableLiveData<String>()
     var cCustomer_Name = MutableLiveData<String>()
     var totalAmount : MutableLiveData<Double> = MutableLiveData()
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
-    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
 
     var searchQty: MutableLiveData<String> = MutableLiveData("1")
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
@@ -102,6 +101,13 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
     var unitPrice : Double = 0.0
     var price_cat_code = "POS"
+
+    private val _prod_Id: MutableLiveData<Int> = MutableLiveData()
+    var discount: Discount? = null
+    val mDiscount: LiveData<Discount> = Transformations
+        .switchMap(_prod_Id){
+            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id)
+        }
 
     // set function
     fun setOrderId(id: Int){
@@ -161,8 +167,8 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
                 val baseEo = Sale_Order( user.cl_Id, user.org_Id, doc_num, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, cu_Id, cCustomer_Name.value, null, totalAmount, 0.0, netAmount, user.ss_cr_Id, rate,
-                    false, location?.latitude, location?.longitude, cu_price_cat_Id,"$strDate",
+                    _sm_id, cu_Id, cCustomer_Name.value, null, totalAmount, 0.0, netAmount, 0.0, user.ss_cr_Id, rate,
+                    false, location?.latitude, location?.longitude, cu_price_cat_Id, notes.value,"$strDate",
                     "${user.id}", "$strDate", "${user.id}"
                 )
                 baseEo.so_price_cat_code = price_cat_code
@@ -268,13 +274,36 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
             val mItem = tmpSOItems.find { it.sod_prod_Id == selectedProduct!!.pr_Id }
             val qty = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0 + (if(mItem?.sod_pack_qty != null)   mItem.sod_pack_qty!! else 0.00)
             val lineTotal = unitPrice * qty
-            val netTotal = lineTotal
+
+            var disValue = 0.0
+            var lDisPer: Double = 0.0
+
+            if(disPer.value != null && disPer.value!!.length > 0){
+                lDisPer =  disPer.value!!.toDouble()
+            }
+            disValue = (lDisPer / 100) * lineTotal
+
+
+            // check if there is discount on item
+            if(discount != null /*&& isGift.value == false*/){
+                if(discount!!.pr_dis_type == "P"){
+                    lDisPer = discount!!.pr_dis_value!!
+                    disValue = (lDisPer / 100) * lineTotal
+                }else{
+                    lDisPer = (discount!!.pr_dis_value!! / lineTotal) * 100
+                    disValue = discount!!.pr_dis_value!! * qty
+                }
+            }
+
+            val netTotal = (lineTotal - disValue)
+            val price_afd = (lDisPer / 100) * unitPrice
+
             val user = App.prefs.saveUser
 
             if(mItem == null){
                 rowNo++
-                val itemEo = Sale_Order_Items(rowNo, 0, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, qty, 1.00, qty, 0.0, unitPrice, 0.0,
-                    lineTotal, null, null, netTotal, null, null, null,null,
+                val itemEo = Sale_Order_Items(rowNo, 0, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, qty, 1.00, qty, 0.0, unitPrice, price_afd,
+                    lineTotal, lDisPer, disValue,0.0,0.0, netTotal, null, null, null,null,
                     null, null, null,false,"${strDate}",
                     "${user?.id}", "${strDate}", "${user?.id}")
                 itemEo.sod_prod_name = selectedProduct!!.pr_description_ar
@@ -287,8 +316,12 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
             else{
                 mItem.sod_pack_qty = qty
                 mItem.sod_unit_qty = qty
+
                 mItem.sod_line_total = lineTotal
                 mItem.sod_net_total = netTotal
+                mItem.sod_discount = lDisPer
+                mItem.sod_disvalue = disValue
+                mItem.updated_at = "$strDate"
             }
             _soItems.value = arrayListOf()
             _soItems.postValue(tmpSOItems)

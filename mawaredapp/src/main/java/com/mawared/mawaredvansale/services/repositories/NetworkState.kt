@@ -16,7 +16,7 @@ class NetworkState(val status: Status, val msg: String) {
         val ERROR_CONNECTION: NetworkState
         val WAITING: NetworkState
         val SUCCESS: NetworkState
-
+        val ERROR_API: NetworkState
         init {
             WAITING = NetworkState(Status.RUNNING, "ns_waiting")
             LOADED = NetworkState(Status.SUCCESS, "ns_success")
@@ -25,6 +25,7 @@ class NetworkState(val status: Status, val msg: String) {
             ENDOFLIST = NetworkState(Status.FAILED, "ns_end_list")
             NODATA = NetworkState(Status.FAILED, "ns_no_data")
             ERROR_CONNECTION = NetworkState(Status.FAILED, "ns_problem_connection")
+            ERROR_API = NetworkState(Status.FAILED, "ns_problem_api")
             SUCCESS = NetworkState(Status.SUCCESS, "ns_success")
 
         }

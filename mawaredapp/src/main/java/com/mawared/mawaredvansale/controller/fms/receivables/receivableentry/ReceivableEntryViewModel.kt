@@ -60,7 +60,7 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
     var selectedCustomer: Customer? = null
     val term : MutableLiveData<String> = MutableLiveData()
     val customerList: LiveData<List<Customer>> = Transformations.switchMap(term){
-        masterDataRepository.getCustomersByOrg(App.prefs.saveUser!!.org_Id, it)
+        masterDataRepository.getCustomersByOrg(_sm_id, App.prefs.saveUser!!.org_Id, it)
     }
 
     var rate : Double = 0.0
@@ -85,7 +85,7 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
                 return@ioThenMain ageDebit
                 },
                 {
-                    pbBalance.value = numberFormat(it?.cu_balance)
+                    pbBalance.value = numberFormat(it?.cu_balance ?: 0.0)
             })
 
         }catch (e: java.lang.Exception){

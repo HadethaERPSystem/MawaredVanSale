@@ -2,6 +2,7 @@ package com.mawared.mawaredvansale.controller.helpers.extension
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.text.format.DateFormat
 import android.util.Log
 import androidx.core.text.TextUtilsCompat
@@ -189,4 +190,14 @@ fun Double?.toFormatNumber() : String?{
         e.printStackTrace()
     }
     return "${this}"
+}
+
+fun String?.getColor(): Int{
+    try {
+        if(this == null) return Color.parseColor("#FFFFFF")
+        return Color.parseColor(this)
+    }catch (e: java.lang.Exception){
+        e.printStackTrace()
+        return Color.parseColor("#FFFFFF")
+    }
 }

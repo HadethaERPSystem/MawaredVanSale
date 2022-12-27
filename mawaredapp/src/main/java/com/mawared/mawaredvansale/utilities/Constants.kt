@@ -14,8 +14,11 @@ const val API_KEY = ""
 //const val BASE_URL = "http://104.227.250.246:6615/"
 
 // Demo  Al-nader cloud
-//const val BASE_URL_API = "http://104.227.250.246:3984/api/"
-//const val BASE_URL = "http://104.227.250.246:3984/"
+const val BASE_URL_API = "http://104.227.250.246:3984/api/"
+const val BASE_URL = "http://104.227.250.246:3984/"
+
+//const val BASE_URL_API = "http://app.alnadir.com:3984/api/"
+//const val BASE_URL = "http://app.alnadir.com:3984/"
 
 // demo local alnader
 //const val BASE_URL_API = "http://172.29.50.2:6633/api/"
@@ -48,6 +51,10 @@ const val API_KEY = ""
 //const val BASE_URL_API = "http://172.20.0.100:6115/api/"
 //const val BASE_URL = "http://172.20.0.100:6115/"
 
+// Demo
+//const val BASE_URL_API = "http://10.10.100.100:7272/api/"
+//const val BASE_URL = "http://10.10.100.100:7272/"
+
 //===========================================================================
 //===================  Unimedica  ===========================================
 // Unimedica live
@@ -61,8 +68,8 @@ const val API_KEY = ""
 
 //===========================================================================
 // For local test
-//const val BASE_URL_API = "http://10.200.0.34/mderp.WebAPI/api/"
-//const val BASE_URL = "http://10.200.0.34/mderp.WebAPI/"
+//const val BASE_URL_API = "http://192.168.123.30/mderp.WebAPI/api/"
+//const val BASE_URL = "http://192.168.123.30/mderp.WebAPI/"
 
 //192.168.1.14
 //const val BASE_URL_API = "http://192.168.1.230/mderp.WebAPI/api/"
@@ -78,9 +85,16 @@ const val API_KEY = ""
 //const val BASE_URL_API = "http://185.80.42.51:1818/api/"
 //const val BASE_URL = "http://185.80.42.51:1818/"
 // Demo
+//const val BASE_URL_API = "http://91.92.144.203:2626/api/"
+//const val BASE_URL = "http://91.92.144.203:2626/"
+
+//AL-Raji
+//Live
+//const val BASE_URL_API = "http://185.80.42.51:1818/api/"
+//const val BASE_URL = "http://185.80.42.51:1818/"
+//Demo
 //const val BASE_URL_API = "http://185.80.42.51:1717/api/"
 //const val BASE_URL = "http://185.80.42.51:1717/"
-
 // new
 //const val BASE_URL_API = "http://185.80.42.118:5009/api/"
 //const val BASE_URL = "http://185.80.42.118:5009/"
@@ -99,8 +113,8 @@ const val API_KEY = ""
 //const val BASE_URL_API = "http://185.80.42.51:7722/api/"
 //const val BASE_URL = "http://185.80.42.51:7722/"
 // Demo
-const val BASE_URL_API = "http://185.80.42.51:7711/api/"
-const val BASE_URL = "http://185.80.42.51:7711/"
+//const val BASE_URL_API = "http://185.80.42.51:7711/api/"
+//const val BASE_URL = "http://185.80.42.51:7711/"
 //const val BASE_URL_API = "http://10.200.0.22:7711/api/"
 //const val BASE_URL = "http://10.200.0.22:7711/"
 
@@ -112,7 +126,6 @@ const val BASE_URL = "http://185.80.42.51:7711/"
 // Demo
 //const val BASE_URL_API = "http://185.80.42.50:8844/api/"
 //const val BASE_URL = "http://185.80.42.50:8844/"
-
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 
@@ -189,6 +202,8 @@ const val URL_ALL_SALESMAN = "${BASE_URL_API}PDAMasterData/Salesman_GetAll"
 const val URL_ALL_SALESMAN_CUSTOMERS = "${BASE_URL_API}PDAMasterData/Salesman_CustomerGetByTerm"
 const val URL_SALESMAN_SUMMARY = "${BASE_URL_API}PDAMasterData/Salesman_GetSummary"
 const val URL_SALESMAN_HSA_SALES_PLAN = "${BASE_URL_API}PDAMasterData/Salesman_hasSalesPlan"
+
+const val URL_USERS_DISC = "${BASE_URL_API}PDAMasterData/UserDisc"
 
 const val URL_UOM_PRODUCT = "${BASE_URL_API}PDAMasterData/Uom_GetByProduct"
 // Get Client

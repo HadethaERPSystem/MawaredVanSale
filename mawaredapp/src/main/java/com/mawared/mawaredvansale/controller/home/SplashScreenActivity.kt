@@ -7,6 +7,7 @@ import android.os.Bundle
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.auth.LoginActivity
+import com.mawared.mawaredvansale.controller.auth.SetApiAddressActivity
 import java.lang.Exception
 
 class SplashScreenActivity : AppCompatActivity() {
@@ -15,22 +16,23 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
 
-        val background = object: Thread(){
+        val background = object : Thread() {
             override fun run() {
                 try {
-                    Thread.sleep(2000)
-                    if(App.prefs.isLoggedIn){
+                    Thread.sleep(1500)
+
+                    if (App.prefs.isLoggedIn) {
                         Intent(baseContext, HomeActivity::class.java).also {
-                            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            it.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(it)
                         }
-                    }else {
+                    } else {
                         val intent = Intent(baseContext, LoginActivity::class.java)
                         startActivity(intent)
                     }
-//                    val intent = Intent(baseContext, HomeActivity::class.java)
-//                    startActivity(intent)
-                }catch (e: Exception){
+
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }

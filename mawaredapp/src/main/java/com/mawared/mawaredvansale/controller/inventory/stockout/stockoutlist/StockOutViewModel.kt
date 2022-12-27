@@ -1,5 +1,6 @@
 package com.mawared.mawaredvansale.controller.inventory.stockout.stockoutlist
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.data.db.entities.inventory.Stockout
@@ -11,8 +12,7 @@ import com.mawared.mawaredvansale.utilities.lazyDeferred
 
 class StockOutViewModel(private val repository: IStockOutRepository) : ViewModel() {
     private val userId: Int =  if(App.prefs.saveUser?.id != null)  App.prefs.saveUser!!.id else 0
-
-    private var navigator: IMainNavigator<Stockout>? = null
+    var errorMessage: MutableLiveData<String> = MutableLiveData()
     var term: String? = ""
 
     fun loadData(list: MutableList<Stockout>, term: String, pageCount: Int, loadMore: (List<Stockout>?, Int) -> Unit){
@@ -26,26 +26,6 @@ class StockOutViewModel(private val repository: IStockOutRepository) : ViewModel
         }catch (e: Exception){
             e.printStackTrace()
         }
-    }
-
-    fun setNavigator(navigator: IMainNavigator<Stockout>)
-    {
-        this.navigator = navigator
-    }
-
-    fun onItemDelete(baseEo: Stockout)
-    {
-        navigator?.onItemDeleteClick(baseEo)
-    }
-
-    fun onItemEdit(baseEo: Stockout)
-    {
-        navigator?.onItemEditClick(baseEo)
-    }
-
-    fun onItemView(baseEo: Stockout)
-    {
-        navigator?.onItemViewClick(baseEo)
     }
 
     fun cancelJob(){

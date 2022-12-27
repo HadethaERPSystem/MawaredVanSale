@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -213,6 +215,20 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
 
         viewModel.mVoucher.observe(viewLifecycleOwner, Observer {
             viewModel.voucher = it
+        })
+
+        binding.atcProduct.addTextChangedListener(object: TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+            override fun afterTextChanged(s: Editable?) {
+                if(viewModel.selectedProduct == null) viewModel.setTerm(s.toString()) else binding.atcProduct.dismissDropDown()
+            }
         })
 
         viewModel.setTerm("")

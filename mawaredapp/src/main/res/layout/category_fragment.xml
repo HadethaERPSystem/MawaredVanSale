@@ -16,40 +16,36 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10dp"
-                android:layout_marginTop="@dimen/_10dp"
-                android:layout_marginEnd="@dimen/_10dp"
-                app:cardCornerRadius="@dimen/_10dp"
-                app:cardElevation="@dimen/_10dp">
+                android:background="@drawable/search_bg"
+                android:queryHint="@string/search_view_brand"
+                android:layout_margin="8dp"
+                app:iconifiedByDefault="false"/>
 
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/search_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/search_bg"
-                    android:iconifiedByDefault="false"
-                    android:queryBackground="@color/transparent"
-                    android:queryHint="@string/search_view_category"
-                    android:theme="@style/ThemeOverlay.Search" />
-
-            </androidx.cardview.widget.CardView>
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_category"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/_10dp"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                 tools:listitem="@layout/item_rv_main_category" />
-
+                android:orientation="vertical">
+                <include
+                    android:id="@+id/progress_bar"
+                    android:visibility="gone"
+                    layout="@layout/layout_progress_bar_with_text"
+                    />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                     tools:listitem="@layout/item_rv_main_category" />
+            </LinearLayout>
         </LinearLayout>
 <!--    </ScrollView>-->
 

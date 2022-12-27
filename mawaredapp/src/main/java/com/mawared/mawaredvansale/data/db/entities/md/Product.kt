@@ -49,6 +49,9 @@ data class Product (
     var pr_dis_per: Double? = null
     var pr_dis_type: String? = null
     var pr_uom_code: String? = null
+    var pr_d_discPrcnt: Double = 0.0
+    var pr_isGift: Boolean = false
+    var pr_user_discPrcnt: Double = 0.0
     var addQty: Double? = null
     fun returnDateString(isoString: String?) : String{
         try {

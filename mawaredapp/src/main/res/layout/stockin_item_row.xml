@@ -122,6 +122,70 @@
                 tools:ignore="SmallSp" />
 
             <TextView
+                android:id="@+id/lbl_pack_size"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:text="@string/lbl_pack_size"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline18"
+                app:layout_constraintStart_toEndOf="@+id/txt_qty"
+                app:layout_constraintTop_toTopOf="@+id/txt_qty"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/txt_packsize"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_pack_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/lbl_pack_size"
+                app:layout_constraintTop_toTopOf="@+id/lbl_pack_size"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/lbl_PackQty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:text="@string/lbl_pack_qty"
+                android:textSize="11sp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline12"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_Qty"
+                tools:ignore="SmallSp" />
+
+            <TextView
+                android:id="@+id/txt_packqty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:fontFamily="@font/droid_kufi_regular"
+                android:gravity="start"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_PackQty"
+                app:layout_constraintEnd_toStartOf="@+id/guideline8"
+                app:layout_constraintStart_toStartOf="@+id/guideline12"
+                app:layout_constraintTop_toTopOf="@+id/lbl_PackQty"
+                tools:ignore="SmallSp" />
+
+
+            <TextView
                 android:id="@+id/lbl_OrderQty"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -131,11 +195,11 @@
                 android:gravity="start"
                 android:text="@string/lbl_order_qty"
                 android:textSize="11sp"
-                app:layout_constraintBottom_toBottomOf="@+id/txt_qty"
                 app:layout_constraintEnd_toStartOf="@+id/guideline18"
                 app:layout_constraintStart_toStartOf="@+id/guideline8"
-                app:layout_constraintTop_toTopOf="@+id/txt_qty"
+                app:layout_constraintTop_toTopOf="@+id/lbl_PackQty"
                 tools:ignore="SmallSp" />
+
 
             <TextView
                 android:id="@+id/txt_OrderQty"
@@ -150,7 +214,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/lbl_OrderQty"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline18"
-                app:layout_constraintTop_toTopOf="@+id/lbl_Qty"
+                app:layout_constraintTop_toTopOf="@+id/lbl_OrderQty"
                 tools:ignore="SmallSp" />
 
             <TextView
@@ -211,7 +275,7 @@
                 android:gravity="start"
                 android:textSize="11sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/lbl_OrderQty"
+                app:layout_constraintBottom_toBottomOf="@+id/lbl_location"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline18"
                 app:layout_constraintTop_toTopOf="@+id/lbl_location" />
@@ -225,7 +289,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="2dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
                 android:gravity="start"
@@ -235,7 +299,7 @@
                 android:textSize="11sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline12"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lbl_Qty" />
+                app:layout_constraintTop_toBottomOf="@+id/lbl_PackQty" />
 
             <TextView
                 android:id="@+id/txt_refno"

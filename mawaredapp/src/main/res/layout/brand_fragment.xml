@@ -10,61 +10,37 @@
             type="com.mawared.mawaredvansale.controller.marketplace.brand.BrandViewModel" />
     </data>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10dp"
-                android:layout_marginTop="@dimen/_10dp"
-                android:layout_marginEnd="@dimen/_10dp"
-                app:cardCornerRadius="@dimen/_10dp"
-                app:cardElevation="@dimen/_10dp">
+                android:background="@drawable/search_bg"
+                android:queryHint="@string/search_view_brand"
+                android:layout_margin="8dp"
+                app:iconifiedByDefault="false"/>
 
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/search_view"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <include
+                    android:id="@+id/progress_bar"
+                    android:visibility="gone"
+                    layout="@layout/layout_progress_bar_with_text"
+                    />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_brand"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/search_bg"
-                    android:iconifiedByDefault="false"
-                    android:queryBackground="@color/transparent"
-                    android:queryHint="@string/search_view_brand"
-                    android:theme="@style/ThemeOverlay.Search" />
-
-            </androidx.cardview.widget.CardView>
-
-<!--            <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:fontFamily="@font/droid_kufi_regular"-->
-<!--                android:paddingStart="@dimen/_10dp"-->
-<!--                android:paddingEnd="@dimen/_10dp"-->
-<!--                android:layout_marginStart="@dimen/_10dp"-->
-<!--                android:layout_marginTop="@dimen/_10dp"-->
-<!--                android:layout_marginEnd="@dimen/_10dp"-->
-<!--                android:text="@string/ic_brand"-->
-<!--                android:id="@+id/tvCategory"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="@dimen/_15ssp" />-->
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_brand"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_10dp"
-                android:orientation="horizontal"
-                tools:itemCount="1"
-                tools:listitem="@layout/item_rv_brand" />
-
+                    android:orientation="horizontal"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/item_rv_brand" />
+            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
 
 </layout>

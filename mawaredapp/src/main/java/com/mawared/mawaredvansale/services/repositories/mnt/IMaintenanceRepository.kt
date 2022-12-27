@@ -8,8 +8,8 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 
 interface IMaintenanceRepository {
     val networkState: LiveData<NetworkState>
-    fun getSaleNetworkState(): LiveData<NetworkState>
-    fun getOnPages(sm_Id: Int, cu_Id: Int?) : LiveData<PagedList<Mnts>>
+
+    suspend fun get_OnPages(sm_Id: Int, term: String, page: Int): List<Mnts>?
 
     fun getById(id: Int) : LiveData<Mnts>
 

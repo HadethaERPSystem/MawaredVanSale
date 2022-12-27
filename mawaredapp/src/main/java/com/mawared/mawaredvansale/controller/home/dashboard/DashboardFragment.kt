@@ -22,6 +22,7 @@ import com.mawared.mawaredvansale.data.db.entities.security.Menu
 import com.mawared.mawaredvansale.databinding.DashboardFragmentBinding
 import com.mawared.mawaredvansale.services.repositories.Status
 import com.mawared.mawaredvansale.utilities.Coroutines
+import com.mawared.mawaredvansale.utilities.MenuSysPrefs
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.mawared.update.AppUtils
 import com.xwray.groupie.GroupAdapter
@@ -87,6 +88,8 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
         navController = Navigation.findNavController(view)
 
         viewModel.salesmanHasPlan()
+//        viewModel.userInvDisc()
+//        viewModel.userItemDisc()
     }
 
     private fun bindUI() = Coroutines.main {
@@ -96,6 +99,7 @@ class DashboardFragment : Fragment(), KodeinAware{//}, IMainNavigator {
             if(it != null) {
                 viewModel.menusCount = it.count()
                 adapter.setList(it)
+                MenuSysPrefs.saveMenu(it)
             }else{
                 viewModel.menusCount = 0
                 rv_menu.removeAllViews()

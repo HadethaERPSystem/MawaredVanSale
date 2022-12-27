@@ -7,6 +7,7 @@ import androidx.lifecycle.Transformations
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
+import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
@@ -21,61 +22,10 @@ import kotlinx.coroutines.Dispatchers.Main
 class ReceiableRepositoryImp(private val api: ApiService): IReceivableRepository, SafeApiRequest() {
     var job: CompletableJob? = null
 
-    lateinit var receivablePagedList: LiveData<PagedList<Receivable>>
-    lateinit var receivableDataSourceFactory: ReceivableDataSourceFactory
 
     private val _networkState = MutableLiveData<NetworkState>()
     override val networkState: LiveData<NetworkState>
         get() = _networkState
-
-
-    override fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Receivable>> {
-        receivableDataSourceFactory = ReceivableDataSourceFactory(api, sm_Id, cu_Id)
-
-
-        val config: PagedList.Config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(POST_PER_PAGE)
-            .build()
-
-        receivablePagedList = LivePagedListBuilder(receivableDataSourceFactory, config).build()
-
-        return receivablePagedList
-    }
-
-    override fun getRecNetworkState(): LiveData<NetworkState> {
-        return Transformations.switchMap<ReceivableDataSource, NetworkState>(receivableDataSourceFactory.recLiveDataSource, ReceivableDataSource::networkState)
-    }
-
-    override fun insert(baseEo: Receivable): LiveData<Receivable> {
-        _networkState.postValue(NetworkState.LOADING)
-        job = Job()
-        return object : LiveData<Receivable>() {
-            override fun onActive() {
-                super.onActive()
-                job?.let {
-                    CoroutineScope(IO).launch {
-                        try {
-                            val response = apiRequest { api.insertReceivable(baseEo) }
-                            withContext(Main) {
-                                value = response.data
-                                _networkState.postValue(NetworkState.LOADED)
-                                job?.complete()
-                            }
-                        }catch (e: ApiException){
-                            _networkState.postValue(NetworkState.ERROR_CONNECTION)
-                            Log.e("Connectivity", "No internet connection", e)
-                            return@launch
-                        }catch (e: Exception){
-                            _networkState.postValue(NetworkState.ERROR)
-                            Log.e("Exception", "Error exception when call insert receivable", e)
-                            return@launch
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     override suspend fun SaveOrUpdate(baseEo: Receivable): ResponseSingle<Receivable> {
         _networkState.postValue(NetworkState.LOADING)
@@ -89,6 +39,29 @@ class ReceiableRepositoryImp(private val api: ApiService): IReceivableRepository
         }catch (e: ApiException){
             _networkState.postValue(NetworkState.ERROR)
             throw e
+        }
+    }
+
+    override suspend fun get_OnPages(sm_Id: Int, term: String, page: Int): List<Receivable>? {
+        try {
+            val response = apiRequest { api.receipt_OnPages(sm_Id, term, page, POST_PER_PAGE) }
+            if(response.isSuccessful){
+                return response.data
+            }
+            return emptyList()
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("ApiError", "No internat connection", e)
+            return emptyList()
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return emptyList()
+        }catch (e: java.lang.Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Error", "Exception", e)
+            return emptyList()
         }
     }
 

@@ -21,6 +21,7 @@
     <uses-feature android:name="android.hardware.camera.any" />
 
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -37,6 +38,7 @@
         android:name=".App"
         android:allowBackup="true"
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/mderp_app_logo"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -44,9 +46,10 @@
         android:roundIcon="@drawable/mderp_app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
-        android:hardwareAccelerated="true">
-
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity
+            android:name=".controller.auth.SetApiAddressActivity"
+            android:exported="false"/>
         <!-- <activity android:name=".controller.common.printing.PrintingActivity"></activity> -->
         <activity android:name=".controller.common.PdfActivity" />
         <activity android:name=".controller.map.MapsActivity" />

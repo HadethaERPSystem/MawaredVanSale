@@ -6,34 +6,34 @@ import androidx.lifecycle.Transformations
 import androidx.paging.PagedList
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
+import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.data.db.entities.sales.Delivery
 import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.delivery.IDeliveryRepository
+import com.mawared.mawaredvansale.utilities.Coroutines
 
 class DeliveryViewModel(private val repository: IDeliveryRepository) : BaseViewModel() {
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
 
-    var navigator: IMainNavigator<Delivery>? = null
     var errorMessage: MutableLiveData<String> = MutableLiveData()
-    private val cuId: MutableLiveData<Int> = MutableLiveData()
+    var term: String? = ""
 
-    val entityEoList: LiveData<PagedList<Delivery>> = Transformations
-        .switchMap(cuId){
-            repository.fetchLivePagedList(_sm_id, it)
+    fun loadData(list: MutableList<Delivery>, term: String, pageCount: Int, loadMore: (List<Delivery>?, Int) -> Unit){
+        try {
+            Coroutines.ioThenMain({
+                val tmp = repository.get_OnPages(_sm_id, term, pageCount)
+                if(tmp != null){
+                    list.addAll(tmp)
+                }
+            }, {loadMore(list, pageCount)})
+        }catch (e: Exception){
+            e.printStackTrace()
         }
-
-
-    val networkStateRV: LiveData<NetworkState> by lazy {
-        repository.getDelvNetworkState()
     }
 
     val networkState: LiveData<NetworkState> by lazy {
         repository.networkState
-    }
-
-    fun listIsEmpty():Boolean{
-        return entityEoList.value?.isEmpty() ?: true
     }
 
     private val _dl_Id: MutableLiveData<Int> = MutableLiveData()
@@ -42,17 +42,6 @@ class DeliveryViewModel(private val repository: IDeliveryRepository) : BaseViewM
             repository.getById(it)
         }
 
-    fun refresh(){
-        setCustomer(cuId.value)
-    }
-
-    fun setCustomer(cm_Id: Int?){
-        if(cuId.value == cm_Id && cm_Id != null){
-            return
-        }
-        cuId.value = cm_Id
-    }
-
     fun find(id: Int){
         if(_dl_Id.value == id){
             return
@@ -60,20 +49,8 @@ class DeliveryViewModel(private val repository: IDeliveryRepository) : BaseViewM
         _dl_Id.value = id
     }
 
-    // on press edit invoice
-    fun onItemEdit(baseEo: Delivery)
-    {
-        navigator?.onItemEditClick(baseEo)
-    }
-
-    // on press view invoice
-    fun onItemView(baseEo: Delivery)
-    {
-        navigator?.onItemViewClick(baseEo)
-    }
-
-    fun onPrient(sl_Id: Int){
-        find(sl_Id)
+    fun onPrient(id: Int){
+        find(id)
     }
 
     // cancel job call in destroy fragment

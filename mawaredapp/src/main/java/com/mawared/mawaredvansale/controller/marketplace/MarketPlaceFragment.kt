@@ -116,6 +116,7 @@ class MarketPlaceFragment : ScopedFragment(), KodeinAware {
                 binding.card1.visibility = View.VISIBLE
                 model.setBrowsingOnly("N")
                 model.setCustomer(viewModel.customer!!)
+                model.setVoucher(viewModel.vocode?: "")
             }
             else
             {

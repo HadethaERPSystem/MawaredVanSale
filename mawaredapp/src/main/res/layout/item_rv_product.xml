@@ -137,30 +137,67 @@
                 app:layout_constraintStart_toStartOf="@+id/productAvatar" />
 
             <ImageButton
+                android:id="@+id/giftBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:paddingStart="5dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="4dp"
+                android:scaleType="fitCenter"
+                android:background="@null"
+                app:layout_constraintBottom_toBottomOf="@+id/productAvatar"
+                app:layout_constraintEnd_toEndOf="@+id/productAvatar"
+                app:srcCompat="@drawable/ic_gift" />
+
+            <ImageButton
+                android:id="@+id/discBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="2dp"
+                android:background="@null"
+                android:paddingStart="5dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="4dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="@+id/productAvatar"
+                app:layout_constraintEnd_toStartOf="@+id/giftBtn"
+                app:srcCompat="@drawable/ic_discount" />
+
+            <ImageButton
                 android:id="@+id/addBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
                 android:layout_marginTop="3dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:paddingStart="@dimen/_10dp"
                 android:paddingEnd="@dimen/_10dp"
                 android:scaleType="fitCenter"
+                android:background="@null"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/new_price"
                 app:srcCompat="@drawable/ic_add_cart" />
+
 
             <ImageButton
                 android:id="@+id/plusBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginStart="5dp"
-                android:paddingStart="@dimen/_10dp"
-                android:paddingEnd="@dimen/_10dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:scaleType="center"
+                android:background="@null"
                 app:layout_constraintBottom_toBottomOf="@+id/addBtn"
                 app:layout_constraintStart_toEndOf="@+id/addBtn"
                 app:layout_constraintTop_toTopOf="@+id/addBtn"
-                app:srcCompat="@drawable/ic_plus" />
+                app:srcCompat="@drawable/ic_add_blue" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addQty"
@@ -184,13 +221,16 @@
                 android:id="@+id/minusBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/_10dp"
-                android:paddingEnd="@dimen/_10dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:scaleType="fitCenter"
+                android:background="@null"
                 app:layout_constraintBottom_toBottomOf="@+id/addQty"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/addQty"
-                app:srcCompat="@drawable/ic_minus" />
+                app:srcCompat="@drawable/ic_minus_red" />
 
             <View
                 android:layout_width="match_parent"

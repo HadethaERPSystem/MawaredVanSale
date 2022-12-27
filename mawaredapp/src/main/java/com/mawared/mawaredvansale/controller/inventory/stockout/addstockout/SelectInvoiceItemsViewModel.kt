@@ -88,6 +88,44 @@ class SelectInvoiceItemsViewModel (private val stockService: IStockOutRepository
         }
     }
 
+    fun setLoc(items: List<InventoryDocLines>) {
+        for (i in items) {
+            if (!i.itemLocations.isNullOrEmpty()) {
+
+
+                val locs = loadItemLocation(i, i.itemLocations!!)
+                for (l in locs) {
+                    val line =
+                        docLine.find { it.prodId == i.prodId && it.baseEntry == i.docEntry && it.baseLine == i.lineNum && it.locId == l.loc_Id }
+                    if (line != null) {
+                        if (i.itemSelectedLoc == null) i.itemSelectedLoc = arrayListOf()
+                        val tmpLoc = i.itemSelectedLoc?.find { it.loc_Id == l.loc_Id }
+                        if (tmpLoc != null) {
+                            tmpLoc.qty = line.qty
+
+                        } else {
+                            i.itemSelectedLoc!!.add(Loc(line.locId, line.locName, line.invQty))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadItemLocation(si: InventoryDocLines, strLocs: String) : ArrayList<Loc> {
+        val mLocs : ArrayList<Loc> = arrayListOf()
+        val arr = strLocs.split(";")
+        arr.forEach {
+            val strL = it.split("|")
+            val l = Loc(strL[0].toInt(), strL[1], strL[2].toDouble())
+            l.docLine = si
+            mLocs.add(l)
+        }
+
+
+        return mLocs
+    }
+
     fun removeLine(item: InventoryDocLines, loc: Loc, qty: Double, Success: () -> Unit){
         try {
 

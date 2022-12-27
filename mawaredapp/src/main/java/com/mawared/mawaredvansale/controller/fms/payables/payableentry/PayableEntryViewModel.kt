@@ -61,7 +61,7 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
     var term : MutableLiveData<String> = MutableLiveData()
     var selectedCustomer: Customer? = null
     val customerList :LiveData<List<Customer>> = Transformations.switchMap(term) {
-        masterDataRepository.getCustomersByOrg(App.prefs.saveUser!!.org_Id, it)  }
+        masterDataRepository.getCustomersByOrg(_sm_id, App.prefs.saveUser!!.org_Id, it)  }
 
     var rate : Double = 0.0
     private val _cr_Id: MutableLiveData<Int> = MutableLiveData()

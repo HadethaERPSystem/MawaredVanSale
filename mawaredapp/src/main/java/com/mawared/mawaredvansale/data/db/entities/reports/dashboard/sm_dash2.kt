@@ -8,5 +8,5 @@ class sm_dash2(
     var pl_visit: Float?,
     var ex_visit: Float?,
     var pl_time: Float?,
-    var ex_time: Float?
+    var ex_time: Float?,
 )

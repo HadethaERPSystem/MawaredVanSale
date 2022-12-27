@@ -86,7 +86,7 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
 
                 Coroutines.main {
                     try {
-                        val response = repository.update(_entityEo!!)
+                        val response = repository.SaveOrUpdate(_entityEo!!)
                         if(response.isSuccessful){
                             _baseEo.value = response.data
                         }

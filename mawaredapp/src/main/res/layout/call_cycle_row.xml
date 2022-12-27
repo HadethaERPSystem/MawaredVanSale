@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <data>
-        <variable name="entityEo"
-            type="com.mawared.mawaredvansale.data.db.entities.md.Call_Cycle"/>
-        <variable
-            name="viewmodel"
-            type="com.mawared.mawaredvansale.controller.callcycle.cylist.CallCycleViewModel" />
-    </data>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +24,6 @@
                 android:id="@+id/view_status"
                 android:layout_width="6dp"
                 android:layout_height="0dp"
-                android:background="@{viewmodel.getColor(entityEo.cy_color_code)}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -43,7 +39,6 @@
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
                 android:text="@string/lbl_cu_code"
-
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline23"
                 app:layout_constraintStart_toEndOf="@+id/view_status"
@@ -51,7 +46,7 @@
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/cy_customer_code"
+                android:id="@+id/cy_bp_code"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -61,10 +56,8 @@
                 android:gravity="start"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
-                android:text="@{entityEo.cy_cu_code}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
-
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/guideline23"
                 app:layout_constraintStart_toEndOf="@+id/view_status"
@@ -73,7 +66,7 @@
                 tools:text="CUS-000001" />
             <!-- Customer Info -->
             <TextView
-                android:id="@+id/lbl_customer_name"
+                android:id="@+id/lbl_bp_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -90,7 +83,7 @@
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/cy_customer_name"
+                android:id="@+id/cy_bp_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -100,13 +93,12 @@
                 android:gravity="start"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
-                android:text="@{entityEo.cy_cu_name}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline23"
-                app:layout_constraintTop_toBottomOf="@+id/lbl_customer_name"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_bp_name"
                 tools:ignore="SmallSp"
                 tools:text="محمد احمد سعيد" />
 
@@ -125,11 +117,11 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toStartOf="@+id/guideline23"
                 app:layout_constraintStart_toEndOf="@+id/view_status"
-                app:layout_constraintTop_toBottomOf="@+id/cy_customer_code"
+                app:layout_constraintTop_toBottomOf="@+id/cy_bp_code"
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/txtv_doc_date"
+                android:id="@+id/doc_date"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -139,7 +131,6 @@
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
-                android:text="@{viewmodel.returnDateString(entityEo.cy_date)}"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -162,11 +153,11 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline23"
-                app:layout_constraintTop_toBottomOf="@+id/cy_customer_name"
+                app:layout_constraintTop_toBottomOf="@+id/cy_bp_name"
                 tools:ignore="SmallSp" />
 
             <TextView
-                android:id="@+id/txtv_status_name"
+                android:id="@+id/status_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -176,7 +167,6 @@
                 android:gravity="start"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
-                android:text="@{entityEo.cy_status_name}"
                 android:textColor="@android:color/holo_green_light"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -193,18 +183,16 @@
                 android:background="@color/colorPrimaryDark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/view_status"
-                app:layout_constraintTop_toBottomOf="@+id/txtv_status_name" />
+                app:layout_constraintTop_toBottomOf="@+id/status_name" />
 
             <ImageButton
-                android:id="@+id/btn_edit"
+                android:id="@+id/editBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="8dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_edit_caption"
-                android:onClick="@{()-> viewmodel.onItemEdit(entityEo)}"
-                android:visibility="@{viewmodel.isVisibile(entityEo.cy_id)}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view"
                 app:srcCompat="@drawable/ic_edit" />
@@ -226,4 +214,4 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
-</layout>
+</RelativeLayout>

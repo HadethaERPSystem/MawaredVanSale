@@ -154,7 +154,7 @@
                     app:layout_constraintTop_toTopOf="@+id/btn_openPlan"
                     app:srcCompat="@drawable/ic_search" />
 
-                <com.github.mikephil.charting.charts.HorizontalBarChart
+                <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/barChart"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"

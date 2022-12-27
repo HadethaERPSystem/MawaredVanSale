@@ -90,6 +90,7 @@
                     android:id="@+id/atc_customer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
@@ -129,6 +130,23 @@
                     app:srcCompat="@drawable/btn_close"
                     tools:ignore="TouchTargetSizeCheck" />
 
+                <EditText
+                    android:id="@+id/et_notes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="2dp"
+                    android:autofillHints="@string/hint_comment"
+                    android:gravity="start"
+                    android:hint="@string/hint_comment"
+                    android:inputType="textMultiLine"
+                    android:text="@={viewmodel.notes}"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_customer"
+                    tools:ignore="TouchTargetSizeCheck" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>

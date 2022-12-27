@@ -33,6 +33,10 @@ class ItemLocsAdapter(@LayoutRes private val layoutResource: Int, private val do
                     if(item.qty!! > docLine.invQty!!) item.addQty = docLine.invQty else item.addQty = item.qty
                 }
                 clickFunc1(item)
+                if(items.count() > 0){
+                    addQty.setText(docLine.uomSize.toString())
+                    items[position].addQty = docLine.uomSize
+                }
             }
             addQty.setText(docLine.uomSize.toString())
             item.addQty = if(!addQty.text.isNullOrEmpty()) addQty.text!!.toString().toDouble() else 0.0

@@ -30,18 +30,22 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
     var customer : Customer? = null
     val price_cat : String = customer?.cu_price_cat_code ?: "POS"
     var vocode: String = ""
-    val curCode: String = App.prefs.saveUser?.ss_cr_code ?: ""
+
     //var orders: List<OrderItems> = arrayListOf()
     private var orders: ArrayList<OrderItems> = arrayListOf()
     var _term: MutableLiveData<String?> = MutableLiveData()
-    val productList: LiveData<List<Product>> = Transformations.switchMap(_term) {
-        repository.getProductForOffers(
-            App.prefs.savedSalesman?.sm_warehouse_id,
-            price_cat,
-            LocalDate.now(),
-            App.prefs.saveUser!!.org_Id,
-            it
-        )
+
+    fun loadData(list: MutableList<Product>, term: String, pageCount: Int, loadMore: (List<Product>?, Int) -> Unit){
+        try {
+            Coroutines.ioThenMain({
+                val prdcs = repository.getProductForOffers(App.prefs.savedSalesman?.sm_warehouse_id, price_cat, LocalDate.now(), App.prefs.saveUser!!.org_Id, term, vocode, pageCount)
+                if(prdcs != null){
+                    list.addAll(prdcs)
+                }
+            }, {loadMore(list, pageCount)})
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     fun loadOrders() {
@@ -78,7 +82,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
         Coroutines.ioThenMain({
             var price: Product_Price_List? = null
             try {
-                price = repository.product_getLastPrice(prod_Id, PriceCode, uomId, curCode)
+                price = repository.product_getLastPrice(prod_Id, PriceCode, uomId, App.prefs.saveUser!!.sl_cr_code!!)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -156,46 +160,28 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                     disValue += gdisValue
                 }
 
-                val netTotal = (lineTotal - disValue)
+                var add_dis_value: Double = 0.0
+                if(baseEo != null){
+                    if(baseEo.od_add_dis_per != null){
+                        add_dis_value = (lineTotal - disValue) * (1- (baseEo.od_add_dis_per!! / 100))
+                    }
+                }
+                val netTotal = (lineTotal - disValue) - add_dis_value
                 val price_afd = (1 - (lDisPer / 100)) * p.pr_unit_price!!
                 val isNew : Boolean = baseEo == null
                 if (baseEo == null) {
                     baseEo = OrderItems(
-                        id,
-                        rowNo,
-                        p.pr_Id,
-                        p.pr_description_ar,
-                        p.pr_SUoMEntry,
-                        p.pr_SalUnitMsr,
-                        addQty,
-                        p.pr_NumInSale,
-                        qty,
-                        giftQty,
-                        p.pr_unit_price,
-                        price_afd,
-                        lineTotal,
-                        lDisPer,
-                        disValue,
-                        netTotal,
-                        p.pr_wr_Id,
-                        p.pr_wr_name,
-                        p.pr_batch_no,
-                        p.pr_expiry_date,
-                        p.pr_mfg_date,
-                        null,
-                        null,
-                        null,
-                        false,
-                        "$strDate",
-                        "${user.id}",
-                        "$strDate",
-                        "${user.id}"
+                        id, rowNo, p.pr_Id, p.pr_description_ar, p.pr_SUoMEntry, p.pr_SalUnitMsr, addQty,  p.pr_NumInSale,
+                        qty,  giftQty,  p.pr_unit_price,  price_afd, lineTotal, lDisPer,  disValue, 0.0,0.0,
+                        netTotal, p.pr_wr_Id, p.pr_wr_name, p.pr_batch_no, p.pr_expiry_date, p.pr_mfg_date, null, null,
+                        null, false, "$strDate", "${user.id}","$strDate", "${user.id}"
                     )
                 } else {
                     baseEo.od_pack_qty = addQty
                     baseEo.od_unit_qty = pcs
                     baseEo.od_line_total = lineTotal
                     baseEo.od_disvalue = disValue
+                    baseEo.od_add_dis_value = add_dis_value
                     baseEo.od_discount = lDisPer
                     baseEo.od_net_total = netTotal
                     baseEo.od_gift_qty = giftQty

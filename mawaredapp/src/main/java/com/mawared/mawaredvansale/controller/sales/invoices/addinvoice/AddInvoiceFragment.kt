@@ -403,9 +403,16 @@ class AddInvoiceFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<
         })
 
         viewModel.setVoucherCode("SaleInvoice")
-        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
+        var cr_id = App.prefs.saveUser!!.sl_cr_Id
+        if(App.prefs.saveUser!!.sl_cr_Id == App.prefs.saveUser!!.ss_cr_Id){
+            cr_id = App.prefs.saveUser!!.sf_cr_Id
+        }
+        viewModel.setCurrencyId(cr_id!!)
+
         viewModel.setItems(null)
         if(viewModel.mode != "Add") viewModel.setTerm("") else viewModel.term.value = ""
+
+        viewModel.fcr_symbol.value = if(App.prefs.saveUser!!.sl_cr_code!! == App.prefs.saveUser!!.ss_cr_code!!) App.prefs.saveUser!!.sf_cr_code!! else App.prefs.saveUser!!.ss_cr_code!!
     }
 
     var pattern : Pattern = Pattern.compile("-?\\d+(\\.\\d+)?")

@@ -9,11 +9,8 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 interface IPayableRepository {
     val networkState: LiveData<NetworkState>
 
-    fun getPayableNetworkState(): LiveData<NetworkState>
-    fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Payable>>
-
-    fun insert(baseEo: Payable) : LiveData<Payable>
     suspend fun SaveOrUpdate(baseEo: Payable) : ResponseSingle<Payable>
+    suspend fun get_OnPages(sm_Id: Int, term: String, page: Int): List<Payable>?
     fun getPayable(sm_Id: Int, cu_Id: Int?) : LiveData<List<Payable>>
     fun getById(py_Id: Int): LiveData<Payable>
     fun delete(py_Id: Int): LiveData<String>

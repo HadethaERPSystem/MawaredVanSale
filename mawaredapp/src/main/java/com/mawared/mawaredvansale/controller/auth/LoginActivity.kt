@@ -40,13 +40,13 @@ class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
     var user : User = User(
         1, "Ali Bawi", "ali.bawi@hadetha.com", "ali.bawi", "a12345", "",
         null, null, null, "", null, null, null, null, null, null,
-        null,0
+        "",0.0,null,0
         )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding : ActivityLoginBinding = DataBindingUtil.setContentView(
+        val binding: ActivityLoginBinding = DataBindingUtil.setContentView(
             this,
             R.layout.activity_login
         )
@@ -61,13 +61,13 @@ class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
         val serial = Build.SERIAL
         //AppUtils.getVersionCode(context)
         //deleteCache(this)
-        if(App.prefs.isLoggedIn){
+
+        if (App.prefs.isLoggedIn) {
             Intent(this, HomeActivity::class.java).also {
                 it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(it)
             }
-        }
-        else{
+        } else {
             viewModel.getLoggedInUser().observe(this, Observer { user ->
                 if (user != null) {
                     Intent(this, HomeActivity::class.java).also {
@@ -78,6 +78,8 @@ class LoginActivity : AppCompatActivity(), IAuthListener, KodeinAware {
                 }
             })
         }
+
+
         bindUI()
     }
 

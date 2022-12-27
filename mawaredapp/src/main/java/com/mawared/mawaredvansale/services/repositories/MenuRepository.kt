@@ -86,19 +86,19 @@ class MenuRepository(
         //var id = res.getIdentifier("ic_so", null, ctx.packageName)
 
         val mList = listOf(
-            Menu(1, res.getString(R.string.menu_sale_order),  "Order", "ic_so"),
-            Menu(2, res.getString(R.string.menu_ps_order),  "PSOrder",   "ic_ps"),
-            Menu(3, res.getString(R.string.menu_sale), "Invoice", "ic_sl"),
-            Menu(4, res.getString(R.string.menu_sale_return), "SaleReturn",  "ic_sr"),
-            Menu(5, res.getString(R.string.menu_transfer), "Transfer",  "ic_trs"),
-            Menu(6, res.getString(R.string.menu_delivery), "Delivery",  "ic_delivery"),
-            Menu(7, res.getString(R.string.menu_receivable),"Receivable", "ic_receipt"),
-            Menu(8, res.getString(R.string.menu_payable),"Payable", "ic_payment"),
-            Menu(9, res.getString(R.string.menu_survey), "Survey",    "ic_survey"),
-            Menu(10, res.getString(R.string.menu_customers), "Customer",    "ic_customers"),
-            Menu(11, res.getString(R.string.menu_reports),"Reports",    "ic_report1"),
-            Menu(12, res.getString(R.string.menu_notification), "Alart",  "ic_alart"),
-            Menu(13, res.getString(R.string.menu_settings), "Settings",  "ic_settings1")
+            Menu(1, res.getString(R.string.menu_sale_order),  "Order", "ic_so",""),
+            Menu(2, res.getString(R.string.menu_ps_order),  "PSOrder",   "ic_ps",""),
+            Menu(3, res.getString(R.string.menu_sale), "Invoice", "ic_sl",""),
+            Menu(4, res.getString(R.string.menu_sale_return), "SaleReturn",  "ic_sr",""),
+            Menu(5, res.getString(R.string.menu_transfer), "Transfer",  "ic_trs",""),
+            Menu(6, res.getString(R.string.menu_delivery), "Delivery",  "ic_delivery",""),
+            Menu(7, res.getString(R.string.menu_receivable),"Receivable", "ic_receipt",""),
+            Menu(8, res.getString(R.string.menu_payable),"Payable", "ic_payment",""),
+            Menu(9, res.getString(R.string.menu_survey), "Survey",    "ic_survey",""),
+            Menu(10, res.getString(R.string.menu_customers), "Customer",    "ic_customers",""),
+            Menu(11, res.getString(R.string.menu_reports),"Reports",    "ic_report1",""),
+            Menu(12, res.getString(R.string.menu_notification), "Alart",  "ic_alart",""),
+            Menu(13, res.getString(R.string.menu_settings), "Settings",  "ic_settings1","")
         )
         menuList.postValue(mList)
         return  menuList
@@ -109,10 +109,10 @@ class MenuRepository(
         //var id = res.getIdentifier("ic_so", null, ctx.packageName)
 
         val mList = listOf(
-            Menu(1, res.getString(R.string.menu_customer_statement),  "CustomerStatement", "ic_cu_statement"),
-            Menu(2, res.getString(R.string.menu_cashbook_statement),  "CashbookStatement", "ic_cashbook"),
-            Menu(3, res.getString(R.string.menu_sales_statement),  "SalesStatement",   "ic_sales"),
-            Menu(4, res.getString(R.string.menu_stock_statement), "StockStatement", "ic_stock")
+            Menu(1, res.getString(R.string.menu_customer_statement),  "CustomerStatement", "ic_cu_statement",""),
+            Menu(2, res.getString(R.string.menu_cashbook_statement),  "CashbookStatement", "ic_cashbook",""),
+            Menu(3, res.getString(R.string.menu_sales_statement),  "SalesStatement",   "ic_sales",""),
+            Menu(4, res.getString(R.string.menu_stock_statement), "StockStatement", "ic_stock","")
         )
         menuList.postValue(mList)
         return  menuList

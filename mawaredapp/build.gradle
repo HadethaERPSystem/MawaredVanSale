@@ -20,13 +20,13 @@ android {
 //            }
 //        }
         compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+        buildToolsVersion "29.0.2"
 
         applicationId "com.mawared.mawaredvansale"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 58
-        versionName "V1.11.58"
+        versionCode 77
+        versionName "V1.11.77"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {

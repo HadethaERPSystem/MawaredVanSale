@@ -9,11 +9,9 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 
 interface IDeliveryRepository {
     val networkState: LiveData<NetworkState>
-    fun getDelvNetworkState(): LiveData<NetworkState>
-    fun fetchLivePagedList(sm_Id: Int, cu_Id: Int?): LiveData<PagedList<Delivery>>
 
-    fun update1(baseEo: Delivery) : LiveData<Delivery>
-    suspend fun update(baseEo: Delivery): ResponseSingle<Delivery>
+    suspend fun SaveOrUpdate(baseEo: Delivery): ResponseSingle<Delivery>
+    suspend fun get_OnPages(sm_Id: Int, term: String, page: Int): List<Delivery>?
     fun getSalesmanId(sm_Id: Int, cu_Id: Int?) : LiveData<List<Delivery>>
     fun getById(dl_Id: Int): LiveData<Delivery>
     fun getItemByMasterId(dl_Id: Int): LiveData<List<Delivery_Items>>

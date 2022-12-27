@@ -1,28 +1,29 @@
 package com.mawared.mawaredvansale.controller.sales.salereturn.salereturnlist
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.controller.adapters.pagination.ReturnPagedListAdapter
+import com.mawared.mawaredvansale.controller.adapters.ReturnAdapter
+import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFunction
+import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
 import com.mawared.mawaredvansale.databinding.SaleReturnFragmentBinding
-import com.mawared.mawaredvansale.interfaces.IMainNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
-import com.mawared.mawaredvansale.services.repositories.NetworkState
-import com.mawared.mawaredvansale.services.repositories.Status
+import com.mawared.mawaredvansale.utilities.MenuSysPrefs
 import com.mawared.mawaredvansale.utilities.snackbar
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
+import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.sale_return_fragment.*
+import kotlinx.android.synthetic.main.sale_return_fragment.progress_bar
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,9 +31,10 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
-class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainNavigator<Sale_Return> {
+class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, SearchView.OnQueryTextListener {
 
     override val kodein by kodein()
+    private val permission = MenuSysPrefs.getPermission("Invoice")
     private val factory: SaleReturnViewModelFactory by instance()
 
     val viewModel by lazy {
@@ -42,11 +44,19 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
     private lateinit var binding: SaleReturnFragmentBinding
     private lateinit var navController: NavController
 
+    private var adapter = ReturnAdapter(R.layout.invoice_row, permission){ e, t->
+        when(t){
+            "E" -> onItemEditClick(e)
+            "V" -> onItemViewClick(e)
+            "D" -> onItemDeleteClick(e)
+            "P" -> viewModel.onPrint(e.sr_Id)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.sale_return_fragment, container, false)
 
-        viewModel.navigator = this
         viewModel.msgListener = this
         viewModel.ctx = requireActivity()
 
@@ -54,10 +64,10 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
         binding.lifecycleOwner = this
 
         binding.pullToRefresh.setOnRefreshListener {
-            viewModel.refresh()
+            loadList(viewModel.term ?: "")
             binding.pullToRefresh.isRefreshing = false
         }
-        binding.btnReload.setOnClickListener { viewModel.refresh() }
+        binding.btnReload.setOnClickListener { loadList(viewModel.term ?: "") }
 
         bindUI()
         setHasOptionsMenu(true)
@@ -71,12 +81,25 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var cols = 1
+        val currentOrientation = resources.configuration.orientation
+        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            cols = 2
+        }
+        @Suppress("UNCHECKED_CAST")
+        rcv_sale_return.setupGrid(requireContext(), adapter as BaseAdapter<Any>, cols)
+        rcv_sale_return.setLoadMoreFunction { loadList(viewModel.term ?: "") }
+        loadList(viewModel.term ?: "")
         navController = Navigation.findNavController(view)
     }
 
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_menu, menu)
+        val search = menu?.findItem(R.id.app_bar_search)
+        val searchView = search?.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -93,49 +116,25 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        viewModel.term = newText
+        adapter.setList(null, 0)
+        loadList(viewModel.term ?: "")
+        return true
+    }
+
     private fun bindUI() = GlobalScope.launch(Main) {
 
         try {
-            val pagedAdapter = ReturnPagedListAdapter(viewModel, requireActivity())
-            val gridLayoutManager = GridLayoutManager(requireActivity(), 1)
-            gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
-                override fun getSpanSize(position: Int): Int {
-                    val viewType = pagedAdapter.getItemViewType(position)
-                    if(viewType == pagedAdapter.MAIN_VIEW_TYPE) return 1    // ORDER_VIEW_TYPE will occupy 1 out of 3 span
-                    else return 1                                            // NETWORK_VIEW_TYPE will occupy all 3 span
-                }
-            }
-            rcv_sale_return.apply {
-                layoutManager = gridLayoutManager// LinearLayoutManager(this@OrdersFragment.context)
-                setHasFixedSize(true)
-                adapter = pagedAdapter// groupAdapter
-            }
-
-            viewModel.saleReturns.observe(viewLifecycleOwner, Observer {
-                pagedAdapter.submitList(it)
-            })
-            viewModel.setCustomer(null)
-
-            viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-                progress_bar.visibility =  if(viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
-                if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
-                    val pack = requireContext().packageName
-                    val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
-                    viewModel.errorMessage.value = resources.getString(id)
-                    ll_error.visibility = View.VISIBLE
-                } else {
-                    ll_error.visibility = View.GONE
-                }
-
-                if(!viewModel.listIsEmpty()){
-                    pagedAdapter.setNetworkState(it)
-                }
-            })
 
             viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
                 if(it == "Successful"){
                     onSuccess(getString(R.string.msg_success_delete))
-                    viewModel.setCustomer(null)
+                    loadList(viewModel.term ?: "")
                 }
                 else{
                     onFailure(getString(R.string.msg_failure_delete))
@@ -148,47 +147,28 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
                 }
             })
 
-            viewModel.setCustomer(null)
         }catch (e: Exception){
             Log.i("Exc", "Error is ${e.message}")
         }
 
     }
 
-    private fun initRecyclerView(saleItem: List<SaleReturnRow>){
-        val groupAdapter = GroupAdapter<ViewHolder>().apply {
-            addAll(saleItem)
-        }
-
-        rcv_sale_return.apply {
-            layoutManager = LinearLayoutManager(this@SaleReturnFragment.context)
-            setHasFixedSize(true)
-            adapter = groupAdapter
-        }
-    }
-
-    private fun List<Sale_Return>.toSaleReturnRow(): List<SaleReturnRow>{
-        return this.map {
-            SaleReturnRow(it, viewModel)
-        }
-    }
-
     // Items event listener
-    override fun onItemDeleteClick(baseEo: Sale_Return) {
+    fun onItemDeleteClick(baseEo: Sale_Return) {
         showDialog(requireContext(), getString(R.string.delete_dialog_title), getString(R.string.msg_confirm_delete), baseEo,{
             onStarted()
             viewModel.confirmDelete(it)
         })
     }
 
-    override fun onItemEditClick(baseEo: Sale_Return) {
+    fun onItemEditClick(baseEo: Sale_Return) {
         val action = SaleReturnFragmentDirections.actionSaleReturnFragmentToSaleReturnEntryFragment()
         action.returnId = baseEo.sr_Id
         action.mode ="Edit"
         navController.navigate(action)
     }
 
-    override fun onItemViewClick(baseEo: Sale_Return) {
+    fun onItemViewClick(baseEo: Sale_Return) {
         val action = SaleReturnFragmentDirections.actionSaleReturnFragmentToSaleReturnEntryFragment()
         action.returnId = baseEo.sr_Id
         action.mode = "View"
@@ -208,6 +188,21 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, IMai
     override fun onFailure(message: String) {
         progress_bar?.visibility = View.GONE
         sale_return_list_cl.snackbar(message)
+    }
+
+    private fun loadList(term : String){
+        val list = adapter.getList().toMutableList()
+        if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            onStarted()
+            viewModel.loadData(list, term,adapter.pageCount + 1){data, pageCount ->
+                showResult(data!!, pageCount)
+            }
+        }
+    }
+
+    fun showResult(list: List<Sale_Return>, pageCount: Int) = HandlerUtils.runOnUiThread {
+        adapter.setList(list, pageCount)
+        progress_bar?.visibility = View.GONE
     }
 
     // fragment event on destoy

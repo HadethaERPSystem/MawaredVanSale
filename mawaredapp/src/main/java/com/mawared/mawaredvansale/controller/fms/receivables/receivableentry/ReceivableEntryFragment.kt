@@ -185,6 +185,7 @@ class ReceivableEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavig
 
         binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedCustomer = adapter.getItem(position)
+            viewModel.loadAgeDebit(viewModel.selectedCustomer!!.cu_ref_Id!!)
         }
 
         binding.atcCustomer.addTextChangedListener(object:TextWatcher {

@@ -2,6 +2,7 @@ package com.mawared.mawaredvansale.controller.marketplace.cart
 
 import android.content.Context
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -25,11 +26,17 @@ import java.lang.Exception
 class CartViewModel(private val saleOrderRepository: IOrderRepository, private val saleRepository: IInvoiceRepository, private val repository: IMDataRepository, private val orderRepository: OrderRepository) : BaseViewModel() {
     private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
     private val user = App.prefs.saveUser!!
+    val mLimitDiscPrcnt: Double = App.prefs.saveUser!!.dDiscPrcnt
+
     var msgListener: IMessageListener? = null
     var ctx: Context? = null
 
     var customer : Customer? = null
     var customer_name: MutableLiveData<String> = MutableLiveData()
+    var ccustomer_name: MutableLiveData<String> = MutableLiveData()
+    var discPrcnt: Double? = 0.0
+    var tmpDiscPrcnt: Double? = 0.0
+    var notes : MutableLiveData<String> = MutableLiveData()
     var isRunning: Boolean = false
     // google map location GPS
     var location: Location? = null
@@ -45,7 +52,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
     var changeIQD= MutableLiveData<String>()
     var remainAmount = MutableLiveData<Double>()
     var fc_remainAmount = MutableLiveData<Double>()
-    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.ss_cr_code!!)
+    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sl_cr_code!!)
     var fcr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sf_cr_code!!)
     var fc_amount: MutableLiveData<Double> = MutableLiveData()
 
@@ -54,7 +61,12 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
     var orders: List<OrderItems> = arrayListOf()
     fun loadOrders(Success:(() -> Unit) = {}){
         try {
-               Coroutines.ioThenMain({orders = orderRepository.getOrderItems()},{Success()})
+            orders = arrayListOf()
+            Coroutines.ioThenMain({
+                orders = orderRepository.getOrderItems()
+
+            },
+             { Success() })
 
         }catch (e: Exception){
             e.printStackTrace()
@@ -112,12 +124,16 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
     fun onSaveInvoice(Success:((Sale?) -> Unit) = {}, Fail:((String?) -> Unit) = {}) {
         if (isValidInvoice()) {
             try {
+
                 isRunning = true
                 val user = App.prefs.saveUser!!
                 val strDate = LocalDateTime.now()
                 val totalAmount: Double = orders.sumByDouble { it.od_line_total!! }
-                val totalDiscount: Double = orders.sumByDouble { if(it.od_disvalue == null) 0.0 else it.od_disvalue!! }
+                val totalDiscount: Double = orders.sumByDouble { (if(it.od_disvalue == null) 0.0 else it.od_disvalue!!) + (if(it.od_add_dis_value == null) 0.0 else it.od_add_dis_value!!) }
                 val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
+                //val tmpDiscPrcnt : Double = if(discPrcnt.value != null) discPrcnt.value!! else 0.0
+                //val net1 = netAmount * (1- (tmpDiscPrcnt/100))
+                //val tdisc = totalDiscount + (netAmount - net1)
                 val dtFull = LocalDateTime.now()
                 val doc_num =  0
                 val cu_Id = customer?.cu_ref_Id
@@ -127,10 +143,11 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                 val change_USD = if(changeUSD.value.isNullOrEmpty()) 0.0 else changeUSD.value!!.toDouble()
                 val amountIQD = if(paidIQD.value.isNullOrEmpty()) 0.0 else paidIQD.value!!.toDouble()
                 val change_IQD = if(changeIQD.value.isNullOrEmpty()) 0.0 else changeIQD.value!!.toDouble()
+
                 val baseEo = Sale(
                     doc_num, "${dtFull}", "${voucher?.vo_prefix}","", user.cl_Id, user.org_Id, voucher!!.vo_Id,  cu_Id,
-                    _sm_id, null, totalAmount, totalDiscount, netAmount, user.ss_cr_Id, user.sf_cr_Id, rate,false,
-                    location?.latitude, location?.longitude, price_cat_Id, amountUSD, change_USD, amountIQD, change_IQD,
+                    ccustomer_name.value, _sm_id, null, totalAmount, totalDiscount, netAmount,  (discPrcnt ?: 0.0), user.ss_cr_Id, user.sf_cr_Id, rate,false,
+                    location?.latitude, location?.longitude, price_cat_Id, amountUSD, change_USD, amountIQD, change_IQD, notes.value,
                     "$strDate", "${user.id}", "$strDate", "${user.id}"
                 )
                 baseEo.sl_price_cat_code = price_cat_code
@@ -138,8 +155,8 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
 
                for (o in orders){
                    val item = Sale_Items(0, o.od_rowNo, null, o.od_prod_Id,
-                       o.od_uom_Id, o.od_pack_qty, o.od_pack_size, o.od_unit_qty, o.od_gift_qty,
-                       o.od_unit_price, o.od_price_afd, o.od_line_total, o.od_discount, o.od_disvalue, o.od_net_total, null, null, null,
+                       o.od_uom_Id, o.od_pack_qty, o.od_pack_size, o.od_unit_qty, o.od_gift_qty, o.od_unit_price, o.od_price_afd, o.od_line_total,
+                       o.od_discount, o.od_disvalue, o.od_add_dis_per, o.od_add_dis_value, o.od_net_total, null, null, null,
                        o.od_wr_Id, o.od_batch_no, o.od_expiry_date,  o.od_mfg_date,
                        false,o.created_at,o.created_by, o.updated_at, o.updated_by
                    )
@@ -171,18 +188,62 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         }
     }
 
+    fun recalculateTotal(Success:(() -> Unit) = {}, Fail:((Double?) -> Unit) = {}){
+        try {
+            if(discPrcnt == null) discPrcnt = 0.0
+
+            if(discPrcnt != null && discPrcnt != 0.0){
+                if(discPrcnt!! > mLimitDiscPrcnt){
+                    val msg1 = ctx!!.resources!!.getString(R.string.msg_error_disc_limit)
+                    msgListener?.onFailure(String.format(msg1,  mLimitDiscPrcnt.toString()))
+                    Fail(tmpDiscPrcnt)
+                    discPrcnt = tmpDiscPrcnt
+                    return
+                }
+            }
+
+            for (o in orders){
+                o.od_add_dis_per = discPrcnt!!
+                o.od_add_dis_value = (o.od_line_total!! - o.od_disvalue!!) * (discPrcnt!! / 100)
+                o.od_net_total = (o.od_line_total!! - o.od_disvalue!!) * (1- (discPrcnt!!/100))
+            }
+            tmpDiscPrcnt = discPrcnt
+            Success()
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+    }
+
     fun setTotals(){
         totalAmount.postValue(orders.sumByDouble{ it.od_line_total ?: 0.0 } )
-        totalDiscount.postValue(orders.sumByDouble { it.od_disvalue  ?: 0.0 })
+        totalDiscount.postValue(orders.sumByDouble { (it.od_disvalue  ?: 0.0) + (it.od_add_dis_value ?: 0.0) })
         val net = orders.sumByDouble { it.od_net_total ?: 0.0 }
         netTotal.postValue(net)
         if(rate != 0.0){
-            if(user.ss_cr_code == "$")
-                fc_amount.postValue(net * rate)
-            else
+            if(user.isDirectRate == "Y")
                 fc_amount.postValue(net / rate)
+            else
+                fc_amount.postValue(net * rate)
 
         }
+    }
+
+    fun getPaidAmount(amountUSD: Double, amountIQD: Double, change_USD: Double, change_IQD: Double) : Double{
+        var paidAmount = 0.0
+        if(App.prefs.saveUser!!.sl_cr_code == "$"){
+            if (user.isDirectRate == "Y") {
+                paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
+            }else{
+                paidAmount = (amountUSD + (amountIQD * rate)) - (change_USD + (change_IQD * rate))
+            }
+        }else{
+            if (user.isDirectRate == "Y") {
+                paidAmount = ((amountUSD * rate) + amountIQD) - ((change_USD * rate) + change_IQD)
+            }else{
+                paidAmount = ((amountUSD / rate) + amountIQD) - ((change_USD / rate) + change_IQD)
+            }
+        }
+        return paidAmount
     }
 
     fun updateRemain(){
@@ -192,19 +253,22 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         val change_IQD = if(changeIQD.value.isNullOrEmpty()) 0.0 else changeIQD.value!!.toDouble()
         val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
 
+        val paidAmount = getPaidAmount(amountUSD, amountIQD, change_USD, change_IQD)
 
-        var paidAmount = 0.0
-        if (user.ss_cr_code == "IQD") {
-            paidAmount = ((amountUSD * rate) + amountIQD) - ((change_USD * rate) + change_IQD)
-        } else {
-            paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
-        }
         remainAmount.value = (netAmount - paidAmount)
         if(rate != 0.0){
-            if(user.ss_cr_code == "$")
-                fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
-            else
-                fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
+            if(App.prefs.saveUser!!.sl_cr_code == "$"){
+                if(user.isDirectRate == "Y")
+                    fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
+                else
+                    fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
+            }else{
+                if(user.isDirectRate == "Y")
+                    fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
+                else
+                    fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
+            }
+
         }
     }
 
@@ -229,6 +293,15 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         val change_IQD = if(changeIQD.value.isNullOrEmpty()) 0.0 else changeIQD.value!!.toDouble()
         val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
 
+        val paidAmount = getPaidAmount(amountUSD, amountIQD, change_USD, change_IQD)
+
+        if(discPrcnt != null && discPrcnt != 0.0){
+            if(discPrcnt!! > mLimitDiscPrcnt){
+                val str = ctx!!.resources!!.getString(R.string.msg_error_disc_limit)
+                msg += (if (msg!!.length > 0) "\n\r" else "")  + String.format(str,  mLimitDiscPrcnt)
+            }
+        }
+
         if(netAmount > 0){
             if(customer != null){
                 if(customer!!.payCode!!.contains("CREDIT")) {
@@ -236,17 +309,14 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
 
                         val bal = customer!!.cu_balance ?: 0.0
                         val user = App.prefs.saveUser!!
-                        var amount = 0.0
-                        var paidAmount = 0.0
-                        if (user.ss_cr_code == "IQD") {
-                            paidAmount = ((amountUSD * rate) + amountIQD) - ((change_USD * rate) + change_IQD)
-                        } else {
-                            paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
-                        }
-                        amount = (bal) + netAmount - paidAmount
-                        if(amount < -1){
-                            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
-                                R.string.msg_error_remain_amount)
+
+                        val amount = (bal) + netAmount - paidAmount
+                        if(amount >= user.dropAmnt!! || amount <= -user.dropAmnt!!){
+                            if(user.dropAmnt != 0.0){
+                                msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_remain_amount)
+                            }else if(amount != 0.0){
+                                msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
+                            }
                         }
                         if (customer!!.cu_credit_limit!! < amount) {
                             msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
@@ -269,18 +339,15 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                         msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
                     }
                     val user = App.prefs.saveUser!!
-                    var amount = 0.0
-                    var paidAmount = 0.0
-                    if (user.ss_cr_code == "IQD") {
-                        paidAmount = ((amountUSD * rate) + amountIQD) - ((change_USD * rate) + change_IQD)
-                    } else {
-                        paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
-                    }
-                    amount = netAmount - paidAmount
-                    if(amount >= 1 || amount <= -1){
-                        msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
-                    }
 
+                    val amount = netAmount - paidAmount
+                    if(amount >= user.dropAmnt!! || amount <= -user.dropAmnt!!){
+                        if(user.dropAmnt != 0.0){
+                            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
+                        }else if(amount != 0.0){
+                            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
+                        }
+                    }
                 }
             }
         }
@@ -297,6 +364,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         if(isValidOrder()){
             try {
                 isRunning = true
+
                 val user = App.prefs.saveUser!!
                 val totalAmount: Double = orders.sumByDouble { it.od_line_total!! }
                 val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
@@ -308,8 +376,8 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                 val price_cat_Id = customer?.cu_price_cat_Id
                 val baseEo = Sale_Order( user.cl_Id, user.org_Id, doc_num, "${dtFull}",
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, cu_Id, null, null, totalAmount, totalDiscount, netAmount, user.ss_cr_Id, rate,
-                    false, location?.latitude, location?.longitude, price_cat_Id, "$strDate",
+                    _sm_id, cu_Id, ccustomer_name.value, null, totalAmount, totalDiscount, netAmount, (discPrcnt ?: 0.0), user.ss_cr_Id, rate,
+                    false, location?.latitude, location?.longitude, price_cat_Id, notes.value, "$strDate",
                     "${user.id}", "$strDate", "${user.id}"
                 )
                 baseEo.so_price_cat_code =  price_cat_code
@@ -317,8 +385,8 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                 baseEo.items = arrayListOf()
                 for (o in orders){
                     val itemEo = Sale_Order_Items(o.od_rowNo, 0, o.od_prod_Id, o.od_uom_Id, o.od_unit_qty, o.od_pack_size, o.od_pack_qty, o.od_gift_qty, o.od_unit_price, o.od_price_afd,
-                        o.od_line_total, o.od_discount, o.od_disvalue, o.od_net_total, o.od_wr_Id,  o.od_batch_no,  o.od_expiry_date,
-                        o.od_mfg_date, null, null, null, false,o.created_at, o.created_by, o.updated_at, o.updated_by)
+                        o.od_line_total, o.od_discount, o.od_disvalue, o.od_add_dis_per, o.od_add_dis_value, o.od_net_total, o.od_wr_Id,  o.od_batch_no,  o.od_expiry_date,
+                        o.od_mfg_date, null, null, null, o.od_isGift,o.created_at, o.created_by, o.updated_at, o.updated_by)
                     itemEo.sod_prod_name = o.od_prod_name
                     itemEo.sod_barcode = ""
                     itemEo.sod_partno = ""
@@ -365,11 +433,20 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
         if (App.prefs.saveUser == null) {
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_currency)
         }
-        val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
 
-        if (customer!!.cu_credit_limit!! < netAmount) {
-            msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(
-                R.string.msg_error_credit_limit)
+        if (customer?.cu_credit_limit != null && customer?.cu_credit_limit!! > 0){
+            val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
+
+            if (customer!!.cu_credit_limit!! < netAmount) {
+                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_credit_limit)
+            }
+        }
+
+        if(discPrcnt != null && discPrcnt != 0.0){
+            if(discPrcnt!! > mLimitDiscPrcnt){
+                val str = ctx!!.resources!!.getString(R.string.msg_error_disc_limit)
+                msg += (if (msg!!.length > 0) "\n\r" else "")  + String.format(str,  mLimitDiscPrcnt)
+            }
         }
 
         var cu_AgeDebit : Int = 0

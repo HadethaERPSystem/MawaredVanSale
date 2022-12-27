@@ -585,8 +585,8 @@ class MntEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<Mn
             viewModel.selectedWarranty = War_Adapter.getItem(position)
             viewModel.serialNo.value = viewModel.selectedWarranty!!.serial_no
             viewModel.selectedInvoices = Sale(null, null, null, viewModel.selectedWarranty!!.ref_No, null, null, null,null,
-                null,null, null,null, null,null,null,null, null,null,
-                null,null, 0.0,0.0, 0.0,0.0,null,null, null,null)
+                null, null,null, null,null, null,0.0,null,null, null,null,
+                null,null, null,0.0, 0.0,0.0,0.0, null,null, null,null,null)
             viewModel.selectedInvoices!!.sl_Id = viewModel.selectedWarranty!!.ref_Id!!
             binding.atcInvoices.setText(viewModel.selectedWarranty?.cus_name, true)
             viewModel.selectedCustomer = Customer("", null, null, null, null, "", viewModel.selectedWarranty?.cus_name, "",

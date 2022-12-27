@@ -15,11 +15,13 @@ data class Sale(
     var sl_orgId: Int?,             // organization code
     var sl_vo_Id: Int?,
     var sl_customerId: Int?,        // Customer code
+    var sl_ccustomer_name: String?,        // Customer code
     var sl_salesmanId: Int?,        // Salesman code
     var sl_regionId: Int?,          // region code
     var sl_total_amount: Double?,   // total sale amount
     var sl_total_discount: Double?,   // total sale amount
     var sl_net_amount: Double?,     // net sale amount
+    var sl_discPrcnt: Double,
     var sl_currencyId: Int?,        // currency code
     var sl_lcurrencyId: Int?,
     var sl_rate: Double?,
@@ -31,6 +33,8 @@ data class Sale(
     var sl_changeUSD: Double,
     var sl_paidIQD: Double,
     var sl_changeIQD: Double,
+
+    var sl_notes: String?,
     var created_at: String?,        // created datetime
     var created_by: String?,        // created user
     var updated_at: String?,        // Updated datetime

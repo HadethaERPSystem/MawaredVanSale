@@ -21,6 +21,7 @@ open class BaseAdapter<T>(private val clickFunc: ((Int) -> Unit)?, private val l
     fun setList(list: List<T>?, count: Int) {
         setList(list)
         pageCount = count
+        notifyDataSetChanged()
     }
 
     open fun setList(list: List<T>?) {

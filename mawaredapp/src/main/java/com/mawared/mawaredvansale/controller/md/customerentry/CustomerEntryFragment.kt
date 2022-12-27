@@ -155,7 +155,8 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
                 viewModel.mcu_payment_terms.value = it.cu_payment_terms
                 viewModel.mcu_longitude.value = if(it.cu_longitude != null) it.cu_longitude.toString() else ""
                 viewModel.mcu_latitude.value = if(it.cu_latitude != null) it.cu_latitude.toString() else ""
-
+                binding.etCuNameAr.isEnabled = false
+                binding.etCuNameEn.isEnabled = false
                 val payment_name = it.cu_payment_name ?: ""
                 val group_name = it.cu_cg_name ?: ""
                 val cat_name = it.cu_cat_name ?: ""

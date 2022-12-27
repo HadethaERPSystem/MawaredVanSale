@@ -51,11 +51,6 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
     val cpt_List by lazyDeferred {
         repository.getCptAll("")
     }
-    /// Autocomplete object for Customer Group
-//    var selectedCustomerGroup: Customer_Group? = null
-//    val CG_List by lazyDeferred {
-//         repository.getCustomersGroups("")
-//    }
 
     var selectedCustomerCat: Customer_Category? = null
     val Category_List by lazyDeferred {
@@ -73,10 +68,7 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
     ///////////////////////////////////////
     /// For insert or update current customer
     var _baseEo: MutableLiveData<Customer> = MutableLiveData()
-//    val savedEntity: LiveData<Customer> = Transformations
-//        .switchMap(_baseEo){
-//            repository.insertCustomer(it)
-//        }
+
 
     // for load order for edit or view
     var _entityEo: Customer? = null

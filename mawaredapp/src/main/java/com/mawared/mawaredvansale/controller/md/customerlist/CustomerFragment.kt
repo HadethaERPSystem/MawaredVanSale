@@ -1,7 +1,5 @@
 package com.mawared.mawaredvansale.controller.md.customerlist
 
-import android.app.SearchManager
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
@@ -17,8 +15,7 @@ import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFuncti
 import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
 import com.mawared.mawaredvansale.databinding.CustomerFragmentBinding
-import com.mawared.mawaredvansale.interfaces.IMainNavigator
-import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.utilities.MenuSysPrefs
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.customer_fragment.*
@@ -26,9 +23,10 @@ import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
-class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainNavigator<Customer> {
+class CustomerFragment : ScopedFragment(), KodeinAware, SearchView.OnQueryTextListener {
 
     override val kodein by kodein()
+    private val permission = MenuSysPrefs.getPermission("Customer")
     private val factory: CustomerViewModelFactory by instance()
 
     private lateinit var binding: CustomerFragmentBinding
@@ -38,9 +36,8 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
 
     private lateinit var navController: NavController
-    private var isInSearchMode: Boolean = false
 
-    val adapter = CustomersListAdapter(R.layout.customer_row){ customer, mode ->
+    val adapter = CustomersListAdapter(R.layout.customer_row, permission){ customer, mode ->
         if(mode == "edit"){
             onItemEditClick(customer)
         }else{
@@ -52,31 +49,12 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.customer_fragment, container, false)
 
-        viewModel.navigator = this
-        viewModel.msgListener = this
-
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
-            android.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-//                viewModel.term = p0
-//                adapter.setList(null, 0)
-//                loadList(viewModel.term ?: "")
-                return false
-            }
-
-            override fun onQueryTextChange(p0: String?): Boolean {
-                viewModel.term = p0
-                adapter.setList(null, 0)
-                loadList(viewModel.term ?: "")
-                return false
-            }
-        })
-
         binding.pullToRefresh.setOnRefreshListener {
-            //viewModel.userId.value = App.prefs.saveUser!!.id
+            adapter.setList(null, 0)
+            loadList(viewModel.term ?: "")
             binding.pullToRefresh.isRefreshing = false
         }
         setHasOptionsMenu(true)
@@ -91,7 +69,6 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         rcv_customers.setLoadMoreFunction { loadList(viewModel.term ?: "") }
         loadList(viewModel.term ?: "")
 
-
     }
 
     // enable options menu in this fragment
@@ -101,8 +78,16 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.addonly_menu, menu)
-
+        val perm = permission.split("|")
+        if(perm.count() > 0 && perm[0] == "1"){
+            inflater.inflate(R.menu.list_menu, menu)
+        }else{
+            inflater.inflate(R.menu.search_menu, menu)
+        }
+        val search = menu?.findItem(R.id.app_bar_search)
+        val searchView = search?.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -116,60 +101,43 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
         return super.onOptionsItemSelected(item)
     }
 
-    // binding recycler view
-//    private fun bindUI()= GlobalScope.launch(Dispatchers.Main) {
-//
-////        viewModel.baseEoList.observe(viewLifecycleOwner, Observer {
-////            adapter.setList(it)
-////        })
-////
-////        viewModel.doSearch(null, "")
-//
-////        viewModel.networkStateRV.observe(viewLifecycleOwner, Observer {
-////            progress_bar.visibility =  if(viewModel.listIsEmpty() && it.status == Status.RUNNING) View.VISIBLE else View.GONE
-////            if (viewModel.listIsEmpty() && (it.status == Status.FAILED)) {
-////                val pack = requireContext().packageName
-////                val id = requireContext().resources.getIdentifier(it.msg,"string", pack)
-////                viewModel.errorMessage.value = resources.getString(id)
-////                ll_error.visibility = View.VISIBLE
-////            } else {
-////                ll_error.visibility = View.GONE
-////            }
-////
-////            if(!viewModel.listIsEmpty()){
-////                pagedAdapter.setNetworkState(it)
-////            }
-////        })
-//
-//    }
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        return true
+    }
 
+    override fun onQueryTextChange(newText: String?): Boolean {
+        viewModel.term = newText
+        adapter.setList(null, 0)
+        loadList(viewModel.term ?: "")
+        return true
+    }
 
-    override fun onStarted() {
+    fun onStarted() {
         progress_bar?.visibility = View.VISIBLE
     }
 
-    override fun onSuccess(message: String) {
+    fun onSuccess(message: String) {
         progress_bar?.visibility = View.GONE
         customer_list_lc?.snackbar(message)
     }
 
-    override fun onFailure(message: String) {
+    fun onFailure(message: String) {
         progress_bar?.visibility = View.GONE
         customer_list_lc?.snackbar(message)
     }
 
-    override fun onItemDeleteClick(baseEo: Customer) {
+    fun onItemDeleteClick(baseEo: Customer) {
 
     }
 
-    override fun onItemEditClick(baseEo: Customer) {
+    fun onItemEditClick(baseEo: Customer) {
         val action = CustomerFragmentDirections.actionCustomerFragmentToCustomerEntryFragment()
         action.customerId = baseEo.cu_ref_Id!!
         action.mode ="Edit"
         navController.navigate(action)
     }
 
-    override fun onItemViewClick(baseEo: Customer) {
+    fun onItemViewClick(baseEo: Customer) {
         val action = CustomerFragmentDirections.actionCustomerFragmentToCustomerEntryFragment()
         action.customerId = baseEo.cu_ref_Id!!
         action.mode = "View"
@@ -184,6 +152,7 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
     private fun loadList(term : String){
         val list = adapter.getList().toMutableList()
         if(adapter.pageCount <= list.size / BaseAdapter.pageSize){
+            onStarted()
             viewModel.loadData(list, term, adapter.pageCount + 1){data, pageCount ->
                 showResult(data!!, pageCount)
             }
@@ -192,5 +161,6 @@ class CustomerFragment : ScopedFragment(), KodeinAware, IMessageListener, IMainN
 
     private fun showResult(list: List<Customer>, pageCount: Int) = HandlerUtils.runOnUiThread {
         adapter.setList(list, pageCount)
+        progress_bar?.visibility = View.GONE
     }
 }

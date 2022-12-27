@@ -239,6 +239,20 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
         }else{
             viewModel.term.value = ""
         }
+
+        binding.atcProduct.addTextChangedListener(object: TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+            override fun afterTextChanged(s: Editable?) {
+                if(viewModel.selectedProduct == null) viewModel.setTerm(s.toString()) else binding.atcProduct.dismissDropDown()
+            }
+        })
     }
 
     // init invoices items
@@ -284,6 +298,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
 
             binding.atcInvoices.showDropDown()
         }
+
     }
 
     private fun initInvoices(invoices: List<Product>){

@@ -43,6 +43,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var allowed_discount: MutableLiveData<Boolean> = MutableLiveData(false)
     var allowed_select_prod: MutableLiveData<Boolean> = MutableLiveData(false)
     var allowed_enter_gift_qty: MutableLiveData<Boolean> = MutableLiveData(false)
+    var ccustomer_name: MutableLiveData<String> = MutableLiveData()
 
     private var tmpInvoiceItems: ArrayList<Sale_Items> = arrayListOf()
     private var tmpDeletedItems: ArrayList<Sale_Items> = arrayListOf()
@@ -61,6 +62,8 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var totalAmount : MutableLiveData<Double> = MutableLiveData()
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
+    var notes = MutableLiveData<String>()
+
     //var isGift: MutableLiveData<Boolean> = MutableLiveData(false)
     var prom_qty: Double = 0.0
     var prom_ex_qty: Double = 0.0
@@ -70,7 +73,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var changeIQD= MutableLiveData<String>()
     var remainAmount = MutableLiveData<Double>()
     var fc_remainAmount = MutableLiveData<Double>()
-    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.ss_cr_code!!)
+    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sl_cr_code!!)
     var fcr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sf_cr_code!!)
     var fc_amount: MutableLiveData<Double> = MutableLiveData()
 
@@ -78,7 +81,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
     var giftQty: MutableLiveData<String> = MutableLiveData("")
     var disPer: MutableLiveData<String> = MutableLiveData("")
-    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
     var _entityEo: Sale? = null
     private val sl_id : MutableLiveData<Int> = MutableLiveData()
     val entityEo: LiveData<Sale> = Transformations
@@ -206,9 +209,9 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 val amountIQD = if(paidIQD.value == null) 0.0 else paidIQD.value!!.toDouble()
                 val change_IQD = if(changeIQD.value == null) 0.0 else changeIQD.value!!.toDouble()
                 val baseEo = Sale(
-                    doc_num, dtFull, "${voucher?.vo_prefix}","", user.cl_Id, user.org_Id, voucher!!.vo_Id,  cu_Id,
-                    _sm_id, null, totalAmount, totalDiscount, netAmount, user.ss_cr_Id, user.sf_cr_Id, rate,false,
-                    location?.latitude, location?.longitude, price_cat_Id, amountUSD, change_USD, amountIQD, change_IQD,
+                    doc_num, dtFull, "${voucher?.vo_prefix}","", user.cl_Id, user.org_Id, voucher!!.vo_Id,  cu_Id, ccustomer_name.value,
+                    _sm_id, null, totalAmount, totalDiscount, netAmount, 0.0, user.ss_cr_Id, user.sf_cr_Id, rate,false,
+                    location?.latitude, location?.longitude, price_cat_Id, amountUSD, change_USD, amountIQD, change_IQD, notes.value,
                     "$strDate", "${user.id}", "$strDate", "${user.id}"
                 )
                 baseEo.sl_price_cat_code = price_cat_code
@@ -247,16 +250,34 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
         }
     }
 
+    fun getPaidAmount(amountUSD: Double, amountIQD: Double, change_USD: Double, change_IQD: Double) : Double{
+        var paidAmount = 0.0
+        if(App.prefs.saveUser!!.sl_cr_code == "$"){
+            if (user.isDirectRate == "Y") {
+                paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
+            }else{
+                paidAmount = (amountUSD + (amountIQD * rate)) - (change_USD + (change_IQD * rate))
+            }
+        }else{
+            if (user.isDirectRate == "Y") {
+                paidAmount = ((amountUSD * rate) + amountIQD) - ((change_USD * rate) + change_IQD)
+            }else{
+                paidAmount = ((amountUSD / rate) + amountIQD) - ((change_USD / rate) + change_IQD)
+            }
+        }
+        return paidAmount
+    }
+
     fun setTotals(){
         totalAmount.postValue(invoiceItems.value!!.sumByDouble{ it.sld_line_total ?: 0.0 } )
         totalDiscount.postValue(invoiceItems.value!!.sumByDouble { it.sld_dis_value  ?: 0.0 })
         val net = invoiceItems.value!!.sumByDouble { it.sld_net_total ?: 0.0 }
         netTotal.postValue(net)
         if(rate != 0.0){
-            if(user.ss_cr_code == "$")
-                fc_amount.postValue(net * rate)
-            else
+            if(user.isDirectRate == "Y")
                 fc_amount.postValue(net / rate)
+            else
+                fc_amount.postValue(net * rate)
 
         }
     }
@@ -268,19 +289,22 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
        val change_IQD = if(changeIQD.value.isNullOrEmpty()) 0.0 else changeIQD.value!!.toDouble()
        val netAmount: Double = tmpInvoiceItems.sumByDouble { it.sld_net_total!! }
 
+       val paidAmount = getPaidAmount(amountUSD, amountIQD, change_USD, change_IQD)
 
-       var paidAmount = 0.0
-       if (user.ss_cr_code == "IQD") {
-           paidAmount = ((amountUSD * rate) + amountIQD) - ((change_USD * rate) + change_IQD)
-       } else {
-           paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
-       }
        remainAmount.value = (netAmount - paidAmount)
        if(rate != 0.0){
-           if(user.ss_cr_code == "$")
-               fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
-           else
-               fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
+           if(App.prefs.saveUser!!.sl_cr_code == "$"){
+               if(user.isDirectRate == "Y")
+                   fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
+               else
+                   fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
+           }else{
+               if(user.isDirectRate == "Y")
+                   fc_remainAmount.postValue( (netAmount - paidAmount) / rate)
+               else
+                   fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
+           }
+
        }
    }
 
@@ -301,12 +325,12 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
         if (App.prefs.saveUser == null) {
             msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_no_currency)
         }
-        val amountUSD = if(paidUSD.value == null) 0.0 else paidUSD.value!!.toDouble()
-        val change_USD = if(changeUSD.value == null) 0.0 else changeUSD.value!!.toDouble()
-        val amountIQD = if(paidIQD.value == null) 0.0 else paidIQD.value!!.toDouble()
-        val change_IQD = if(changeIQD.value == null) 0.0 else changeIQD.value!!.toDouble()
+        val amountUSD = if(paidUSD.value.isNullOrEmpty()) 0.0 else paidUSD.value!!.toDouble()
+        val change_USD = if(changeUSD.value.isNullOrEmpty()) 0.0 else changeUSD.value!!.toDouble()
+        val amountIQD = if(paidIQD.value.isNullOrEmpty()) 0.0 else paidIQD.value!!.toDouble()
+        val change_IQD = if(changeIQD.value.isNullOrEmpty()) 0.0 else changeIQD.value!!.toDouble()
         val netAmount: Double = tmpInvoiceItems.sumByDouble { it.sld_net_total!! }
-
+        val paidAmount = getPaidAmount(amountUSD, amountIQD, change_USD, change_IQD)
         if(netAmount > 0){
             if(selectedCustomer != null){
                 if(selectedCustomer!!.payCode!!.contains("CREDIT")) {
@@ -314,16 +338,14 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
                         val bal = selectedCustomer!!.cu_balance ?: 0.0
                         val user = App.prefs.saveUser!!
-                        var amount = 0.0
-                        var paidAmount = 0.0
-                        if (user.ss_cr_code == "IQD") {
-                            paidAmount = ((amountUSD * rate) + amountIQD) - ((change_USD * rate) + change_IQD)
-                        } else {
-                            paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
-                        }
-                        amount = (bal) + netAmount - paidAmount
-                        if(amount < -1){
-                            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_remain_amount)
+
+                        val amount = (bal) + netAmount - paidAmount
+                        if(amount >= user.dropAmnt!! || amount <= -user.dropAmnt!!){
+                            if(user.dropAmnt!! != 0.0){
+                                msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_remain_amount)
+                            }else if(amount != 0.0){
+                                msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_remain_amount)
+                            }
                         }
                         if (selectedCustomer!!.cu_credit_limit!! < amount) {
                             msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_credit_limit)
@@ -345,18 +367,15 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                         msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
                     }
                     val user = App.prefs.saveUser!!
-                    var amount = 0.0
-                    var paidAmount = 0.0
-                    if (user.ss_cr_code == "IQD") {
-                        paidAmount = ((amountUSD * rate) + amountIQD) - ((change_USD * rate) + change_IQD)
-                    } else {
-                        paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
-                    }
-                    amount = netAmount - paidAmount
-                    if(amount >= 1 || amount <= -1){
-                        msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
-                    }
 
+                    val amount = netAmount - paidAmount
+                    if(amount >= user.dropAmnt!! || amount <= -user.dropAmnt!!){
+                        if(user.dropAmnt!! != 0.0){
+                            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
+                        }else if(amount != 0.0){
+                            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_not_paid_amount)
+                        }
+                    }
                 }
             }
         }
@@ -442,6 +461,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
             var disValue = 0.0
             var lDisPer: Double = 0.0
+            //var addDiscPrcnt: Double = 0.0
 
             if(disPer.value != null && disPer.value!!.length > 0){
                 lDisPer =  disPer.value!!.toDouble()
@@ -475,7 +495,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 rowNo++
                 val item = Sale_Items(0, rowNo, null, selectedProduct!!.pr_Id,
                    selectedProduct!!.pr_uom_Id, newQty, 1.0, newQty, gQty,
-                    unitPrice, price_afd, lineTotal, lDisPer, disValue, netTotal, null, null, null,
+                    unitPrice, price_afd, lineTotal, lDisPer, disValue, 0.0, 0.0, netTotal, null, null, null,
                     _wr_id,selectedProduct!!.pr_batch_no, selectedProduct!!.pr_expiry_date,  selectedProduct!!.pr_mfg_date,
                     false,"$strDate","${user?.id}", "$strDate", "${user?.id}"
                 )
@@ -531,14 +551,14 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
             if (disPer.value != null && disPer.value!!.length > 0) {
                 val tmpDisPer = disPer.value!!.toDouble()
-                val disPerLimit = App.prefs.saveUser!!.dis_Per ?: 0.0
+                val disPerLimit = App.prefs.saveUser!!.iDiscPrcnt
 
                 if (tmpDisPer > disPerLimit) {
                     val str: String =
                         ctx!!.resources!!.getString(R.string.msg_error_discount_overflow)
                     msg += (if (msg!!.length > 0) "\n\r" else "") + String.format(
                         str,
-                        App.prefs.saveUser!!.dis_Per!!
+                        App.prefs.saveUser!!.iDiscPrcnt
                     )
                 }
             }

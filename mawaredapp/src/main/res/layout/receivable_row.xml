@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-    <data>
-        <variable name="entityEo"
-                type="com.mawared.mawaredvansale.data.db.entities.fms.Receivable"/>
-        <variable
-                name="viewmodel"
-                type="com.mawared.mawaredvansale.controller.fms.receivables.receivablelist.ReceivableViewModel" />
-    </data>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
     <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="6dp"
-            app:cardMaxElevation="6dp"
-            app:contentPadding="5dp"
-            app:cardBackgroundColor="@android:color/white"
-            android:layout_margin="5dp">
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="6dp"
+        app:cardMaxElevation="6dp"
+        app:contentPadding="5dp"
+        app:cardBackgroundColor="@android:color/white"
+        android:layout_margin="5dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -46,7 +44,7 @@
             <!-- Invoice date label and data-->
 
             <TextView
-                    android:id="@+id/txtv_doc_no"
+                    android:id="@+id/doc_no"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
@@ -54,7 +52,6 @@
                     android:layout_marginEnd="2dp"
                     android:gravity="start"
                     android:padding="5dp"
-                    android:text="@{String.valueOf(entityEo.rcv_ref_no)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -81,20 +78,19 @@
 
             <!-- customer label -->
             <TextView
-                    android:id="@+id/txtv_doc_date"
+                    android:id="@+id/doc_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:gravity="start"
                     android:padding="5dp"
-                    android:text="@{viewmodel.returnDateString(entityEo.rcv_doc_date)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
-                    app:layout_constraintTop_toTopOf="@+id/txtv_doc_no"
+                    app:layout_constraintTop_toTopOf="@+id/doc_no"
                     tools:text="2019-09-08" />
             <!-- Customer -->
             <TextView
@@ -111,11 +107,11 @@
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtv_doc_no"
+                    app:layout_constraintTop_toBottomOf="@+id/doc_no"
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/txtv_customer_name"
+                    android:id="@+id/bp_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
@@ -123,7 +119,6 @@
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:gravity="start"
-                    android:text="@{entityEo.rcv_cu_name}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -142,22 +137,20 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@{viewmodel.lbl_SCAmount + ` ` + entityEo.rcv_cr_symbol}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtv_customer_name"
+                    app:layout_constraintTop_toBottomOf="@+id/bp_name"
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/txtv_amount_sc"
+                    android:id="@+id/amount_sc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@{viewmodel.numberFormat(entityEo.rcv_amount)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -174,29 +167,27 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@{viewmodel.lbl_FCAmount + ` ` + entityEo.rcv_lc_cr_symbol}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/txtv_amount_sc"
+                    app:layout_constraintStart_toEndOf="@+id/amount_sc"
                     app:layout_constraintTop_toTopOf="@+id/lbl_amount_sc" />
 
             <!-- Amount label -->
 
             <TextView
-                    android:id="@+id/txtv_amount_fc"
+                    android:id="@+id/amount_fc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:gravity="start"
-                    android:text="@{viewmodel.numberFormat(entityEo.rcv_lc_amount)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
-                    app:layout_constraintTop_toTopOf="@+id/txtv_amount_sc" />
+                    app:layout_constraintTop_toTopOf="@+id/amount_sc" />
 
             <TextView
                     android:id="@+id/lbl_change_sc"
@@ -206,22 +197,20 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@{viewmodel.lbl_SCChange + ` ` + entityEo.rcv_cr_symbol}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toStartOf="@+id/guideline14"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtv_amount_sc"
+                    app:layout_constraintTop_toBottomOf="@+id/amount_sc"
                     tools:ignore="SmallSp" />
 
             <TextView
-                    android:id="@+id/txtv_change_sc"
+                    android:id="@+id/change_sc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@{viewmodel.numberFormat(entityEo.rcv_change)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -238,27 +227,25 @@
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
-                    android:text="@{viewmodel.lbl_FCChange + ` ` + entityEo.rcv_lc_cr_symbol}"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline14"
                     app:layout_constraintTop_toTopOf="@+id/lbl_change_sc" />
 
             <TextView
-                    android:id="@+id/txtv_change_fc"
+                    android:id="@+id/change_fc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:gravity="start"
-                    android:text="@{viewmodel.numberFormat(entityEo.rcv_lc_change)}"
                     android:textColor="@android:color/black"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/txtv_change_sc"
-                    app:layout_constraintTop_toTopOf="@+id/txtv_change_sc" />
+                    app:layout_constraintStart_toEndOf="@+id/change_sc"
+                    app:layout_constraintTop_toTopOf="@+id/change_sc" />
 
             <View
                     android:id="@+id/view"
@@ -266,51 +253,48 @@
                     android:layout_height="2dp"
                     android:layout_marginTop="4dp"
                     android:background="@color/colorPrimaryDark"
-                    app:layout_constraintTop_toBottomOf="@+id/txtv_change_sc"
+                    app:layout_constraintTop_toBottomOf="@+id/change_sc"
                     tools:layout_editor_absoluteX="1dp" />
             <!-- Buttons for view, edit & delete -->
             <ImageButton
-                android:id="@+id/btn_delete"
+                android:id="@+id/deleteBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_delete_caption"
                 android:visibility="gone"
-                android:onClick="@{()-> viewmodel.onItemDelete(entityEo)}"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_edit"
+                app:layout_constraintBottom_toBottomOf="@+id/editBtn"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/btn_edit"
+                app:layout_constraintTop_toTopOf="@+id/editBtn"
                 app:srcCompat="@drawable/ic_delete" />
 
             <ImageButton
-                android:id="@+id/btn_edit"
+                android:id="@+id/editBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_edit_caption"
-                android:onClick="@{()-> viewmodel.onItemEdit(entityEo)}"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_view"
-                app:layout_constraintEnd_toStartOf="@+id/btn_delete"
-                app:layout_constraintTop_toTopOf="@+id/btn_view"
+                app:layout_constraintBottom_toBottomOf="@+id/viewBtn"
+                app:layout_constraintEnd_toStartOf="@+id/deleteBtn"
+                app:layout_constraintTop_toTopOf="@+id/viewBtn"
                 app:srcCompat="@drawable/ic_edit" />
 
             <ImageButton
-                android:id="@+id/btn_view"
+                android:id="@+id/viewBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_view_caption"
-                android:onClick="@{()-> viewmodel.onItemView(entityEo)}"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_print"
-                app:layout_constraintEnd_toStartOf="@+id/btn_edit"
-                app:layout_constraintTop_toTopOf="@+id/btn_print"
+                app:layout_constraintBottom_toBottomOf="@+id/printBtn"
+                app:layout_constraintEnd_toStartOf="@+id/editBtn"
+                app:layout_constraintTop_toTopOf="@+id/printBtn"
                 app:srcCompat="@drawable/ic_view1" />
 
             <ImageButton
-                android:id="@+id/btn_print"
+                android:id="@+id/printBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -318,9 +302,8 @@
                 android:layout_marginBottom="4dp"
                 android:background="@null"
                 android:contentDescription="@string/btn_view_caption"
-                android:onClick="@{()-> viewmodel.onPrint(entityEo.rcv_Id)}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_view"
+                app:layout_constraintEnd_toStartOf="@+id/viewBtn"
                 app:layout_constraintTop_toBottomOf="@+id/view"
                 app:srcCompat="@drawable/ic_print" />
 
@@ -336,4 +319,4 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-</layout>
+</RelativeLayout>

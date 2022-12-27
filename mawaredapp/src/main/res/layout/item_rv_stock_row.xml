@@ -6,14 +6,15 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="6dp"
-            app:cardMaxElevation="6dp"
-            app:contentPadding="5dp"
-            app:cardBackgroundColor="@android:color/white"
-            android:layout_margin="5dp">
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="6dp"
+        app:cardMaxElevation="6dp"
+        app:contentPadding="5dp"
+        app:cardBackgroundColor="@android:color/white"
+        android:layout_margin="5dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -228,38 +229,40 @@
                 tools:layout_editor_absoluteX="0dp" />
 
             <ImageButton
-                    android:id="@+id/deleteBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@null"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view"
-                    app:srcCompat="@drawable/ic_action_delete"
-                    android:contentDescription="@string/btn_delete_caption"/>
+                android:id="@+id/deleteBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="4dp"
+                android:background="@null"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view"
+                app:srcCompat="@drawable/ic_action_delete"
+                android:contentDescription="@string/btn_delete_caption"/>
 
             <ImageButton
-                    android:id="@+id/editBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    app:layout_constraintEnd_toStartOf="@+id/deleteBtn"
-                    app:layout_constraintTop_toTopOf="@+id/deleteBtn"
-                    app:srcCompat="@drawable/ic_action_edit"
-                    android:contentDescription="@string/btn_edit_caption"/>
+                android:id="@+id/editBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@+id/deleteBtn"
+                app:layout_constraintTop_toTopOf="@+id/deleteBtn"
+                app:srcCompat="@drawable/ic_action_edit"
+                android:contentDescription="@string/btn_edit_caption"/>
 
             <ImageButton
-                    android:id="@+id/viewBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:background="@null"
-                    app:layout_constraintEnd_toStartOf="@+id/editBtn"
-                    app:layout_constraintTop_toTopOf="@+id/editBtn"
-                    app:srcCompat="@drawable/ic_view"
-                    android:contentDescription="@string/btn_view_caption"/>
+                android:id="@+id/viewBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                app:layout_constraintEnd_toStartOf="@+id/editBtn"
+                app:layout_constraintTop_toTopOf="@+id/editBtn"
+                app:srcCompat="@drawable/ic_view"
+                android:contentDescription="@string/btn_view_caption"/>
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline10"

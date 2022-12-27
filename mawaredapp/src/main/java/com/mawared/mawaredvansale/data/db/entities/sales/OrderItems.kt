@@ -21,6 +21,8 @@ data class OrderItems (
     var od_line_total: Double?,    // Line Total
     var od_discount: Double?,      // Percentage Discount
     var od_disvalue: Double?,      // Fixed Amount Discount
+    var od_add_dis_per: Double?,
+    var od_add_dis_value: Double?,
     var od_net_total: Double?,
     var od_wr_Id: Int?,
     var od_wr_name: String?,

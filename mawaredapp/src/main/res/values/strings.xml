@@ -115,6 +115,7 @@
     <string name="lbl_expiry_date">Expire date</string>
     <string name="lbl_mfg_date">Mfg date</string>
     <string name="tag_search">Search</string>
+    <string name="search_hint">Search for ...</string>
     <string name="add_invoice_button_tag">Add Invoice</string>
     <string name="tag_print">Print</string>
 
@@ -196,7 +197,7 @@
     <string name="msg_notify_device_not_support_bluetooth">the device does not support bluetooth</string>
     <string name="msg_notify_no_paired_bluetooth_device">no paired bluetooth devices found</string>
     <string name="msg_return_qty_greater_invqty">Return quantity greater than invoice quantity</string>
-
+    <string name="msg_error_disc_limit">The document discount is greater than your discount [%s]</string>
     <string name="msg_error_invalid_service">Select Service</string>
 
     <string name="msg_notify_bluetooth_enabled">Bluetooth has been enabled</string>
@@ -341,6 +342,7 @@
     <string name="ns_end_list">You have reached the end</string>
     <string name="ns_no_data">No data available</string>
     <string name="ns_problem_connection">Connection Problem</string>
+    <string name="ns_problem_api">API Problem : May be timeout</string>
     <string name="to_date">To Date</string>
     <string name="from_date">From Date</string>
     <string name="hint_status_name">Waiting</string>
@@ -502,6 +504,7 @@
     <string name="btn_add_to_cart">Add Item</string>
     <string name="lbl_prom">Qty Offer</string>
     <string name="hint_enter_qty">Enter Qty</string>
+    <string name="hint_enter_disc_prcnt">Enter Discount Percentage</string>
     <string name="radio_sale_invoice">Sale Invoice</string>
     <string name="radio_sale_order">Sale Order</string>
     <string name="layout_select_customer_title">Customers Schedule</string>
@@ -538,4 +541,9 @@
     <string name="layout_select_type_of_stock_in">select type of stock-in</string>
     <string name="layout_select_items_for_stock_in">Select items for stock-in</string>
     <string name="layout_select_invoice_for_stock_in">Select Invoice for stock-in</string>
+    <string name="hint_comment">Comment</string>
+    <string name="lbl_api_address">API Address</string>
+    <string name="hint_enter_api_address">Enter Api Address</string>
+    <string name="like_http_192_192_80_200">like: http://192.192.80.200</string>
+    <string name="msg_notempty_api_address">You should enter Api Address</string>
 </resources>
