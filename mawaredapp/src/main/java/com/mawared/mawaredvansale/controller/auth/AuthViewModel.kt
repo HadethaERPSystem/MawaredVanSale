@@ -75,6 +75,7 @@ class AuthViewModel(private val repository: UserRepository) : BaseViewModel() {
                     App.prefs.isLoggedIn = true
                     //if(App.prefs.printing_type.isNullOrEmpty())
                     App.prefs.printing_type = "I"
+                    App.prefs.printing_so_mode = ""
                     repository.saveUser(it)
                     return@main
                 }

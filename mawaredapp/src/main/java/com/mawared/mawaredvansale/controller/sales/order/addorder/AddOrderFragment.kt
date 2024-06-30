@@ -1,16 +1,22 @@
 package com.mawared.mawaredvansale.controller.sales.order.addorder
 
+//import com.google.zxing.integration.android.IntentIntegrator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.vision.CameraSource
+import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter1
@@ -34,6 +40,8 @@ import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 import org.threeten.bp.LocalDate
 import java.util.*
+import com.google.zxing.integration.android.IntentIntegrator
+import com.mawared.mawaredvansale.controller.Barcode.ContinuousActivity
 
 class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListener, IAddNavigator<Sale_Order_Items> {
 
@@ -59,6 +67,17 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
 
         bindUI()
 
+        binding.scanCodeBtn.setOnClickListener {
+            val scanner = Intent(requireContext(), ContinuousActivity::class.java)
+            startActivityForResult(scanner, 12)
+//            val scanner = IntentIntegrator(requireActivity())
+//
+//            scanner.setBeepEnabled(false)
+//            scanner.setCameraId(0)
+//            scanner.setPrompt("SCAN")
+//            scanner.setBarcodeImageEnabled(false)
+//            scanner.initiateScan()
+        }
         return binding.root
     }
 
@@ -119,17 +138,39 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK && data != null){
+            if(data.hasExtra("return_barcode")){
+               viewModel.searchBarcode.value = data.getExtras()!!.getString("return_barcode")//  binding.edtxtBarcode.setText(data.getExtras()!!.getString("return_barcode"))
+            }
+
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     fun bindUI() = GlobalScope.launch(Main){
 
         viewModel._baseEo.observe(viewLifecycleOwner, Observer {
             if(it != null){
                 onSuccess(getString(R.string.msg_success_saved))
+                viewModel.doPrint(it)
                 requireActivity().onBackPressed()
             }else{
                 onFailure(getString(R.string.msg_failure_saved))
             }
 
+        })
+
+        viewModel.product.observe(viewLifecycleOwner, Observer {
+            if(it != null){
+                viewModel.selectedProduct = it
+                viewModel.unitPrice = viewModel.selectedProduct!!.pr_unit_price ?: 0.00
+                viewModel.setProductId(viewModel.selectedProduct!!.pr_Id)
+                viewModel.allowed_enter_gift_qty.value = false
+                if(App.prefs.saveUser!!.hasGift != null && App.prefs.saveUser!!.hasGift == "Y") viewModel.allowed_enter_gift_qty.value = true
+                viewModel.onAddItem()
+            }
         })
 
         viewModel.entityEo.observe(viewLifecycleOwner, Observer {
@@ -169,6 +210,7 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
             if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_ref_Id){
                 viewModel.clearItems()
             }
+            binding.atcCustomer.dismissDropDown()
             viewModel.setPriceCategory()
             viewModel.setTerm("")
         }
@@ -191,8 +233,6 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
             adapter.setCustomers(cu)
             if(viewModel.mode != "Add" && cu.isNotEmpty() && viewModel.entityEo.value != null){
                 viewModel.selectedCustomer = cu.find { it.cu_ref_Id == viewModel.entityEo.value?.so_customerId}
-            }else{
-                binding.atcCustomer.showDropDown()
             }
         })
 
@@ -238,11 +278,8 @@ class AddOrderFragment : ScopedFragmentLocation() , KodeinAware, IMessageListene
         })
 
         viewModel.setVoucherCode("SaleOrder")
-        var cr_id = App.prefs.saveUser!!.sl_cr_Id
-        if(App.prefs.saveUser!!.sl_cr_Id == App.prefs.saveUser!!.ss_cr_Id){
-            cr_id = App.prefs.saveUser!!.sf_cr_Id
-        }
-        viewModel.setCurrencyId(cr_id!!)
+
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
 
         viewModel.setItems(arrayListOf())
         if(viewModel.mode != "Add") {

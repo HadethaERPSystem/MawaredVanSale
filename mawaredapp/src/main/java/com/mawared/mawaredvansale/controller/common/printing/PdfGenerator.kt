@@ -117,11 +117,13 @@ class MawaredPdf: PdfPageEventHelper(){
                 table.addCell(cell)
             }
             for (r in rows){
+                // Col = 0
                 var cell = PdfPCell(Phrase(9F, rowNo.toString(), fontStyle))
                 cell.horizontalAlignment = Element.ALIGN_CENTER
 
                 table.addCell(cell)
 
+                // Col = 1
                 cell = PdfPCell(Phrase(9F, r.sld_barcode, fontStyle))
                 cell.paddingTop = 4F
                 cell.paddingBottom = 4F
@@ -133,6 +135,8 @@ class MawaredPdf: PdfPageEventHelper(){
                 if(isRTL){
                     pr_name = r.sld_prod_name_ar
                 }
+
+                // Col = 2
                 cell = PdfPCell(Phrase(9F, pr_name, fontStyle))
                 cell.setPadding(5F)
                 if(isRTL){
@@ -145,8 +149,9 @@ class MawaredPdf: PdfPageEventHelper(){
                 cell.verticalAlignment = Element.ALIGN_TOP
                 table.addCell(cell)
                 val cellHeight = cell.calculatedHeight
-
-                cell = PdfPCell(Phrase(9F, df1.format(r.sld_pack_qty), fontStyle))
+                // Col = 3
+                val qty = r.sld_pack_qty!! - (r.sld_gift_qty ?: 0.0)
+                cell = PdfPCell(Phrase(9F, df1.format(qty), fontStyle))
                 cell.setPadding(5F)
                 cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
                 cell.horizontalAlignment = Element.ALIGN_LEFT
@@ -154,7 +159,7 @@ class MawaredPdf: PdfPageEventHelper(){
                 table.addCell(cell)
 
                 // Uom
-
+                // Col = 4
                 cell = PdfPCell(Phrase(9F, r.sld_uom_name, fontStyle))
                 cell.setPadding(5F)
                 if(isRTL){
@@ -166,35 +171,36 @@ class MawaredPdf: PdfPageEventHelper(){
 
                 cell.verticalAlignment = Element.ALIGN_TOP
                 table.addCell(cell)
-
+                // Col = 5
                 cell = PdfPCell(Phrase(9F, df1.format(r.sld_gift_qty), fontStyle))
                 cell.setPadding(5F)
                 cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
                 cell.horizontalAlignment = Element.ALIGN_LEFT
                 cell.verticalAlignment = Element.ALIGN_TOP
                 table.addCell(cell)
-
+                // Col = 6
                 cell = PdfPCell(Phrase(9F, df.format(r.sld_unit_price), fontStyle))
                 cell.setPadding(5F)
                 cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
                 cell.horizontalAlignment = Element.ALIGN_LEFT
                 cell.verticalAlignment = Element.ALIGN_TOP
                 table.addCell(cell)
+                // Col = 7
+//                cell = PdfPCell(Phrase(9F, df.format(r.sld_dis_value), fontStyle))
+//                cell.setPadding(5F)
+//                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
+//                cell.horizontalAlignment = Element.ALIGN_LEFT
+//                cell.verticalAlignment = Element.ALIGN_TOP
+//                table.addCell(cell)
 
-                cell = PdfPCell(Phrase(9F, df.format(r.sld_dis_value), fontStyle))
-                cell.setPadding(5F)
-                cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
-                cell.horizontalAlignment = Element.ALIGN_LEFT
-                cell.verticalAlignment = Element.ALIGN_TOP
-                table.addCell(cell)
-
+                // Col = 8
                 cell = PdfPCell(Phrase(9F, df.format(r.sld_net_total), fontStyle))
                 cell.setPadding(5F)
                 cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
                 cell.horizontalAlignment = Element.ALIGN_LEFT
                 cell.verticalAlignment = Element.ALIGN_TOP
                 table.addCell(cell)
-
+                // Col = 9
                 cell = PdfPCell(Phrase(9F, "", fontStyle))
                 cell.setPadding(5F)
                 cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
@@ -756,8 +762,14 @@ class MawaredPdf: PdfPageEventHelper(){
             val pw =rect.width
             var fyPos = rect.bottom + footerHeight
             if(pageFooter != null){
+                var cnt = pageFooter!!.size
+                if(cnt < 8){
+                    cnt = 8
+                }
+                fyPos = rect.bottom + (20 * cnt)
 
                 for (h in pageFooter!!){
+
                     if(h.rows == null){
                         val table = PdfPTable(1)
                         table.totalWidth = workArea
@@ -766,7 +778,7 @@ class MawaredPdf: PdfPageEventHelper(){
                         val fontName = BaseFont.createFont(h.fontName, BaseFont.IDENTITY_H, true)
                         val fontStyle = Font(fontName, h.fontSize, h.fontWeight, BaseColor.BLACK)
                         //val font: Font = FontFactory.getFont(h.fontName, BaseFont.CP1252,true,22F, Font.BOLD )
-                        val cell = PdfPCell(Phrase(9F, h.text, fontStyle))
+                        val cell = PdfPCell(Phrase(h.fontSize, h.text, fontStyle))
                         cell.runDirection = PdfWriter.RUN_DIRECTION_RTL
                         cell.horizontalAlignment = h.align
                         cell.border = 0
@@ -797,7 +809,7 @@ class MawaredPdf: PdfPageEventHelper(){
                                 table.addCell(cell)
                             }
                         }
-                        fyPos = table.writeSelectedRows(0, -1, xPos, fyPos - 10, writer.directContent)
+                        fyPos = table.writeSelectedRows(0, -1, xPos, fyPos , writer.directContent)
                     }
                 }
             }

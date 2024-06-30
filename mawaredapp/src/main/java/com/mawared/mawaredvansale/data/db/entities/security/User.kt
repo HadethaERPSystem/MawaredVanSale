@@ -36,4 +36,8 @@ data class User (
     var iDiscPrcnt: Double = 0.0
     var dDiscPrcnt: Double = 0.0
     var hasGift: String? = null
+    var print_msg: String? = null
+    var qryGroup1: String? = null
+    var qryGroup2: String? = null
+    var qryGroup3: String? = null
 }

@@ -13,7 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.zxing.integration.android.IntentIntegrator
+//import com.google.zxing.integration.android.IntentIntegrator
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.ProductSearchAdapter
@@ -104,33 +104,33 @@ class TransferEntryFragment : ScopedFragment(), KodeinAware, IAddNavigator<Trans
         super.onStart()
         (requireActivity() as AppCompatActivity).supportActionBar?.subtitle = getString(R.string.layout_entry_sub_title)
     }
-    fun initBarcode() {
-        // this for activity
-        // val scanner = IntentIntegrator(activity)
-        //scanner.initiateScan()
-
-        // this for fragment
-        val scanner = IntentIntegrator.forSupportFragment(this)
-        scanner.setDesiredBarcodeFormats(IntentIntegrator.CODE_128)
-        scanner.setBeepEnabled(false)
-        scanner.initiateScan()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(resultCode == Activity.RESULT_OK){
-            val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-            if(result != null){
-                if(result.contents == null){
-                    add_layout.snackbar("")
-                }else{
-                    // get barcode
-                    val barcode = result.contents
-                }
-            }else{
-                super.onActivityResult(requestCode, resultCode, data)
-            }
-        }
-    }
+//    fun initBarcode() {
+//        // this for activity
+//        // val scanner = IntentIntegrator(activity)
+//        //scanner.initiateScan()
+//
+//        // this for fragment
+//        val scanner = IntentIntegrator.forSupportFragment(this)
+//        scanner.setDesiredBarcodeFormats(IntentIntegrator.CODE_128)
+//        scanner.setBeepEnabled(false)
+//        scanner.initiateScan()
+//    }
+//
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        if(resultCode == Activity.RESULT_OK){
+//            val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+//            if(result != null){
+//                if(result.contents == null){
+//                    add_layout.snackbar("")
+//                }else{
+//                    // get barcode
+//                    val barcode = result.contents
+//                }
+//            }else{
+//                super.onActivityResult(requestCode, resultCode, data)
+//            }
+//        }
+//    }
 
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

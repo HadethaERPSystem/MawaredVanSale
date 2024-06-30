@@ -45,8 +45,8 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
     var lc_change: MutableLiveData<String> = MutableLiveData()
     var comment: MutableLiveData<String> = MutableLiveData()
 
-    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.cr_code!!)
-    var fcr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sl_cr_code!!)
+    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.ss_cr_code!!)
+    var fcr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sf_cr_code!!)
 
     val _baseEo: MutableLiveData<Payable> = MutableLiveData()
 
@@ -106,17 +106,17 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
                 isRunning = true
                 val user = App.prefs.saveUser!!
                 val strDate = LocalDateTime.now()
-                val amount_usd: Double = if(bc_amount.value != null)  bc_amount.value!!.toDouble() else 0.00
-                val amount_iqd: Double = if(lc_amount.value != null)  lc_amount.value!!.toDouble() else 0.00
-                val change_usd: Double = if(bc_change.value != null)  bc_change.value!!.toDouble() else 0.00
-                val change_iqd: Double = if(lc_change.value != null)  lc_change.value!!.toDouble() else 0.00
+                val amount_usd: Double = if(!bc_amount.value.isNullOrEmpty())  bc_amount.value!!.toDouble() else 0.0
+                val amount_iqd: Double = if(!lc_amount.value.isNullOrEmpty())  lc_amount.value!!.toDouble() else 0.0
+                val change_usd: Double = if(!bc_change.value.isNullOrEmpty())  bc_change.value!!.toDouble() else 0.0
+                val change_iqd: Double = if(!lc_change.value.isNullOrEmpty())  lc_change.value!!.toDouble() else 0.0
                 val dtFull = doc_date.value + " " + LocalTime.now()
                 val cu_Id = selectedCustomer?.cu_ref_Id ?: _entityEo?.py_cu_Id
                 val baseEo = Payable(
                     user.cl_Id, user.org_Id, 0, dtFull, mVoucher.value!!.vo_Id, "${mVoucher.value!!.vo_prefix}", null,
                     _sm_id, cu_Id, 0.00,
                     amount_usd, change_usd, amount_iqd, change_iqd,
-                    user.cr_Id, user.sl_cr_Id, rate, comment.value, false, location?.latitude, location?.longitude, null,
+                    user.ss_cr_Id, user.sf_cr_Id, rate, comment.value, false, location?.latitude, location?.longitude, null,
                     "$strDate", "${user.id}", "$strDate", "${user.id}"
                 )
 

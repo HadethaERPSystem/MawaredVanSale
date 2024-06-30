@@ -201,8 +201,6 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
                 adapter.setCustomers(cu)
                 if(viewModel.mode != "Add" && cu.isNotEmpty() && viewModel._entityEo != null){
                     viewModel.selectedCustomer = cu.find { it.cu_ref_Id == viewModel._entityEo?.sr_customerId}
-                }else{
-                    binding.atcCustomer.showDropDown()
                 }
             }
         })
@@ -252,6 +250,21 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
             override fun afterTextChanged(s: Editable?) {
                 if(viewModel.selectedProduct == null) viewModel.setTerm(s.toString()) else binding.atcProduct.dismissDropDown()
             }
+        })
+
+        binding.atcInvoices.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if(viewModel.selectedInvoice == null) viewModel.setInvoices(s.toString()) else binding.atcInvoices.dismissDropDown()
+            }
+
         })
     }
 

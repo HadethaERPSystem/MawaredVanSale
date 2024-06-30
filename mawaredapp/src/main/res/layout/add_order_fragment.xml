@@ -249,11 +249,20 @@
                     android:inputType="text"
                     android:text="@={viewmodel.searchBarcode}"
                     android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/scanCodeBtn"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/atc_product"
                     tools:ignore="TouchTargetSizeCheck" />
-
+                <ImageButton
+                    android:id="@+id/scanCodeBtn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
+                    app:layout_constraintBottom_toBottomOf="@+id/edtxt_barcode"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/edtxt_barcode"
+                    app:srcCompat="@drawable/ic_barcode_scan" />
                 <!-- Qty -->
                 <EditText
                     android:id="@+id/edtxt_Qty"

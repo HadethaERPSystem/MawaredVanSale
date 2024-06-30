@@ -1,14 +1,23 @@
 package com.mawared.mawaredvansale.controller.sales.invoices.addinvoice
 
+import android.app.Activity
 import android.content.Context
+import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.location.Location
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.itextpdf.text.BaseColor
+import com.itextpdf.text.Element
+import com.itextpdf.text.Font
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
+import com.mawared.mawaredvansale.controller.common.GenerateTicket
+import com.mawared.mawaredvansale.controller.common.TicketPrinting
+import com.mawared.mawaredvansale.controller.common.printing.*
 import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
@@ -18,9 +27,15 @@ import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.invoices.IInvoiceRepository
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.utilities.Coroutines
+import com.mawared.mawaredvansale.utilities.ImageLoader
+import com.mawared.mawaredvansale.utilities.URL_LOGO
+import com.mawared.mawaredvansale.utils.SunmiPrintHelper
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import java.io.IOException
+import java.io.InputStream
+import java.text.DecimalFormat
 import java.util.*
 
 class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
@@ -35,6 +50,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var visible = View.VISIBLE
     var addNavigator: IAddNavigator<Sale_Items>? = null
     var ctx: Context? = null
+    var activity: Activity? = null
     var isRunning: Boolean = false
     // google map location GPS
     var location: Location? = null
@@ -73,7 +89,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var changeIQD= MutableLiveData<String>()
     var remainAmount = MutableLiveData<Double>()
     var fc_remainAmount = MutableLiveData<Double>()
-    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sl_cr_code!!)
+    var scr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.ss_cr_code!!)
     var fcr_symbol : MutableLiveData<String> = MutableLiveData(App.prefs.saveUser!!.sf_cr_code!!)
     var fc_amount: MutableLiveData<Double> = MutableLiveData()
 
@@ -81,7 +97,9 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
     var giftQty: MutableLiveData<String> = MutableLiveData("")
     var disPer: MutableLiveData<String> = MutableLiveData("")
-    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
+    var discAmnt: MutableLiveData<String> = MutableLiveData("")
+
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
     var _entityEo: Sale? = null
     private val sl_id : MutableLiveData<Int> = MutableLiveData()
     val entityEo: LiveData<Sale> = Transformations
@@ -125,7 +143,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     var discount: Discount? = null
     val mDiscount: LiveData<Discount> = Transformations
         .switchMap(_prod_Id){
-            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id)
+            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id, price_cat_code)
         }
 
     var ageDebit: Customer ?= null
@@ -197,17 +215,18 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 val user = App.prefs.saveUser!!
                 val strDate = LocalDateTime.now()
                 val totalAmount: Double = tmpInvoiceItems.sumByDouble { it.sld_line_total!! }
-                val totalDiscount: Double = tmpInvoiceItems.sumByDouble { if(it.sld_dis_value == null) 0.0 else it.sld_dis_value!! }
+                val totalDiscount: Double = tmpInvoiceItems.sumByDouble { if(it.sld_dis_value == null) 0.0 else it.sld_dis_value!! + if(it.sld_disc_amnt == null) 0.0 else it.sld_disc_amnt!! }
                 val netAmount: Double = tmpInvoiceItems.sumByDouble { it.sld_net_total!! }
                 val dtFull = docDate.value + " " + LocalTime.now()
                 val doc_num = docNo.value?.toInt() ?: 0
                 val cu_Id = selectedCustomer?.cu_ref_Id ?: _entityEo?.sl_customerId
                 val price_cat_Id = selectedCustomer?.cu_price_cat_Id ?: _entityEo?.sl_price_cat_Id
                 // paid
-                val amountUSD = if(paidUSD.value == null) 0.0 else paidUSD.value!!.toDouble()
-                val change_USD = if(changeUSD.value == null) 0.0 else changeUSD.value!!.toDouble()
-                val amountIQD = if(paidIQD.value == null) 0.0 else paidIQD.value!!.toDouble()
-                val change_IQD = if(changeIQD.value == null) 0.0 else changeIQD.value!!.toDouble()
+                val amountUSD = if(paidUSD.value.isNullOrEmpty()) 0.0 else paidUSD.value!!.toDouble()
+                val change_USD = if(changeUSD.value.isNullOrEmpty()) 0.0 else changeUSD.value!!.toDouble()
+                val amountIQD = if(paidIQD.value.isNullOrEmpty()) 0.0 else paidIQD.value!!.toDouble()
+                val change_IQD = if(changeIQD.value.isNullOrEmpty()) 0.0 else changeIQD.value!!.toDouble()
+                //val cuId = if(App.prefs.saveUser!!.sl_cr_code!! == App.prefs.saveUser!!.ss_cr_code!!) App.prefs.saveUser!!.sf_cr_Id!! else App.prefs.saveUser!!.ss_cr_Id!!
                 val baseEo = Sale(
                     doc_num, dtFull, "${voucher?.vo_prefix}","", user.cl_Id, user.org_Id, voucher!!.vo_Id,  cu_Id, ccustomer_name.value,
                     _sm_id, null, totalAmount, totalDiscount, netAmount, 0.0, user.ss_cr_Id, user.sf_cr_Id, rate,false,
@@ -252,7 +271,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
     fun getPaidAmount(amountUSD: Double, amountIQD: Double, change_USD: Double, change_IQD: Double) : Double{
         var paidAmount = 0.0
-        if(App.prefs.saveUser!!.sl_cr_code == "$"){
+        if(App.prefs.saveUser!!.ss_cr_code == "$"){
             if (user.isDirectRate == "Y") {
                 paidAmount = (amountUSD + (amountIQD / rate)) - (change_USD + (change_IQD / rate))
             }else{
@@ -270,7 +289,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
     fun setTotals(){
         totalAmount.postValue(invoiceItems.value!!.sumByDouble{ it.sld_line_total ?: 0.0 } )
-        totalDiscount.postValue(invoiceItems.value!!.sumByDouble { it.sld_dis_value  ?: 0.0 })
+        totalDiscount.postValue(invoiceItems.value!!.sumByDouble { (it.sld_dis_value  ?: 0.0) + (it.sld_disc_amnt ?: 0.0) })
         val net = invoiceItems.value!!.sumByDouble { it.sld_net_total ?: 0.0 }
         netTotal.postValue(net)
         if(rate != 0.0){
@@ -293,7 +312,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
        remainAmount.value = (netAmount - paidAmount)
        if(rate != 0.0){
-           if(App.prefs.saveUser!!.sl_cr_code == "$"){
+           if(App.prefs.saveUser!!.ss_cr_code == "$"){
                if(user.isDirectRate == "Y")
                    fc_remainAmount.postValue( (netAmount - paidAmount) * rate)
                else
@@ -337,16 +356,16 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                     if (selectedCustomer?.cu_credit_limit != null && selectedCustomer?.cu_credit_limit != 0.0) {
 
                         val bal = selectedCustomer!!.cu_balance ?: 0.0
-                        val user = App.prefs.saveUser!!
+                        //val user = App.prefs.saveUser!!
 
                         val amount = (bal) + netAmount - paidAmount
-                        if(amount >= user.dropAmnt!! || amount <= -user.dropAmnt!!){
-                            if(user.dropAmnt!! != 0.0){
-                                msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_remain_amount)
-                            }else if(amount != 0.0){
-                                msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_remain_amount)
-                            }
-                        }
+//                        if(amount >= user.dropAmnt!! || amount <= -user.dropAmnt!!){
+//                            if(user.dropAmnt!! != 0.0){
+//                                msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_remain_amount)
+//                            }else if(amount != 0.0){
+//                                msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_remain_amount)
+//                            }
+//                        }
                         if (selectedCustomer!!.cu_credit_limit!! < amount) {
                             msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_credit_limit)
                         }
@@ -419,6 +438,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                         searchQty.value = "1"
                         giftQty.value = ""
                         disPer.value = ""
+                        discAmnt.value = ""
                         //isGift.value = false
                         unitPrice = 0.0
                         prom_qty = 0.0
@@ -461,12 +481,16 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
             var disValue = 0.0
             var lDisPer: Double = 0.0
+            var _discAmnt: Double = 0.0
             //var addDiscPrcnt: Double = 0.0
 
             if(disPer.value != null && disPer.value!!.length > 0){
                 lDisPer =  disPer.value!!.toDouble()
             }
 
+            if(discAmnt.value != null && discAmnt.value!!.length > 0){
+                _discAmnt = discAmnt.value!!.toDouble()
+            }
             disValue = (lDisPer / 100) * lineTotal
 
             // check if there is discount on item
@@ -486,7 +510,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
             }
 
             //val netTotal = if(isGift.value == true) 0.0 else (lineTotal - disValue)
-            val netTotal = (lineTotal - disValue)
+            val netTotal = (lineTotal - (disValue + _discAmnt))
             val price_afd = (lDisPer / 100) * unitPrice
 
             val user = App.prefs.saveUser
@@ -495,7 +519,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 rowNo++
                 val item = Sale_Items(0, rowNo, null, selectedProduct!!.pr_Id,
                    selectedProduct!!.pr_uom_Id, newQty, 1.0, newQty, gQty,
-                    unitPrice, price_afd, lineTotal, lDisPer, disValue, 0.0, 0.0, netTotal, null, null, null,
+                    unitPrice, price_afd, lineTotal, lDisPer, disValue, 0.0, 0.0, _discAmnt, netTotal, null, null, null,
                     _wr_id,selectedProduct!!.pr_batch_no, selectedProduct!!.pr_expiry_date,  selectedProduct!!.pr_mfg_date,
                     false,"$strDate","${user?.id}", "$strDate", "${user?.id}"
                 )
@@ -512,6 +536,7 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
                 mItem.sld_net_total = netTotal
                 mItem.sld_dis_per = lDisPer
                 mItem.sld_dis_value = disValue
+                mItem.sld_disc_amnt = _discAmnt
                 mItem.updated_at = "$strDate"
             }
             _invoiceItems.postValue(tmpInvoiceItems)
@@ -646,5 +671,475 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
     fun cancelJob(){
         masterDataRepository.cancelJob()
         saleRepository.cancelJob()
+    }
+
+    fun doPrint(entityEo: Sale){
+        if(App.prefs.printing_type == "R") {
+            try {
+                val lang = Locale.getDefault().toString().toLowerCase()
+                entityEo.sl_salesman_phone = App.prefs.savedSalesman?.sm_phone_no ?: ""
+
+                if(App.prefs.printer == "Sunmi"){
+                    var bmp : Bitmap? = null
+                    ImageLoader().LoadImageFromUrl(URL_LOGO + "co_black_logo.png") {
+                        bmp = it
+                        val tickets = GenerateTicket(ctx!!, lang).createSunmiTicket(
+                            entityEo,
+                            bmp,
+                            "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION",
+                            null,
+                            null
+                        )
+                        SunmiPrintHelper.getInstance().printReceipt(ctx, tickets)
+                        msgListener?.onSuccess("Print Successfully")
+                    }
+                } else {
+
+                    val tickets = GenerateTicket(ctx!!, lang).create(entityEo, URL_LOGO + "co_black_logo.png", "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", null, null)
+
+                    TicketPrinting(ctx!!, tickets).run()
+                    msgListener?.onSuccess("Print Successfully")
+
+                }
+
+            }catch (e: Exception){
+                msgListener!!.onFailure("Error Exception ${e.message}")
+                e.printStackTrace()
+            }
+
+        }else {
+            //val lang = Locale.getDefault().toString().toLowerCase()
+            val config = ctx!!.resources.configuration
+            val isRTL = config.layoutDirection != View.LAYOUT_DIRECTION_LTR
+            var bmp: Bitmap? =
+                null // BitmapFactory.decodeResource(ctx!!.resources, R.drawable.ic_logo_black)
+
+            val mngr: AssetManager = ctx!!.assets
+            var `is`: InputStream? = null
+            try {
+                //`is` = mngr.open("images/co_logo.bmp")
+                //bmp = BitmapFactory.decodeStream(`is`)
+                //URL_LOGO + "co_black_logo.png"
+                //`is` = mngr.open("images/co_logo.bmp")
+                //bmp = BitmapFactory.decodeStream(`is`)
+            } catch (e1: IOException) {
+                e1.printStackTrace()
+            }
+            val fontNameEn = "assets/fonts/arial.ttf"
+            val fontNameAr = "assets/fonts/arial.ttf"// "assets/fonts/droid_kufi_regular.ttf"
+            try {
+
+                val imgLogo = RepLogo(bmp, 10F, 800F)
+                val header: ArrayList<HeaderFooterRow> = arrayListOf()
+                var tbl: HashMap<Int, TCell> = hashMapOf()
+                val rws: ArrayList<CTable> = arrayListOf()
+                val phones = if (entityEo.sl_org_phone != null) entityEo.sl_org_phone!!.replace(
+                    "|",
+                    "\n\r"
+                ) else ""
+
+                header.add(
+                    HeaderFooterRow(
+                        0,
+                        null,
+                        App.prefs.saveUser!!.client_name,
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        1,
+                        null,
+                        "${entityEo.sl_org_name}",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        2,
+                        null,
+                        phones,
+                        11F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                //header.add(HeaderFooterRow(3, null, "Asia: 0770-6502228", 20F, Element.ALIGN_CENTER, Font.BOLD, fontNameEn))
+                header.add(
+                    HeaderFooterRow(
+                        3,
+                        null,
+                        "",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameAr
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        4,
+                        null,
+                        "",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+                header.add(
+                    HeaderFooterRow(
+                        5,
+                        null,
+                        "",
+                        14F,
+                        Element.ALIGN_CENTER,
+                        Font.BOLD,
+                        fontNameEn
+                    )
+                )
+
+                tbl.put(0, TCell("", 9F, false, 2f, "", Element.ALIGN_CENTER, 0))
+                tbl.put(
+                    1,
+                    TCell(
+                        ctx!!.resources!!.getString(R.string.rpt_list_name),
+                        9f,
+                        false,
+                        15F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+                tbl.put(
+                    2,
+                    TCell(
+                        entityEo.sl_vo_name!!,
+                        9F,
+                        false,
+                        30F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+
+                tbl.put(
+                    3,
+                    TCell(
+                        ctx!!.resources!!.getString(R.string.rpt_invoice_no),
+                        9F,
+                        false,
+                        15F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+                tbl.put(
+                    4,
+                    TCell(
+                        entityEo.sl_refNo!!,
+                        9F,
+                        false,
+                        30F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+
+                tbl.put(
+                    5,
+                    TCell(
+                        ctx!!.resources!!.getString(R.string.rpt_invoice_date),
+                        9F,
+                        false,
+                        10F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    6,
+                    TCell(
+                        returnDateString(entityEo.sl_doc_date!!),
+                        9F,
+                        false,
+                        25F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+
+                tbl.put(7, TCell("", 9F, false, 15F, "", Element.ALIGN_CENTER, 0))
+                tbl.put(8, TCell("", 9F, false, 10F, "", Element.ALIGN_CENTER, 0))
+                tbl.put(9, TCell("", 9F, false, 2F, "", Element.ALIGN_CENTER, 0))
+                rws.add(CTable(tbl))
+                tbl = hashMapOf()
+
+                tbl.put(0, TCell("", 9F, false, 12F, "", Element.ALIGN_CENTER, 0))
+                tbl.put(
+                    1,
+                    TCell(
+                        ctx!!.resources!!.getString(R.string.rpt_customer),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+                tbl.put(
+                    2,
+                    TCell(
+                        entityEo.sl_customer_name!!,
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontName = fontNameAr
+                    )
+                )
+
+                tbl.put(
+                    3,
+                    TCell(
+                        ctx!!.resources!!.getString(R.string.rpt_contact_name),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontNameAr
+                    )
+                )
+                tbl.put(
+                    4,
+                    TCell(
+                        "${entityEo.sl_contact_name}",
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0,
+                        fontNameAr
+                    )
+                )
+
+                tbl.put(
+                    5,
+                    TCell(
+                        ctx!!.resources!!.getString(R.string.rpt_phone),
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+                tbl.put(
+                    6,
+                    TCell(
+                        if (entityEo.sl_customer_phone == null) "" else entityEo.sl_customer_phone!!,
+                        9F,
+                        false,
+                        12F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+
+                tbl.put(
+                    7,
+                    TCell(
+                        ctx!!.resources!!.getString(R.string.rpt_cr_name),
+                        9F,
+                        false,
+                        18F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+                tbl.put(
+                    8,
+                    TCell(
+                        if (entityEo.sl_cr_name == null) "" else entityEo.sl_cr_name!!,
+                        9F,
+                        false,
+                        18F,
+                        "",
+                        Element.ALIGN_RIGHT,
+                        0
+                    )
+                )
+
+                tbl.put(9, TCell("", 9F, false, 12F, "", Element.ALIGN_CENTER, 0))
+                rws.add(CTable(tbl))
+
+                val cw: ArrayList<Int> = arrayListOf(5, 15, 25, 10, 30, 25, 15, 15, 10, 5)
+                header.add(HeaderFooterRow(8, rws, null, cellsWidth = cw))
+
+                val footer: ArrayList<HeaderFooterRow> = arrayListOf()
+                var LineNum: Int = 0
+                if(!App.prefs.saveUser!!.print_msg.isNullOrEmpty()){
+                    val lines = App.prefs.saveUser!!.print_msg!!.split("#").map{it.trim()}
+                    for (str: String in lines){
+                        footer.add(HeaderFooterRow(LineNum, null, "$str", fontSize = 11F, align = Element.ALIGN_LEFT, Font.BOLD,  fontName = fontNameAr))
+                        LineNum++
+                    }
+                    footer.add(HeaderFooterRow(LineNum++, null, "", fontSize = 12F, align = Element.ALIGN_LEFT,  fontName = fontNameAr))
+                    footer.add(HeaderFooterRow(LineNum++, null, "", fontSize = 12F, align = Element.ALIGN_LEFT,  fontName = fontNameAr))
+                    footer.add(HeaderFooterRow(LineNum++, null, "", fontSize = 12F, align = Element.ALIGN_LEFT,  fontName = fontNameAr))
+                }
+
+                footer.add(HeaderFooterRow(LineNum++,null,"موارد / الشركة الحديثة للبرامجيات الاتمتة المحدودة", fontSize = 9F, align = Element.ALIGN_LEFT, fontName = fontNameAr))
+                footer.add( HeaderFooterRow( LineNum++,null,ctx!!.resources!!.getString(R.string.rpt_user_name) + ": ${App.prefs.saveUser!!.name}",  fontSize = 9F, align = Element.ALIGN_LEFT, fontName = fontNameAr))
+
+                val rowHeader: HashMap<Int, RowHeader> = hashMapOf()
+                rowHeader.put(0, RowHeader("#", 9.0F, false, 4, "", 0, 0F))
+                rowHeader.put(  1,   RowHeader(   ctx!!.resources!!.getString(R.string.rpt_barcode),   9.0F, false,   15,  "", 0,   0F         )          )
+                rowHeader.put( 2,  RowHeader(   ctx!!.resources!!.getString(R.string.rpt_prod_name),   9.0F,  false, 37, "", 0, 0F  )            )
+                rowHeader.put(  3,   RowHeader(   ctx!!.resources!!.getString(R.string.rpt_qty),  9.0F,  false,  5,  "",  0,  0F                )            )
+                rowHeader.put(  4,   RowHeader(   ctx!!.resources!!.getString(R.string.rpt_uom),  9.0F,  false,  8,  "",  0,  0F                )            )
+                rowHeader.put( 5, RowHeader(  ctx!!.resources!!.getString(R.string.rpt_gift),  9.0F, false,5,  "", 0, 0F )  )
+                rowHeader.put( 6, RowHeader(  ctx!!.resources!!.getString(R.string.rpt_unit_price), 9.0F,  false,11,  "", 0,  0F  )           )
+                //rowHeader.put( 7,  RowHeader(   ctx!!.resources!!.getString(R.string.rpt_dis_value),  9.0F,   false,  7,    "",    0,  0F) )
+                rowHeader.put(    7,   RowHeader(   ctx!!.resources!!.getString(R.string.rpt_net_total),   9.0F,  false,  11,  "",     0,    0F       )     )
+                rowHeader.put( 8,
+                    RowHeader( ctx!!.resources!!.getString(R.string.rpt_notes),  9.0F,  false,  13,  "Total",   0,  0F           )            )
+
+
+                // Summary part
+                val df1 = DecimalFormat("#,###")
+                val df2 = DecimalFormat("#,###,###.#")
+                val summary: ArrayList<HeaderFooterRow> = arrayListOf()
+                tbl = hashMapOf()
+                var srows: ArrayList<CTable> = arrayListOf()
+                val tQty = entityEo.items.sumByDouble { it.sld_pack_qty!! }
+                tbl.put(    0,    TCell(   ctx!!.resources!!.getString(R.string.rpt_total_qty),   9F,  false,  25F,   "",   Element.ALIGN_RIGHT,  1,  fontName = fontNameAr)          )
+                tbl.put(1, TCell("${df1.format(tQty)}", 9F, false, 80F, "", Element.ALIGN_RIGHT, 1))
+                srows.add(CTable(tbl))
+
+                tbl = hashMapOf()
+                val tweight =  entityEo.items.sumByDouble { if (it.sld_total_weight == null) 0.00 else it.sld_total_weight!! }
+                tbl.put(  0, TCell( ctx!!.resources!!.getString(R.string.rpt_total_weight), 9F,   false, 12F,  "",  Element.ALIGN_RIGHT,    1,    fontName = fontNameAr  ) )
+                tbl.put(  1,  TCell("${df2.format(tweight)}", 9F, false, 80F, "", Element.ALIGN_RIGHT, 1)            )
+                srows.add(CTable(tbl))
+                // row 2
+                tbl = hashMapOf()
+                tbl.put(   0,  TCell(  ctx!!.resources!!.getString(R.string.rpt_total_amount),  9F,   false,  12F,  "",   Element.ALIGN_RIGHT,  1,   fontName = fontNameAr ) )
+                tbl.put( 1,  TCell( "${df2.format(entityEo.sl_total_amount)}",   9F,    false, 80F, "",  Element.ALIGN_RIGHT, 1 ) )
+                srows.add(CTable(tbl))
+                // row 3
+                val tDiscount =
+                    if (entityEo.sl_total_discount == null) 0.00 else entityEo.sl_total_discount
+                tbl = hashMapOf()
+                tbl.put( 0,  TCell(  ctx!!.resources!!.getString(R.string.rpt_total_discount), 9F, false,  12F,  "",  Element.ALIGN_RIGHT, 1, fontName = fontNameAr     )  )
+                tbl.put(   1, TCell("${df2.format(tDiscount)}", 9F, false, 80F, "", Element.ALIGN_RIGHT, 1)          )
+                srows.add(CTable(tbl))
+                // row 4
+                tbl = hashMapOf()
+                tbl.put(  0,  TCell(  ctx!!.resources!!.getString(R.string.rpt_net_amount),9F,   false, 12F, "",  Element.ALIGN_RIGHT,  1, fontName = fontNameAr  )  )
+                tbl.put( 1,  TCell( "${df2.format(entityEo.sl_net_amount)}", 9F, false,  80F,  "",  Element.ALIGN_RIGHT,  1  ) )
+                srows.add(CTable(tbl))
+
+                //sl_customer_balance
+                var balance: Double = 0.00
+                if (entityEo.sl_customer_balance != null) balance = entityEo.sl_customer_balance!!
+                tbl = hashMapOf()
+                tbl.put(   0,  TCell( ctx!!.resources!!.getString(R.string.rpt_cu_balance), 9F, false, 12F, "",  Element.ALIGN_RIGHT, 1,  fontName = fontNameAr )  )
+                tbl.put( 1, TCell( "${df2.format(balance)}  ${entityEo.sl_cr_name}",   9F,   false, 80F,  "",   Element.ALIGN_RIGHT, 1 )  )
+                srows.add(CTable(tbl))
+
+                val scw: java.util.ArrayList<Int> = arrayListOf(80, 20)
+                summary.add(HeaderFooterRow(0, srows, null, cellsWidth = scw))
+
+                summary.add(
+                    HeaderFooterRow(
+                        1,
+                        null,
+                        "T",
+                        fontSize = 20F,
+                        fontColor = BaseColor.WHITE
+                    )
+                )
+                summary.add(
+                    HeaderFooterRow(
+                        2,
+                        null,
+                        "T",
+                        fontSize = 20F,
+                        fontColor = BaseColor.WHITE
+                    )
+                )
+                summary.add(
+                    HeaderFooterRow(
+                        3,
+                        null,
+                        "T",
+                        fontSize = 20F,
+                        fontColor = BaseColor.WHITE
+                    )
+                )
+                summary.add(
+                    HeaderFooterRow(
+                        4,
+                        null,
+                        "T",
+                        fontSize = 20F,
+                        fontColor = BaseColor.WHITE
+                    )
+                )
+                srows = arrayListOf()
+                tbl = hashMapOf()
+                tbl.put( 0, TCell( ctx!!.resources.getString(R.string.rpt_person_reciever_sig),10F,false, 12F, "",  Element.ALIGN_CENTER,0,  fontName = fontNameAr   ))
+                tbl.put( 1,
+                    TCell( ctx!!.resources.getString(R.string.rpt_storekeeper_sig),10F,false,12F, "", Element.ALIGN_CENTER, 0, fontName = fontNameAr ) )
+                tbl.put( 2, TCell(  ctx!!.resources.getString(R.string.rpt_sales_manager_sig),  10F,   false, 12F, "", Element.ALIGN_CENTER, 0,  fontName = fontNameAr )  )
+                srows.add(CTable(tbl))
+
+                summary.add(HeaderFooterRow(5, srows, null, cellsWidth = arrayListOf(35, 35, 34)))
+                val act = activity!!
+                GeneratePdf().createPdf(
+                    act,
+                    imgLogo,
+                    entityEo.items,
+                    rowHeader,
+                    header,
+                    footer,
+                    null,
+                    summary,
+                    isRTL
+                ) { _, path ->
+                    msgListener!!.onSuccess("Pdf Created Successfully")
+                    GeneratePdf().printPDF(act, path)
+                }
+            } catch (e: Exception) {
+                msgListener!!.onFailure("Error Exception ${e.message}")
+                e.printStackTrace()
+            }
+        }
     }
 }

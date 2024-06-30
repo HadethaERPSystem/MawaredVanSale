@@ -167,7 +167,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 isRunning = true
                 val user = App.prefs.saveUser!!
                 val totalAmount: Double = tmpSRItems.sumByDouble { it.srd_line_total!! }
-                val totalDisc: Double = tmpSRItems.sumByDouble { (it.srd_dis_value ?: 0.0) + (it.srd_add_dis_value ?: 0.0) }
+                val totalDisc: Double = tmpSRItems.sumByDouble { (it.srd_dis_value ?: 0.0) + (it.srd_add_dis_value ?: 0.0) + (it.srd_disc_amnt ?: 0.0) }
                 val netAmount: Double = tmpSRItems.sumByDouble { it.srd_net_total!! }
                 val strDate = LocalDateTime.now()
                 val dtFull = doc_date.value + " " + LocalTime.now()
@@ -303,26 +303,29 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             var pr_mfg_date: String? = null
             var pr_batch_no: String? = null
             var add_disc_value : Double = 0.0
+            var _discAmnt: Double = 0.0
+
             if(selectedInvoice != null){
                 paksize = selectedInvoice!!.pr_NumInSale!!
                 qty = pQty * paksize
                 disPer = selectedInvoice!!.pr_dis_per ?: 0.0
-                disValue = if(disPer > 0.0) lineTotal * (1-(disPer / 100)) else 0.0
+                disValue = if(disPer > 0.0) lineTotal * (disPer / 100) else 0.0
                 pr_expiry_date = selectedInvoice!!.pr_expiry_date
                 pr_mfg_date = selectedInvoice!!.pr_mfg_date
                 pr_batch_no = selectedInvoice!!.pr_batch_no
-                add_disc_value = (lineTotal - disValue) * (1-(selectedInvoice!!.pr_d_discPrcnt/100))
+                _discAmnt = selectedInvoice!!.pr_disc_amnt
+                add_disc_value = (lineTotal - disValue) * (selectedInvoice!!.pr_d_discPrcnt/100)
                 if(sr_discPrcnt == 0.0)
                     sr_discPrcnt = selectedInvoice!!.pr_d_discPrcnt
             }
-            val netTotal = (lineTotal - disValue -  add_disc_value)
+            val netTotal = (lineTotal - (disValue +  add_disc_value + _discAmnt))
 
             val user = App.prefs.saveUser
 
             if(mItem == null){
                 rowNo++
                 val itemEo = Sale_Return_Items(0, rowNo, selectedProduct!!.pr_Id, selectedInvoice!!.pr_uom_Id, pQty, paksize, qty, price,
-                    lineTotal, disPer, disValue, selectedInvoice!!.pr_d_discPrcnt, add_disc_value, netTotal, null, null, null, _wr_id, ref_rowNo, ref_Id, ref_no,
+                    lineTotal, disPer, disValue, selectedInvoice!!.pr_d_discPrcnt, add_disc_value,_discAmnt, netTotal, null, null, null, _wr_id, ref_rowNo, ref_Id, ref_no,
                     pr_batch_no, pr_expiry_date,  pr_mfg_date,"$strDate",
                     "${user?.id}", "$strDate", "${user?.id}")
 
@@ -397,7 +400,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
 
     fun setTotals(){
         totalAmount.postValue(srItems.value!!.sumByDouble{ it.srd_line_total ?: 0.0 } )
-        totalDiscount.postValue(srItems.value!!.sumByDouble { it.srd_dis_value  ?: 0.0 })
+        totalDiscount.postValue(srItems.value!!.sumByDouble { (it.srd_dis_value  ?: 0.0) + (it.srd_disc_amnt ?: 0.0) })
         netTotal.postValue(srItems.value!!.sumByDouble { it.srd_net_total ?: 0.0 })
     }
 

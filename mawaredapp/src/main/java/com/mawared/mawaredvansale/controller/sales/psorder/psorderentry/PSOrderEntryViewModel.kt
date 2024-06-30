@@ -33,6 +33,8 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     var addNavigator: IAddNavigator<Sale_Order_Items>? = null
     var allowed_select_prod: MutableLiveData<Boolean> = MutableLiveData(false)
     var disPer: MutableLiveData<String> = MutableLiveData("")
+    var discAmnt: MutableLiveData<String> = MutableLiveData("")
+
     var isRunning: Boolean = false
     // google map location GPS
     var location: Location? = null
@@ -106,7 +108,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
     var discount: Discount? = null
     val mDiscount: LiveData<Discount> = Transformations
         .switchMap(_prod_Id){
-            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id)
+            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id, price_cat_code)
         }
 
     // set function
@@ -167,7 +169,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
                 val baseEo = Sale_Order( user.cl_Id, user.org_Id, doc_num, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, cu_Id, cCustomer_Name.value, null, totalAmount, 0.0, netAmount, 0.0, user.ss_cr_Id, rate,
+                    _sm_id, cu_Id, cCustomer_Name.value, null, totalAmount, 0.0, netAmount, 0.0, user.sl_cr_Id, rate,
                     false, location?.latitude, location?.longitude, cu_price_cat_Id, notes.value,"$strDate",
                     "${user.id}", "$strDate", "${user.id}"
                 )
@@ -241,6 +243,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
         totalAmount.value = 0.0
         netTotal.value = 0.0
         totalDiscount.value = 0.0
+        discAmnt.value = ""
         unitPrice = 0.0
         price_cat_code = "POS"
         clear("cu")
@@ -256,6 +259,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
                         searchBarcode.value = ""
                         searchQty.value = "1"
                         unitPrice = 0.00
+                        discAmnt.value = ""
                         clear("prod")
                     }else{
                         msgListener?.onFailure(ctx!!.resources!!.getString(R.string.msg_error_fail_add_item))
@@ -277,10 +281,15 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
 
             var disValue = 0.0
             var lDisPer: Double = 0.0
+            var _discAmnt: Double = 0.0
 
             if(disPer.value != null && disPer.value!!.length > 0){
                 lDisPer =  disPer.value!!.toDouble()
             }
+            if(discAmnt.value != null && discAmnt.value!!.length > 0){
+                _discAmnt = discAmnt.value!!.toDouble()
+            }
+
             disValue = (lDisPer / 100) * lineTotal
 
 
@@ -295,7 +304,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
                 }
             }
 
-            val netTotal = (lineTotal - disValue)
+            val netTotal = (lineTotal - (disValue + _discAmnt))
             val price_afd = (lDisPer / 100) * unitPrice
 
             val user = App.prefs.saveUser
@@ -303,7 +312,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
             if(mItem == null){
                 rowNo++
                 val itemEo = Sale_Order_Items(rowNo, 0, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, qty, 1.00, qty, 0.0, unitPrice, price_afd,
-                    lineTotal, lDisPer, disValue,0.0,0.0, netTotal, null, null, null,null,
+                    lineTotal, lDisPer, disValue,0.0,0.0, _discAmnt, netTotal, null, null, null,null,
                     null, null, null,false,"${strDate}",
                     "${user?.id}", "${strDate}", "${user?.id}")
                 itemEo.sod_prod_name = selectedProduct!!.pr_description_ar
@@ -321,6 +330,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
                 mItem.sod_net_total = netTotal
                 mItem.sod_discount = lDisPer
                 mItem.sod_disvalue = disValue
+                mItem.sod_disc_amnt = _discAmnt
                 mItem.updated_at = "$strDate"
             }
             _soItems.value = arrayListOf()

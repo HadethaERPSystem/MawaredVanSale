@@ -295,6 +295,7 @@
     <string name="select_arabic_language_encode">اختر اللغة العربية</string>
     <string name="select_latin_language_encode">اختر اللغة الانكليزية</string>
     <string name="select_print_type">اختر نوع الطباعة</string>
+    <string name="select_print_mode">اختر شكل الطباعة</string>
     <string name="visit_no">رقم الزبارة</string>
     <string name="survey_name">اسم الاستطلاع</string>
     <string name="previous_btn">السابق</string>
@@ -312,6 +313,7 @@
     <string name="rpt_barcode">الباركود</string>
     <string name="rpt_prod_name">المادة</string>
     <string name="rpt_qty">الكمية</string>
+    <string name="rpt_uom">وحدة القياس</string>
     <string name="rpt_gift">الهدايا المجانية</string>
     <string name="rpt_unit_price">سعر المفرد</string>
     <string name="rpt_dis_value">الخصم</string>
@@ -361,7 +363,10 @@
         <item>I-Invoice</item>
         <item>R-Receipt</item>
     </string-array>
-
+    <string-array name="PrintMode">
+        <item>F-Full Receipt</item>
+        <item>H-Only Header</item>
+    </string-array>
     <string-array name="codepage">
         <item>"Default"</item>
         <item>"Chinese Simplified"</item>
@@ -510,6 +515,7 @@
     <string name="lbl_prom">عرض كمية</string>
     <string name="hint_enter_qty">ادخل الكمية</string>
     <string name="hint_enter_disc_prcnt">ادخل نسبة الخصم</string>
+    <string name="hint_enter_disc_amnt">ادخل مبلغ الخصم</string>
     <string name="radio_sale_invoice">فاتورة بيع</string>
     <string name="radio_sale_order">امر بيع</string>
     <string name="layout_select_customer_title">جدولة الزبائن</string>
@@ -551,4 +557,32 @@
     <string name="hint_enter_api_address">Enter Api Address</string>
     <string name="like_http_192_192_80_200">like: http://192.192.80.200</string>
     <string name="msg_notempty_api_address">يحب عدم ترك حقل بروتكول الاتصال قارغ</string>
+
+    <!--instruction-->
+    <string name="toast_1">Transaction print,use the AIDL mode!</string>
+    <string name="toast_2">The service has been disconnected!</string>
+    <string name="toast_3">Bluetooth device is unavailable</string>
+    <string name="toast_4">Bluetooth device not detected. Please open Bluetooth!</string>
+    <string name="toast_5">Not Found InnterPrinter!</string>
+    <string name="toast_6">Bluetooth connect failed!</string>
+    <string name="toast_7"> Only a single Qr code is printed for the AIDL mode</string>
+    <string name="toast_8">Now QrCode size must be less than 7!</string>
+    <string name="toast_9">BarCode type or conent error!</string>
+    <string name="toast_10">Please set the printer as black label mode!</string>
+    <string name="toast_11">Settings->System->Advanced->InnerPrinter-> set black mark
+        function</string>
+    <string name="toast_12">Please set the printer to label mode!</string>
+
+    <!--about content-->
+    <string name="about_content">PrinterHelper is suitable for the sunmi series. \nPrinterHelper integrate two connection type: AIDL and BLUETOOTH. It also provide a series of printing testing module, which help the developer to connect with the sunmi printing function faster. \n upload the information that need to be printed, which allows sunmi to better locate the issues. \n official site: http://www.sunmi.com. \n developer documentation: http://docs.sunmi.com</string>
+
+
+    <!--function explain-->
+    <string name="text_instruction"> specification: The typeface of sunmi is monospaced font. Expect for supporting the font structure set by normal instruction set, it can also use AIDL interface interchange to directly set the font size. However, the testing demo only could use AIDL interface interchange to do it. Developers could look up relative Epson instruction set, then set the font by themselves. \n notice: the setting of the character set only has influence on the order printing, not affecting AIDL printing characters. Printing Single-Byte Character set should set the Single-Byte mode at first. Howerver, the default of sunmi services is double byte mode.  </string>
+    <string name="btn_caption_torch">*</string>
+    <string name="btn_caption_scan">Scan+</string>
+    <string name="lbl_scanning_result">Result:</string>
+    <string name="lbl_waiting_result">...</string>
+    <string name="lbl_disc_amnt">خصم مبلغ</string>
+
 </resources>

@@ -20,13 +20,25 @@ enum class LineType{
     Text, Image, Barcode, Column, LineSeparator, NewLine, Line, Rectangle
 }
 
-enum class AlignText{
+ enum class AlignText{
     LEFT,
     CENTER,
     RIGHT
 
 
 }
+
+class SunmiTicket(
+    var type: LineType = LineType.Text,
+    var cols : Array<String>?,
+    var width: IntArray?,
+    var align: IntArray?,
+    var isBold: Boolean,
+    var text: String?,
+    var textAlign: Int?,
+    var fontSize: Int? = 12,
+    var bmp: Bitmap?
+)
 
 enum class Attribute {
     LARGE_FONT_NO_BOLD_NO_UNDERLINE_NO_HIGHLIGHT,

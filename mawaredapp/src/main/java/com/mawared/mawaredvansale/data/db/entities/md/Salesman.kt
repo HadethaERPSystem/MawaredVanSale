@@ -17,7 +17,8 @@ data class Salesman (
     var sm_credit_limit: Double?,
     var sm_balance: Double?,
     var sm_profile: String?,
-    var sm_van_code: String?
+    var sm_van_code: String?,
+    var price_cat: String?
 ){
     @PrimaryKey(autoGenerate = false)
     var sm_id:  Int = 0

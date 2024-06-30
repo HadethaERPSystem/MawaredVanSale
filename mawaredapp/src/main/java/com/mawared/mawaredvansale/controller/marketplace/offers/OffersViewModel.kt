@@ -28,7 +28,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
     var msgListener: IMessageListener? = null
     var ctx: Context? = null
     var customer : Customer? = null
-    val price_cat : String = customer?.cu_price_cat_code ?: "POS"
+    var price_cat : String = "POS"
     var vocode: String = ""
 
     //var orders: List<OrderItems> = arrayListOf()
@@ -172,7 +172,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                 if (baseEo == null) {
                     baseEo = OrderItems(
                         id, rowNo, p.pr_Id, p.pr_description_ar, p.pr_SUoMEntry, p.pr_SalUnitMsr, addQty,  p.pr_NumInSale,
-                        qty,  giftQty,  p.pr_unit_price,  price_afd, lineTotal, lDisPer,  disValue, 0.0,0.0,
+                        qty,  giftQty,  p.pr_unit_price,  price_afd, lineTotal, lDisPer,  disValue, 0.0,0.0, 0.0,
                         netTotal, p.pr_wr_Id, p.pr_wr_name, p.pr_batch_no, p.pr_expiry_date, p.pr_mfg_date, null, null,
                         null, false, "$strDate", "${user.id}","$strDate", "${user.id}"
                     )

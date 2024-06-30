@@ -18,7 +18,7 @@ data class Sale_Return(
     var sr_customerId: Int?,        // Customer Id
     var sr_regionId: Int?,          // region code
     var sr_total_amount: Double?,   // total sale amount
-    var sr_total_disc: Double?,
+    var sr_total_discount: Double?,
     var sr_net_amount: Double?,     // net sale amount
     var sr_discPrcnt: Double,
     var sr_currencyId: Int?,        // Currency code

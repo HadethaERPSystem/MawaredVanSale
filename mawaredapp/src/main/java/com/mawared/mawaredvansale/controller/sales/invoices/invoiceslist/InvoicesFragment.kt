@@ -15,13 +15,18 @@ import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.InvoicesAdapter
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragment
+import com.mawared.mawaredvansale.controller.common.Common
+import com.mawared.mawaredvansale.controller.common.printing.CreatePdf
+import com.mawared.mawaredvansale.controller.common.printing.PrintPDFViaBluetooth
 import com.mawared.mawaredvansale.controller.helpers.extension.setLoadMoreFunction
 import com.mawared.mawaredvansale.controller.helpers.extension.setupGrid
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale
 import com.mawared.mawaredvansale.databinding.FragmentInvoicesBinding
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.utilities.MenuSysPrefs
+import com.mawared.mawaredvansale.utilities.PrintingObject
 import com.mawared.mawaredvansale.utilities.snackbar
+import com.mawared.mawaredvansale.utils.SunmiPrintHelper
 import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.fragment_invoices.*
 import kotlinx.android.synthetic.main.fragment_invoices.progress_bar
@@ -46,7 +51,13 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, Search
             "E" -> onItemEditClick(e)
             "V" -> onItemViewClick(e)
             "D" -> onItemDeleteClick(e)
-            "P" -> viewModel.onPrint(e.sl_Id)
+            "P" -> {
+//                val filePath = Common.getAppPath(requireActivity()) + "test.pdf"
+//                CreatePdf().createPdfFromString("علي حسين باوي", filePath )
+//                PrintPDFViaBluetooth(requireContext()).printPdfViaBluetooth(filePath ,"DC:0D:30:63:34:1A")
+                viewModel.onPrint(e.sl_Id)
+
+             }
         }
     }
 
@@ -95,6 +106,12 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, Search
 
     }
 
+    /**
+     * Connect print service through interface library
+     */
+    private fun init() {
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+    }
     // enable options menu in this fragment
     override fun onResume() {
         removeObservers()
@@ -121,6 +138,7 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, Search
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
+        init()
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -215,7 +233,6 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, Search
     }
 
     fun onItemViewClick(baseEo: Sale) {
-
         val action = InvoicesFragmentDirections.actionInvoicesFragmentToAddInvoiceFragment()
         action.saleId = baseEo.sl_Id
         action.mode = "View"
@@ -241,4 +258,5 @@ class InvoicesFragment : ScopedFragment(), KodeinAware, IMessageListener, Search
         super.onDestroy()
         viewModel.cancelJob()
     }
+
 }

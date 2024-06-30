@@ -1,6 +1,8 @@
 package com.mawared.mawaredvansale.controller.marketplace.items
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -17,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.Barcode.ContinuousActivity
 import com.mawared.mawaredvansale.controller.adapters.ItemAdapter
 import com.mawared.mawaredvansale.controller.adapters.UoMAdapter
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
@@ -115,18 +118,23 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
         }
         mAlertDialog?.applyBtn?.setOnClickListener{
             val discPrcnt = mAlertDialog?.addDisc?.text
-            if(!discPrcnt.isNullOrEmpty()){
-                val disc = discPrcnt.toString().toDouble()
+            val discAmnt = mAlertDialog?.addDiscAmnt?.text
+            if(!discPrcnt.isNullOrEmpty() || !discAmnt.isNullOrEmpty()){
+                val disc = if(discPrcnt.isNullOrEmpty()) 0.0 else discPrcnt.toString().toDouble()
+                val discAmnt = if(discAmnt.isNullOrEmpty()) 0.0 else discAmnt.toString().toDouble()
+                val discAmntPrcnt = ((discAmnt / (p.pr_unit_price ?: 1.0)) * 100)
                 val limitDisc = App.prefs.saveUser?.iDiscPrcnt ?: 0.0
-                if(disc <= limitDisc){
+                if((disc + discAmntPrcnt) <= limitDisc){
                     p.pr_user_discPrcnt = disc
-                    p.pr_price_AfD = p.pr_unit_price!! * (1-(p.pr_user_discPrcnt / 100))
+                    p.pr_user_disc_amnt = discAmnt
+                    p.pr_price_AfD = (p.pr_unit_price!! * (1-(p.pr_user_discPrcnt / 100))) - discAmnt
                     f(p)
                 }else{
                     val msg = requireContext().resources.getString(R.string.msg_error_disc_limit)
                     onFailure(String.format(msg, limitDisc.toString()))
                 }
             }
+
             mAlertDialog?.dismiss()
         }
     })
@@ -159,6 +167,11 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
                 return true
             }
         })
+
+        binding.btnScan.setOnClickListener {
+            val scanner = Intent(requireContext(), ContinuousActivity::class.java)
+            startActivityForResult(scanner, 12)
+        }
         //(requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_items_title)
         bindUI()
         binding.pullToRefresh.setOnRefreshListener {
@@ -171,6 +184,15 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
             loadList(viewModel.term ?: "", viewModel.cat_id, viewModel.br_id)
         }
         return binding.root
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK && data != null){
+            if(data.hasExtra("return_barcode")){
+                binding.searchView.setQuery(data.getExtras()!!.getString("return_barcode"), false)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -208,6 +230,7 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
         })
         model.customer.observe(viewLifecycleOwner, Observer {
             viewModel.customer = it
+            viewModel.price_cat = it.cu_price_cat_code ?: App.prefs.savedSalesman?.price_cat ?: "POS"
         })
         model.vocode.observe(viewLifecycleOwner, Observer {
             viewModel.vocode = it

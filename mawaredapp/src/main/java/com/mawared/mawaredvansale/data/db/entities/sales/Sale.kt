@@ -21,7 +21,7 @@ data class Sale(
     var sl_total_amount: Double?,   // total sale amount
     var sl_total_discount: Double?,   // total sale amount
     var sl_net_amount: Double?,     // net sale amount
-    var sl_discPrcnt: Double,
+    var sl_dis_per: Double,
     var sl_currencyId: Int?,        // currency code
     var sl_lcurrencyId: Int?,
     var sl_rate: Double?,

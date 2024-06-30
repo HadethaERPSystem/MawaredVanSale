@@ -35,31 +35,31 @@
                     android:textSize="12sp"/>
 
                 <TextView
-                    android:layout_width="110dp"
+                    android:layout_width="105dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="top"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:text="@{viewmodel.numberFormat(entityEo.rcv_amount)}"
                     android:background="@drawable/table_content_cell_bg"
-                    android:textSize="12sp"/>
+                    android:textSize="11sp"/>
 
                 <TextView
-                    android:layout_width="110dp"
+                    android:layout_width="105dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="top"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:text="@{viewmodel.numberFormat(entityEo.py_amount)}"
                     android:background="@drawable/table_content_cell_bg"
-                    android:textSize="12sp"/>
+                    android:textSize="11sp"/>
 
                 <TextView
-                    android:layout_width="110dp"
+                    android:layout_width="120dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="top"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:text="@{viewmodel.numberFormat(entityEo.balance)}"
                     android:background="@drawable/table_content_cell_bg"
-                    android:textSize="12sp"/>
+                    android:textSize="11sp"/>
 
             </LinearLayout>
 

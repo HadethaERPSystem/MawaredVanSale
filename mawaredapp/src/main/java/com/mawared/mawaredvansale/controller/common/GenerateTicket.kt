@@ -3,6 +3,7 @@ package com.mawared.mawaredvansale.controller.common
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.icu.text.DecimalFormat
 import android.util.Log
 import androidx.core.text.TextUtilsCompat
 import androidx.core.view.ViewCompat
@@ -11,13 +12,9 @@ import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
 import com.mawared.mawaredvansale.data.db.entities.reports.stock.StockStatement
-import com.mawared.mawaredvansale.data.db.entities.sales.Sale
-import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
-import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
-import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return_Items
-import com.mawared.mawaredvansale.data.db.entities.sales.Transfer
-import com.mawared.mawaredvansale.data.db.entities.sales.Transfer_Items
+import com.mawared.mawaredvansale.data.db.entities.sales.*
 import org.threeten.bp.LocalTime
+import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -281,6 +278,379 @@ class GenerateTicket(val ctx: Context, val lang: String){
         return lines
     }
 
+    fun create(baseEo: Sale_Order, logo: String?, systemInfo: String?, message: String?, cmsMessage: String?): List<Ticket>{
+        val lines: ArrayList<Ticket> = arrayListOf()
+
+        if(logo != null) {
+            try {
+                lines.add(Ticket(logo, LineType.Image, AlignText.CENTER, bmp = null))
+
+            }catch (e: java.lang.Exception){
+                e.printStackTrace()
+            }
+
+        }
+        // number and date
+        lines.add(Ticket("${res.getString(R.string.lbl_no)}: ${baseEo.so_refNo.toString().padEnd(24, ' ')}", LineType.Text))
+        val s = "${res.getString(R.string.lbl_doc_date)}: ${returnDateString(baseEo.so_date!!).padEnd(18,' ')} ${res.getString(R.string.lbl_time)} ${LocalTime.now().hour}:${LocalTime.now().minute}:${LocalTime.now().second}"
+        lines.add(Ticket(s, LineType.Text))
+
+
+        lines.add(Ticket("${res.getString(R.string.lbl_customer_name)}: ${baseEo.so_customer_name!!.padEnd(18, ' ')} ", LineType.Text))
+
+
+        lines.add(Ticket("${res.getString(R.string.lbl_salesman_name)}: ${baseEo.so_salesman_name!!.padEnd(18, ' ')}", LineType.Text))
+
+        lines.add(Ticket("".padEnd(48, 'ـ'), LineType.Text))
+        // Lines title
+        lines.add(Ticket(res.getString(R.string.lbl_prod_name).padEnd(20, ' ') + res.getString(R.string.lbl_qty).padEnd(10, ' ')+ res.getString(R.string.lbl_unit_price).padEnd(10, ' ') + res.getString(R.string.lbl_line_total), LineType.Text))
+
+        lines.add(Ticket("".padEnd(48, 'ـ'), LineType.Text))
+
+        for (d: Sale_Order_Items in baseEo.items){
+            var prod_name = ""
+            if(lang == "ar_iq") {
+                if(d.sod_prod_name != null) prod_name = d.sod_prod_name!!
+            }else{
+                prod_name = if(d.sod_prod_name != null) d.sod_prod_name!! else d.sod_prod_name!!
+            }
+            val prod = prod_name.trim()//.padEnd(34, ' ')
+            val qty = d.sod_unit_qty!!.toString().padEnd(6, ' ').padStart(4,' ')
+            val up = d.sod_unit_price!!.toString().padEnd(8, ' ').padStart(4,' ')
+            val net = d.sod_net_total!!.toString()//.padEnd(7, ' ')
+
+
+            if(prod.length > 22){
+                val cpos = prod.substring(0,22).lastIndexOf(' ')
+                val pr_name1 = prod.substring(0,cpos)
+                val num = pr_name1.length + qty.length + up.length + net.length
+                val line = pr_name1.padEnd(22, ' ') + qty + up + net// + if(num < 47) "".padEnd(47-num) else ""
+                lines.add(Ticket(line, LineType.Text, AlignText.LEFT))
+                val pr_name2 = prod.substring(cpos)
+                val line1 = pr_name2.padEnd(47)
+                lines.add(Ticket(line1, LineType.Text, AlignText.LEFT))
+            }else{
+                val num = prod.length + qty.length + net.length
+                val line = prod.padEnd(22, ' ')  + qty + up + net// + if(num < 47) "".padEnd(47-num) else ""
+                lines.add(Ticket(line, LineType.Text, AlignText.LEFT))
+            }
+        }
+
+        lines.add(Ticket("".padEnd(48, 'ـ'), LineType.Text))
+        val tqty = baseEo.items.sumByDouble { x->x.sod_unit_qty ?: 0.0 }
+        var tgqty = baseEo.items.sumByDouble { x->x.sod_gift_qty ?: 0.0 }
+        val tgqty1= baseEo.items.sumByDouble { if(it.sod_isGift == false) 0.0 else it.sod_unit_qty ?: 0.0 }
+        tgqty += tgqty1
+        lines.add(Ticket("${res.getString(R.string.lbl_total_qty)}".padStart(34, ' ') + tqty.toString().padStart(10,' ') , LineType.Text))
+        lines.add(Ticket("${res.getString(R.string.lbl_total_gift)}".padStart(34, ' ') + tgqty.toString().padStart(10,' ') , LineType.Text))
+
+        lines.add(Ticket("${res.getString(R.string.lbl_total)} ".padStart(36, ' ') + if(baseEo.so_total_amount == null) "0.00".padStart(10,' ') else baseEo.so_total_amount.toString().padStart(10,' '), LineType.Text))
+
+        lines.add(Ticket("${res.getString(R.string.lbl_total_discount)} ".padStart(35, ' ') + if(baseEo.so_total_discount == null) "0.00".padStart(10,' ') else baseEo.so_total_discount.toString().padStart(10,' '), LineType.Text))
+
+        lines.add(Ticket("${res.getString(R.string.lbl_net_amount)} ".padStart(36, ' ') + if(baseEo.so_net_amount == null) "0.00".padStart(10,' ') else baseEo.so_net_amount.toString().padStart(10,' '), LineType.Text))
+
+        lines.add(Ticket("".padEnd(48, 'ـ'), LineType.Text))
+
+        if(!baseEo.so_refNo.isNullOrEmpty()){
+            lines.add(Ticket("\n", LineType.Text))
+            lines.add(Ticket(baseEo.so_refNo, LineType.Barcode, AlignText.CENTER, Attribute.LARGE_FONT_BOLD_NO_UNDERLINE_HIGHLIGHT))
+            lines.add(Ticket("\n", LineType.Text))
+        }
+
+        if(!cmsMessage.isNullOrEmpty()){
+            lines.add(Ticket(cmsMessage, LineType.Text))
+            lines.add(Ticket("\n", LineType.Text))
+        }
+
+        if(!systemInfo.isNullOrEmpty()){
+            lines.add(Ticket(systemInfo, LineType.Text))
+            lines.add(Ticket("\n", LineType.Text))
+        }
+
+        return lines
+    }
+//    var type: LineType = LineType.Text,
+//    var cols : ArrayList<String>?,
+//    var width: ArrayList<Int>?,
+//    var align: ArrayList<Int>?,
+//    var isBold: Boolean,
+//    var text: String?,
+//    var textAlign: Int,
+//    var fontSize: Int = 12,
+//    var bmp: Bitmap?
+
+    fun createSunmiTicket(baseEo: Sale, logo: Bitmap?, systemInfo: String?, message: String?, cmsMessage: String?): List<SunmiTicket>{
+        val lines: ArrayList<SunmiTicket> = arrayListOf()
+        if(logo != null) {
+            try {
+                lines.add(SunmiTicket(LineType.Image, null, null, null, false, "", 1, 12, logo))
+            }catch (e: java.lang.Exception){
+                e.printStackTrace()
+            }
+
+        }
+        //SunmiTicket : LineType, Cols, Width, Align, isBold, text, textAling, fontSize, bmp
+
+        var cols = arrayOf<String>(res.getString(R.string.lbl_no), baseEo.sl_refNo.toString())
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,4), intArrayOf(0,0), true, null, null, 21, null))
+
+        cols = arrayOf<String>(res.getString(R.string.lbl_doc_date), returnDateString(baseEo.sl_doc_date!!), res.getString(R.string.lbl_time), "${LocalTime.now().hour}:${LocalTime.now().minute}")
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2, 1, 1), intArrayOf(0,0,0,0), true, null, null, 21, null))
+
+        var phone: String = ""
+        if(!baseEo.sl_customer_phone.isNullOrEmpty()){
+            phone = baseEo.sl_customer_phone!!.trim()
+        }
+//        if(baseEo.sl_customer_name!!.length >= 18){
+//            val pos = baseEo.sl_customer_name!!.substring(0,18).lastIndexOf(' ')
+//            val cu_name1 = baseEo.sl_customer_name!!.substring(0,pos)
+//            val cu_name2 = baseEo.sl_customer_name!!.substring(pos)
+//            cols = arrayOf<String>(res.getString(R.string.lbl_customer_name), cu_name1)
+//            lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 11, null))
+//
+//            cols = arrayOf<String>("", cu_name2)
+//            lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0, 0), true, null, null, 11, null))
+//        }else{
+//
+//        }
+        cols = arrayOf<String>(res.getString(R.string.lbl_customer_name), baseEo.sl_customer_name!!)
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 21, null))
+        cols = arrayOf<String>(res.getString(R.string.rpt_phone), phone)
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 21, null))
+
+        // Salesman
+        cols = arrayOf<String>(res.getString(R.string.lbl_salesman_name), baseEo.sl_salesman_name!!)
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 21, null))
+
+        cols = arrayOf<String>(res.getString(R.string.rpt_phone), baseEo.sl_salesman_phone.toString())
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 21, null))
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+
+        // Print Table Header
+        //cols = arrayOf<String>(res.getString(R.string.lbl_prod_name), res.getString(R.string.lbl_qty), res.getString(R.string.lbl_unit_price), res.getString(R.string.lbl_line_total))
+        cols = arrayOf<String>(res.getString(R.string.lbl_prod_name), res.getString(R.string.lbl_qty), res.getString(R.string.lbl_line_total))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(4,1,1), intArrayOf(0,0,0), true, null, null, 21, null))
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+
+        for (d: Sale_Items in baseEo.items){
+            var prod_name = ""
+            if(lang == "ar_iq") {
+                if(d.sld_prod_name_ar != null) prod_name = d.sld_prod_name_ar!!
+            }else{
+                prod_name = if(d.sld_prod_name != null) d.sld_prod_name!! else d.sld_prod_name_ar!!
+            }
+            val prod = prod_name.trim()
+//            if(prod.length > 22){
+//                val cpos = prod.substring(0,22).lastIndexOf(' ')
+//                val pr_name1 = prod.substring(0,cpos)
+//                //cols = arrayOf<String>(pr_name1, d.sld_pack_qty.toString(), d.sld_unit_price.toString(), d.sld_net_total.toString())
+//                cols = arrayOf<String>(pr_name1, d.sld_pack_qty.toString(), d.sld_net_total.toString())
+//                lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(3,1,1), intArrayOf(0,0,0), true, null, null, 11, null))
+//
+//                val pr_name2 = prod.substring(cpos)
+//                cols = arrayOf<String>(pr_name2)
+//                lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1), intArrayOf(0), true, null, null, 11, null))
+//            }else{
+                //cols = arrayOf<String>(prod, d.sld_pack_qty.toString(), d.sld_unit_price.toString(), d.sld_net_total.toString())
+                cols = arrayOf<String>(prod, d.sld_pack_qty.toString(), numberFormat(d.sld_net_total))
+                lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(4,1,1), intArrayOf(0,0,0), true, null, null, 21, null))
+            //}
+        }
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+        val tqty = baseEo.items.sumByDouble { x->x.sld_unit_qty ?: 0.0 }
+        var tgqty = baseEo.items.sumByDouble { x->x.sld_gift_qty ?: 0.0 }
+        val tgqty1= baseEo.items.sumByDouble { if(it.sld_isGift == false) 0.0 else it.sld_unit_qty ?: 0.0 }
+        tgqty += tgqty1
+        // Print Total Quantity
+        cols = arrayOf<String>(res.getString(R.string.lbl_total_qty), numberFormat(tqty))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+        // print Total Gift
+        cols = arrayOf<String>(res.getString(R.string.lbl_total_gift), numberFormat(tgqty))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+        // Print Total Line Amount
+        cols = arrayOf<String>(res.getString(R.string.lbl_total), if(baseEo.sl_total_amount == null) "0.00" else numberFormat(baseEo.sl_total_amount))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+        // Print Total Discount
+        cols = arrayOf<String>(res.getString(R.string.lbl_total_discount), if(baseEo.sl_total_discount == null) "0.00" else numberFormat(baseEo.sl_total_discount))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+        // Print Total Net Amount
+        cols = arrayOf<String>(res.getString(R.string.lbl_net_amount), if(baseEo.sl_net_amount == null) "0.00" else numberFormat(baseEo.sl_net_amount))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+
+        // Print Footer
+        if(!baseEo.sl_refNo.isNullOrEmpty()){
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 14, null))
+            lines.add(SunmiTicket(LineType.Barcode, null, null, null, true, baseEo.sl_refNo, 1, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+
+        }
+
+        if(!cmsMessage.isNullOrEmpty()){
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "$cmsMessage \n", 0, 21, null))
+        }
+
+        if(!systemInfo.isNullOrEmpty()){
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "$systemInfo", 0, 16, null))
+        }
+        return lines
+    }
+
+    fun createSunmiTicket(baseEo: Sale_Order, logo: Bitmap?, systemInfo: String?, message: String?, cmsMessage: String?): List<SunmiTicket>{
+        val lines: ArrayList<SunmiTicket> = arrayListOf()
+        if(logo != null) {
+            try {
+                lines.add(SunmiTicket(LineType.Image, null, null, null, false, "", 1, 12, logo))
+            }catch (e: java.lang.Exception){
+                e.printStackTrace()
+            }
+
+        }
+        //SunmiTicket : LineType, Cols, Width, Align, isBold, text, textAling, fontSize, bmp
+
+        var cols = arrayOf<String>(res.getString(R.string.lbl_no), baseEo.so_refNo.toString())
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,4), intArrayOf(0,0), true, null, null, 21, null))
+
+        cols = arrayOf<String>(res.getString(R.string.lbl_doc_date), returnDateString(baseEo.so_date!!), res.getString(R.string.lbl_time), "${LocalTime.now().hour}:${LocalTime.now().minute}")
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2, 1, 1), intArrayOf(0,0,0,0), true, null, null, 21, null))
+
+
+        cols = arrayOf<String>(res.getString(R.string.lbl_customer_name), baseEo.so_customer_name!!)
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 21, null))
+
+        // Salesman
+        cols = arrayOf<String>(res.getString(R.string.lbl_salesman_name), baseEo.so_salesman_name ?: "")
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 21, null))
+
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+
+        // Print Table Header
+        //cols = arrayOf<String>(res.getString(R.string.lbl_prod_name), res.getString(R.string.lbl_qty), res.getString(R.string.lbl_unit_price), res.getString(R.string.lbl_line_total))
+        cols = arrayOf<String>(res.getString(R.string.lbl_prod_name), res.getString(R.string.lbl_qty), res.getString(R.string.lbl_line_total))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(4,1,1), intArrayOf(0,0,0), true, null, null, 21, null))
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+
+        for (d: Sale_Order_Items in baseEo.items){
+            var prod_name = ""
+            if(lang == "ar_iq") {
+                if(d.sod_prod_name != null) prod_name = d.sod_prod_name!!
+            }else{
+                prod_name = if(d.sod_prod_name != null) d.sod_prod_name!! else d.sod_prod_name!!
+            }
+            val prod = prod_name.trim()
+
+            cols = arrayOf<String>(prod, d.sod_pack_qty.toString(), numberFormat(d.sod_net_total))
+            lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(4,1,1), intArrayOf(0,0,0), true, null, null, 21, null))
+            //}
+        }
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+        val tqty = baseEo.items.sumByDouble { x->x.sod_unit_qty ?: 0.0 }
+        var tgqty = baseEo.items.sumByDouble { x->x.sod_gift_qty ?: 0.0 }
+        val tgqty1= baseEo.items.sumByDouble { if(it.sod_isGift == false) 0.0 else it.sod_unit_qty ?: 0.0 }
+        tgqty += tgqty1
+        // Print Total Quantity
+        cols = arrayOf<String>(res.getString(R.string.lbl_total_qty), numberFormat(tqty))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+        // print Total Gift
+        cols = arrayOf<String>(res.getString(R.string.lbl_total_gift), numberFormat(tgqty))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+        // Print Total Line Amount
+        cols = arrayOf<String>(res.getString(R.string.lbl_total), if(baseEo.so_total_amount == null) "0.00" else numberFormat(baseEo.so_total_amount))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+        // Print Total Discount
+        cols = arrayOf<String>(res.getString(R.string.lbl_total_discount), if(baseEo.so_total_discount == null) "0.00" else numberFormat(baseEo.so_total_discount))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+        // Print Total Net Amount
+        cols = arrayOf<String>(res.getString(R.string.lbl_net_amount), if(baseEo.so_net_amount == null) "0.00" else numberFormat(baseEo.so_net_amount))
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(2,1), intArrayOf(0, 2), true, null, null, 20, null))
+
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+
+        // Print Footer
+        if(!baseEo.so_refNo.isNullOrEmpty()){
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 14, null))
+            lines.add(SunmiTicket(LineType.Barcode, null, null, null, true, baseEo.so_refNo, 1, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+
+        }
+
+        if(!cmsMessage.isNullOrEmpty()){
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "$cmsMessage \n", 0, 21, null))
+        }
+
+        if(!systemInfo.isNullOrEmpty()){
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "$systemInfo", 0, 16, null))
+        }
+        return lines
+    }
+
+    fun createSunmiTicket(baseEo: Sale_Order, logo: Bitmap?, systemInfo: String?): List<SunmiTicket>{
+        val lines: ArrayList<SunmiTicket> = arrayListOf()
+        if(logo != null) {
+            try {
+                lines.add(SunmiTicket(LineType.Image, null, null, null, false, "", 1, 12, logo))
+            }catch (e: java.lang.Exception){
+                e.printStackTrace()
+            }
+        }
+        //SunmiTicket : LineType, Cols, Width, Align, isBold, text, textAling, fontSize, bmp
+
+        var cols = arrayOf<String>(res.getString(R.string.lbl_no), baseEo.so_refNo.toString())
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,4), intArrayOf(0,0), true, null, null, 21, null))
+
+        cols = arrayOf<String>(res.getString(R.string.lbl_doc_date), returnDateString(baseEo.so_date!!), res.getString(R.string.lbl_time), "${LocalTime.now().hour}:${LocalTime.now().minute}")
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2, 1, 1), intArrayOf(0,0,0,0), true, null, null, 21, null))
+
+
+        cols = arrayOf<String>(res.getString(R.string.lbl_customer_name), baseEo.so_customer_name!!)
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 21, null))
+
+        // Salesman
+        cols = arrayOf<String>(res.getString(R.string.lbl_salesman_name), baseEo.so_salesman_name ?: "")
+        lines.add(SunmiTicket(LineType.Column, cols, intArrayOf(1,2), intArrayOf(0,0), true, null, null, 21, null))
+
+        // Print Line ___________________
+        lines.add(SunmiTicket(LineType.Line, null, null, null, false, "".padEnd(48, '_'), 0, 24, null))
+
+        // Print Footer
+        if(!baseEo.so_refNo.isNullOrEmpty()){
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 14, null))
+            lines.add(SunmiTicket(LineType.Barcode, null, null, null, true, baseEo.so_refNo, 1, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 22, null))
+
+        }
+
+        if(!systemInfo.isNullOrEmpty()){
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "\n", 0, 20, null))
+            lines.add(SunmiTicket(LineType.Text, null, null, null, true, "$systemInfo", 0, 16, null))
+        }
+        return lines
+    }
+
     fun create(baseEo: Sale_Return, logo: String?, systemInfo: String?, message: String?, cmsMessage: String?): List<Ticket>{
         val lines: ArrayList<Ticket> = arrayListOf()
 
@@ -308,14 +678,14 @@ class GenerateTicket(val ctx: Context, val lang: String){
 
         for (d: Sale_Return_Items in baseEo.items){
             var prod_name = ""
-            if(lang == "ar_iq") {
+            if(lang == "ar_iq" && d.srd_prod_name_ar != null) {
                 if(d.srd_prod_name_ar != null) prod_name = d.srd_prod_name_ar!!
             }else{
                 prod_name = if(d.srd_prod_name != null) d.srd_prod_name!! else d.srd_prod_name_ar!!
             }
             val prod = prod_name.trim()//.padEnd(34, ' ')
-            val qty = d.srd_unit_qty!!.toString().padEnd(6, ' ').padStart(4,' ')
-            val net = d.srd_net_total!!.toString()//.padEnd(7, ' ')
+            val qty = numberFormat(d.srd_unit_qty!!).padEnd(6, ' ').padStart(4,' ')
+            val net = numberFormat(d.srd_net_total!!)//.padEnd(7, ' ')
 
 
             if(prod.length > 30){
@@ -338,14 +708,14 @@ class GenerateTicket(val ctx: Context, val lang: String){
         val tqty = baseEo.items.sumByDouble { x->x.srd_unit_qty ?: 0.0 }
         //val tgqty = baseEo.items.sumByDouble { x->x.srd_gift_qty ?: 0.0 }
 
-        lines.add(Ticket("${res.getString(R.string.lbl_total_qty)}".padStart(35, ' ') + tqty.toString().padStart(10,' ') , LineType.Text))
+        lines.add(Ticket("${res.getString(R.string.lbl_total_qty)}".padStart(35, ' ') + numberFormat(tqty).padStart(10,' ') , LineType.Text))
         //lines.add(Ticket("${res.getString(R.string.lbl_total_gift)}".padStart(35, ' ') + tgqty.toString().padStart(10,' ') , LineType.Text))
 
-        lines.add(Ticket("${res.getString(R.string.lbl_total)} ".padStart(35, ' ') + if(baseEo.sr_total_amount == null) "0.00".padStart(10,' ') else baseEo.sr_total_amount.toString().padStart(10,' '), LineType.Text))
+        lines.add(Ticket("${res.getString(R.string.lbl_total)} ".padStart(35, ' ') + if(baseEo.sr_total_amount == null) "0.00".padStart(10,' ') else numberFormat(baseEo.sr_total_amount).padStart(10,' '), LineType.Text))
 
         //lines.add(Ticket("${res.getString(R.string.lbl_total_discount)} ".padStart(35, ' ') + if(baseEo.sr_total_discount == null) "0.00".padStart(10,' ') else baseEo.sl_total_discount.toString().padStart(10,' '), LineType.Text))
 
-        lines.add(Ticket("${res.getString(R.string.lbl_net_amount)} ".padStart(36, ' ') + if(baseEo.sr_net_amount == null) "0.00".padStart(10,' ') else baseEo.sr_net_amount.toString().padStart(10,' '), LineType.Text))
+        lines.add(Ticket("${res.getString(R.string.lbl_net_amount)} ".padStart(36, ' ') + if(baseEo.sr_net_amount == null) "0.00".padStart(10,' ') else numberFormat(baseEo.sr_net_amount).padStart(10,' '), LineType.Text))
 
         lines.add(Ticket("".padEnd(48, 'ـ'), LineType.Text))
 
@@ -810,5 +1180,10 @@ class GenerateTicket(val ctx: Context, val lang: String){
             Log.i("Exc", "Error in BaseViewModel returnDateString($isoString)")
             return ""
         }
+    }
+
+    fun numberFormat(value: Double?): String{
+        val nf = "%,.0f".format(Locale.ENGLISH, value)
+        return nf
     }
 }

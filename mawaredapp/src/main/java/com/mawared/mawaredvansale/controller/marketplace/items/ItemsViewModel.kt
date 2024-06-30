@@ -28,7 +28,7 @@ class ItemsViewModel(private val repository: IMDataRepository, private val order
     private var orders: ArrayList<OrderItems> = arrayListOf()
     var msgListener: IMessageListener? = null
     var ctx: Context? = null
-    val price_cat : String = customer?.cu_price_cat_code ?: "POS"
+    var price_cat : String = "POS"
     var cat_id: Int? = null
     var br_id: Int? = null
     var term: String? = ""
@@ -49,8 +49,18 @@ class ItemsViewModel(private val repository: IMDataRepository, private val order
 
     fun loadData(list: MutableList<Product>, term: String, cat_id: Int?, br_id: Int?, pageCount: Int, loadMore: (List<Product>?, Int) -> Unit) {
         try {
+            if(customer == null){
+                price_cat = App.prefs.savedSalesman?.price_cat ?: "POS"
+            }
             Coroutines.ioThenMain({
-                val prdcs = repository.getProductForMarket(App.prefs.savedSalesman?.sm_warehouse_id, price_cat,  LocalDate.now(), App.prefs.saveUser!!.org_Id, cat_id,  br_id, term, vocode, pageCount)
+                var prdcs : List<Product>? = emptyList<Product>()
+                if(vocode == "SaleOrder"){
+                    prdcs = repository.getProductForMarketSO(App.prefs.savedSalesman?.sm_user_id, price_cat,  LocalDate.now(), App.prefs.saveUser!!.org_Id, cat_id,  br_id, term, vocode, pageCount)
+                }
+                else{
+                    prdcs = repository.getProductForMarket(App.prefs.savedSalesman?.sm_warehouse_id, price_cat,  LocalDate.now(), App.prefs.saveUser!!.org_Id, cat_id,  br_id, term, vocode, pageCount)
+                }
+
                 if (prdcs != null) {
                     list.addAll(prdcs)
                 }
@@ -164,7 +174,7 @@ class ItemsViewModel(private val repository: IMDataRepository, private val order
 
                 var disValue = 0.0
                 var lDisPer: Double = 0.0
-
+                var _discAmnt: Double = 0.0
                 if(isGift){
                     lDisPer = 100.0
                     disValue = (lDisPer / 100) * lineTotal
@@ -181,7 +191,10 @@ class ItemsViewModel(private val repository: IMDataRepository, private val order
                 }else if(p.pr_user_discPrcnt != 0.0){
                     lDisPer = p.pr_user_discPrcnt
                     disValue = (lDisPer / 100) * lineTotal
-                }else if(baseEo?.od_discount != null && baseEo.od_discount != 0.0){
+                }else if(p.pr_user_disc_amnt != 0.0){
+                       _discAmnt = p.pr_user_disc_amnt
+                }
+                else if(baseEo?.od_discount != null && baseEo.od_discount != 0.0){
                     lDisPer = baseEo.od_discount!!
                     disValue = lineTotal * (baseEo.od_discount!! / 100)
                 }
@@ -197,13 +210,13 @@ class ItemsViewModel(private val repository: IMDataRepository, private val order
                         add_dis_value = (lineTotal - disValue) * (1- (baseEo.od_add_dis_per!! / 100))
                     }
                 }
-                val netTotal = (lineTotal - disValue) - add_dis_value
+                val netTotal = (lineTotal - (disValue + _discAmnt)) - add_dis_value
                 val price_afd = (1 - (lDisPer / 100)) * p.pr_unit_price!!
                 val isNew : Boolean = baseEo == null
                 if (baseEo == null) {
                     baseEo = OrderItems(
                         id, rowNo, p.pr_Id, p.pr_description_ar, p.pr_SUoMEntry, p.pr_SalUnitMsr, addQty,  p.pr_NumInSale,
-                        qty,  giftQty,  p.pr_unit_price,  price_afd, lineTotal, lDisPer,  disValue, 0.0,0.0,
+                        qty,  giftQty,  p.pr_unit_price,  price_afd, lineTotal, lDisPer,  disValue, 0.0,0.0, _discAmnt,
                         netTotal, p.pr_wr_Id, p.pr_wr_name, p.pr_batch_no, p.pr_expiry_date, p.pr_mfg_date, null, null,
                         null, isGift, "$strDate", "${user.id}","$strDate", "${user.id}"
                     )
@@ -214,6 +227,7 @@ class ItemsViewModel(private val repository: IMDataRepository, private val order
                     baseEo.od_disvalue = disValue
                     baseEo.od_add_dis_value = add_dis_value
                     baseEo.od_discount = lDisPer
+                    baseEo.od_disc_amnt = _discAmnt
                     baseEo.od_net_total = netTotal
                     baseEo.od_gift_qty = giftQty
                     baseEo.updated_at = "$strDate"

@@ -20,6 +20,7 @@ import com.mawared.mawaredvansale.databinding.OrdersFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.utilities.MenuSysPrefs
 import com.mawared.mawaredvansale.utilities.snackbar
+import com.mawared.mawaredvansale.utils.SunmiPrintHelper
 import com.microsoft.appcenter.utils.HandlerUtils
 import kotlinx.android.synthetic.main.orders_fragment.*
 import kotlinx.android.synthetic.main.orders_fragment.progress_bar
@@ -48,6 +49,7 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMessageListener, SearchVi
             "E" -> onItemEditClick(e)
             "V" -> onItemViewClick(e)
             "D" -> onItemDeleteClick(e)
+            "P" -> viewModel.onPrint(e.so_id)
         }
     }
 
@@ -55,7 +57,8 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMessageListener, SearchVi
 
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.orders_fragment, container, false)
-
+        viewModel.msgListener = this
+        viewModel.ctx = requireActivity()
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
@@ -87,6 +90,13 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMessageListener, SearchVi
         navController = Navigation.findNavController(view)
      }
 
+    /**
+     * Connect print service through interface library
+     */
+    private fun init() {
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+    }
+
     override fun onResume() {
         removeObservers()
         super.onResume()
@@ -111,6 +121,7 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMessageListener, SearchVi
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
+        init()
     }
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -153,6 +164,9 @@ class OrdersFragment : ScopedFragment(), KodeinAware, IMessageListener, SearchVi
 
     private fun bindUI() = GlobalScope.launch(Main) {
 
+        viewModel.baseEo.observe(viewLifecycleOwner, {
+            viewModel.onPrintTicket(it)
+        })
         viewModel.deleteRecord.observe(viewLifecycleOwner, Observer {
 
             if(it == "Successful"){

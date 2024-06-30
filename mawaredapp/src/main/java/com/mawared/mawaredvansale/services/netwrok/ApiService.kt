@@ -2,6 +2,7 @@ package com.mawared.mawaredvansale.services.netwrok
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.mawared.mawaredvansale.App
+import com.mawared.mawaredvansale.BuildConfig
 import com.mawared.mawaredvansale.data.db.entities.reports.fms.CashbookStatement
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
@@ -31,6 +32,14 @@ import retrofit2.http.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+import okhttp3.OkHttpClient
+import java.lang.Exception
+import java.security.SecureRandom
+import java.security.cert.CertificateException
+import java.security.cert.X509Certificate
+import javax.net.ssl.*
+
+
 interface ApiService {
     @FormUrlEncoded
     @POST(URL_LOGIN)
@@ -55,6 +64,18 @@ interface ApiService {
 
     @GET(URL_PRODUCTS_GET_FOR_MARKET_PLACE)
     suspend fun products_GetForMarket(@Query("WarehouseId") warehouseId: Int?,
+                                      @Query("PriceCode") priceCode: String,
+                                      @Query("currentDate") currentDate: LocalDate,
+                                      @Query("org_Id") org_Id: Int?,
+                                      @Query("cat_Id") cat_Id: Int?,
+                                      @Query("brand_Id") br_Id: Int?,
+                                      @Query("Term") Term: String?,
+                                      @Query("objCode") objCode: String,
+                                      @Query("page") page: Int,
+                                      @Query("pageSize") pageSize: Int) : Response<ResponseList<Product>>
+
+    @GET(URL_PRODUCTS_GET_FOR_MARKET_PLACE_SO)
+    suspend fun products_GetForMarketSO(@Query("userId") userId: Int?,
                                       @Query("PriceCode") priceCode: String,
                                       @Query("currentDate") currentDate: LocalDate,
                                       @Query("org_Id") org_Id: Int?,
@@ -108,7 +129,7 @@ interface ApiService {
     @GET(URL_PRODUCTS_GET_BY_CONTRACT)
     suspend fun products_GetByContract(@Query("contId") contId: Int?, @Query("term") term: String): Response<ResponseList<Product>>
 
-    @GET(URL_ALL_PRODUCTS)
+    @GET(URL_PRODUCT_BY_BARCODE)
     suspend fun product_GetByBarcode(@Query("Barcode") barcode: String,
                                @Query("WarehouseId") warehouseId: Int?,
                                @Query("PriceCode") priceCode: String) : Response<ResponseSingle<Product>>
@@ -264,7 +285,10 @@ interface ApiService {
     //// DISCOUNT
     //////////////////////////////////////////////////////////////////////////////////////////
     @GET(URL_DISCOUNT_BY_PRODUCT)
-    suspend fun discount_GetCurrent(@Query("pr_Id") pr_Id: Int, @Query("CurrentDate") currentDate: LocalDate, @Query("org_Id") org_Id: Int?): Response<ResponseSingle<Discount>>
+    suspend fun discount_GetCurrent(@Query("pr_Id") pr_Id: Int,
+                                    @Query("CurrentDate") currentDate: LocalDate,
+                                    @Query("org_Id") org_Id: Int?,
+                                    @Query("price_cat_code") price_cat_code: String): Response<ResponseSingle<Discount>>
 
     @GET(URL_WAREHOUSE_GET_ALL)
     suspend fun warehouse_GetAll() : Response<ResponseList<Warehouse>>
@@ -580,19 +604,19 @@ interface ApiService {
     companion object{
         operator fun invoke(connectivityInterceptor: ConnectivityInterceptor) : ApiService{
 
-            val requestInterceptor = Interceptor{ chain ->
-                val url = chain.request()
-                    .url()
-                    .newBuilder()
-                    .addQueryParameter("key", API_KEY)
-                    .build()
-                val request = chain.request()
-                    .newBuilder()
-                    .url(url)
-                    .build()
-
-                return@Interceptor chain.proceed(request)
-            }
+//            val requestInterceptor = Interceptor{ chain ->
+//                val url = chain.request()
+//                    .newBuilder()
+//                    .url(BASE_URL)
+//                    .addQueryParameter("key", API_KEY)
+//                    .build()
+//                val request = chain.request()
+//                    .newBuilder()
+//                    .url(url)
+//                    .build()
+//
+//                return@Interceptor chain.proceed(request)
+//            }
             // define okHttpclient for checking if connection is available or not
             val okHttpclient = OkHttpClient.Builder()
                 .addInterceptor(connectivityInterceptor)
@@ -602,11 +626,52 @@ interface ApiService {
 
             return Retrofit.Builder()
                 .client(okHttpclient) // for checking if connection is avialable or not
-                .baseUrl(BASE_URL_API)
+                .baseUrl(BASE_URL)
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(getUnsafeOkHttpClient()?.build())
                 .build()
                 .create(ApiService::class.java)
+        }
+
+        fun getUnsafeOkHttpClient(): OkHttpClient.Builder? {
+            return try {
+                // Create a trust manager that does not validate certificate chains
+                val trustAllCerts = arrayOf<TrustManager>(
+                    object : X509TrustManager {
+                        @Throws(CertificateException::class)
+                        override fun checkClientTrusted(
+                            chain: Array<X509Certificate>,
+                            authType: String
+                        ) {
+                        }
+
+                        @Throws(CertificateException::class)
+                        override fun checkServerTrusted(
+                            chain: Array<X509Certificate>,
+                            authType: String
+                        ) {
+                        }
+
+                        override fun getAcceptedIssuers(): Array<X509Certificate> {
+                            return arrayOf()
+                        }
+                    }
+                )
+
+                // Install the all-trusting trust manager
+                val sslContext = SSLContext.getInstance("SSL")
+                sslContext.init(null, trustAllCerts, SecureRandom())
+
+                // Create an ssl socket factory with our all-trusting manager
+                val sslSocketFactory: SSLSocketFactory = sslContext.socketFactory
+                val builder = OkHttpClient.Builder()
+                builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+                builder.hostnameVerifier { hostname, session -> true }
+                builder
+            } catch (e: Exception) {
+                throw RuntimeException(e)
+            }
         }
     }
 }

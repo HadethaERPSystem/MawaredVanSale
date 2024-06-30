@@ -49,6 +49,13 @@ class SalesOrderAdapter(@LayoutRes private val layoutResource: Int, private val 
                 val item = it.tag as Sale_Order
                 clickFunc1(item, "E")
             }
+            printBtn.visibility = if(perm.count() > 0 && perm[4] == "1") View.VISIBLE else View.GONE
+            printBtn.tag = item
+            printBtn.setOnClickListener {
+                @Suppress("NAME_SHADOWING")
+                val item = it.tag as Sale_Order
+                clickFunc1(item, "P")
+            }
         }
     }
 }

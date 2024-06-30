@@ -21,7 +21,7 @@ class CustomersListAdapter(@LayoutRes private val layoutResource: Int, private v
             cu_rg_name.text = (item.cu_rg_name ?: "")
             cardView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.anim_two))
             val perm = permission.split("|")
-            editBtn.visibility = if(perm.count() > 0 && perm[3] == "1") View.VISIBLE else View.GONE
+            editBtn.visibility = if(perm.count() > 0 && perm[1] == "1") View.VISIBLE else View.GONE
             editBtn.tag = item
             editBtn.setOnClickListener {
                 @Suppress("NAME_SHADOWING")

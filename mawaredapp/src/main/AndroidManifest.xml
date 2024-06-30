@@ -4,19 +4,39 @@
     package="com.mawared.mawaredvansale"
     android:versionCode="1"
     android:versionName="1.0">
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!-- Needed only if your app looks for Bluetooth devices.
+             If your app doesn't use Bluetooth scan results to derive physical
+             location information, you can strongly assert that your app
+             doesn't derive physical location. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
+    <!-- Needed only if your app makes the device discoverable to Bluetooth
+      devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <!-- Needed only if your app communicates with already-paired Bluetooth
+           devices. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!--bibo01 : hardware option-->
+    <uses-feature android:name="android.hardware.bluetooth"/>
+    <uses-feature android:name="android.hardware.bluetooth_le"/>
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
+
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage"/>
     <uses-feature android:name="android.hardware.usb.host" />
     <uses-feature android:name="android.hardware.camera.any" />
 
@@ -27,10 +47,9 @@
         android:required="true" />
 
     <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" /> -->
-    <uses-permission android:name="android.permission.CAMERA" />
+    <meta-data
+        android:name="com.google.android.gms.vision.DEPENDENCIES"
+        android:value="barcode" />
 
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -48,12 +67,16 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
+            android:name=".controller.common.ScannerBarcodeActivity"
+            android:exported="false" />
+        <activity
             android:name=".controller.auth.SetApiAddressActivity"
-            android:exported="false"/>
-        <!-- <activity android:name=".controller.common.printing.PrintingActivity"></activity> -->
+            android:exported="false" /> <!-- <activity android:name=".controller.common.printing.PrintingActivity"></activity> -->
         <activity android:name=".controller.common.PdfActivity" />
         <activity android:name=".controller.map.MapsActivity" />
         <activity android:name=".controller.map.RealLocationActivity" />
+        <activity android:name=".controller.Barcode.ContinuousActivity"/>
+        <activity android:name=".controller.Barcode.InlineScanActivity"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -65,6 +88,8 @@
             tools:replace="screenOrientation" />
         <activity
             android:name=".controller.home.SplashScreenActivity"
+            android:exported="true"
+            android:theme="@style/SplashTheme"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,6 +100,7 @@
         <activity android:name=".controller.auth.LoginActivity" />
         <activity
             android:name=".controller.home.HomeActivity"
+            android:exported="true"
             android:label="@string/home_page_title" />
         <activity
             android:name=".controller.common.ControlActivity"

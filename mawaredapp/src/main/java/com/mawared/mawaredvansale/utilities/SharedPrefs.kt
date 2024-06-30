@@ -36,6 +36,9 @@ class SharedPrefs(context: Context) {
     val KEY_BASE_SERVER_URL = ""
     val gson = Gson()
     val KEY_PRINTING_TYPE = "Key_priting_type"
+    val KEY_PRINTER = "key_printer_type"
+    val KEY_PRINTING_SO_MODE = "key_printing_so_mode"
+    val KEY_PRINTING_INV_MODE = "key_printing_inv_mode"
     val KEY_APP_VERSION = "key_app_verion"
     val KEY_APP_HAS_PLAN = "key_app_has_plan"
     var KEY_SYS_MENU = "Key_sys_menu"
@@ -93,7 +96,15 @@ class SharedPrefs(context: Context) {
     var printing_type: String?
         get() = prefs.getString(KEY_PRINTING_TYPE, "R") // I - Invoice OR R-Receipt
         set(value) = prefs.edit().putString(KEY_PRINTING_TYPE, value).apply()
-
+    var printer: String?
+        get()= prefs.getString(KEY_PRINTER, "")
+        set(value) = prefs.edit().putString(KEY_PRINTER, value).apply()
+    var printing_so_mode: String?
+        get() = prefs.getString(KEY_PRINTING_SO_MODE, "F") // F - Full OR H- Only Header
+        set(value) = prefs.edit().putString(KEY_PRINTING_SO_MODE, value).apply()
+    var printing_inv_mode: String?
+        get() = prefs.getString(KEY_PRINTING_SO_MODE, "F") // F - Full OR H- Only Header
+        set(value) = prefs.edit().putString(KEY_PRINTING_SO_MODE, value).apply()
     var lang_Encode_latin:String?
         get() = prefs.getString(KEY_LANG_ENCODE_LATIN, null)
         set(value) = prefs.edit().putString(KEY_LANG_ENCODE_LATIN, value).apply()

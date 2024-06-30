@@ -314,7 +314,16 @@
                 app:layout_constraintEnd_toStartOf="@+id/editBtn"
                 app:layout_constraintTop_toBottomOf="@+id/view"
                 app:srcCompat="@drawable/ic_view1" />
-
+            <ImageButton
+                android:id="@+id/printBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                app:layout_constraintEnd_toStartOf="@+id/viewBtn"
+                app:layout_constraintTop_toTopOf="@+id/viewBtn"
+                app:srcCompat="@drawable/ic_print"
+                android:contentDescription="@string/btn_view_caption"/>
             <TextView
                 android:id="@+id/sale_status"
                 android:layout_width="0dp"
@@ -332,9 +341,9 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/viewBtn"
+                app:layout_constraintEnd_toStartOf="@+id/printBtn"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/viewBtn"
+                app:layout_constraintTop_toTopOf="@+id/printBtn"
                 tools:text="" />
 
             <androidx.constraintlayout.widget.Guideline

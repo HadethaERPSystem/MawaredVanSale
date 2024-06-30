@@ -122,9 +122,9 @@ class CashbookStatementFragment : ScopedFragment(), KodeinAware, IDateRangePicke
                 ReportRowHeader(
                     "#",
                     "${resources.getString(R.string.lbl_customer_name)}",
-                    "${resources.getString(R.string.rpt_received_amount)} ${App.prefs.saveUser?.cr_code}",
-                    "${resources.getString(R.string.rpt_paid_amount)} ${App.prefs.saveUser?.cr_code}",
-                    "${resources.getString(R.string.rpt_amount_balance)} ${App.prefs.saveUser?.cr_code}"
+                    "${resources.getString(R.string.rpt_received_amount)} ${App.prefs.saveUser?.sl_cr_code}",
+                    "${resources.getString(R.string.rpt_paid_amount)} ${App.prefs.saveUser?.sl_cr_code}",
+                    "${resources.getString(R.string.rpt_amount_balance)} ${App.prefs.saveUser?.sl_cr_code}"
                 )
             pageAdapter.setHeader(header)
             viewModel.cbsItems.observe(viewLifecycleOwner, Observer {

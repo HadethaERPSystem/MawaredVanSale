@@ -168,6 +168,7 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
             if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_ref_Id){
                 viewModel.clearItems()
             }
+            binding.atcCustomer.dismissDropDown()
             viewModel.setPriceCategory()
             viewModel.setTerm("")
         }
@@ -190,8 +191,6 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
             adapter.setCustomers(cu)
             if(viewModel.mode != "Add" && cu.size > 0 && viewModel._entityEo != null){
                 viewModel.selectedCustomer = cu.find { it.cu_ref_Id == viewModel._entityEo?.so_customerId}
-            }else{
-                binding.atcCustomer.showDropDown()
             }
         })
 
@@ -227,11 +226,8 @@ class PSOrderEntryFragment : ScopedFragmentLocation() , KodeinAware, IMessageLis
         })
 
         viewModel.setVoucherCode("PSOrder")
-        var cr_id = App.prefs.saveUser!!.sl_cr_Id
-        if(App.prefs.saveUser!!.sl_cr_Id == App.prefs.saveUser!!.ss_cr_Id){
-            cr_id = App.prefs.saveUser!!.sf_cr_Id
-        }
-        viewModel.setCurrencyId(cr_id!!)
+
+        viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
         viewModel.setItems(null)
         if(viewModel.mode != "Add") viewModel.setTerm("") else viewModel.term.value = ""
     }

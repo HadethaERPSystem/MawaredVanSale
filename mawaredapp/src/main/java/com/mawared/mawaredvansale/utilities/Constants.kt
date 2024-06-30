@@ -12,10 +12,12 @@ const val API_KEY = ""
 //Cloud
 //const val BASE_URL_API = "http://104.227.250.246:6615/api/"
 //const val BASE_URL = "http://104.227.250.246:6615/"
+//const val BASE_URL_API = "http://app.alnadir.com:6615/api/"
+//const val BASE_URL = "http://app.alnadir.com:6615/"
 
 // Demo  Al-nader cloud
-const val BASE_URL_API = "http://104.227.250.246:3984/api/"
-const val BASE_URL = "http://104.227.250.246:3984/"
+//const val BASE_URL_API = "http://104.227.250.246:3984/api/"
+//const val BASE_URL = "http://104.227.250.246:3984/"
 
 //const val BASE_URL_API = "http://app.alnadir.com:3984/api/"
 //const val BASE_URL = "http://app.alnadir.com:3984/"
@@ -27,12 +29,12 @@ const val BASE_URL = "http://104.227.250.246:3984/"
 //===========================================================================
 // IIF Live
 //===========================================================================
-//const val BASE_URL_API = "http://185.80.42.138:6615/api/"
-//const val BASE_URL = "http://185.80.42.138:6615/"
+//const val BASE_URL_API = "http://37.236.83.232:6615/api/"
+//const val BASE_URL = "http://37.236.83.232:6615/"
 
 // IIF Demo
-//const val BASE_URL_API = "http://185.80.42.138:6555/api/"
-//const val BASE_URL = "http://185.80.42.138:6555/"
+//const val BASE_URL_API = "http://37.236.83.232:8888/api/"
+//const val BASE_URL = "http://37.236.83.232:8888/"
 
 //===========================================================================
 // KR LIVE 192.168.111.2
@@ -68,15 +70,15 @@ const val BASE_URL = "http://104.227.250.246:3984/"
 
 //===========================================================================
 // For local test
-//const val BASE_URL_API = "http://192.168.123.30/mderp.WebAPI/api/"
-//const val BASE_URL = "http://192.168.123.30/mderp.WebAPI/"
+const val BASE_URL_API = "http://192.168.31.141/mderp.WebAPI/api/"
+const val BASE_URL = "http://192.168.31.141/mderp.WebAPI/"
 
 //192.168.1.14
-//const val BASE_URL_API = "http://192.168.1.230/mderp.WebAPI/api/"
-//const val BASE_URL = "http://192.168.1.230/mderp.WebAPI/"
+//const val BASE_URL_API = "http://192.168.100.159/mderp.WebAPI/api/"
+//const val BASE_URL = "http://192.168.100.159/mderp.WebAPI/"
 
-//const val BASE_URL_API = "http://192.168.1.18/mderp.WebAPI/api/"
-//const val BASE_URL = "http://192.168.1.18/mderp.WebAPI/"
+//const val BASE_URL_API = "http://10.200.0.214/mderp.WebAPI/api/"
+//const val BASE_URL = "http://10.200.0.214/mderp.WebAPI/"
 
 //===========================================================================
 //=================== AL-RAAQI live =========================================
@@ -90,14 +92,14 @@ const val BASE_URL = "http://104.227.250.246:3984/"
 
 //AL-Raji
 //Live
-//const val BASE_URL_API = "http://185.80.42.51:1818/api/"
-//const val BASE_URL = "http://185.80.42.51:1818/"
+//const val BASE_URL_API = "https://api.erp-raji.com/api/"
+//const val BASE_URL = "https://api.erp-raji.com/"
 //Demo
-//const val BASE_URL_API = "http://185.80.42.51:1717/api/"
-//const val BASE_URL = "http://185.80.42.51:1717/"
+//const val BASE_URL_API = "https://apidemo.erp-raji.com/api/"
+//const val BASE_URL = "https://apidemo.erp-raji.com/"
 // new
 //const val BASE_URL_API = "http://185.80.42.118:5009/api/"
-//const val BASE_URL = "http://185.80.42.118:5009/"
+//const val BASE_URL = "http://185.80.42.118:5009/"-
 //===========================================================================
 //====================== Diwan ==============================================
 // Live //7667
@@ -106,6 +108,14 @@ const val BASE_URL = "http://104.227.250.246:3984/"
 // Demo
 //const val BASE_URL_API = "http://185.80.42.100:7586/api/"
 //const val BASE_URL = "http://185.80.42.100:7586/"
+//===========================================================================
+//====================== Merza ==============================================
+// Live //7667
+//const val BASE_URL_API = "http://185.80.42.100:9980/api/"
+//const val BASE_URL = "http://185.80.42.100:9980/"
+// Demo
+//const val BASE_URL_API = "http://185.80.42.100:9981/api/"
+//const val BASE_URL = "http://185.80.42.100:9981/"
 
 //===========================================================================
 //====================== AL-Manara AL-Khadhra'a  ============================
@@ -127,6 +137,34 @@ const val BASE_URL = "http://104.227.250.246:3984/"
 //const val BASE_URL_API = "http://185.80.42.50:8844/api/"
 //const val BASE_URL = "http://185.80.42.50:8844/"
 
+//==============================================================================
+//======================== Sales demo
+//const val BASE_URL_API = "https://sales-api.demo.erpmawared.com/api/"
+//const val BASE_URL = "https://sales-api.demo.erpmawared.com/"
+
+//====================== Hadetha demo API ======================================
+//const val BASE_URL_API = "https://api.hsa.demo.erpmawared.com/api/"
+//const val BASE_URL = "https://api.hsa.demo.erpmawared.com/"
+
+//====================== Diva demo API ======================================
+//const val BASE_URL_API = "https://diva.api.demo.erpmawared.com/api/"
+//const val BASE_URL = "https://diva.api.demo.erpmawared.com/"
+
+//====================== IIFJY demo API ======================================
+//const val BASE_URL_API = "https://api.iifjy.demo.erpmawared.com/api/"
+//const val BASE_URL = "https://api.iifjy.demo.erpmawared.com/"
+
+//====================== Unimedica demo API ======================================
+//const val BASE_URL_API = "https://api.unimedica.demo.erpmawared.com/api/"
+//const val BASE_URL = "https://api.unimedica.demo.erpmawared.com/"
+
+//====================== Dor-Alamid demo API ======================================
+//const val BASE_URL_API = "https://api.dor-alamid.demo.erpmawared.com/api/"
+//const val BASE_URL = "https://api.dor-alamid.demo.erpmawared.com/"
+//====================== Dor-Alamid Live API ======================================
+//const val BASE_URL_API = "https://api.dor-alamid.mawared-erp.net/api/"
+//const val BASE_URL = "https://api.dor-alamid.mawared-erp.net/"
+
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 
 const val URL_USER_MENU = "${BASE_URL_API}PDAMenus/Menus_GetByUser"
@@ -142,6 +180,7 @@ const val URL_PRODUCTS_GET_USER_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product
 const val URL_PRODUCTS_GET_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetOnPages"
 const val URL_PRODUCTS_GET_BY_CONTRACT = "${BASE_URL_API}PDAMasterData/Product_GetByContract"
 const val URL_PRODUCTS_GET_FOR_MARKET_PLACE= "${BASE_URL_API}PDAMasterData/Product_GetForMarketPlace"
+const val URL_PRODUCTS_GET_FOR_MARKET_PLACE_SO= "${BASE_URL_API}PDAMasterData/Product_GetForMarketPlaceSO"
 const val URL_PRODUCTS_GET_FOR_OFFERS = "${BASE_URL_API}PDAMasterData/pda_Product_GetOffers"
 // Get All Product Url
 const val URL_PRODUCT_BY_BARCODE = "${BASE_URL_API}PDAMasterData/Product_GetByBarcode"
@@ -329,9 +368,11 @@ const val URL_SALES_PLAN = "${BASE_URL_API}PDAMasterData/SalesPlan_Get"
 // Upload file URL
 const val URL_UPLOAD_FILE = "${BASE_URL_API}PDAMasterData/UploadFile"
 // Image URL
-const val URL_IMAGE = "${BASE_URL}wwwroot/uploads/Products/"
-const val URL_IMAGE_BRAND = "${BASE_URL}wwwroot/uploads/Brand/"
-const val URL_IMAGE_CATEGORY = "${BASE_URL}wwwroot/uploads/Category/"
+const val URL_GET_IMAGE = "${BASE_URL_API}PDAMasterData/LoadImage"
+
+//const val URL_IMAGE = "${BASE_URL}wwwroot/uploads/Products/"
+//const val URL_IMAGE_BRAND = "${BASE_URL}wwwroot/uploads/Brand/"
+//const val URL_IMAGE_CATEGORY = "${BASE_URL}wwwroot/uploads/Category/"
 const val URL_LOGO = "${BASE_URL}wwwroot/CompanyInfo/"
 
 const val EXTRA_DATA_LOCATIONS = "extra_data_locations"

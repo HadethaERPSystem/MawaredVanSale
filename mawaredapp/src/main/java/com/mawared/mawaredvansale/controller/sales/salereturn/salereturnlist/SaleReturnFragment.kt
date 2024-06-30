@@ -34,7 +34,7 @@ import org.kodein.di.generic.instance
 class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, SearchView.OnQueryTextListener {
 
     override val kodein by kodein()
-    private val permission = MenuSysPrefs.getPermission("Invoice")
+    private val permission = MenuSysPrefs.getPermission("SaleReturn")
     private val factory: SaleReturnViewModelFactory by instance()
 
     val viewModel by lazy {
@@ -44,7 +44,7 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, Sear
     private lateinit var binding: SaleReturnFragmentBinding
     private lateinit var navController: NavController
 
-    private var adapter = ReturnAdapter(R.layout.invoice_row, permission){ e, t->
+    private var adapter = ReturnAdapter(R.layout.sale_return_row, permission){ e, t->
         when(t){
             "E" -> onItemEditClick(e)
             "V" -> onItemViewClick(e)
@@ -95,7 +95,12 @@ class SaleReturnFragment : ScopedFragment(), KodeinAware, IMessageListener, Sear
 
     // inflate the menu
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.list_menu, menu)
+        val perm = permission.split("|")
+        if(perm.count() > 0 && perm[0] == "1"){
+            inflater.inflate(R.menu.list_menu, menu)
+        }else{
+            inflater.inflate(R.menu.search_menu, menu)
+        }
         val search = menu?.findItem(R.id.app_bar_search)
         val searchView = search?.actionView as? SearchView
         searchView?.isSubmitButtonEnabled = true

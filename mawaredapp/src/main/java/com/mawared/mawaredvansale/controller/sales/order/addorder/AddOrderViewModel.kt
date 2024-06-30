@@ -1,6 +1,7 @@
 package com.mawared.mawaredvansale.controller.sales.order.addorder
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.location.Location
 import android.view.View
 import androidx.lifecycle.LiveData
@@ -9,6 +10,9 @@ import androidx.lifecycle.Transformations
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
+import com.mawared.mawaredvansale.controller.common.GenerateTicket
+import com.mawared.mawaredvansale.controller.common.SunmiTicket
+import com.mawared.mawaredvansale.controller.common.TicketPrinting
 import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Order_Items
@@ -17,9 +21,14 @@ import com.mawared.mawaredvansale.interfaces.IMessageListener
 import com.mawared.mawaredvansale.services.repositories.masterdata.IMDataRepository
 import com.mawared.mawaredvansale.services.repositories.order.IOrderRepository
 import com.mawared.mawaredvansale.utilities.Coroutines
+import com.mawared.mawaredvansale.utilities.ImageLoader
+import com.mawared.mawaredvansale.utilities.URL_LOGO
+import com.mawared.mawaredvansale.utils.SunmiPrintHelper
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import java.util.*
+import kotlin.collections.ArrayList
 
 class AddOrderViewModel(private val orderRepository: IOrderRepository,
                         private val masterDataRepository: IMDataRepository) : BaseViewModel() {
@@ -47,12 +56,13 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
     //var isGift: MutableLiveData<Boolean> = MutableLiveData(false)
-    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.sl_cr_code ?: "")
+    var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
 
     var searchQty: MutableLiveData<String> = MutableLiveData("1")
     var searchBarcode: MutableLiveData<String> = MutableLiveData()
     var giftQty: MutableLiveData<String> = MutableLiveData("")
     var disPer: MutableLiveData<String> = MutableLiveData("")
+    var discAmnt: MutableLiveData<String> = MutableLiveData("")
 
     var selectedCustomer: Customer? = null
     var oCu_Id: Int? = null
@@ -89,6 +99,10 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
             masterDataRepository.getProductsByUserWarehouse(it, _sm_id, price_cat_code)
         }
 
+    val product : LiveData<Product> = Transformations
+        .switchMap(searchBarcode){
+        masterDataRepository.productGetByBarcode(it, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
+    }
     var rate : Double = 0.0
     private val _cr_Id: MutableLiveData<Int> = MutableLiveData()
     val currencyRate: LiveData<Currency_Rate> = Transformations
@@ -109,7 +123,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     var discount: Discount? = null
     val mDiscount: LiveData<Discount> = Transformations
         .switchMap(_prod_Id){
-            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id)
+            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id, price_cat_code)
         }
 
     var ageDebit: Customer ?= null
@@ -178,7 +192,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
                 val user = App.prefs.saveUser!!
                 val totalAmount: Double = tmpSOItems.sumByDouble { it.sod_line_total!! }
                 val netAmount: Double = tmpSOItems.sumByDouble { it.sod_net_total!! }
-                val totalDiscount = tmpSOItems.sumByDouble { it.sod_disvalue!! }
+                val totalDiscount = tmpSOItems.sumByDouble { it.sod_disvalue!! + it.sod_disc_amnt!! }
                 val strDate= LocalDateTime.now()
                 val dtFull = docDate.value + " " + LocalTime.now()
                 val doc_num = docNo.value?.toInt() ?: 0
@@ -284,6 +298,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
         giftQty.value = ""
         searchQty.value = "1"
         unitPrice = 0.0
+        discAmnt.value = ""
         //isGift.value = false
         price_cat_code = "POS"
         clear("cu")
@@ -300,6 +315,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
                         searchBarcode.value = ""
                         searchQty.value = "1"
                         giftQty.value = ""
+                        discAmnt.value = ""
                         //isGift.value = false
                         unitPrice = 0.0
                         clear("prod")
@@ -338,10 +354,16 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
 
             var disValue = 0.0
             var lDisPer: Double = 0.0
+            var _discAmnt: Double = 0.0
 
             if(disPer.value != null && disPer.value!!.length > 0){
                 lDisPer =  disPer.value!!.toDouble()
             }
+
+            if(discAmnt.value != null && discAmnt.value!!.length > 0){
+                _discAmnt = discAmnt.value!!.toDouble()
+            }
+
             disValue = (lDisPer / 100) * lineTotal
 
 
@@ -362,7 +384,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
             }
 
             //val netTotal = if(isGift.value == true) 0.0 else (lineTotal - disValue)
-            val netTotal = (lineTotal - disValue)
+            val netTotal = (lineTotal - (disValue + _discAmnt))
             val price_afd = (lDisPer / 100) * unitPrice
 
             val user = App.prefs.saveUser!!
@@ -370,7 +392,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
             if(mItem == null){
                 rowNo++
                 val itemEo = Sale_Order_Items(rowNo, 0, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, newQty, 1.00, newQty, gift_qty, unitPrice, price_afd,
-                    lineTotal, lDisPer, disValue, 0.0, 0.0, netTotal, selectedProduct!!.pr_wr_Id,  selectedProduct!!.pr_batch_no,  selectedProduct!!.pr_expiry_date,
+                    lineTotal, lDisPer, disValue, 0.0, 0.0, _discAmnt, netTotal, selectedProduct!!.pr_wr_Id,  selectedProduct!!.pr_batch_no,  selectedProduct!!.pr_expiry_date,
                     selectedProduct!!.pr_mfg_date, null, null, null, false,"${strDate}",
                     "${user.id}", "${strDate}", "${user.id}")
                 itemEo.sod_prod_name = selectedProduct!!.pr_description_ar
@@ -388,6 +410,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
                 mItem.sod_net_total = netTotal
                 mItem.sod_discount = lDisPer
                 mItem.sod_disvalue = disValue
+                mItem.sod_disc_amnt = _discAmnt
                 mItem.updated_at = "$strDate"
             }
             _soItems.value = arrayListOf()
@@ -429,6 +452,15 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
             }
         }
 
+        if(discAmnt.value != null && discAmnt.value!!.length > 0){
+            val lineTotal = unitPrice * (tQty - gQty)
+            val discPer = (discount!!.pr_dis_value!! / lineTotal) * 100
+            val discPerLimit = App.prefs.saveUser!!.iDiscPrcnt
+            if(discPer > discPerLimit) {
+                val str: String = ctx!!.resources!!.getString(R.string.msg_error_discount_overflow)
+                msg += (if (msg!!.length > 0) "\n\r" else "") + String.format(str, App.prefs.saveUser!!.iDiscPrcnt)
+            }
+        }
         if(pr_qty <= 0){
             msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_available_product_qty)
         }
@@ -463,7 +495,7 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
 
     fun setTotals(){
         totalAmount.postValue(soItems.value!!.sumByDouble{ it.sod_line_total ?: 0.0 } )
-        totalDiscount.postValue(soItems.value!!.sumByDouble { it.sod_disvalue  ?: 0.0 })
+        totalDiscount.postValue(soItems.value!!.sumByDouble { (it.sod_disvalue  ?: 0.0) + (it.sod_disc_amnt ?: 0.0) })
         netTotal.postValue(soItems.value!!.sumByDouble { it.sod_net_total ?: 0.0 })
     }
 
@@ -509,5 +541,37 @@ class AddOrderViewModel(private val orderRepository: IOrderRepository,
     fun cancelJob(){
         orderRepository.cancelJob()
         masterDataRepository.cancelJob()
+    }
+
+    fun doPrint(entityEo: Sale_Order){
+        try {
+            val lang = Locale.getDefault().toString().toLowerCase()
+            //entityEo.so_salesman_phone = App.prefs.savedSalesman?.sm_phone_no ?: ""
+            if(App.prefs.printer == "Sunmi"){
+                var bmp : Bitmap? = null
+                ImageLoader().LoadImageFromUrl(URL_LOGO + "co_black_logo.png") {
+                    bmp = it
+                    //val bmp = SunmiPrintHelper.getInstance().LoadImageFromUrl()
+                    var tickets : List<SunmiTicket> = arrayListOf()
+                    if(App.prefs.printing_so_mode == "H") {
+                        tickets = GenerateTicket(ctx!!, lang).createSunmiTicket(entityEo, bmp,  "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION" )
+                    }
+                    else{
+                        tickets = GenerateTicket(ctx!!, lang).createSunmiTicket(entityEo, bmp,  "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", "", "" )
+                    }
+
+                    SunmiPrintHelper.getInstance().printReceipt(ctx, tickets)
+                    msgListener?.onSuccess("Print Successfully")
+                }
+            }else{
+                val tickets = GenerateTicket(ctx!!, lang).create(entityEo, URL_LOGO + "co_black_logo.png", "Mawared Vansale\nAL-HADETHA FRO SOFTWATE & AUTOMATION", null, null )
+
+                TicketPrinting(ctx!!, tickets).run()
+                msgListener?.onSuccess("Print Successfully")
+            }
+        }catch (e: Exception){
+            msgListener!!.onFailure("Error Exception ${e.message}")
+            e.printStackTrace()
+        }
     }
 }

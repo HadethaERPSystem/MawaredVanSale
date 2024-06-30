@@ -249,7 +249,7 @@
             android:layout_height="35dp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
-            android:background="@color/zxing_possible_result_points"
+            android:background="@color/inputbackcolor"
             android:fontFamily="@font/droid_kufi_regular"
             android:gravity="center"
             android:text="@{viewmodel.numberFormat(viewmodel.fc_amount)}"

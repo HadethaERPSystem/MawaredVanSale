@@ -138,6 +138,7 @@ class OffersFragment : ScopedFragment(), KodeinAware, IMessageListener {
         })
         model.customer.observe(viewLifecycleOwner, Observer {
             viewModel.customer = it
+            viewModel.price_cat = it.cu_price_cat_code ?: "POS"
         })
         model.vocode.observe(viewLifecycleOwner, Observer {
             viewModel.vocode = it

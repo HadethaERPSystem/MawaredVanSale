@@ -44,8 +44,10 @@ class atc_invoices_Adapter(context: Context, @LayoutRes private val layoutResour
     override fun getFilter(): Filter {
         return object : Filter(){
             override fun publishResults(constraint: CharSequence?, filterResults: FilterResults?) {
-                mProducts = filterResults?.values as List<Product>
-                notifyDataSetChanged()
+                if(filterResults?.values != null) {
+                    mProducts = filterResults?.values as List<Product>
+                    notifyDataSetChanged()
+                }
             }
 
             override fun performFiltering(constraint: CharSequence?): FilterResults {
@@ -56,7 +58,7 @@ class atc_invoices_Adapter(context: Context, @LayoutRes private val layoutResour
                     allProducts
                 else
                     allProducts.filter {
-                            it.pr_batch_no!!.contains(queryString)
+                            it.ref_no!!.contains(queryString)
                     }
                 return filterResult
             }
