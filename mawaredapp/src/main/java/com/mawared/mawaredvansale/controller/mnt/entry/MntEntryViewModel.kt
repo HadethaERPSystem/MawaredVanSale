@@ -185,7 +185,7 @@ class MntEntryViewModel(private val mntRepository: IMaintenanceRepository,
     var discount: Discount? = null
     val mDiscount: LiveData<Discount> = Transformations
         .switchMap(_prod_Id){
-            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id)
+            masterDataRepository.getDiscountItem(it, LocalDate.now(), App.prefs.saveUser!!.org_Id, price_cat_code)
         }
 
     var voucher: Voucher? = null

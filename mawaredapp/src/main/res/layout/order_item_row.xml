@@ -274,7 +274,7 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
                 android:fontFamily="@font/droid_kufi_regular"
-                android:text="@string/lbl_discount_per"
+                android:text="@string/lbl_discount"
                 android:textAlignment="center"
                 android:background="#e7e7e7"
                 android:textSize="13sp"

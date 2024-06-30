@@ -5,9 +5,8 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PagedList
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.mawared.mawaredvansale.data.db.AppDatabase
@@ -19,23 +18,20 @@ import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
 import com.mawared.mawaredvansale.services.netwrok.responses.ResponseSingle
 import com.mawared.mawaredvansale.services.repositories.NetworkState
 import com.mawared.mawaredvansale.services.repositories.masterdata.ItemDS.*
-import com.mawared.mawaredvansale.services.repositories.masterdata.customerDS.CustomerDataSource
-import com.mawared.mawaredvansale.services.repositories.masterdata.customerDS.CustomerDataSourceFactory
-import com.mawared.mawaredvansale.services.repositories.masterdata.customerDS.ScheduledCustomerDataSource
-import com.mawared.mawaredvansale.services.repositories.masterdata.customerDS.ScheduledCustomerDataSourceFactory
+
 import com.mawared.mawaredvansale.utilities.ApiException
 import com.mawared.mawaredvansale.utilities.NoConnectivityException
 import com.mawared.mawaredvansale.utilities.POST_PER_PAGE
-import com.mawared.mawaredvansale.utilities.URL_IMAGE
+import com.mawared.mawaredvansale.utilities.URL_GET_IMAGE
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import org.threeten.bp.LocalDate
+import com.mawared.mawaredvansale.R
 
 import android.graphics.Bitmap
 import com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDoc
 import com.mawared.mawaredvansale.data.db.entities.inventory.InventoryDocLines
-import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Items
 
 
 private val MINIMUM_INTERVAL = 6
@@ -647,6 +643,30 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override suspend fun getProductForMarketSO(userId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, cat_Id: Int?, br_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>? {
+        _networkState.postValue(NetworkState.LOADING)
+        try {
+            val response =  apiRequest { api.products_GetForMarketSO(userId, priceCode, currentDate , org_Id, cat_Id, br_Id, Term, objCode, page, POST_PER_PAGE) }
+            if (response.isSuccessful) {
+                _networkState.postValue(NetworkState.LOADED)
+                return response.data
+            }
+            _networkState.postValue(NetworkState.LOADED)
+            return null
+        } catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return null
+        } catch (e: Exception){
+            _networkState.postValue(NetworkState.ERROR)
+            Log.e("Error Exception", "${e.message}", e)
+            return null
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Error API Exception", "${e.message}", e)
+            return null
+        }
+    }
     override suspend fun getProductForOffers(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>? {
         try {
             val response =  apiRequest { api.products_GetForOffers(warehouseId, priceCode, currentDate , org_Id, Term, objCode, page, POST_PER_PAGE) }
@@ -1278,7 +1298,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
-    override fun getDiscountItem(pr_Id: Int, currentDate: LocalDate, org_Id: Int?): LiveData<Discount>  {
+    override fun getDiscountItem(pr_Id: Int, currentDate: LocalDate, org_Id: Int?, price_cat_code: String): LiveData<Discount>  {
         job = Job()
         return object : LiveData<Discount>() {
             override fun onActive() {
@@ -1286,7 +1306,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                 job?.let {
                     CoroutineScope(IO).launch {
                         try {
-                            val response = apiRequest { api.discount_GetCurrent(pr_Id, currentDate, org_Id) }
+                            val response = apiRequest { api.discount_GetCurrent(pr_Id, currentDate, org_Id, price_cat_code) }
                             withContext(Main) {
                                 value = response.data
                                 job?.complete()
@@ -1705,12 +1725,17 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         @BindingAdapter("android:urlRemoteImage")
         fun loadImage(view: ImageView, imgeUrl: String?) {
 
-            if (imgeUrl == null) return
+            val options: RequestOptions = RequestOptions()
+                .centerCrop()
+                .placeholder(R.drawable.progress_animation)
+                .error(R.drawable.imagenotfound)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .priority(Priority.HIGH)
+                .dontAnimate()
+                .dontTransform()
 
             Glide.with(view.context)
-                .load(URL_IMAGE + imgeUrl).apply(RequestOptions().fitCenter())
-                //.error(R.drawable.ic_broken_image) //6
-                //.fallback(R.drawable.ic_no_image) //7
+                .load(URL_GET_IMAGE + "/Products/" + (imgeUrl ?: "noimage")).apply(options)
                 .into(view)
         }
 

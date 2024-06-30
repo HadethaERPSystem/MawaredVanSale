@@ -21,6 +21,7 @@ data class Sale_Order_Items(
     var sod_disvalue: Double?,      // Fixed Amount Discount
     var sod_add_dis_per: Double?,
     var sod_add_dis_value: Double?,
+    var sod_disc_amnt: Double?,
     var sod_net_total: Double?,
     var sod_wr_Id: Int?,
     var sod_batch_no: String?,

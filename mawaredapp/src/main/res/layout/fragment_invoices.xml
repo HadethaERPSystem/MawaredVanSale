@@ -9,7 +9,11 @@
                 name="viewmodel"
                 type="com.mawared.mawaredvansale.controller.sales.invoices.invoiceslist.InvoicesViewModel" />
     </data>
-
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pullToRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp">
     <LinearLayout
         android:id="@+id/inv_list_lc"
         android:layout_width="match_parent"
@@ -63,18 +67,14 @@
                     tools:ignore="TouchTargetSizeCheck" />
             </LinearLayout>
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/pullToRefresh"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp">
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     tools:listitem="@layout/invoice_row"
                     android:id="@+id/rcv_invoices"/>
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     </LinearLayout>
-
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

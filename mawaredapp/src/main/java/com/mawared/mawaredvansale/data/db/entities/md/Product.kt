@@ -52,6 +52,8 @@ data class Product (
     var pr_d_discPrcnt: Double = 0.0
     var pr_isGift: Boolean = false
     var pr_user_discPrcnt: Double = 0.0
+    var pr_disc_amnt: Double = 0.0
+    var pr_user_disc_amnt: Double = 0.0
     var addQty: Double? = null
     fun returnDateString(isoString: String?) : String{
         try {

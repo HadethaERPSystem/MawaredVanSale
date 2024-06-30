@@ -1,5 +1,7 @@
 package com.mawared.mawaredvansale.controller.settings
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -7,6 +9,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -17,6 +21,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.utilities.toast
@@ -25,6 +31,7 @@ import print.Print
 import java.text.DecimalFormat
 import java.util.*
 
+@SuppressLint("MissingPermission")
 class DeviceListActivity: Activity() {
     val TAG = DeviceListActivity::class.java.simpleName
     private var D = true
@@ -53,7 +60,7 @@ class DeviceListActivity: Activity() {
             finish()
         }
     }
-    private var message: Message? = null
+    private var message: Message = Message()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +74,24 @@ class DeviceListActivity: Activity() {
             strAddressList = ""
             doDiscovery()
             it.visibility = View.GONE
+        }
+
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED)
+//        {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+//            {
+//                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 2)
+//                return
+//            }
+//        }
+        if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), 2)
+            finish()
+        }
+
+        if(!hasPermission(Manifest.permission.BLUETOOTH_SCAN)){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.BLUETOOTH_SCAN), 2)
+            finish()
         }
 
         // Array Adapter
@@ -99,6 +124,7 @@ class DeviceListActivity: Activity() {
     private fun getPairedData(): List<String>{
         val data: ArrayList<String> = arrayListOf()
         //默认的蓝牙适配器
+
         mBtAdapter = BluetoothAdapter.getDefaultAdapter()
         // 得到当前的一个已经配对的蓝牙设备
         val pairedDevices = mBtAdapter!!.bondedDevices
@@ -168,6 +194,7 @@ class DeviceListActivity: Activity() {
             val hasConnected = false
             progress.visibility = View.VISIBLE
             try {
+
                 if (mBtAdapter!!.isDiscovering) {
                     mBtAdapter!!.cancelDiscovery()
                 }
@@ -253,6 +280,14 @@ class DeviceListActivity: Activity() {
             val dummy = thread
             thread = null
             dummy!!.interrupt()
+        }
+    }
+
+    private fun hasPermission(permission: String): Boolean{
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+        } else  {
+           true
         }
     }
 }

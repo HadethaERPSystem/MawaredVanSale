@@ -26,7 +26,7 @@ class CartAdapter (@LayoutRes private val layoutResource: Int, private val click
             tview_sc.text = App.prefs.saveUser!!.sl_cr_code!!
             tview_line_total.text = "${item.od_line_total.toFormatNumber()}"
             tview_sc2.text = App.prefs.saveUser!!.sl_cr_code!!
-            tview_disc_value.text = "${((item.od_disvalue ?: 0.0) + (item.od_add_dis_value ?: 0.0)).toFormatNumber()}"
+            tview_disc_value.text = "${((item.od_disvalue ?: 0.0) + (item.od_add_dis_value ?: 0.0)+ (item.od_disc_amnt ?: 0.0)).toFormatNumber()}"
             tview_net_total.text = "${item.od_net_total.toFormatNumber()}"
             tview_sc3.text = App.prefs.saveUser!!.sl_cr_code!!
 

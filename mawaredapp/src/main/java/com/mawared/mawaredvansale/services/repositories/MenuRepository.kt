@@ -19,6 +19,7 @@ import com.mawared.mawaredvansale.services.netwrok.ApiService
 import com.mawared.mawaredvansale.services.netwrok.SafeApiRequest
 import com.mawared.mawaredvansale.utilities.ApiException
 import com.mawared.mawaredvansale.utilities.NoConnectivityException
+import com.mawared.mawaredvansale.utilities.URL_GET_IMAGE
 import com.mawared.mawaredvansale.utilities.URL_LOGO
 import kotlinx.coroutines.*
 
@@ -142,7 +143,7 @@ class MenuRepository(
         fun loadImage(view: ImageView, imgeUrl: String){
             try {
                 Glide.with(view.context)
-                    .load(URL_LOGO + imgeUrl).apply(RequestOptions().fitCenter())
+                    .load(URL_GET_IMAGE + "/CompanyInfo/" + imgeUrl).apply(RequestOptions().fitCenter())
                     .into(view)
             }
             catch (e: Exception){}

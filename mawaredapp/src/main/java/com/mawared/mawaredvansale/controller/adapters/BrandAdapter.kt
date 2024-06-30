@@ -5,12 +5,14 @@ import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseAdapter
 import com.mawared.mawaredvansale.data.db.entities.md.Product_Brand
-import com.mawared.mawaredvansale.utilities.URL_IMAGE
-import com.mawared.mawaredvansale.utilities.URL_IMAGE_BRAND
+import com.mawared.mawaredvansale.utilities.URL_GET_IMAGE
 import kotlinx.android.synthetic.main.item_rv_brand.view.*
+import java.io.FileNotFoundException
 
 
 class BrandAdapter(@LayoutRes private val layoutResource: Int, private val clickFunc1: (Product_Brand) -> Unit) : BaseAdapter<Product_Brand>(null, layoutResource) {
@@ -18,21 +20,32 @@ class BrandAdapter(@LayoutRes private val layoutResource: Int, private val click
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         with(holder.itemView){
-            brandName.text = (item.br_description_ar ?: "")
+            try {
+                brandName.text = (item.br_description_ar ?: "")
 
-            if(!item.br_image_name.isNullOrEmpty()){
+                val options: RequestOptions = RequestOptions()
+                    .centerCrop()
+                    .placeholder(R.drawable.progress_animation)
+                    .error(R.drawable.imagenotfound)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .priority(Priority.HIGH)
+                    .dontAnimate()
+                    .dontTransform()
+
                 Glide.with(brandAvatar.context)
-                    .asDrawable()
-                    .load(URL_IMAGE_BRAND + item.br_image_name).apply(RequestOptions().fitCenter())
+                    .load(URL_GET_IMAGE + "/Brand/" + (item.br_image_name ?: "noimage"))
+                    .apply(options)
                     .into(brandAvatar)
-            }else{
-                brandAvatar.setImageDrawable(ContextCompat.getDrawable(brandAvatar.context, R.drawable.ic_brand))
+
+                this.tag = item
+                this.setOnClickListener {
+                    @Suppress("NAME_SHADOWING")
+                    val item = it.tag as Product_Brand
+                    clickFunc1(item)
+                }
+            }catch(e: FileNotFoundException){
             }
-            this.tag = item
-            this.setOnClickListener {
-                @Suppress("NAME_SHADOWING")
-                val item = it.tag as Product_Brand
-                clickFunc1(item)
+            catch (e: Exception){
             }
         }
     }

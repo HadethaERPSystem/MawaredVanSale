@@ -19,6 +19,7 @@ data class Sale_Return_Items(
     var srd_dis_value: Double?,      // Fixed Amount Discount
     var srd_add_dis_per: Double?,
     var srd_add_dis_value: Double?,
+    var srd_disc_amnt: Double?,
     var srd_net_total: Double?,    // Line Total
     var srd_lotno: String?,         // Lot Number
     var srd_isPromotion: String?,   // Is Current Item Promotion Or Not : Y:Yes, N: No

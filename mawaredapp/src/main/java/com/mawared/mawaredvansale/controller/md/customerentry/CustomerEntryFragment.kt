@@ -52,8 +52,7 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         binding.viewmodel = viewModel
         binding.lifecycleOwner = this
 
-        (activity as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_customer_entry_title)
-        (activity as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
+
 
         bindUI()
 
@@ -87,6 +86,11 @@ class CustomerEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as AppCompatActivity).supportActionBar!!.title = getString(R.string.layout_customer_entry_title)
+        (requireActivity() as AppCompatActivity).supportActionBar!!.subtitle = getString(R.string.layout_entry_sub_title)
+    }
     // enable options menu in this fragment
     override fun onCreate(savedInstanceState: Bundle?) {
         setHasOptionsMenu(true)

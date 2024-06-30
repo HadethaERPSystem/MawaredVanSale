@@ -50,6 +50,7 @@ interface IMDataRepository {
     // Product method
     fun getProducts(term: String, warehouseId: Int?, priceCode: String): LiveData<List<Product>>
     suspend fun getProductForMarket(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, cat_Id: Int?, br_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>?
+    suspend fun getProductForMarketSO(userId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, cat_Id: Int?, br_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>?
     suspend fun getProductForOffers(warehouseId: Int?, priceCode: String, currentDate: LocalDate, org_Id: Int?, Term: String?, objCode: String, page: Int): List<Product>?
     fun getProductsByPriceTerm(term: String, priceCode: String): LiveData<List<Product>>
     fun getProductsByUserWarehouse(term: String, userId: Int?, priceCode: String): LiveData<List<Product>>
@@ -86,7 +87,7 @@ interface IMDataRepository {
     fun priceCat_GetAll(): LiveData<List<PriceCategory>>
     fun priceCat_GetBySalesman(sm_Id: Int): LiveData<List<PriceCategory>>
     fun priceCat_GetById(prc_Id: Int): LiveData<PriceCategory>
-    fun getDiscountItem(pr_Id: Int, currentDate: LocalDate, org_Id: Int?): LiveData<Discount>
+    fun getDiscountItem(pr_Id: Int, currentDate: LocalDate, org_Id: Int?, price_cat_code: String): LiveData<Discount>
     fun warehouse_GetAll(): LiveData<List<Warehouse>>
     fun warehouse_GetBySalesman(sm_Id: Int): LiveData<List<Warehouse>>
     fun location_GetByWhs(whsId: Int) : LiveData<List<Loc>>

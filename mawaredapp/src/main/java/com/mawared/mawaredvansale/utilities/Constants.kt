@@ -70,8 +70,8 @@ const val API_KEY = ""
 
 //===========================================================================
 // For local test
-const val BASE_URL_API = "http://192.168.31.141/mderp.WebAPI/api/"
-const val BASE_URL = "http://192.168.31.141/mderp.WebAPI/"
+//const val BASE_URL_API = "http://192.168.31.141/mderp.WebAPI/api/"
+//const val BASE_URL = "http://192.168.31.141/mderp.WebAPI/"
 
 //192.168.1.14
 //const val BASE_URL_API = "http://192.168.100.159/mderp.WebAPI/api/"
@@ -162,8 +162,8 @@ const val BASE_URL = "http://192.168.31.141/mderp.WebAPI/"
 //const val BASE_URL_API = "https://api.dor-alamid.demo.erpmawared.com/api/"
 //const val BASE_URL = "https://api.dor-alamid.demo.erpmawared.com/"
 //====================== Dor-Alamid Live API ======================================
-//const val BASE_URL_API = "https://api.dor-alamid.mawared-erp.net/api/"
-//const val BASE_URL = "https://api.dor-alamid.mawared-erp.net/"
+const val BASE_URL_API = "https://api.dor-alamid.mawared-erp.net/api/"
+const val BASE_URL = "https://api.dor-alamid.mawared-erp.net/"
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 

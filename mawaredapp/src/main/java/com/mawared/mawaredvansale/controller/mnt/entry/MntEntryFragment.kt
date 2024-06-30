@@ -869,7 +869,7 @@ class MntEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<Mn
                 startActivityForResult(intent, mediaHelper.getRcCamera())
             }
         }catch (e: Exception){
-            Log.e("Permission", e.message)
+            Log.e("Permission", e.message.toString())
         }
 
     }

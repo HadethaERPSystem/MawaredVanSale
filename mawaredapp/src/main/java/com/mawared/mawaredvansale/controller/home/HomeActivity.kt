@@ -2,14 +2,16 @@ package com.mawared.mawaredvansale.controller.home
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -33,7 +35,6 @@ import org.xmlpull.v1.XmlPullParserException
 import java.io.File
 import java.io.IOException
 import java.util.*
-import java.util.jar.Manifest
 import javax.xml.parsers.DocumentBuilderFactory
 
 
@@ -55,6 +56,7 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         super.onStart()
         UpdateChecker.checkForSilent(this)
     }
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //loadLocale()// call loadLocale
@@ -120,9 +122,34 @@ class HomeActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 //            e.printStackTrace()
 //        }
 
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+            ), 1
+        )
+        checkStoragePermission()
 
     }
 
+    fun checkStoragePermission(){
+        // If you have access to the external storage, do whatever you need
+        // If you have access to the external storage, do whatever you need
+        if (Environment.isExternalStorageEmulated()) {
+
+            // If you don't have access, launch a new activity to show the user the system's dialog
+            // to allow access to the external storage
+        } else {
+            permissionstorage()
+        }
+    }
+    private fun permissionstorage() {
+        val intent = Intent()
+        intent.action = android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+        val uri: Uri = Uri.fromParts("package", this.packageName, null)
+        intent.data = uri
+        startActivity(intent)
+    }
     @Throws(XmlPullParserException::class, IOException::class)
     fun parseXml(parser: XmlPullParser){
         var eventType = parser.eventType

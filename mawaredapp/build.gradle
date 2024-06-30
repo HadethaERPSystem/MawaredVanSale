@@ -25,8 +25,8 @@ android {
         applicationId "com.mawared.mawaredvansale"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 98
-        versionName "V1.11.98"
+        versionCode 99
+        versionName "V1.11.99"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

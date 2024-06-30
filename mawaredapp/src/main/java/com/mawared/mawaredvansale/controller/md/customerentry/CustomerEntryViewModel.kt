@@ -117,11 +117,14 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
                         val response = repository.customerSaveOrUpdate(baseEo)
                         if(response.isSuccessful){
                             _baseEo.value = response.data
+                            isRunning = false
                         }
                         else{
+                            isRunning = false
                             msgListener?.onFailure("Error message when try to save customer. Error is ${response.message}")
                         }
                     }catch (e: Exception){
+                        isRunning = false
                         msgListener?.onFailure("Error message when try to save customer. Error is ${e.message}")
                     }
                 }
@@ -129,6 +132,8 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
             catch (e: Exception){
                 msgListener?.onFailure("${resources!!.getString(R.string.msg_exception)} Exception is ${e.message}")
             }
+        }else{
+            isRunning = false
         }
     }
 
@@ -165,11 +170,11 @@ class CustomerEntryViewModel(private val repository: IMDataRepository) : BaseVie
         }
 
         if(mcu_address_ar.value.isNullOrEmpty()){
-            msg = (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_address)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_address)
         }
 
         if(mcu_mobile.value.isNullOrEmpty() && mcu_phone.value.isNullOrEmpty()){
-            msg = (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_mobile)
+            msg += (if(msg!!.length > 0) "\n\r" else "")  +  resources!!.getString(R.string.msg_error_mobile)
         }
 
         if(!msg.isNullOrEmpty()){

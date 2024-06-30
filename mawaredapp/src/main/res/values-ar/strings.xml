@@ -476,4 +476,5 @@
     <string name="warranty_no">رقم الضمان</string>
     <string name="select_regular_maintenance">اختر الصيانة الدورية</string>
     <string name="contract_no">رقم العقد</string>
+    <string name="lbl_disc_amnt">خصم مبلغ</string>
 </resources>

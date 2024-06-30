@@ -64,7 +64,7 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
         if(items != null && _items == items){
             return
         }
-        _items.value = items!!
+        _items.value = items ?: emptyList()
     }
     //---------------------
     //---- button function

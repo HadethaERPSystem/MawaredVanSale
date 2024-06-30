@@ -13,7 +13,7 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="3dp"
             android:layout_marginEnd="5dp"
-            android:autofillHints="@string/lbl_customer_name_ar"
+            android:autofillHints="@string/lbl_discount_per"
             android:background="@color/inputbackcolor"
             android:fontFamily="@font/droid_kufi_regular"
             android:gravity="center_vertical"
@@ -21,19 +21,39 @@
             android:text="@string/lbl_discount_per"
             android:textColor="@android:color/black"
             android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/closeBtn"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/txt_discAmnt"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="5dp"
+            android:autofillHints="@string/lbl_disc_amnt"
+            android:background="@color/inputbackcolor"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:gravity="center_vertical"
+            android:hint="@string/lbl_disc_amnt"
+            android:text="@string/lbl_disc_amnt"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline1"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
+            app:layout_constraintTop_toTopOf="parent" />
         <ImageButton
             android:id="@+id/closeBtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:background="@drawable/custom_red_button"
             android:fontFamily="@font/droid_kufi_regular"
             app:layout_constraintBottom_toBottomOf="@+id/txt_disc"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline1"
             app:layout_constraintTop_toTopOf="@+id/txt_disc"
             app:srcCompat="@drawable/ic_close_32"
             tools:ignore="SpeakableTextPresentCheck" />
@@ -53,8 +73,28 @@
             android:text=""
             android:textColor="@color/black"
             android:textSize="@dimen/_11ssp"
-            app:layout_constraintEnd_toStartOf="@+id/applyBtn"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_disc"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/addDiscAmnt"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:enabled="true"
+            android:gravity="center_horizontal|center_vertical"
+            android:hint="@string/hint_enter_disc_amnt"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="@dimen/_11ssp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline1"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toBottomOf="@+id/txt_disc"
             tools:ignore="TouchTargetSizeCheck" />
 
@@ -62,16 +102,31 @@
             android:id="@+id/applyBtn"
             android:layout_width="0dp"
             android:layout_height="40dp"
+            android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             android:background="@drawable/button_gray"
             android:fontFamily="@font/droid_kufi_regular"
-            android:paddingStart="40dp"
-            android:paddingEnd="30dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
             android:text="@string/btn_ok"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="@+id/addDisc"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline1"
             app:layout_constraintTop_toTopOf="@+id/addDisc" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.70" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.35" />
 </androidx.constraintlayout.widget.ConstraintLayout>

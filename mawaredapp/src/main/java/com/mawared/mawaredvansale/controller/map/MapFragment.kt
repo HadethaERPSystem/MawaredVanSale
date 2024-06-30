@@ -325,9 +325,9 @@ class MapFragment : Fragment(), KodeinAware, IMainNavigator<Call_Cycle>, IDatePi
     private fun getCityName(lat: Double, long: Double): String{
         var CityName = ""
         val geoCoder = Geocoder(requireContext(), Locale.getDefault())
-        val address: List<Address> = geoCoder.getFromLocation(lat, long, 1)
+        val address = geoCoder.getFromLocation(lat, long, 1)
 
-        CityName = address.get(0).locality
+        CityName = address?.get(0)?.locality ?: ""
         return CityName
     }
 
@@ -335,9 +335,9 @@ class MapFragment : Fragment(), KodeinAware, IMainNavigator<Call_Cycle>, IDatePi
     private fun getCountryName(lat: Double, long: Double): String{
         var countryName = ""
         val geoCoder = Geocoder(requireContext(), Locale.getDefault())
-        val address: List<Address> = geoCoder.getFromLocation(lat, long, 1)
+        val address = geoCoder.getFromLocation(lat, long, 1)
 
-        countryName = address.get(0).countryName
+        countryName = address?.get(0)?.countryName ?: ""
         return countryName
     }
 
