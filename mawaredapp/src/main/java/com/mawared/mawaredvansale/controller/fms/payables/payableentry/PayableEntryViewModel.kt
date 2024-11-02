@@ -27,7 +27,8 @@ import org.threeten.bp.LocalTime
 class PayableEntryViewModel(private val repository: IPayableRepository,
                             private val masterDataRepository: IMDataRepository) : BaseViewModel() {
 
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
+    //private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
+    private val _user_id: Int = App.prefs.saveUser!!.id
     var mode: String = "Add"
     var ctx: Context? = null
     var isRunning: Boolean = false
@@ -61,7 +62,7 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
     var term : MutableLiveData<String> = MutableLiveData()
     var selectedCustomer: Customer? = null
     val customerList :LiveData<List<Customer>> = Transformations.switchMap(term) {
-        masterDataRepository.getCustomersByOrg(_sm_id, App.prefs.saveUser!!.org_Id, it)  }
+        masterDataRepository.getCustomersByOrg(_user_id, App.prefs.saveUser!!.org_Id, it)  }
 
     var rate : Double = 0.0
     private val _cr_Id: MutableLiveData<Int> = MutableLiveData()
@@ -114,7 +115,7 @@ class PayableEntryViewModel(private val repository: IPayableRepository,
                 val cu_Id = selectedCustomer?.cu_ref_Id ?: _entityEo?.py_cu_Id
                 val baseEo = Payable(
                     user.cl_Id, user.org_Id, 0, dtFull, mVoucher.value!!.vo_Id, "${mVoucher.value!!.vo_prefix}", null,
-                    _sm_id, cu_Id, 0.00,
+                    _user_id, cu_Id, 0.00,
                     amount_usd, change_usd, amount_iqd, change_iqd,
                     user.ss_cr_Id, user.sf_cr_Id, rate, comment.value, false, location?.latitude, location?.longitude, null,
                     "$strDate", "${user.id}", "$strDate", "${user.id}"

@@ -8,18 +8,19 @@ import android.text.TextWatcher
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
+import com.mawared.mawaredvansale.controller.adapters.AutoCompleteProductAdapter
 import com.mawared.mawaredvansale.controller.adapters.CustomerAdapter1
 import com.mawared.mawaredvansale.controller.adapters.ProductSearchAdapter
 import com.mawared.mawaredvansale.controller.adapters.atc_invoices_Adapter
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
 import com.mawared.mawaredvansale.controller.common.GenerateTicket
 import com.mawared.mawaredvansale.controller.common.TicketPrinting
+import com.mawared.mawaredvansale.data.db.entities.md.DocRefDto
 import com.mawared.mawaredvansale.data.db.entities.md.Product
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return_Items
@@ -171,15 +172,14 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
             binding.atcCustomer.showDropDown()
         }
         binding.atcCustomer.setOnItemClickListener { _, _, position, _ ->
-            viewModel.allowed_select_prod.value = true
             viewModel.selectedCustomer = adapter.getItem(position)
             if(viewModel.oCu_Id != viewModel.selectedCustomer?.cu_ref_Id){
                 viewModel.clearItems()
             }
             viewModel.setPriceCategory()
             binding.atcCustomer.dismissDropDown()
-            viewModel.setTerm("")
-            binding.atcProduct.requestFocus()
+            viewModel.setInvoices("")
+            binding.atcInvoices.requestFocus()
         }
 
         binding.atcCustomer.addTextChangedListener(object: TextWatcher {
@@ -233,7 +233,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
         viewModel.setItems(null)
 
         if(viewModel.mode != "Add") {
-            viewModel.setTerm("")
+            viewModel.setInvoices("")
         }else{
             viewModel.term.value = ""
         }
@@ -290,7 +290,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
 
     // init product autocomplete view
     private fun initProductAutocomplete(products: List<Product>){
-        val adapter = ProductSearchAdapter(requireContext(),
+        val adapter = AutoCompleteProductAdapter(requireContext(),
             R.layout.support_simple_spinner_dropdown_item,
             products
         )
@@ -303,18 +303,12 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
 
         binding.atcProduct.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedProduct = adapter.getItem(position)
-            viewModel.doc_unit_price.value = ""
-            viewModel.doc_expiry.value = ""
-            viewModel.selectedInvoice = null
-            viewModel.unitPrice = 0.0
-            viewModel.setInvoices("")
-
-            binding.atcInvoices.showDropDown()
+            viewModel.doc_unit_price.value = viewModel.selectedProduct!!.pr_unit_price!!.toString()
         }
 
     }
 
-    private fun initInvoices(invoices: List<Product>){
+    private fun initInvoices(invoices: List<DocRefDto>){
         val adapter = atc_invoices_Adapter(requireContext(),
             R.layout.support_simple_spinner_dropdown_item,
             invoices
@@ -327,12 +321,14 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
         }
         binding.atcInvoices.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectedInvoice = adapter.getItem(position)
-            viewModel.invQty = viewModel.selectedInvoice!!.pr_qty ?: 0.0
-            viewModel.unitPrice = viewModel.selectedInvoice!!.pr_unit_price ?: 0.0
-            viewModel.doc_unit_price.value = viewModel.selectedInvoice!!.pr_unit_price.toString() ?: "0"
-            viewModel.ref_rowNo = viewModel.selectedInvoice!!.ref_rowNo
-            viewModel.ref_Id = viewModel.selectedInvoice!!.ref_Id
-            viewModel.ref_no = viewModel.selectedInvoice!!.ref_no
+            viewModel.setTerm("")
+            viewModel.allowed_select_prod.value = true
+            binding.atcProduct.showDropDown()
+
+//            viewModel.invQty = viewModel.selectedInvoice!!.pr_qty ?: 0.0
+//            viewModel.unitPrice = viewModel.selectedInvoice!!.pr_unit_price ?: 0.0
+//            viewModel.doc_unit_price.value = viewModel.selectedInvoice!!.pr_unit_price.toString() ?: "0"
+
 
             //viewModel.doc_expiry.value =viewModel.returnDateString(viewModel.selectedInvoice!!.pr_expiry_date ?: "")
             //viewModel.doc_unit_price.value = viewModel.numberFormat(viewModel.selectedInvoice!!.pr_unit_price ?: 0.0)
@@ -380,13 +376,17 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
                 viewModel.oCu_Id = viewModel.selectedCustomer?.cu_Id
                 viewModel.allowed_select_prod.value = false
                 binding.atcCustomer.setText("", true)
-            }
-            "prod"-> {
+                binding.atcInvoices.setText("", true)
                 binding.atcProduct.setText("", true)
             }
             "invoices"->{
                 binding.atcInvoices.setText("", true)
+                binding.atcProduct.setText("", true)
             }
+            "prod"-> {
+                binding.atcProduct.setText("", true)
+            }
+
         }
 
     }

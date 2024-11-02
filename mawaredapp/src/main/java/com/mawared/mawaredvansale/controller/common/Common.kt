@@ -18,7 +18,8 @@ object Common {
         if (!dir.exists()) {
             dir.mkdir()
         }
-        return dir.path + File.separator
+        //"${dir.absolutePath}/example.pdf"
+        return dir.absolutePath + File.separator
 
     }
 }

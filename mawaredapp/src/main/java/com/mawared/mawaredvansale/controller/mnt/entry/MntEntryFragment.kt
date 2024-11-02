@@ -595,7 +595,7 @@ class MntEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<Mn
             binding.atcCustomer.setText(viewModel.selectedInvoices?.sl_customer_name, true)
             viewModel.selectedDevice = Product(null, null, viewModel.selectedWarranty!!.prod_name,viewModel.selectedWarranty!!.prod_name, null, null, null,null,
                 null, viewModel.selectedWarranty!!.uom_Id, null,null, null, null, null, null, null,null,null, null, null, null,null,
-                null, null, null, null)
+                null, null, null, null, null,null)
             viewModel.selectedDevice!!.pr_Id = viewModel.selectedWarranty!!.prod_Id!!
             binding.atcDevice.setText(viewModel.selectedDevice!!.pr_description)
             binding.atcWarranty.dismissDropDown()

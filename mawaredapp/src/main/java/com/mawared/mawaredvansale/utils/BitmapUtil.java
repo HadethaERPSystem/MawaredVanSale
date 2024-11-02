@@ -67,11 +67,11 @@ public class BitmapUtil {
                 break;
         }
         MultiFormatWriter qrCodeWriter = new MultiFormatWriter();
-        Map<EncodeHintType, Object> hints = new HashMap<>();
-        hints.put(EncodeHintType.CHARACTER_SET, "GBK");
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+//        Map<EncodeHintType, Object> hints = new HashMap<>();
+//        hints.put(EncodeHintType.CHARACTER_SET, "GBK");
+//        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         try {
-            BitMatrix encode = qrCodeWriter.encode(content, barcodeFormat, width, height, hints);
+            BitMatrix encode = qrCodeWriter.encode(content, barcodeFormat, width, height);
             int[] pixels = new int[width * height];
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {

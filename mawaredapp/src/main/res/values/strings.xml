@@ -219,7 +219,7 @@
     <string name="msg_error_stockout_qty_greater_than_sale_qty">Required stock out quantity greater than sale quantity</string>
     <string name="msg_error_stockout_select_invoice">You should select invoice for stock out</string>
     <string name="msg_error_stockout_no_item_selected">You should select item for stock out</string>
-
+    <string name="msg_error_gift_and_promo">You can not use git and promotion at same item</string>
     <string name="msg_error_stockin_qty_greater_than_purchase_qty">Required stock-in quantity greater than purchase quantity</string>
     <string name="msg_error_stockin_qty_greater_than_transfer_qty">Required stock-in quantity greater than stock-out transfer quantity</string>
     <string name="msg_error_stockin_qty_greater_than_sale_qty">Required stock-in quantity greater than stock-out sale invoice quantity</string>

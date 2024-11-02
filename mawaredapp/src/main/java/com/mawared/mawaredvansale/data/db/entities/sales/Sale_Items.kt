@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.mawared.mawaredvansale.data.db.entities.md.Loc
+import java.io.Serializable
 
 @Entity
 data class Sale_Items (
@@ -40,7 +41,7 @@ data class Sale_Items (
     var created_by: String?,    // created user
     var updated_at: String?,    // Updated datetime
     var updated_by: String?     // Updated user
-){
+) : Serializable {
     @PrimaryKey(autoGenerate = true)
     var sld_Id: Int = 0
     var sld_cost_price: Double? = null

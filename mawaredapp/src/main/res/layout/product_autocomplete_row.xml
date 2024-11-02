@@ -83,7 +83,7 @@
                     android:paddingEnd="4dp"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:gravity="center_vertical"
-                    android:text="@{`الرصيد :`+ String.valueOf(product.pr_qty)}"
+                    android:text="@{`الكمية :`+ String.valueOf(product.pr_qty)}"
                     android:textColor="@android:color/holo_green_dark"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="parent"

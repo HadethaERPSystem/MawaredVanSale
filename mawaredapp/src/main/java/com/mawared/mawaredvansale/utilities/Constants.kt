@@ -158,12 +158,19 @@ const val API_KEY = ""
 //const val BASE_URL_API = "https://api.unimedica.demo.erpmawared.com/api/"
 //const val BASE_URL = "https://api.unimedica.demo.erpmawared.com/"
 
+//====================== Unimedica live API ======================================
+//const val BASE_URL_API = "https://api.unimedica.hsa-erp.com/api/"
+//const val BASE_URL = "https://api.unimedica.hsa-erp.com/"
+
 //====================== Dor-Alamid demo API ======================================
-//const val BASE_URL_API = "https://api.dor-alamid.demo.erpmawared.com/api/"
-//const val BASE_URL = "https://api.dor-alamid.demo.erpmawared.com/"
+const val BASE_URL_API = "https://api.dor-alamid.demo.erpmawared.com/api/"
+const val BASE_URL = "https://api.dor-alamid.demo.erpmawared.com/"
 //====================== Dor-Alamid Live API ======================================
-const val BASE_URL_API = "https://api.dor-alamid.mawared-erp.net/api/"
-const val BASE_URL = "https://api.dor-alamid.mawared-erp.net/"
+//const val BASE_URL_API = "https://api.dor-alamid.mawared-erp.net/api/"
+//const val BASE_URL = "https://api.dor-alamid.mawared-erp.net/"
+////====================== Local API ======================================
+//const val BASE_URL_API = "http://192.168.31.141/mderp.WebAPI/api/"
+//const val BASE_URL = "http://192.168.31.141/mderp.WebAPI/"
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 
@@ -174,7 +181,8 @@ const val URL_ALL_PRODUCTS = "${BASE_URL_API}PDAMasterData/ProductGetByTerm"
 const val URL_ALL_PRODUCTS_PRICE_CAT = "${BASE_URL_API}PDAMasterData/ProductGetByPriceTerm"
 const val URL_PRODUCTS_BY_USER = "${BASE_URL_API}PDAMasterData/ProductGetByUser"
 const val URL_PRODUCTS_BY_SEARCH = "${BASE_URL_API}PDAMasterData/ProductGetBySearch"
-const val URL_PRODUCTS_ON_INVOICES = "${BASE_URL_API}PDAMasterData/Product_GeInvoices"
+const val URL_PRODUCTS_BY_SEARCH_DOC = "${BASE_URL_API}PDAMasterData/Product_GetSearchBySaleDoc"
+const val  URL_INVOICES_BY_CUSTOMER = "${BASE_URL_API}PDAMasterData/Invoices_GetByCustomer"
 const val URL_PRODUCTS_GET_WAREHOUSE_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetByWarehouseOnPages"
 const val URL_PRODUCTS_GET_USER_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetByUserOnPages"
 const val URL_PRODUCTS_GET_ON_PAGES = "${BASE_URL_API}PDAMasterData/Product_GetOnPages"
@@ -396,6 +404,11 @@ const val MESSAGE_UNABLE_CONNECT = 7
 /** */ // Key names received from the BluetoothService Handler
 const val DEVICE_NAME = "device_name"
 const val MSG_TOAST = "toast"
+
+const val ENTITY_DATA = "entity_data"
+const val ENTITY_SUMMARY = "entity_summary"
+const val ENTITY_LINES = "entity_lines"
+const val REPORT_TEMPLATE = "report_template"
 
 // Intent request codes
 private const val REQUEST_CONNECT_DEVICE = 1

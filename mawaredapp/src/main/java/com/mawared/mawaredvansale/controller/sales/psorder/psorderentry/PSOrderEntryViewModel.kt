@@ -305,7 +305,7 @@ class PSOrderEntryViewModel(private val orderRepository: IOrderRepository,
             }
 
             val netTotal = (lineTotal - (disValue + _discAmnt))
-            val price_afd = (lDisPer / 100) * unitPrice
+            val price_afd = (1 - (lDisPer / 100)) * unitPrice //unitPrice * if(lDisPer == 0.0) 1.0 else (lDisPer / 100)
 
             val user = App.prefs.saveUser
 

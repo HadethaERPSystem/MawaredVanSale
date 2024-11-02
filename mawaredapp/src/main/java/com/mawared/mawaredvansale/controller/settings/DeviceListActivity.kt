@@ -211,6 +211,7 @@ class DeviceListActivity: Activity() {
                         //                            Config.isLog=true;
                         //val portOpen = Print.PortOpen(ctx, "Bluetooth,$toothAddress")
                         App.prefs.bluetooth_port = "Bluetooth,$toothAddress"
+                        App.prefs.bluetooth_address = "$toothAddress"
                         App.prefs.printer_name = info.subSequence(0, info.length-18).toString()
 
                         message = Message()

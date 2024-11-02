@@ -61,7 +61,7 @@ class Constants {
     //Demo
     //static final String UPDATE_URL = "http://195.133.221.131:6666/api/PDAMasterData/GetJsonFile";
     // Live
-    //static final String UPDATE_URL = "http://195.133.221.131:7777/api/PDAMasterData/GetJsonFile";
+    static final String UPDATE_URL = "https://api.unimedica.hsa-erp.com/api/PDAMasterData/GetJsonFile";
 
     // Manara
     // Demo //
@@ -86,5 +86,5 @@ class Constants {
 
     // Dor-Alamid
     //static final String UPDATE_URL = "https://api.dor-alamid.demo.erpmawared.com/api/PDAMasterData/GetJsonFile";
-    static final String UPDATE_URL = "https://api.dor-alamid.mawared-erp.net/api/PDAMasterData/GetJsonFile/update.json";
+    //static final String UPDATE_URL = "https://api.dor-alamid.mawared-erp.net/api/PDAMasterData/GetJsonFile/update.json";
 }

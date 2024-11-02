@@ -16,7 +16,7 @@ import com.mawared.mawaredvansale.utilities.URL_LOGO
 import java.util.*
 
 class PayableViewModel(private val repository: IPayableRepository) : BaseViewModel() {
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
+    private val _user_id: Int = App.prefs.saveUser!!.id
 
     var msgListener: IMessageListener? = null
     var ctx: Context? = null
@@ -28,7 +28,7 @@ class PayableViewModel(private val repository: IPayableRepository) : BaseViewMod
     fun loadData(list: MutableList<Payable>, term: String, pageCount: Int, loadMore: (List<Payable>?, Int) -> Unit){
         try {
             Coroutines.ioThenMain({
-                val tmp = repository.get_OnPages(_sm_id, term, pageCount)
+                val tmp = repository.get_OnPages(_user_id, term, pageCount)
                 if(tmp != null){
                     list.addAll(tmp)
                 }

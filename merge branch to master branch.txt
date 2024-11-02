@@ -1,0 +1,2 @@
+git checkout master // to change the active branch back to the master branch
+git merge rep_paging //Then we run the command git merge rep_paging to merge the new feature into the master branch.

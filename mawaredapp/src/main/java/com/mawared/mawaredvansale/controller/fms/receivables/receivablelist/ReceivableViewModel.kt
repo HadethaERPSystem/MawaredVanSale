@@ -25,8 +25,7 @@ import java.io.InputStream
 import java.util.*
 
 class ReceivableViewModel(private val repository: IReceivableRepository) : BaseViewModel() {
-    private val _sm_id: Int =
-        if (App.prefs.savedSalesman?.sm_user_id != null) App.prefs.savedSalesman!!.sm_user_id!! else 0
+    private val _user_id: Int = App.prefs.saveUser!!.id
 
     var msgListener: IMessageListener? = null
     var ctx: Context? = null
@@ -39,7 +38,7 @@ class ReceivableViewModel(private val repository: IReceivableRepository) : BaseV
     fun loadData(list: MutableList<Receivable>, term: String, pageCount: Int, loadMore: (List<Receivable>?, Int) -> Unit){
         try {
             Coroutines.ioThenMain({
-                val tmp = repository.get_OnPages(_sm_id, term, pageCount)
+                val tmp = repository.get_OnPages(_user_id, term, pageCount)
                 if(tmp != null){
                     list.addAll(tmp)
                 }

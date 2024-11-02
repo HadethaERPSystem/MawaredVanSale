@@ -25,8 +25,8 @@ android {
         applicationId "com.mawared.mawaredvansale"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 99
-        versionName "V1.11.99"
+        versionCode 100
+        versionName "V1.11.100"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -102,7 +102,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-
+    //implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.10'
     //implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.1.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -173,6 +173,7 @@ dependencies {
     // barcode lib
     def zxing_version = "3.6.0"
     implementation "com.journeyapps:zxing-android-embedded:$zxing_version"
+
     implementation 'com.android.support:multidex:1.0.3'
     //Lib
     def picasso_version = "2.71828"
@@ -187,6 +188,7 @@ dependencies {
     implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.9.3'
     // SDK ESC Print Lib
     implementation files('libs/Android_Print_SDK_ESC_V1.11.jar')
+    implementation files('libs/printer_lib.jar')
 //    implementation files('libs/btsdk.jar')
 //    implementation files('libs/zixng.jar')
 
@@ -231,4 +233,6 @@ dependencies {
 
 //    implementation 'com.google.zxing:core:3.3.3'
 //    implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+
+    //implementation "com.github.Dibyakshu:peripage-kotlin-bluetooth-printer:1.0.0" // For Bluetooth printing
 }

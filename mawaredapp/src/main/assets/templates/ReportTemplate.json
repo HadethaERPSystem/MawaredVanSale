@@ -1,0 +1,550 @@
+{
+  "settings" : {
+    "width" : "540",
+    "xMargin": "5",
+    "yMargin": "5",
+    "lineHeight": "28",
+    "textSpacing" : "5"
+  },
+  "header": {
+    "logo": "",
+    "xPos": "0.50",
+    "yPos": "5",
+    "rows": [
+      {
+        "columns": [
+          {
+            "type": "field",
+            "label": "",
+            "field": "disp_doc_date",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.20",
+            "format": "D"
+          },
+          {
+            "type": "label",
+            "label": "التأريخ : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.21"
+          },
+          {
+            "type": "field",
+            "label": "",
+            "field": "sl_refNo",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.80"
+          },
+          {
+            "type": "label",
+            "label": "الرقم : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.81"
+          }
+        ]
+      },
+      {
+        "columns": [
+          {
+            "type": "field",
+            "label": "",
+            "field": "sl_customer_name",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "15",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.80"
+          },
+          {
+            "type": "label",
+            "label": "الزبون : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.81"
+          }
+        ]
+      },
+      {
+        "columns": [
+          {
+            "type": "field",
+            "label": "",
+            "field": "sl_customer_phone",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.80"
+          },
+          {
+            "type": "label",
+            "label": "رقم الهاتف : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.81"
+          }
+        ]
+      }
+    ],
+    "saperator": {
+      "type": "line",
+      "label": "",
+      "field": "",
+      "typeface": {},
+      "start": "0",
+      "width": "1"
+    }
+  },
+  "rowheader": {
+    "columns": [
+      {
+        "type": "label",
+        "label": "المادة",
+        "typeface": {
+          "font": "fonts/droid_kufi_bold.ttf",
+          "size": "12",
+          "style": "normal",
+          "color": "black",
+          "align": "center"
+        },
+        "pointX": "0.85"
+      },
+      {
+        "type": "label",
+        "label": "الكمية",
+        "typeface": {
+          "font": "fonts/droid_kufi_bold.ttf",
+          "size": "12",
+          "style": "normal",
+          "color": "black",
+          "align": "center"
+        },
+        "pointX": "0.45"
+      },
+      {
+        "type": "label",
+        "label": "السعر",
+        "typeface": {
+          "font": "fonts/droid_kufi_bold.ttf",
+          "size": "12",
+          "style": "normal",
+          "color": "black",
+          "align": "center"
+        },
+        "pointX": "0.35"
+      },
+      {
+        "type": "label",
+        "label": "المجموع",
+        "typeface": {
+          "font": "fonts/droid_kufi_bold.ttf",
+          "size": "12",
+          "style": "normal",
+          "color": "black",
+          "align": "center"
+        },
+        "pointX": "0.23"
+      },
+      {
+        "type": "label",
+        "label": "الصافي",
+        "typeface": {
+          "font": "fonts/droid_kufi_bold.ttf",
+          "size": "12",
+          "style": "normal",
+          "color": "black",
+          "align": "center"
+        },
+        "pointX": "0.10"
+      }
+    ],
+    "saperator": {
+      "type": "line",
+      "label": "",
+      "field": "",
+      "typeface": {},
+      "start": "0",
+      "width": "1"
+    }
+  },
+  "details": {
+    "columns": [
+      {
+        "type": "field",
+        "field": "sld_prod_name_ar",
+        "typeface": {
+          "font": "fonts/arial.ttf",
+          "size": "14",
+          "style": "normal",
+          "color": "black",
+          "align": "right",
+          "jusfy": "j",
+          "textWrap": "Y"
+        },
+        "pointX": "0.97",
+        "width": "0.45"
+      },
+      {
+        "type": "field",
+        "label": "",
+        "field": "sld_unit_qty",
+        "typeface": {
+          "font": "fonts/arial.ttf",
+          "size": "13",
+          "style": "normal",
+          "color": "black",
+          "align": "right"
+        },
+        "pointX": "0.48",
+        "format" : "N"
+      },
+      {
+        "type": "field",
+        "label": "",
+        "field": "sld_unit_price",
+        "typeface": {
+          "font": "fonts/arial.ttf",
+          "size": "13",
+          "style": "normal",
+          "color": "black",
+          "align": "right"
+        },
+        "pointX": "0.38",
+        "format" : "N"
+      },
+      {
+        "type": "field",
+        "label": "",
+        "field": "sld_line_total",
+        "typeface": {
+          "font": "fonts/arial.ttf",
+          "size": "13",
+          "style": "normal",
+          "color": "black",
+          "align": "right"
+        },
+        "pointX": "0.26",
+        "format" : "N"
+      },
+      {
+        "type": "field",
+        "label": "",
+        "field": "sld_net_total",
+        "typeface": {
+          "font": "fonts/arial.ttf",
+          "size": "13",
+          "style": "normal",
+          "color": "black",
+          "align": "right"
+        },
+        "pointX": "0.13",
+        "format" : "N"
+      }
+    ],
+    "saperator": {
+      "type": "line",
+      "label": "",
+      "field": "",
+      "typeface": {},
+      "start": "0",
+      "width": "1"
+    }
+  },
+  "summary": {
+    "rows": [
+      {
+        "width": "0.5",
+        "columns": [
+          {
+            "type": "label",
+            "label": "مجموع الكميات : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.22",
+            "width": "0.20"
+          },
+          {
+            "type": "field",
+            "label": "",
+            "field": "sld_unit_qty",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.20",
+            "width": "0.20",
+            "format" : "N"
+          }
+        ]
+      },
+      {
+        "width": "0.5",
+        "columns": [
+          {
+            "type": "label",
+            "label": "مجموع الهدايا : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.22",
+            "width": "0.20"
+          },
+          {
+            "type": "field",
+            "label": "",
+            "field": "sld_gift_qty",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.20",
+            "width": "0.20",
+            "format" : "N"
+          }
+        ]
+      },
+      {
+        "width": "0.5",
+        "columns": [
+          {
+            "type": "label",
+            "label": "المجموع : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.22",
+            "width": "0.20"
+          },
+          {
+            "type": "field",
+            "label": "",
+            "field": "sl_total_amount",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.20",
+            "width": "0.20",
+            "format" : "N"
+          }
+        ]
+      },
+      {
+        "width": "0.5",
+        "columns": [
+          {
+            "type": "label",
+            "label": "مجموع الخصم : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.22",
+            "width": "0.20"
+          },
+          {
+            "type": "field",
+            "label": "",
+            "field": "sl_total_discount",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.20",
+            "width": "0.20",
+            "format" : "N"
+          }
+        ]
+      },
+      {
+        "width": "0.5",
+        "columns": [
+          {
+            "type": "label",
+            "label": "صافي المبلغ : ",
+            "field": "",
+            "typeface": {
+              "font": "fonts/droid_kufi_bold.ttf",
+              "size": "12",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.22",
+            "width": "0.20"
+          },
+          {
+            "type": "field",
+            "label": "",
+            "field": "sl_net_amount",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "right"
+            },
+            "pointX": "0.20",
+            "width": "0.20",
+            "format" : "N"
+          }
+        ]
+      }
+    ],
+    "saperator": {
+      "type": "line",
+      "label": "",
+      "field": "",
+      "typeface": {},
+      "start": "0",
+      "width": "1"
+    }
+  },
+  "footer": {
+    "rows": [
+      {
+        "columns": [
+          {
+            "type": "barcode",
+            "label": "",
+            "field": "sl_refNo",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "11",
+              "style": "normal",
+              "color": "black",
+              "align": "center"
+            },
+            "pointX": "0.50",
+            "width": "0.80",
+            "barcode_width": "300",
+            "barcode_height": "60",
+            "barcodeType": "CODE_128"
+          }
+        ]
+      },
+      {
+        "columns": [
+          {
+            "type": "newline",
+            "label": "",
+            "field": "",
+            "typeface": {},
+            "pointX": "0",
+            "width": "0"
+          }
+        ]
+      },
+      {
+        "columns": [
+          {
+            "type": "label",
+            "label": "Mawared Vansale",
+            "field": "",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.02",
+            "width": "1"
+          }
+        ]
+      },
+      {
+        "columns": [
+          {
+            "type": "label",
+            "label": "AL-HADETHA FRO SOFTWATE & AUTOMATION",
+            "typeface": {
+              "font": "fonts/arial.ttf",
+              "size": "13",
+              "style": "normal",
+              "color": "black",
+              "align": "left"
+            },
+            "pointX": "0.02",
+            "width": "1"
+          }
+        ]
+      }
+    ]
+  }
+}

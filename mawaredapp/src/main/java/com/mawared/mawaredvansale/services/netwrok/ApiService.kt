@@ -1,8 +1,6 @@
 package com.mawared.mawaredvansale.services.netwrok
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.mawared.mawaredvansale.App
-import com.mawared.mawaredvansale.BuildConfig
 import com.mawared.mawaredvansale.data.db.entities.reports.fms.CashbookStatement
 import com.mawared.mawaredvansale.data.db.entities.fms.Payable
 import com.mawared.mawaredvansale.data.db.entities.fms.Receivable
@@ -126,6 +124,10 @@ interface ApiService {
 
     @GET(URL_PRODUCTS_BY_SEARCH)
     suspend fun products_GetBySearch(@Query("Term") term: String) : Response<ResponseList<Product>>
+
+    @GET(URL_PRODUCTS_BY_SEARCH_DOC)
+    suspend fun products_GetBySearchDoc(@Query("Term") term: String, @Query("docId") docId: Int) : Response<ResponseList<Product>>
+
     @GET(URL_PRODUCTS_GET_BY_CONTRACT)
     suspend fun products_GetByContract(@Query("contId") contId: Int?, @Query("term") term: String): Response<ResponseList<Product>>
 
@@ -133,10 +135,9 @@ interface ApiService {
     suspend fun product_GetByBarcode(@Query("Barcode") barcode: String,
                                @Query("WarehouseId") warehouseId: Int?,
                                @Query("PriceCode") priceCode: String) : Response<ResponseSingle<Product>>
-    @GET(URL_PRODUCTS_ON_INVOICES)
+    @GET(URL_INVOICES_BY_CUSTOMER)
     suspend fun product_GetInvoicessByCustomer(@Query("cu_Id") cu_Id: Int,
-                                               @Query("prod_Id") prod_Id: Int,
-                                               @Query("term") term: String): Response<ResponseList<Product>>
+                                                 @Query("term") term: String): Response<ResponseList<DocRefDto>>
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     @GET(URL_SERVICES)
@@ -623,18 +624,18 @@ interface ApiService {
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .build()
 
-
+            val client = getUnsafeOkHttpClient()
             return Retrofit.Builder()
-                .client(okHttpclient) // for checking if connection is avialable or not
+                //.client(okHttpclient) // for checking if connection is avialable or not
                 .baseUrl(BASE_URL)
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(getUnsafeOkHttpClient()?.build())
+                .client(client)
                 .build()
                 .create(ApiService::class.java)
         }
 
-        fun getUnsafeOkHttpClient(): OkHttpClient.Builder? {
+        fun getUnsafeOkHttpClient1(): OkHttpClient.Builder? {
             return try {
                 // Create a trust manager that does not validate certificate chains
                 val trustAllCerts = arrayOf<TrustManager>(

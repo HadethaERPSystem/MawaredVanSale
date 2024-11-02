@@ -55,8 +55,9 @@ interface IMDataRepository {
     fun getProductsByPriceTerm(term: String, priceCode: String): LiveData<List<Product>>
     fun getProductsByUserWarehouse(term: String, userId: Int?, priceCode: String): LiveData<List<Product>>
     fun getProductsBySearch(term: String): LiveData<List<Product>>
+    fun getProductsBySearchByDoc(term: String, doc: Int): LiveData<List<Product>>
     fun getProductsByContract(contId: Int?, term: String): LiveData<List<Product>>
-    fun getProducts_InvoicesByCustomer(cu_Id: Int, prod_Id: Int, term: String): LiveData<List<Product>>
+    fun getProducts_InvoicesByCustomer(cu_Id: Int, term: String): LiveData<List<DocRefDto>>
     fun productGetByBarcode(barcode: String, warehouseId: Int?, priceCode: String): LiveData<Product>
     fun getProductById(prod_Id: Int): LiveData<Product>
 

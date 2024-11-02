@@ -94,7 +94,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
         )
     }
 
-    fun addOrder(p: Product, Success:(() -> Unit) = {}) {
+    fun addOrder(p: Product, success:(() -> Unit) = {}) {
         if (isValid(p)) {
             try {
 
@@ -103,49 +103,66 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                 var baseEo : OrderItems? = null
                 var opcs: Double = 0.0
                 var ogQty: Double = 0.0
+                val isGift = p.pr_isGift
+                var oRowIsGift = false
+                var isPromo = "N"
 
-                if(p.pr_batch_no.isNullOrEmpty()) {
-                    baseEo = orders.find { it.od_prod_Id == p.pr_Id && it.od_wr_Id == p.pr_wr_Id && it.od_uom_Id == p.pr_SUoMEntry }
+                if (p.pr_batch_no.isNullOrEmpty()) {
+                    baseEo = orders.find { it.od_prod_Id == p.pr_Id && it.od_wr_Id == p.pr_wr_Id && it.od_uom_Id == p.pr_SUoMEntry}// && it.od_isGift == p.pr_isGift }
                 }
                 else {
                     baseEo =
-                        orders.find { it.od_prod_Id == p.pr_Id && it.od_wr_Id == p.pr_wr_Id && it.od_uom_Id == p.pr_SUoMEntry && it.od_batch_no == p.pr_batch_no && it.od_expiry_date == p.pr_expiry_date }
+                        orders.find { it.od_prod_Id == p.pr_Id && it.od_wr_Id == p.pr_wr_Id && it.od_uom_Id == p.pr_SUoMEntry && it.od_batch_no == p.pr_batch_no && it.od_expiry_date == p.pr_expiry_date}// && it.od_isGift == p.pr_isGift }
                 }
+                oRowIsGift = baseEo?.od_isGift ?: false
+
                 var addQty: Double = p.addQty!!
-                //var ogiftQty : Double = 0.0
+
                 if (baseEo?.od_pack_qty != null) {
-                    addQty += (baseEo.od_pack_qty!!)// - baseEo.od_gift_qty!!)
+                    addQty += (baseEo.od_pack_qty!!)
                     ogQty = baseEo.od_gift_qty!!
-                    //opcs = baseEo.od_unit_qty!!
-                    //ogiftQty = obaseEo.od_gift_qty!!
                 }
+
                 val pcs = (addQty * p.pr_NumInSale!!)
 
-                var giftQty: Double = 0.0
-                if (p.prom_qty != null && p.prom_qty != 0.0 && p.pr_NumInSale == 1.0) {
+                var promQty: Double = 0.0
+                if (!oRowIsGift && p.prom_qty != null && p.prom_qty != 0.0 && p.pr_NumInSale == 1.0) {
                     var vector: Int = 0
                     vector = (pcs / p.prom_qty!!).toInt()
-                    giftQty = vector * p.prom_ex_qty!!
+                    promQty = vector * p.prom_ex_qty!!
+                    isPromo = "Y"
                 }
 
-                giftQty += ogQty
+                var giftQty : Double = 0.0
+                if(isGift){
+                    giftQty = p.addQty!! + ogQty
+                }else{
+                    giftQty = ogQty
+                }
 
-                val id: Int = (if (orders.count() == 0) 1 else orders.maxOf { x -> x.od_Id } + 1)
+                val id: Int = (if (orders.isEmpty() ) 1 else orders.maxOf { x -> x.od_Id } + 1)
                 val rowNo: Int =
-                    (if (orders.count() == 0) 1 else orders.maxOf { x -> x.od_rowNo!! } + 1)
-                val qty = pcs + giftQty
+                    (if (orders.isEmpty()) 1 else orders.maxOf { x -> x.od_rowNo!! } + 1)
                 if(p.pr_NumInSale!! == 1.0){
-                    addQty += giftQty
+                    addQty += promQty
                 }
-                val lineTotal = addQty * p.pr_unit_price!!
 
-                val gdisValue = p.pr_unit_price!! * giftQty
-                val gdis_per = ((gdisValue / lineTotal) * 100)
+                val qty = pcs + promQty
 
                 var disValue = 0.0
                 var lDisPer: Double = 0.0
+                var discAmnt: Double = 0.0
+                val lineTotal = addQty  * p.pr_unit_price!!
 
-                if (p.pr_dis_value != null && p.pr_dis_value != 0.0 /*&& isGift.value == false*/) {
+                if(promQty > 0){
+                    disValue= p.pr_unit_price!! * promQty
+                    lDisPer = ((disValue / lineTotal) * 100)
+                }
+                else if(giftQty > 0){
+                    disValue= p.pr_unit_price!! * giftQty
+                    lDisPer = ((disValue / lineTotal) * 100)
+                }
+                else if (p.pr_dis_value != null && p.pr_dis_value != 0.0 /*&& isGift.value == false*/) {
                     if (p.pr_dis_type!! == "P") {
                         lDisPer = p.pr_dis_value!!
                         disValue = (lDisPer / 100) * lineTotal
@@ -153,28 +170,32 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                         lDisPer = (p.pr_dis_value!! / p.pr_unit_price!!) * 100
                         disValue = p.pr_dis_value!! * addQty
                     }
+                }else if(p.pr_user_discPrcnt != 0.0){
+                    lDisPer = p.pr_user_discPrcnt
+                    disValue = (lDisPer / 100) * lineTotal
+                }else if(p.pr_user_disc_amnt != 0.0){
+                    discAmnt = p.pr_user_disc_amnt * p.addQty!!
                 }
-
-                if (gdisValue != 0.0) {
-                    lDisPer += gdis_per
-                    disValue += gdisValue
+                else if(baseEo?.od_discount != null && baseEo.od_discount != 0.0){
+                    lDisPer = baseEo.od_discount!!
+                    disValue = lineTotal * (baseEo.od_discount!! / 100)
                 }
 
                 var add_dis_value: Double = 0.0
                 if(baseEo != null){
-                    if(baseEo.od_add_dis_per != null){
+                    if(baseEo.od_add_dis_per != null && baseEo.od_add_dis_per != 0.0){
                         add_dis_value = (lineTotal - disValue) * (1- (baseEo.od_add_dis_per!! / 100))
                     }
                 }
-                val netTotal = (lineTotal - disValue) - add_dis_value
+                val netTotal = (lineTotal - (disValue + discAmnt)) - add_dis_value
                 val price_afd = (1 - (lDisPer / 100)) * p.pr_unit_price!!
                 val isNew : Boolean = baseEo == null
                 if (baseEo == null) {
                     baseEo = OrderItems(
                         id, rowNo, p.pr_Id, p.pr_description_ar, p.pr_SUoMEntry, p.pr_SalUnitMsr, addQty,  p.pr_NumInSale,
-                        qty,  giftQty,  p.pr_unit_price,  price_afd, lineTotal, lDisPer,  disValue, 0.0,0.0, 0.0,
-                        netTotal, p.pr_wr_Id, p.pr_wr_name, p.pr_batch_no, p.pr_expiry_date, p.pr_mfg_date, null, null,
-                        null, false, "$strDate", "${user.id}","$strDate", "${user.id}"
+                        qty,  giftQty + promQty,  p.pr_unit_price,  price_afd, lineTotal, lDisPer,  disValue, 0.0,0.0, discAmnt,
+                        netTotal, p.pr_wr_Id, p.pr_wr_name, p.pr_batch_no, p.pr_expiry_date, p.pr_mfg_date, null, isPromo,
+                        null, isGift, "$strDate", "${user.id}","$strDate", "${user.id}"
                     )
                 } else {
                     baseEo.od_pack_qty = addQty
@@ -183,10 +204,12 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                     baseEo.od_disvalue = disValue
                     baseEo.od_add_dis_value = add_dis_value
                     baseEo.od_discount = lDisPer
+                    baseEo.od_disc_amnt = discAmnt
                     baseEo.od_net_total = netTotal
-                    baseEo.od_gift_qty = giftQty
+                    baseEo.od_gift_qty = giftQty + promQty
                     baseEo.updated_at = "$strDate"
                     baseEo.updated_by = "${user.id}"
+                    baseEo.od_isGift = oRowIsGift
                 }
 
                 Coroutines.ioThenMain({
@@ -204,7 +227,7 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                         Log.e("Error", "${e.message}")
                     }
                 }, {
-                    Success()
+                    success()
                 })
             } catch (e: Exception) {
                 msgListener?.onFailure("Error message when try to add item. Error is ${e.message}")
@@ -214,16 +237,15 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
 
     fun isValid(p: Product) : Boolean{
         var msg: String? = ""
-        var addQty : Double = p.addQty ?: 0.0
+        var addQty : Double = (p.addQty ?: 0.0) * (p.pr_NumInSale ?: 1.0)
         val pr_qty: Double = p.pr_qty ?: 0.0
+        val addedQty: Double = 0.0
         if (addQty == 0.0) {
-            {
-                msg += (if (msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_qty)
-            }
+            msg += (if (msg!!.isNotEmpty()) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_qty)
         }
         if(vocode != "PSOrder") {
             val baseEo = if(p.pr_batch_no.isNullOrEmpty())
-                orders.find { it.od_prod_Id == p.pr_Id && it.od_wr_Id == p.pr_wr_Id && it.od_uom_Id == p.pr_uom_Id}
+                orders.find { it.od_prod_Id == p.pr_Id && it.od_wr_Id == p.pr_wr_Id && it.od_uom_Id == p.pr_SUoMEntry }
             else
                 orders.find { it.od_prod_Id == p.pr_Id && it.od_wr_Id == p.pr_wr_Id && it.od_uom_Id == p.pr_uom_Id && it.od_batch_no == p.pr_batch_no && it.od_expiry_date == p.pr_expiry_date }
 
@@ -231,15 +253,18 @@ class OffersViewModel (private val repository: IMDataRepository, private val ord
                 addQty += baseEo.od_unit_qty!!
             }
             if(pr_qty <= 0){
-                msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_available_product_qty)
+                msg += (if(msg!!.isNotEmpty()) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_available_product_qty)
             }
             if(addQty > pr_qty){
-                msg += (if(msg!!.length > 0) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_required_qty_less_product_qty)
+                msg += (if(msg!!.isNotEmpty()) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_not_required_qty_less_product_qty)
+            }
+            if (p.pr_isGift && baseEo?.od_isPromotion == "Y"){
+                msg += (if(msg!!.isNotEmpty()) "\n\r" else "")  + ctx!!.resources!!.getString(R.string.msg_error_gift_and_promo)
             }
         }
 
         if (p.pr_unit_price == 0.0) {
-            msg += (if(msg!!.length > 0) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_price)
+            msg += (if(msg!!.isNotEmpty()) "\n\r" else "") + ctx!!.resources!!.getString(R.string.msg_error_invalid_price)
         }
 
         if(!msg.isNullOrEmpty()){

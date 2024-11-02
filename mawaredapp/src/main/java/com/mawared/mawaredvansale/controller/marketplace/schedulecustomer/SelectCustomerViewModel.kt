@@ -47,7 +47,7 @@ class SelectCustomerViewModel (private val repository: IMDataRepository, private
                 })
         }catch (e: java.lang.Exception){
             e.printStackTrace()
-            Fail()
+//            Fail()
         }
     }
 }

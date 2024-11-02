@@ -19,4 +19,6 @@
     <color name="lightdanger">#fb6e52</color>
     <color name="lightgreen">#F9FDCF</color>
     <color name="darkorange">#ff8c00</color>
+
+    <color name="teak_template">#E91E63</color>
 </resources>

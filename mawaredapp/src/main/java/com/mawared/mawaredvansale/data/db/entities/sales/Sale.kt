@@ -62,6 +62,8 @@ data class Sale(
     var sl_status_name: String? = null
     var sl_items_count: Int? = 0
     var whs_count: Int? = 0
+    var disp_doc_date: String? = null
+
     @Ignore
     var items: ArrayList<Sale_Items> = arrayListOf()
     @Ignore

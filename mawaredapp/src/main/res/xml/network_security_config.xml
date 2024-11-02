@@ -6,6 +6,9 @@
         </trust-anchors>
     </base-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">185.80.42.68:6615</domain>
+        <domain includeSubdomains="true">api.dor-alamid.demo.erpmawared.com</domain>
+<!--        <domain includeSubdomains="true">lorempixel.com</domain>-->
+<!--        <domain includeSubdomains="true">amazonaws.com</domain>-->
+<!--        <domain includeSubdomains="true">placeimg.com</domain>-->
     </domain-config>
 </network-security-config>

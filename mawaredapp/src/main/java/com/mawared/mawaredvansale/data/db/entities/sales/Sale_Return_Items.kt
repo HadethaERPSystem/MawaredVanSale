@@ -20,14 +20,17 @@ data class Sale_Return_Items(
     var srd_add_dis_per: Double?,
     var srd_add_dis_value: Double?,
     var srd_disc_amnt: Double?,
+    var DiscAmntPCS: Double?,
     var srd_net_total: Double?,    // Line Total
     var srd_lotno: String?,         // Lot Number
     var srd_isPromotion: String?,   // Is Current Item Promotion Or Not : Y:Yes, N: No
     var srd_promotionId: Int?,      // Promotion Id
     var srd_warehouseId: Int?,       // Salesman Warehouse Id
     var srd_ref_rowNo: Int?,
+    var srd_base_line: Int?,
     var srd_ref_Id: Int?,
     var srd_ref_no: String?,
+    var srd_base_type: Int?,
     var srd_batch_no: String?,
     var srd_expiry_date: String?,
     var srd_mfg_date: String?,

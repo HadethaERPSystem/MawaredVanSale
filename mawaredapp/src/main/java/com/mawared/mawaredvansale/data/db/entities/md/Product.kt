@@ -28,6 +28,7 @@ data class Product (
     var pr_SUoMQty: Double?,
     var pr_image_name: String?,
     var pr_qty: Double?,
+    var pr_pqty: Double?,
     var pr_unit_price: Double?,
     var pr_price_AfD: Double?,
     var pr_batch_no: String?,
@@ -38,11 +39,14 @@ data class Product (
     var ref_rowNo: Int?,
     var ref_Id: Int?,
     var ref_no: String?,
-    var pr_is_batch_no: String?
+    var ref_type: Int?,
+    var pr_is_batch_no: String?,
+    var discAmntPCS: Double = 0.0
 ){
     @PrimaryKey(autoGenerate = false)
     var pr_Id:  Int = 0
     var pr_wr_name: String? = null
+
     var prom_qty: Double? = null
     var prom_ex_qty: Double? = null
     var pr_dis_value: Double? = null

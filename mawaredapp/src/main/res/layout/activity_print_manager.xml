@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:background="@color/white"
+    tools:context=".controller.printing_manager.PrintManagerActivity">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnPrint"
+            android:text="@string/btn_print"
+            android:textAllCaps="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_gray"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:fontFamily="@font/droid_kufi_regular"
+            android:layout_marginLeft="@dimen/_20dp"
+            android:layout_marginRight="@dimen/_20dp"/>
+
+        <com.mawared.mawaredvansale.controller.printing_manager.SimpleTemplate
+            android:id="@+id/template"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_50dp"/>
+
+</FrameLayout>
+

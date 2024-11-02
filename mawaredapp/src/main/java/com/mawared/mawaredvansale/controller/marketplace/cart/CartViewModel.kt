@@ -385,7 +385,7 @@ class CartViewModel(private val saleOrderRepository: IOrderRepository, private v
                 val user = App.prefs.saveUser!!
                 val totalAmount: Double = orders.sumByDouble { it.od_line_total!! }
                 val netAmount: Double = orders.sumByDouble { it.od_net_total!! }
-                val totalDiscount = orders.sumByDouble { it.od_disvalue!! }
+                val totalDiscount = orders.sumByDouble { it.od_disvalue!!+it.od_disc_amnt!! }
                 val strDate= LocalDateTime.now()
                 val dtFull = LocalDateTime.now()
                 val doc_num =  0

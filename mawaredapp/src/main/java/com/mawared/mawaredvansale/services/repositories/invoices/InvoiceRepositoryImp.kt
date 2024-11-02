@@ -206,6 +206,29 @@ class InvoiceRepositoryImp(private val api: ApiService): IInvoiceRepository, Saf
         }
     }
 
+    override suspend fun loadInvoice(sl_Id: Int): Sale? {
+        try {
+            val response = apiRequest { api.getInvoiceById(sl_Id) }
+            if(response.isSuccessful){
+                return response.data
+            }
+            return null
+        }catch (e: ApiException){
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("ApiError", "No internat connection", e)
+            return null
+        }
+        catch (e: NoConnectivityException) {
+            _networkState.postValue(NetworkState.ERROR_CONNECTION)
+            Log.e("Connectivity", "No internat connection", e)
+            return null
+        }catch (e: Exception){
+            _networkState.postValue(NetworkState.LOADING)
+            Log.e("Error", "Exception", e)
+            return null
+        }
+    }
+
     override fun cancelJob(){
         _networkState.value = null
         job?.cancel()

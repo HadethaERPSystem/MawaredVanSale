@@ -511,7 +511,8 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
             //val netTotal = if(isGift.value == true) 0.0 else (lineTotal - disValue)
             val netTotal = (lineTotal - (disValue + _discAmnt))
-            val price_afd = (lDisPer / 100) * unitPrice
+
+            val price_afd =  (1 - (lDisPer / 100)) * unitPrice // * if(lDisPer == 0.0) 1.0 else (lDisPer / 100)
 
             val user = App.prefs.saveUser
 
@@ -573,9 +574,9 @@ class AddInvoiceViewModel(private val saleRepository: IInvoiceRepository,
 
             val pr_qty: Int =
                 if (selectedProduct?.pr_qty != null) selectedProduct?.pr_qty!!.toInt() else 0
-            val _discAmnt = if(discAmnt.value == null) 0.0 else discAmnt.value!!.toDouble()
+            val _discAmnt = if(discAmnt.value.isNullOrEmpty()) 0.0 else discAmnt.value!!.toDouble()
             val _discAmntPrcnt = ((_discAmnt / (unitPrice ?: 1.0)) * 100)
-            val _discPrcnt = if(disPer.value == null) 0.0 else disPer.value!!.toDouble()
+            val _discPrcnt = if(disPer.value.isNullOrEmpty()) 0.0 else disPer.value!!.toDouble()
 
             if ((_discAmntPrcnt + _discPrcnt) > 0.0) {
                 val disPerLimit = App.prefs.saveUser!!.iDiscPrcnt

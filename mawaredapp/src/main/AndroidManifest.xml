@@ -67,6 +67,9 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
+            android:name=".controller.printing_manager.PrintManagerActivity"
+            android:exported="false" />
+        <activity
             android:name=".controller.common.ScannerBarcodeActivity"
             android:exported="false" />
         <activity

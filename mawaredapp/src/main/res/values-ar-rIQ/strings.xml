@@ -225,7 +225,7 @@
     <string name="msg_error_stockout_qty_greater_than_sale_qty">كمية الاخراج المطلوبة اكبر من كمية البيع</string>
     <string name="msg_error_stockout_select_invoice">لايمكن حفظ الاخراج بدون اختيار فاتورة بيع</string>
     <string name="msg_error_stockout_no_item_selected">لايمكن حفظ الاخراج بدون اضافة مواد للاخراج</string>
-
+    <string name="msg_error_gift_and_promo">لايمكن اضافة هدية وترويج لنفس المادة في نفس الوقت</string>
     <string name="msg_error_stockin_qty_greater_than_purchase_qty">كمية الادخال المطلوبة اكبر من كمية فاتورة الشراء</string>
     <string name="msg_error_stockin_qty_greater_than_transfer_qty">كمية الادخال المطلوبة اكبر من كمية اخراج فاتورة المناقلة</string>
     <string name="msg_error_stockin_qty_greater_than_sale_qty">كمية الادخال المطلوبة اكبر من كمية اخراج فاتورة البيع</string>

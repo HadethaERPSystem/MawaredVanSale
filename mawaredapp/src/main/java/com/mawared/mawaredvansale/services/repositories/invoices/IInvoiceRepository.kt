@@ -19,5 +19,6 @@ interface IInvoiceRepository {
     fun getInvoice(sl_Id: Int): LiveData<Sale>
     fun delete(sl_Id: Int): LiveData<String>
     suspend fun invoices_OnPages(sm_Id: Int, term: String, page: Int) : List<Sale>?
+    suspend fun loadInvoice(sl_Id: Int): Sale?
     fun cancelJob()
 }

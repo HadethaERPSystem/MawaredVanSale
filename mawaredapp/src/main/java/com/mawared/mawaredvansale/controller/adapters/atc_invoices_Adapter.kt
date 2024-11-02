@@ -10,25 +10,25 @@ import android.widget.Filter
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import com.mawared.mawaredvansale.R
-import com.mawared.mawaredvansale.data.db.entities.md.Product
+import com.mawared.mawaredvansale.data.db.entities.md.DocRefDto
 import com.mawared.mawaredvansale.databinding.AtcInvoicesRowBinding
 import java.util.*
 
-class atc_invoices_Adapter(context: Context, @LayoutRes private val layoutResource: Int, private val allProducts: List<Product>):
-   ArrayAdapter<Product>(context, layoutResource, allProducts) {
-    var mProducts: List<Product> = allProducts
+class atc_invoices_Adapter(context: Context, @LayoutRes private val layoutResource: Int, private val docs: List<DocRefDto>):
+   ArrayAdapter<DocRefDto>(context, layoutResource, docs) {
+    var mDocs: List<DocRefDto> = docs
     var lang: String = Locale.getDefault().toString().toLowerCase()
 
     override fun getCount(): Int {
-        return mProducts.size
+        return mDocs.size
     }
 
-    override fun getItem(position: Int): Product? {
-        return mProducts.get(position)
+    override fun getItem(position: Int): DocRefDto? {
+        return mDocs.get(position)
     }
 
     override fun getItemId(position: Int): Long {
-        return mProducts.get(position).pr_Id.toLong()
+        return mDocs.get(position).ref_Id!!.toLong()
     }
 
     @SuppressLint("ViewHolder")
@@ -36,7 +36,7 @@ class atc_invoices_Adapter(context: Context, @LayoutRes private val layoutResour
 
         val layoutInflater = (context as Activity).layoutInflater
         val binding: AtcInvoicesRowBinding = DataBindingUtil.inflate(layoutInflater, R.layout.atc_invoices_row, parent, false)
-        binding.product = getItem(position)
+        binding.docSale = getItem(position)
         return binding.root
     }
 
@@ -45,7 +45,7 @@ class atc_invoices_Adapter(context: Context, @LayoutRes private val layoutResour
         return object : Filter(){
             override fun publishResults(constraint: CharSequence?, filterResults: FilterResults?) {
                 if(filterResults?.values != null) {
-                    mProducts = filterResults?.values as List<Product>
+                    mDocs = filterResults?.values as List<DocRefDto>
                     notifyDataSetChanged()
                 }
             }
@@ -55,16 +55,16 @@ class atc_invoices_Adapter(context: Context, @LayoutRes private val layoutResour
 
                 val filterResult = Filter.FilterResults()
                 filterResult.values = if(queryString == null || queryString.isEmpty())
-                    allProducts
+                    docs
                 else
-                    allProducts.filter {
+                    docs.filter {
                             it.ref_no!!.contains(queryString)
                     }
                 return filterResult
             }
 
             override fun convertResultToString(resultValue: Any?): CharSequence {
-                val item = resultValue as Product
+                val item = resultValue as DocRefDto
                 val name = item.ref_no ?: "" // if(lang == "en_us" && item.pr_description != null) item.pr_description else item.pr_description_ar
                 return name
             }

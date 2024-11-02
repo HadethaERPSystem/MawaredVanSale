@@ -26,6 +26,7 @@ data class Sale_Return(
     var sr_rate: Double?,           // Current Exchange Rate
     var sr_ret_ref_Id : Int?,           // Reference Invoice Id
     var sr_ret_ref_no: String?,
+    var sr_ref_type: Int?,
     var sr_isDeleted: Boolean?,
     var sr_statusId: Int?,
     var sr_latitude: Double?,

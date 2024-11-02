@@ -170,19 +170,62 @@
                 android:padding="2dp">
 
 
+                <AutoCompleteTextView
+                    android:id="@+id/atc_invoices"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="2dp"
+                    android:enabled="@{viewmodel.allowed_select_prod}"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:hint="@string/lbl_ref_no"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_openInvoices"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <ImageButton
+                    android:id="@+id/btn_openInvoices"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    app:layout_constraintBottom_toBottomOf="@+id/atc_invoices"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelInvoices"
+                    app:layout_constraintTop_toTopOf="@+id/atc_invoices"
+                    app:srcCompat="@drawable/ic_arrow_drop_down"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <ImageButton
+                    android:id="@+id/btn_cancelInvoices"
+                    android:layout_width="35dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@null"
+                    android:contentDescription="@string/btn_add_item_caption"
+                    android:onClick="@{()-> viewmodel.clear(`invoices`)}"
+                    app:layout_constraintBottom_toBottomOf="@+id/btn_openInvoices"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/btn_openInvoices"
+                    app:srcCompat="@drawable/btn_close"
+                    tools:ignore="TouchTargetSizeCheck" />
+
                 <!-- Item Name-->
                 <AutoCompleteTextView
                     android:id="@+id/atc_product"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="2dp"
                     android:enabled="@{viewmodel.allowed_select_prod}"
                     android:fontFamily="@font/droid_kufi_regular"
                     android:hint="@string/lbl_prod_name"
                     android:textSize="12sp"
+
                     app:layout_constraintEnd_toStartOf="@+id/btn_openItems"
                     app:layout_constraintStart_toStartOf="parent"
-
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_invoices"
                     tools:ignore="TouchTargetSizeCheck" />
 
                 <ImageButton
@@ -214,52 +257,13 @@
                     app:srcCompat="@drawable/btn_close"
                     tools:ignore="TouchTargetSizeCheck" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/atc_invoices"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="2dp"
-                    android:enabled="@{viewmodel.allowed_select_prod}"
-                    android:fontFamily="@font/droid_kufi_regular"
-                    android:hint="@string/lbl_ref_no"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_openInvoices"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/atc_product"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-                <ImageButton
-                    android:id="@+id/btn_openInvoices"
-                    android:layout_width="35dp"
-                    android:layout_height="48dp"
-                    android:layout_marginEnd="2dp"
-                    android:background="@null"
-                    android:contentDescription="@string/btn_add_item_caption"
-                    app:layout_constraintBottom_toBottomOf="@+id/atc_invoices"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_cancelInvoices"
-                    app:layout_constraintTop_toTopOf="@+id/atc_invoices"
-                    app:srcCompat="@drawable/ic_arrow_drop_down"
-                    tools:ignore="TouchTargetSizeCheck" />
-
-                <ImageButton
-                    android:id="@+id/btn_cancelInvoices"
-                    android:layout_width="35dp"
-                    android:layout_height="48dp"
-                    android:background="@null"
-                    android:contentDescription="@string/btn_add_item_caption"
-                    android:onClick="@{()-> viewmodel.clear(`invoices`)}"
-                    app:layout_constraintBottom_toBottomOf="@+id/btn_openInvoices"
-                    app:layout_constraintEnd_toStartOf="@+id/guideline33"
-                    app:layout_constraintTop_toTopOf="@+id/btn_openInvoices"
-                    app:srcCompat="@drawable/btn_close"
-                    tools:ignore="TouchTargetSizeCheck" />
 
                 <EditText
                     android:id="@+id/edtxt_price"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
                     android:autofillHints="@string/lbl_unit_price"
                     android:enabled="@{viewmodel.allowed_select_prod}"
                     android:fontFamily="@font/droid_kufi_regular"
@@ -267,9 +271,9 @@
                     android:inputType="text"
                     android:text="@={viewmodel.doc_unit_price}"
                     android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/guideline33"
-                    app:layout_constraintTop_toTopOf="@+id/btn_cancelInvoices"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline33"
+                    app:layout_constraintStart_toEndOf="@+id/guideline32"
+                    app:layout_constraintTop_toTopOf="@+id/edtxt_barcode"
                     tools:ignore="TouchTargetSizeCheck" />
                 <!-- Barcode -->
 
@@ -287,9 +291,9 @@
                     android:inputType="text"
                     android:text="@={viewmodel.searchBarcode}"
                     android:textSize="12sp"
-                    app:layout_constraintEnd_toStartOf="@+id/edtxt_Qty"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline32"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/atc_invoices"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_product"
                     tools:ignore="TouchTargetSizeCheck" />
 
                 <!-- Qty -->
@@ -340,14 +344,15 @@
         </com.google.android.material.card.MaterialCardView>
 
         <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                tools:listitem="@layout/sale_return_item_row"
-                android:id="@+id/rcv_sale_return_items"
-                app:layout_constraintBottom_toTopOf="@+id/total_discount_name"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/mcv_salesreturn1"/>
+            android:id="@+id/rcv_sale_return_items"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/total_discount_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mcv_salesreturn1"
+            tools:listitem="@layout/sale_return_item_row" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline20"

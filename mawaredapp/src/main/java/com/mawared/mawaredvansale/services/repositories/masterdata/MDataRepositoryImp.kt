@@ -761,6 +761,31 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
+    override fun getProductsBySearchByDoc(term: String, docId: Int): LiveData<List<Product>> {
+        job = Job()
+        return object : LiveData<List<Product>>() {
+            override fun onActive() {
+                super.onActive()
+                job?.let {
+                    CoroutineScope(IO).launch {
+                        try {
+                            val response = apiRequest { api.products_GetBySearchDoc(term, docId) }
+                            withContext(Main) {
+                                value = response.data
+                                job?.complete()
+                            }
+                        }catch (e: ApiException){
+                            Log.e("Connectivity", "No internet connection", e)
+                            return@launch
+                        }catch (e: Exception){
+                            Log.e("Exception", "Error exception when call getProductsBySearch", e)
+                            return@launch
+                        }
+                    }
+                }
+            }
+        }
+    }
     override fun getProductsByContract(contId: Int?, term: String): LiveData<List<Product>> {
         job = Job()
         return object : LiveData<List<Product>>() {
@@ -788,16 +813,16 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
         }
     }
 
-    override fun getProducts_InvoicesByCustomer(cu_Id: Int, prod_Id: Int, term: String ): LiveData<List<Product>> {
+    override fun getProducts_InvoicesByCustomer(cu_Id: Int, term: String ): LiveData<List<DocRefDto>> {
         job = Job()
-        return object : LiveData<List<Product>>() {
+        return object : LiveData<List<DocRefDto>>() {
             override fun onActive() {
                 super.onActive()
                 job?.let {
                     CoroutineScope(IO).launch {
                         try {
                             val response =
-                                apiRequest { api.product_GetInvoicessByCustomer(cu_Id, prod_Id, term) }
+                                apiRequest { api.product_GetInvoicessByCustomer(cu_Id, term) }
                             withContext(Main) {
                                 value = response.data
                                 job?.complete()
@@ -806,7 +831,7 @@ class MDataRepositoryImp(private val api: ApiService, private val db: AppDatabas
                             Log.e("Connectivity", "No internet connection", e)
                             return@launch
                         }catch (e: Exception){
-                            Log.e("Exception", "Error exception when call getProductsByBatchs", e)
+                            Log.e("Exception", "Error exception when call getProducts_InvoicesByCustomer", e)
                             return@launch
                         }
                     }

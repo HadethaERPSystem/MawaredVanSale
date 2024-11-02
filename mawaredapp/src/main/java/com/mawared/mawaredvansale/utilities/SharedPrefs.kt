@@ -28,6 +28,7 @@ class SharedPrefs(context: Context) {
     val KEY_SYSTEM_LANG = "system_mawared_language"
     val LOGO_NAME = "client_logo_name"
     val KEY_BLUETOOTH_PRINTER_PORT = "bluetooth_printer_port"
+    val KEY_BLUETOOTH_PRINTER_ADDR = "bluetooth_printer_addr"
     val KEY_PRINETER_NAME = "print_name"
     val KEY_LANG_ENCODE_LATIN = "lang_encode_latin"
     val KEY_LANG_CODEPAGE_LATIN = "lang_codepage_latin"
@@ -88,6 +89,10 @@ class SharedPrefs(context: Context) {
     var bluetooth_port: String?
         get() = prefs.getString(KEY_BLUETOOTH_PRINTER_PORT, null)
         set(value) = prefs.edit().putString(KEY_BLUETOOTH_PRINTER_PORT, value).apply()
+
+    var bluetooth_address: String?
+        get() = prefs.getString(KEY_BLUETOOTH_PRINTER_ADDR, null)
+        set(value) = prefs.edit().putString(KEY_BLUETOOTH_PRINTER_ADDR, value).apply()
 
     var printer_name: String?
         get() = prefs.getString(KEY_PRINETER_NAME, null)

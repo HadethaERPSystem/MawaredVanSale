@@ -26,7 +26,9 @@ import org.threeten.bp.LocalTime
 class ReceivableEntryViewModel(private val repository: IReceivableRepository,
                                private val masterDataRepository: IMDataRepository) : BaseViewModel() {
 
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
+    //private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
+    private val _user_id: Int = App.prefs.saveUser!!.id
+
     var mode: String = "Add"
     var ctx: Context? = null
     var isRunning: Boolean = false
@@ -60,7 +62,7 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
     var selectedCustomer: Customer? = null
     val term : MutableLiveData<String> = MutableLiveData()
     val customerList: LiveData<List<Customer>> = Transformations.switchMap(term){
-        masterDataRepository.getCustomersByOrg(_sm_id, App.prefs.saveUser!!.org_Id, it)
+        masterDataRepository.getCustomersByOrg(_user_id, App.prefs.saveUser!!.org_Id, it)
     }
 
     var rate : Double = 0.0
@@ -129,7 +131,7 @@ class ReceivableEntryViewModel(private val repository: IReceivableRepository,
                 val cu_Id = selectedCustomer?.cu_ref_Id ?: _entityEo?.rcv_cu_Id
                 val baseEo = Receivable(
                     user.cl_Id, user.org_Id, 0,dtFull, mVoucher.value!!.vo_Id, "${mVoucher.value!!.vo_prefix}",
-                    null, _sm_id, cu_Id, 0.0, amount_usd, change_usd,
+                    null, _user_id, cu_Id, 0.0, amount_usd, change_usd,
                     amount_iqd, change_iqd, user.ss_cr_Id, user.sf_cr_Id, rate, comment.value, false,
                     location?.latitude, location?.longitude, null,"$strDate", "${user.id}","$strDate", "${user.id}"
                 )

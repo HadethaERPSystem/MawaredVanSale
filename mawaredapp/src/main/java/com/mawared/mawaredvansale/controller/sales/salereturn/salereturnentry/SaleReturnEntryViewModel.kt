@@ -11,6 +11,7 @@ import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
 import com.mawared.mawaredvansale.data.db.entities.md.Currency_Rate
 import com.mawared.mawaredvansale.data.db.entities.md.Customer
+import com.mawared.mawaredvansale.data.db.entities.md.DocRefDto
 import com.mawared.mawaredvansale.data.db.entities.md.Product
 import com.mawared.mawaredvansale.data.db.entities.md.Voucher
 import com.mawared.mawaredvansale.data.db.entities.sales.Sale_Return
@@ -50,7 +51,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     var netTotal: MutableLiveData<Double> = MutableLiveData()
     var totalDiscount: MutableLiveData<Double> = MutableLiveData()
     var cr_symbol: MutableLiveData<String> = MutableLiveData(App.prefs.saveUser?.ss_cr_code ?: "")
-    var sr_discPrcnt: Double = 0.0
+    //var sr_discPrcnt: Double = 0.0
      var tmpSRItems: ArrayList<Sale_Return_Items> = arrayListOf()
     var tmpDeletedItems: ArrayList<Sale_Return_Items> = arrayListOf()
 
@@ -85,14 +86,14 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
-            masterdataRepository.getProductsBySearch(it)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
+            masterdataRepository.getProductsBySearchByDoc(it, selectedInvoice!!.ref_Id!!)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
         }
 
-    var selectedInvoice: Product? = null
+    var selectedInvoice: DocRefDto? = null
     private val _term1: MutableLiveData<String> = MutableLiveData()
-    val InvoicesList: LiveData<List<Product>> = Transformations
+    val InvoicesList: LiveData<List<DocRefDto>> = Transformations
         .switchMap(_term1){
-            masterdataRepository.getProducts_InvoicesByCustomer(selectedCustomer!!.cu_ref_Id!!, selectedProduct!!.pr_Id, it)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
+            masterdataRepository.getProducts_InvoicesByCustomer(selectedCustomer!!.cu_ref_Id!!, it)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
         }
 
     var rate : Double = 0.0
@@ -109,12 +110,10 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             masterdataRepository.getVoucherByCode(it)
         }
 
-    var unitPrice : Double = 0.0
+
     var price_cat_code = "POS"
-    var invQty : Double = 0.0
-    var ref_rowNo : Int? = 0
-    var ref_Id : Int? = null
-    var ref_no : String? = null
+
+
     // function to set value
     fun setId(id: Int){
         if(_id.value == id){
@@ -177,8 +176,8 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 val baseEo = Sale_Return(
                     user.cl_Id, user.org_Id,doc_num, dtFull,
                     "", mVoucher.value!!.vo_prefix, mVoucher.value!!.vo_Id,
-                    _sm_id, cu_Id, null, totalAmount,totalDisc, netAmount, sr_discPrcnt, user.ss_cr_Id, user.sf_cr_Id, rate,
-                    ref_Id, ref_no, false,0, location?.latitude, location?.longitude, cu_price_cat_Id,"$strDate",
+                    _sm_id, cu_Id, null, totalAmount,totalDisc, netAmount, selectedInvoice!!.discPrcnt!!, user.ss_cr_Id, user.sf_cr_Id, rate,
+                    selectedInvoice!!.ref_Id, selectedInvoice!!.ref_no, selectedInvoice!!.ref_type, false,0, location?.latitude, location?.longitude, cu_price_cat_Id,"$strDate",
                     "${user.id}", "$strDate", "${user.id}"
                 )
                 baseEo.sr_price_cat_code = price_cat_code
@@ -249,7 +248,6 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
         rowNo = 0
         searchBarcode.value = ""
         searchQty.value = "1"
-        unitPrice = 0.00
         price_cat_code = "POS"
         clear("cu")
         clear("prod")
@@ -264,10 +262,6 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                         selectedProduct = null
                         searchBarcode.value = ""
                         searchQty.value = ""
-                        unitPrice = 0.0
-                        invQty = 0.0
-                        ref_Id = null
-                        ref_no = null
                         doc_expiry.value = ""
                         doc_unit_price.value = ""
                         clear("prod")
@@ -285,47 +279,33 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
 
         try {
             val strDate = LocalDate.now()
-            val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id && it.srd_ref_rowNo == ref_rowNo && it.srd_Id == ref_Id }//&& it.srd_batch_no == selectedInvoice!!.pr_batch_no && it.srd_expiry_date == selectedInvoice!!.pr_expiry_date }
+            val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id && it.srd_ref_rowNo == selectedProduct!!.ref_rowNo && it.srd_Id == selectedInvoice!!.ref_Id }//&& it.srd_batch_no == selectedInvoice!!.pr_batch_no && it.srd_expiry_date == selectedInvoice!!.pr_expiry_date }
             val pQty = if(!searchQty.value.isNullOrEmpty()) searchQty.value!!.toDouble() else 0.0 + (if(mItem?.srd_pack_qty != null)   mItem.srd_pack_qty!! else 0.0)
             //unitPrice = if(selectedInvoice != null) selectedInvoice!!.pr_unit_price!! else unitPrice
-            var price = unitPrice
-            if(selectedInvoice != null) {
-                price = selectedInvoice!!.pr_unit_price!!
-            }
+            val price = selectedProduct!!.pr_unit_price!!
 
             val lineTotal = price * pQty
-            var qty: Double = pQty // if(selectedInvoice != null) selectedInvoice!!.pr_NumInSale!! else 1.0
-            var paksize: Double = 1.0
+            val qty: Double = pQty * selectedProduct!!.pr_NumInSale!!
+            val paksize = selectedProduct!!.pr_NumInSale!!
 
-            var disPer: Double = 0.0
-            var disValue : Double = 0.0
-            var pr_expiry_date: String? = null
-            var pr_mfg_date: String? = null
-            var pr_batch_no: String? = null
-            var add_disc_value : Double = 0.0
-            var _discAmnt: Double = 0.0
+            val disPer = selectedProduct!!.pr_dis_per ?: 0.0
+            val disValue = if(disPer > 0.0) lineTotal * (disPer / 100) else 0.0
+            val pr_expiry_date = selectedProduct!!.pr_expiry_date
+            val pr_mfg_date = selectedProduct!!.pr_mfg_date
+            val pr_batch_no = selectedProduct!!.pr_batch_no
+            val _discAmnt = selectedProduct!!.discAmntPCS * qty
+            val add_disc_value = (lineTotal - disValue) * (selectedProduct!!.pr_d_discPrcnt/100)
 
-            if(selectedInvoice != null){
-                paksize = selectedInvoice!!.pr_NumInSale!!
-                qty = pQty * paksize
-                disPer = selectedInvoice!!.pr_dis_per ?: 0.0
-                disValue = if(disPer > 0.0) lineTotal * (disPer / 100) else 0.0
-                pr_expiry_date = selectedInvoice!!.pr_expiry_date
-                pr_mfg_date = selectedInvoice!!.pr_mfg_date
-                pr_batch_no = selectedInvoice!!.pr_batch_no
-                _discAmnt = selectedInvoice!!.pr_disc_amnt
-                add_disc_value = (lineTotal - disValue) * (selectedInvoice!!.pr_d_discPrcnt/100)
-                if(sr_discPrcnt == 0.0)
-                    sr_discPrcnt = selectedInvoice!!.pr_d_discPrcnt
-            }
             val netTotal = (lineTotal - (disValue +  add_disc_value + _discAmnt))
 
             val user = App.prefs.saveUser
 
             if(mItem == null){
                 rowNo++
-                val itemEo = Sale_Return_Items(0, rowNo, selectedProduct!!.pr_Id, selectedInvoice!!.pr_uom_Id, pQty, paksize, qty, price,
-                    lineTotal, disPer, disValue, selectedInvoice!!.pr_d_discPrcnt, add_disc_value,_discAmnt, netTotal, null, null, null, _wr_id, ref_rowNo, ref_Id, ref_no,
+                val itemEo = Sale_Return_Items(0, rowNo, selectedProduct!!.pr_Id, selectedProduct!!.pr_uom_Id, pQty, paksize, qty, price,
+                    lineTotal, disPer, disValue, selectedProduct!!.pr_d_discPrcnt, add_disc_value,_discAmnt, selectedProduct!!.discAmntPCS, netTotal,
+                    null, null, null, _wr_id, selectedProduct!!.ref_rowNo,
+                    selectedProduct!!.ref_rowNo, selectedProduct!!.ref_Id, selectedProduct!!.ref_no, selectedProduct!!.ref_type,
                     pr_batch_no, pr_expiry_date,  pr_mfg_date,"$strDate",
                     "${user?.id}", "$strDate", "${user?.id}")
 
@@ -335,10 +315,15 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
                 tmpSRItems.add(itemEo)
             }
             else{
-                mItem.srd_pack_qty = qty
+                mItem.srd_pack_qty = pQty
                 mItem.srd_unit_qty = qty
                 mItem.srd_line_total = lineTotal
                 mItem.srd_net_total = netTotal
+                mItem.srd_dis_value = disValue
+                mItem.srd_disc_amnt = _discAmnt
+                mItem.DiscAmntPCS = selectedProduct!!.discAmntPCS
+                mItem.srd_add_dis_per = selectedProduct!!.pr_d_discPrcnt
+                mItem.srd_add_dis_value = add_disc_value
             }
             _srItems.postValue(tmpSRItems)
 
@@ -367,18 +352,17 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
 //        }
 
 
-        val qty : Double = if(searchQty.value.isNullOrEmpty()) 0.0 else searchQty.value!!.toDouble()
+        val qty : Double = (if(searchQty.value.isNullOrEmpty()) 0.0 else searchQty.value!!.toDouble()) * selectedProduct!!.pr_NumInSale!!
         if(qty <= 0.0){
             msg += (if (msg!!.length > 0) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_qty)
         }
         var tQty = qty
-        val mItem =
-            tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id && it.srd_ref_rowNo == ref_rowNo && it.srd_Id == ref_Id }
+        val mItem = tmpSRItems.find { it.srd_prod_Id == selectedProduct!!.pr_Id && it.srd_ref_rowNo == selectedProduct!!.ref_rowNo && it.srd_Id == selectedProduct!!.ref_Id }
         if (mItem != null) {
             tQty += mItem.srd_unit_qty!!
         }
 
-        if(tQty > invQty){
+        if(tQty > selectedProduct?.pr_qty!!){
             msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_return_qty_greater_invqty)
         }
 
@@ -386,7 +370,7 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
             msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_product)
         }
 
-        if (unitPrice == 0.0) {
+        if (doc_unit_price.value.isNullOrEmpty()) {
             msg += (if(!msg.isNullOrEmpty()) "\n\r" else "") + resources!!.getString(R.string.msg_error_invalid_price)
         }
 

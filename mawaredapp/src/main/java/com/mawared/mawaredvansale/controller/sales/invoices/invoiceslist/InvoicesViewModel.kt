@@ -64,6 +64,17 @@ class InvoicesViewModel(private val repository: IInvoiceRepository) : BaseViewMo
         }
     }
 
+    fun loadData(id: Int , success:(Sale?) -> Unit){
+        try {
+            var obj: Sale? = null
+            Coroutines.ioThenMain({
+                val tmp = repository.loadInvoice(id)
+                obj= tmp
+            }, { success(obj)})
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+    }
 
     val networkState: LiveData<NetworkState> by lazy {
         repository.networkState
