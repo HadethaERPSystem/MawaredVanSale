@@ -78,16 +78,34 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
                 <!-- Image button for add item -->
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_delivered"
-                    android:layout_width="140dp"
-                    android:layout_height="50dp"
-                    android:text="Delivery"
+                    android:layout_width="110dp"
+                    android:layout_height="30dp"
+                    android:text="@string/btn_delivery_caption"
+                    android:background="@drawable/custom_blue_button"
                     android:textAllCaps="false"
+                    android:textColor="@android:color/white"
                     android:contentDescription="@string/btn_add_item_caption"
                     android:onClick="@{()-> viewmodel.onClickDelivered()}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_takePhoto"
+                    android:layout_width="110dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/custom_blue_button"
+                    android:padding="0dp"
+                    android:text="@string/btn_attachment"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+
+                    android:visibility="visible"
+                    app:layout_constraintStart_toEndOf="@+id/btn_delivered"
+                    app:layout_constraintTop_toTopOf="@+id/btn_delivered"
+                    tools:ignore="TouchTargetSizeCheck" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>

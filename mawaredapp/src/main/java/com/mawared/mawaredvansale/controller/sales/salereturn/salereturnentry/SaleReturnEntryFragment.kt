@@ -152,6 +152,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
                 viewModel.rowNo = it.items.maxByOrNull { it.srd_rowNo!! }?.srd_rowNo ?: 0
                 binding.atcCustomer.setText("${it.sr_customer_name}", true)
                 viewModel.setItems(it.items)
+                viewModel.setInvoices("")
             }
         })
 
@@ -178,8 +179,8 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
             }
             viewModel.setPriceCategory()
             binding.atcCustomer.dismissDropDown()
-            viewModel.setInvoices("")
             binding.atcInvoices.requestFocus()
+            viewModel.setInvoices("")
         }
 
         binding.atcCustomer.addTextChangedListener(object: TextWatcher {
@@ -232,9 +233,7 @@ class SaleReturnEntryFragment : ScopedFragmentLocation(), KodeinAware, IMessageL
         viewModel.setCurrencyId(App.prefs.saveUser!!.sf_cr_Id!!)
         viewModel.setItems(null)
 
-        if(viewModel.mode != "Add") {
-            viewModel.setInvoices("")
-        }else{
+        if(viewModel.mode == "Add") {
             viewModel.term.value = ""
         }
 

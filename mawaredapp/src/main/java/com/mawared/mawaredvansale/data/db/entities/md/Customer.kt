@@ -51,4 +51,5 @@ data class Customer(
     var cu_cr_code: String? = null
     var totalPages: Int = 0
     var cu_DebitAge: Int? = null
+    var cu_disc: Double? = null
 }

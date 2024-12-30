@@ -123,7 +123,11 @@ class ItemsFragment : ScopedFragment(), KodeinAware, IMessageListener {
                 val disc = if(discPrcnt.isNullOrEmpty()) 0.0 else discPrcnt.toString().toDouble()
                 val discAmnt = if(discAmnt.isNullOrEmpty()) 0.0 else discAmnt.toString().toDouble()
                 val discAmntPrcnt = ((discAmnt / (p.pr_unit_price ?: 1.0)) * 100)
-                val limitDisc = App.prefs.saveUser?.iDiscPrcnt ?: 0.0
+                var limitDisc = App.prefs.saveUser?.iDiscPrcnt ?: 0.0
+                val cLimitDisc = viewModel.customer?.cu_disc ?: 0.0
+                if(limitDisc < cLimitDisc){
+                    limitDisc = cLimitDisc
+                }
                 if((disc + discAmntPrcnt) <= limitDisc){
                     p.pr_user_discPrcnt = disc
                     p.pr_user_disc_amnt = discAmnt

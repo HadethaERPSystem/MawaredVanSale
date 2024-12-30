@@ -24,6 +24,7 @@ data class OrderItems (
     var od_add_dis_per: Double?,
     var od_add_dis_value: Double?,
     var od_disc_amnt: Double?,
+    var od_disc_amnt_pcs: Double?,
     var od_net_total: Double?,
     var od_wr_Id: Int?,
     var od_wr_name: String?,

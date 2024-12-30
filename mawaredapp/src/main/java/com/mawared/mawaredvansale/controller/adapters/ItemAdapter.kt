@@ -50,7 +50,8 @@ class ItemAdapter (@LayoutRes private val layoutResource: Int, private val click
                 productDisc.visibility = View.GONE
                 promValue.visibility = View.GONE
                 productQty.text = "${item.pr_SUoMQty?.toFormatNumber()} ${item.pr_SalUnitMsr ?: ""}"
-                if (item.pr_price_AfD != null && item.pr_price_AfD != 0.0) {
+                if ((item.pr_price_AfD != null && item.pr_price_AfD != 0.0) || item.pr_user_discPrcnt != 0.0 ||
+                    item.pr_user_disc_amnt != 0.0 || item.pr_dis_per != 0.0 || item.pr_dis_value != 0.0) {
                     new_price.text =
                         "${item.pr_price_AfD.toString()}  ${App.prefs.saveUser!!.sl_cr_code!!}"
                     old_price.visibility = View.VISIBLE
@@ -64,9 +65,14 @@ class ItemAdapter (@LayoutRes private val layoutResource: Int, private val click
 
                 if (!item.pr_dis_type.isNullOrEmpty()) {
                     var prefix = "%"
-                    if (item.pr_dis_type == "F") prefix = App.prefs.saveUser!!.sl_cr_code!!
+                    if (item.pr_dis_type == "F") {
+                        prefix = App.prefs.saveUser!!.sl_cr_code!!
+                        productDisc.text = "${item.pr_dis_value} ${prefix}"
+                    }
+                    else{
+                        productDisc.text = "${item.pr_dis_per} ${prefix}"
+                    }
 
-                    productDisc.text = "${item.pr_dis_value} ${prefix}"
                     productDisc.visibility = View.VISIBLE
                 }
 
@@ -112,10 +118,10 @@ class ItemAdapter (@LayoutRes private val layoutResource: Int, private val click
                                 if (price != null) {
                                     unit_price = price.pl_unitPirce!!
                                 } else {
-                                    if (data.pr_NumInSale!! > u.qty2!!) {
+                                    if (data.pr_NumInSale!! > u.qty!!) {
                                         unit_price = data.pr_unit_price!! / data.pr_NumInSale!!
                                     } else {
-                                        unit_price = data.pr_unit_price!! * u.qty2!!
+                                        unit_price = data.pr_unit_price!! * u.qty!!
                                     }
                                 }
                                 items[position].pr_SalUnitMsr = u.uom_code
@@ -130,7 +136,7 @@ class ItemAdapter (@LayoutRes private val layoutResource: Int, private val click
                                         App.prefs.saveUser!!.sl_cr_code!!
                                     if (prefix == "%") {
                                         price_AfD =
-                                            items[position].pr_unit_price!! * (1 - (items[position].pr_dis_value!! / 100))
+                                            items[position].pr_unit_price!! * (1 - (items[position].pr_dis_per!! / 100))
 
                                     } else {
                                         price_AfD =
@@ -162,7 +168,8 @@ class ItemAdapter (@LayoutRes private val layoutResource: Int, private val click
                             item.pr_user_discPrcnt = it.pr_user_discPrcnt
                             items[position].pr_user_discPrcnt = it.pr_user_discPrcnt
 
-                            if (item.pr_price_AfD != null && item.pr_price_AfD != 0.0) {
+                            if ((item.pr_price_AfD != null && item.pr_price_AfD != 0.0) || item.pr_user_discPrcnt != 0.0 ||
+                                item.pr_user_disc_amnt != 0.0 || item.pr_dis_per != 0.0 || item.pr_dis_value != 0.0) {
                                 new_price.text =
                                     "${item.pr_price_AfD.toString()}  ${App.prefs.saveUser!!.sl_cr_code!!}"
                                 old_price.visibility = View.VISIBLE

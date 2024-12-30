@@ -580,5 +580,6 @@
     <string name="lbl_scanning_result">Result:</string>
     <string name="lbl_waiting_result">...</string>
     <string name="lbl_disc_amnt">Disc Amount</string>
+    <string name="btn_delivery_caption">Delivery</string>
 
 </resources>

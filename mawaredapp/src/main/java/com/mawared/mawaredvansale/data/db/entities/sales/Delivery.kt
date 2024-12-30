@@ -1,7 +1,9 @@
 package com.mawared.mawaredvansale.data.db.entities.sales
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.mawared.mawaredvansale.data.db.entities.dms.Document
 
 @Entity
 data class Delivery(
@@ -35,4 +37,6 @@ data class Delivery(
     var dl_customer_name: String?  = null
     var dl_salesman_name: String? = null
     var dl_region_name: String? = null
+    @Ignore
+    var DocLines: ArrayList<Document> = arrayListOf()
 }

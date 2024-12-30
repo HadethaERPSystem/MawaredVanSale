@@ -163,14 +163,23 @@ const val API_KEY = ""
 //const val BASE_URL = "https://api.unimedica.hsa-erp.com/"
 
 //====================== Dor-Alamid demo API ======================================
-const val BASE_URL_API = "https://api.dor-alamid.demo.erpmawared.com/api/"
-const val BASE_URL = "https://api.dor-alamid.demo.erpmawared.com/"
+//const val BASE_URL_API = "https://api.dor-alamid.demo.erpmawared.com/api/"
+//const val BASE_URL = "https://api.dor-alamid.demo.erpmawared.com/"
 //====================== Dor-Alamid Live API ======================================
 //const val BASE_URL_API = "https://api.dor-alamid.mawared-erp.net/api/"
 //const val BASE_URL = "https://api.dor-alamid.mawared-erp.net/"
+
+//====================== Infinity demo API ======================================
+//const val BASE_URL_API = "https://api.dor-alamid.demo.erpmawared.com/api/"
+//const val BASE_URL = "https://api.dor-alamid.demo.erpmawared.com/"
+//====================== Infinity Live API ======================================
+const val BASE_URL_API = "https://api.demo.infinity.erpmawared.com/api/"
+const val BASE_URL = "https://api.demo.infinity.erpmawared.com/"
+
 ////====================== Local API ======================================
 //const val BASE_URL_API = "http://192.168.31.141/mderp.WebAPI/api/"
 //const val BASE_URL = "http://192.168.31.141/mderp.WebAPI/"
+
 
 const val URL_LOGIN = "${BASE_URL_API}PDAUserAuth/login"
 

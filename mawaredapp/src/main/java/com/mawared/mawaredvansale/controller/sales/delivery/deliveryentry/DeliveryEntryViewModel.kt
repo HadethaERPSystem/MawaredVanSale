@@ -8,6 +8,7 @@ import androidx.lifecycle.Transformations
 import com.mawared.mawaredvansale.App
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.BaseViewModel
+import com.mawared.mawaredvansale.data.db.entities.dms.Document
 import com.mawared.mawaredvansale.data.db.entities.md.*
 import com.mawared.mawaredvansale.data.db.entities.sales.Delivery
 import com.mawared.mawaredvansale.data.db.entities.sales.Delivery_Items
@@ -42,6 +43,8 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
 //            repository.update(it)
 //        }
 
+    private var tmpDocLines :ArrayList<Document> = arrayListOf()
+    private var _docLines = MutableLiveData<List<Document>>()
 
     private val _items = MutableLiveData<List<Delivery_Items>>()
     val items: LiveData<List<Delivery_Items>>
@@ -83,7 +86,10 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
                _entityEo!!.dl_Id = _entityEo!!.dl_Id
                _entityEo!!.updated_at = strDate.toString()
                _entityEo!!.updated_by = user?.id.toString()
-
+                if(tmpDocLines.count() > 0){
+                    for(doc in tmpDocLines)
+                        _entityEo!!.DocLines.add(Document(doc.fileName, doc.masterType, doc.base64String, null, doc.isNew))
+                }
                 Coroutines.main {
                     try {
                         val response = repository.SaveOrUpdate(_entityEo!!)
@@ -129,6 +135,14 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
         setItems(null)
         setItems(tmpItems as List<Delivery_Items>)
     }
+    //================================================================================================
+    //================= Add document line
+    //================================================================================================
+    fun addDocument(doc: Document){
+        tmpDocLines.add(doc)
+        _docLines.postValue(tmpDocLines)
+    }
+
     //-------------------------------------------
     //---- row function
 //    fun onAddItem() {

@@ -86,14 +86,14 @@ class SaleReturnEntryViewModel(private val repository: ISaleReturnRepository, pr
     private val _term: MutableLiveData<String> = MutableLiveData()
     val productList: LiveData<List<Product>> = Transformations
         .switchMap(_term){
-            masterdataRepository.getProductsBySearchByDoc(it, selectedInvoice!!.ref_Id!!)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
+            masterdataRepository.getProductsBySearchByDoc(it, selectedInvoice?.ref_Id ?: _entityEo?.sr_ret_ref_Id!!)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
         }
 
     var selectedInvoice: DocRefDto? = null
     private val _term1: MutableLiveData<String> = MutableLiveData()
     val InvoicesList: LiveData<List<DocRefDto>> = Transformations
         .switchMap(_term1){
-            masterdataRepository.getProducts_InvoicesByCustomer(selectedCustomer!!.cu_ref_Id!!, it)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
+            masterdataRepository.getProducts_InvoicesByCustomer(selectedCustomer?.cu_ref_Id ?: _entityEo?.sr_customerId!!, it)//, App.prefs.savedSalesman?.sm_warehouse_id, price_cat_code)
         }
 
     var rate : Double = 0.0

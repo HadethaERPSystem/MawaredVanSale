@@ -1,21 +1,34 @@
 package com.mawared.mawaredvansale.controller.sales.delivery.deliveryentry
 
+import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 //import com.google.zxing.integration.android.IntentIntegrator
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
+import com.mawared.mawaredvansale.data.db.entities.dms.Document
 import com.mawared.mawaredvansale.data.db.entities.sales.Delivery_Items
 import com.mawared.mawaredvansale.databinding.DeliveryEntryFragmentBinding
 import com.mawared.mawaredvansale.interfaces.IAddNavigator
 import com.mawared.mawaredvansale.interfaces.IMessageListener
+import com.mawared.mawaredvansale.utilities.MediaHelper
 import com.mawared.mawaredvansale.utilities.snackbar
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -26,9 +39,23 @@ import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
+import android.provider.Settings
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import java.io.File
+import java.util.*
 
 class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<Delivery_Items>,
     IMessageListener {
+
+        companion object{
+            var MY_CAMERA_REQUEST_CODE = 7171
+        }
 
     override val kodein by kodein()
 
@@ -40,13 +67,16 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
 
     lateinit var binding: DeliveryEntryFragmentBinding
 
+    var imageUri : Uri? = null
+
+    lateinit var mediaHelper: MediaHelper
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // initialize binding
         binding = DataBindingUtil.inflate(inflater, R.layout.delivery_entry_fragment, container, false)
-
+        mediaHelper = MediaHelper()
         viewModel.addNavigator = this
         viewModel.msgListener = this
         viewModel.resources = resources
@@ -54,7 +84,9 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         binding.lifecycleOwner = this
 
         bindUI()
-
+        binding.btnTakePhoto.setOnClickListener {
+            openCamera()
+        }
         return binding.root
     }
 
@@ -151,8 +183,9 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
         })
 
         viewModel.entityEo.observe(viewLifecycleOwner, Observer {
-            if(it != null){
+            if(it != null && !viewModel.isDelivered.value!!){
                 viewModel._entityEo = it
+                viewModel._entityEo?.DocLines = arrayListOf()
                 viewModel.dl_doc_date.value = viewModel.returnDateString(it.dl_doc_date!!)
                 viewModel.dl_refNo.value = it.dl_doc_no.toString()
                 viewModel.dl_customer_name.value = it.dl_customer_name
@@ -216,6 +249,72 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
     override fun onDestroy() {
         super.onDestroy()
         viewModel.cancelJob()
+    }
+
+    private fun openCamera(){
+        Dexter.withContext(requireContext())
+            .withPermissions(listOf(
+                Manifest.permission.CAMERA
+            )
+            ).withListener(object:MultiplePermissionsListener{
+                override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                    if(p0!!.areAllPermissionsGranted()){
+                        val values = ContentValues()
+                        values.put(MediaStore.Images.Media.TITLE, "New Picture")
+                        values.put(MediaStore.Images.Media.DESCRIPTION, "From Your Camera")
+                        imageUri = requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                        startActivityForResult(intent, MY_CAMERA_REQUEST_CODE)
+                    }
+                    else{
+                        Toast.makeText(requireActivity(), "You must accept all permission", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?,
+                    p1: PermissionToken?
+                ) {
+                    Log.d("PermissionRationale", "Rationale should be shown for permissions: $p0")
+                    // Show a dialog explaining why the app needs these permissions
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Permission Required")
+                        .setMessage("This app requires camera and storage permissions to capture and save photos.")
+                        .setPositiveButton("Grant") { dialog, _ ->
+                            dialog.dismiss()
+                            p1?.continuePermissionRequest()
+                        }
+                        .setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                            p1?.cancelPermissionRequest()
+                        }
+                        .show()
+                }
+
+            }).check()
+    }
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK)
+            if(requestCode == MY_CAMERA_REQUEST_CODE){
+                try {
+                    val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, imageUri)
+                    val fn = mediaHelper.getMyFileName("DLV")
+                    val doc = Document(
+                        fileName = fn,
+                        masterType = "Delivery",
+                        base64String = mediaHelper.bitmapToString(bitmap),
+                        bmp = bitmap,
+                        isNew = "Y"
+                    )
+                    viewModel.addDocument(doc)
+                }
+                catch (e: Exception){
+                    e.printStackTrace()
+                }
+            }
     }
 
 }

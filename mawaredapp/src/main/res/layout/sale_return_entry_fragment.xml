@@ -175,7 +175,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="2dp"
-                    android:enabled="@{viewmodel.allowed_select_prod}"
+
                     android:fontFamily="@font/droid_kufi_regular"
                     android:hint="@string/lbl_ref_no"
                     android:textSize="12sp"

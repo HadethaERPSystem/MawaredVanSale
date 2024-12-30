@@ -2,6 +2,8 @@ package com.mawared.mawaredvansale.controller.mnt.entry
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
@@ -13,15 +15,22 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import com.mawared.mawaredvansale.R
 import com.mawared.mawaredvansale.controller.adapters.*
 import com.mawared.mawaredvansale.controller.base.ScopedFragmentLocation
+import com.mawared.mawaredvansale.controller.sales.delivery.deliveryentry.DeliveryEntryFragment
 import com.mawared.mawaredvansale.controller.sales.invoices.addinvoice.AddInvoiceFragmentArgs
 import com.mawared.mawaredvansale.data.db.entities.dms.Document
 import com.mawared.mawaredvansale.data.db.entities.md.*
@@ -48,12 +57,17 @@ import org.threeten.bp.LocalDate
 
 class MntEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<Mnts>, IMessageListener {
 
+    companion object{
+        var MY_CAMERA_REQUEST_CODE = 7171
+    }
+
     override val kodein by kodein()
     private val factory: MntEntryViewModelFactory by instance()
     private var SCREEN: Int = 0
 
-    var fileName = ""
-    var fileUri = Uri.parse("")
+//    var fileName = ""
+//    var fileUri = Uri.parse("")
+    var imageUri : Uri? = null
     lateinit var mediaHelper: MediaHelper
 
     val viewModel by lazy {
@@ -88,7 +102,7 @@ class MntEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<Mn
             save()
         }
         binding.btnTakePhoto.setOnClickListener {
-            requestPermissions()
+            openCamera()
         }
         return binding.root
     }
@@ -860,35 +874,103 @@ class MntEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigator<Mn
     }
 
 
-    fun requestPermissions() = runWithPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA){
-        try{
-            fileUri = mediaHelper.getOutputMediaFileUri()
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
-            if(intent.resolveActivity(requireActivity().packageManager) != null) {
-                startActivityForResult(intent, mediaHelper.getRcCamera())
-            }
-        }catch (e: Exception){
-            Log.e("Permission", e.message.toString())
-        }
+//    fun requestPermissions() = runWithPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA){
+//        try{
+//            fileUri = mediaHelper.getOutputMediaFileUri()
+//            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
+//            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//            if(intent.resolveActivity(requireActivity().packageManager) != null) {
+//                startActivityForResult(intent, mediaHelper.getRcCamera())
+//            }
+//        }catch (e: Exception){
+//            Log.e("Permission", e.message.toString())
+//        }
+//
+//    }
 
+    private fun openCamera(){
+        Dexter.withContext(requireContext())
+            .withPermissions(listOf(
+                Manifest.permission.CAMERA
+            )
+            ).withListener(object: MultiplePermissionsListener {
+                override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
+                    if(p0!!.areAllPermissionsGranted()){
+                        val values = ContentValues()
+                        values.put(MediaStore.Images.Media.TITLE, "New Picture")
+                        values.put(MediaStore.Images.Media.DESCRIPTION, "From Your Camera")
+                        imageUri = requireActivity().contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                        startActivityForResult(intent, DeliveryEntryFragment.MY_CAMERA_REQUEST_CODE)
+                    }
+                    else{
+                        Toast.makeText(requireActivity(), "You must accept all permission", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?,
+                    p1: PermissionToken?
+                ) {
+                    Log.d("PermissionRationale", "Rationale should be shown for permissions: $p0")
+                    // Show a dialog explaining why the app needs these permissions
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Permission Required")
+                        .setMessage("This app requires camera and storage permissions to capture and save photos.")
+                        .setPositiveButton("Grant") { dialog, _ ->
+                            dialog.dismiss()
+                            p1?.continuePermissionRequest()
+                        }
+                        .setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                            p1?.cancelPermissionRequest()
+                        }
+                        .show()
+                }
+
+            }).check()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK)
-            if(requestCode == mediaHelper.getRcCamera()){
-                val takenImage = BitmapFactory.decodeFile(fileUri.path)
-                //var imstr = mediaHelper.getBitmapToString(imv, fileUri)
-                fileName = mediaHelper.getMyFileName()
-                val doc = Document(
-                    fileName = mediaHelper.getMyFileName(),
-                    masterType = "Maintenance",
-                    base64String = mediaHelper.bitmapToString(takenImage),
-                    bmp = takenImage,
-                    isNew = "Y"
-                )
-                viewModel.addDocument(doc)
+            if(requestCode == DeliveryEntryFragment.MY_CAMERA_REQUEST_CODE){
+                try {
+                    val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, imageUri)
+                    val fn = mediaHelper.getMyFileName("DLV")
+                    val doc = Document(
+                        fileName = fn,
+                        masterType = "Delivery",
+                        base64String = mediaHelper.bitmapToString(bitmap),
+                        bmp = bitmap,
+                        isNew = "Y"
+                    )
+                    viewModel.addDocument(doc)
+                }
+                catch (e: Exception){
+                    e.printStackTrace()
+                }
             }
     }
+//    @Deprecated("Deprecated in Java")
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if(resultCode == Activity.RESULT_OK)
+//            if(requestCode == mediaHelper.getRcCamera()){
+//                val takenImage = BitmapFactory.decodeFile(fileUri.path)
+//                //var imstr = mediaHelper.getBitmapToString(imv, fileUri)
+//                fileName = mediaHelper.getMyFileName()
+//                val doc = Document(
+//                    fileName = mediaHelper.getMyFileName(),
+//                    masterType = "Maintenance",
+//                    base64String = mediaHelper.bitmapToString(takenImage),
+//                    bmp = takenImage,
+//                    isNew = "Y"
+//                )
+//                viewModel.addDocument(doc)
+//            }
+//    }
 }

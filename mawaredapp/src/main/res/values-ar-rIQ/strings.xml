@@ -584,5 +584,6 @@
     <string name="lbl_scanning_result">Result:</string>
     <string name="lbl_waiting_result">...</string>
     <string name="lbl_disc_amnt">خصم مبلغ</string>
+    <string name="btn_delivery_caption">توصيل</string>
 
 </resources>
