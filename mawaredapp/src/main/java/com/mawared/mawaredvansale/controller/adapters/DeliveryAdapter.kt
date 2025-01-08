@@ -31,7 +31,7 @@ class DeliveryAdapter(@LayoutRes private val layoutResource: Int, private val pe
                 val item = it.tag as Delivery
                 clickFunc1(item, "V")
             }
-            editBtn.visibility = if(perm.count() > 0 && perm[1] == "1") View.VISIBLE else View.GONE
+            editBtn.visibility = if(perm.count() > 0 && perm[1] == "1" && item.dl_isDelivered == "W") View.VISIBLE else View.GONE
             editBtn.tag = item
             editBtn.setOnClickListener {
                 @Suppress("NAME_SHADOWING")
