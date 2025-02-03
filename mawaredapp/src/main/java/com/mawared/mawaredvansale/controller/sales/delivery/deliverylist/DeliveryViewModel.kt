@@ -14,7 +14,7 @@ import com.mawared.mawaredvansale.services.repositories.delivery.IDeliveryReposi
 import com.mawared.mawaredvansale.utilities.Coroutines
 
 class DeliveryViewModel(private val repository: IDeliveryRepository) : BaseViewModel() {
-    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else 0
+    private val _sm_id: Int = if(App.prefs.savedSalesman?.sm_user_id != null)  App.prefs.savedSalesman!!.sm_user_id!! else App.prefs.saveUser!!.id
 
     var errorMessage: MutableLiveData<String> = MutableLiveData()
     var term: String? = ""

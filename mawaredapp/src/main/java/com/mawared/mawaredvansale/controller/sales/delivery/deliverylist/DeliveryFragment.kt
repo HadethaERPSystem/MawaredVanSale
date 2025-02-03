@@ -157,8 +157,8 @@ class DeliveryFragment : ScopedFragment(), KodeinAware, SearchView.OnQueryTextLi
     }
 
     fun onItemViewClick(baseEo: Delivery) {
-        val action = InvoicesFragmentDirections.actionInvoicesFragmentToAddInvoiceFragment()
-        action.saleId = baseEo.dl_Id
+        val action = DeliveryFragmentDirections.actionDeliveryFragmentToDeliveryEntryFragment()
+        action.deliveryId = baseEo.dl_Id
         action.mode = "View"
         navController.navigate(action)
     }

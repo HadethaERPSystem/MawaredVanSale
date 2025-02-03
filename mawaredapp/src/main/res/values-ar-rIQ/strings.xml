@@ -216,7 +216,7 @@
     <string name="msg_error_not_available_product_qty">لاتتوفر كمية لهذه المادة لغرض البيع</string>
     <string name="msg_error_not_required_qty_less_product_qty">الكمية المطلوبة اكبر من الكمية المتوفرة</string>
     <string name="msg_error_not_selected_to_delivered">يجب اختيار تجهيز المواد</string>
-
+    <string name="msg_error_no_attachment">يجب ارفاق صورة واحدة على الاقل لتوصيل الفاتورة</string>
     <string name="msg_error_not_load_call_cycle">لم يتم تحميل خط السير للزبون الحالي</string>
     <string name="msg_error_not_select_status">يجب اختيار حالة خط السير</string>
     <string name="msg_error_not_fill_notes">يجب ادخال الملاحظات</string>
@@ -248,8 +248,8 @@
     <string name="lbl_trade_name">الاسم التجاري</string>
     <string name="lbl_english_address">العنوان باللغة الانكليزية</string>
     <string name="lbl_arabic_address">العنوان بالعربي</string>
-    <string name="lbl_mobile_number">رقم الجوال</string>
-    <string name="lbl_phone_number">رقم الهاتف</string>
+    <string name="lbl_mobile_number">الجوال</string>
+    <string name="lbl_phone_number">الهاتف</string>
     <string name="lbl_contact_name">Contact Name</string>
     <string name="lbl_code">الرمز</string>
     <string name="lbl_customer_cat_name">صنف الزبون</string>
@@ -585,5 +585,6 @@
     <string name="lbl_waiting_result">...</string>
     <string name="lbl_disc_amnt">خصم مبلغ</string>
     <string name="btn_delivery_caption">توصيل</string>
+    <string name="lbl_unit_description">وصف الوحدة</string>
 
 </resources>

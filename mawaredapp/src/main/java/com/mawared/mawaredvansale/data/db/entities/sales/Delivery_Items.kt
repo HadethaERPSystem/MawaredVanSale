@@ -30,4 +30,5 @@ data class Delivery_Items(
     var dld_barcode: String? = null
     var dld_part_no: String? = null
     var dld_uom_name: String? = null
+    var dld_uom_desc: String? = null
 }

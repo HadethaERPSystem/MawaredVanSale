@@ -98,6 +98,11 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
             if(viewModel.mode != "Add"){
                 viewModel.dl_id.value = args.deliveryId
             }
+
+            if(viewModel.mode != "Edit"){
+                binding?.btnDelivered?.visibility = View.GONE
+                binding?.btnTakePhoto?.visibility = View.GONE
+            }
         }
     }
 
@@ -187,8 +192,12 @@ class DeliveryEntryFragment : ScopedFragmentLocation(), KodeinAware, IAddNavigat
                 viewModel._entityEo = it
                 viewModel._entityEo?.DocLines = arrayListOf()
                 viewModel.dl_doc_date.value = viewModel.returnDateString(it.dl_doc_date!!)
-                viewModel.dl_refNo.value = it.dl_doc_no.toString()
+                viewModel.dl_refNo.value = it.dl_refNo
                 viewModel.dl_customer_name.value = it.dl_customer_name
+                viewModel.dl_cu_phone.value = it.dl_cu_phone
+                viewModel.dl_region.value = it.dl_region_name
+                viewModel.dl_net_amount.value = it.dl_net_amount
+
                 viewModel.setItems(it.items)
             }
         })

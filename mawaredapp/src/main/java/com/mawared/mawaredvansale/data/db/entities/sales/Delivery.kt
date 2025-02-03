@@ -37,6 +37,7 @@ data class Delivery(
     var dl_customer_name: String?  = null
     var dl_salesman_name: String? = null
     var dl_region_name: String? = null
+    var dl_cu_phone: String? = null
     @Ignore
     var DocLines: ArrayList<Document> = arrayListOf()
 }

@@ -36,60 +36,208 @@
 
                 <!-- Invoice no label and data-->
                 <TextView
-                        android:id="@+id/sale_doc_no"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:gravity="center"
-                        android:hint="@string/lbl_doc_no"
-                        android:padding="8dp"
-                        android:text="@={viewmodel.dl_refNo}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toStartOf="@+id/etxt_date"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:id="@+id/atc_refNo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_ref_doc_no"
+                    android:padding="4dp"
+                    android:textAlignment="viewStart"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline34"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/sale_doc_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:enabled="false"
+                    android:gravity="start"
+                    android:hint="@string/lbl_doc_no"
+                    android:padding="8dp"
+                    android:text="@={viewmodel.dl_refNo}"
+                    android:textAlignment="viewStart"
+                    android:textColor="@android:color/black"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/etxt_date"
+                    app:layout_constraintStart_toStartOf="@+id/guideline34"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <!-- Invoice date label and data-->
                 <TextView
-                        android:id="@+id/etxt_date"
-                        android:layout_width="130dp"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:hint="@string/lbl_doc_date"
-                        android:text="@{viewmodel.dl_doc_date}"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:id="@+id/etxt_date"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:gravity="start"
+                    android:textAlignment="viewStart"
+                    android:padding="8dp"
+                    android:hint="@string/lbl_doc_date"
+                    android:text="@{viewmodel.dl_doc_date}"
+                    android:textColor="@android:color/black"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <!-- Customer Info -->
                 <TextView
-                        android:id="@+id/atc_customer"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:fontFamily="@font/droid_kufi_regular"
-                        android:gravity="start"
-                        android:padding="8dp"
-                        android:hint="@string/lbl_customer_name"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/sale_doc_no" />
+                    android:id="@+id/atc_customer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:hint="@string/lbl_customer_name"
+                    android:padding="4dp"
+                    android:textAlignment="viewStart"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline34"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_refNo" />
+
+                <TextView
+                    android:id="@+id/customer_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:textAlignment="viewStart"
+                    android:padding="4dp"
+                    android:text="@{viewmodel.dl_customer_name}"
+                    android:textColor="@android:color/black"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline34"
+                    app:layout_constraintTop_toTopOf="@+id/atc_customer" />
+                <!-- Phone number -->
+                <TextView
+                    android:id="@+id/atc_phone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:textAlignment="viewStart"
+                    android:hint="@string/lbl_phone_number"
+                    android:padding="4dp"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline34"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+
+                <TextView
+                    android:id="@+id/phone_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:textAlignment="viewStart"
+                    android:gravity="start"
+                    android:padding="4dp"
+                    android:text="@{viewmodel.dl_cu_phone}"
+                    android:textColor="@android:color/black"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline34"
+                    app:layout_constraintTop_toTopOf="@+id/atc_phone" />
+                <!-- Region name -->
+                <TextView
+                    android:id="@+id/atc_region"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:textAlignment="viewStart"
+                    android:hint="@string/lbl_region_name"
+                    android:padding="4dp"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline34"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_phone" />
+
+                <TextView
+                    android:id="@+id/region_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:textAlignment="viewStart"
+                    android:gravity="start"
+                    android:padding="4dp"
+                    android:text="@{viewmodel.dl_region}"
+                    android:textColor="@android:color/black"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline34"
+                    app:layout_constraintTop_toTopOf="@+id/atc_region" />
+
+                <!-- Net Amount -->
+                <TextView
+                    android:id="@+id/atc_net_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:gravity="start"
+                    android:textAlignment="viewStart"
+                    android:hint="@string/lbl_net_amount"
+                    android:padding="4dp"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline34"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/atc_region" />
+
+                <TextView
+                    android:id="@+id/lbl_net_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/droid_kufi_regular"
+                    android:textAlignment="viewStart"
+                    android:gravity="start"
+                    android:padding="4dp"
+                    android:text="@{viewmodel.numberFormat(viewmodel.dl_net_amount)}"
+                    android:textColor="@android:color/black"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline34"
+                    app:layout_constraintTop_toTopOf="@+id/atc_net_amount" />
                 <!-- Image button for add item -->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_delivered"
                     android:layout_width="110dp"
                     android:layout_height="30dp"
-                    android:text="@string/btn_delivery_caption"
+                    android:layout_marginTop="4dp"
                     android:background="@drawable/custom_blue_button"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
                     android:contentDescription="@string/btn_add_item_caption"
                     android:onClick="@{()-> viewmodel.onClickDelivered()}"
+                    android:text="@string/btn_delivery_caption"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/atc_customer" />
+                    app:layout_constraintTop_toBottomOf="@+id/atc_net_amount" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_takePhoto"
@@ -106,6 +254,13 @@
                     app:layout_constraintStart_toEndOf="@+id/btn_delivered"
                     app:layout_constraintTop_toTopOf="@+id/btn_delivered"
                     tools:ignore="TouchTargetSizeCheck" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline34"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.24" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.card.MaterialCardView>

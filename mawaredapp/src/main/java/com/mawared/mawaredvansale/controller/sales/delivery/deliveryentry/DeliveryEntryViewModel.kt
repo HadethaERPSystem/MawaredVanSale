@@ -35,6 +35,10 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
     var dl_doc_date: MutableLiveData<String> = MutableLiveData()
     var dl_refNo: MutableLiveData<String> = MutableLiveData()
     var dl_customer_name: MutableLiveData<String> = MutableLiveData()
+    var dl_cu_phone: MutableLiveData<String> = MutableLiveData()
+    var dl_region: MutableLiveData<String> = MutableLiveData()
+    var dl_net_amount: MutableLiveData<Double> = MutableLiveData()
+
     var isDelivered: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val _baseEo: MutableLiveData<Delivery> = MutableLiveData()
@@ -116,6 +120,9 @@ class DeliveryEntryViewModel(private val repository: IDeliveryRepository,
             msg =  resources!!.getString(R.string.msg_error_not_selected_to_delivered)
         }
 
+        if(tmpDocLines.count() == 0){
+            msg +=  resources!!.getString(R.string.msg_error_no_attachment)
+        }
         if (!msg.isNullOrEmpty()) {
             isSuccess = false
             msgListener?.onFailure(msg)

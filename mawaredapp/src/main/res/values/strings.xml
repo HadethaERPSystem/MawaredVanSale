@@ -89,7 +89,7 @@
     <string name="lbl_salesman_no">Salesman No</string>
     <string name="lbl_customer_name_en">Customer English Name</string>
     <string name="lbl_customer_name_ar">Customer Arabic Name</string>
-    <string name="lbl_region_name">Region Name</string>
+    <string name="lbl_region_name">Region</string>
     <string name="lbl_count_items">Items count</string>
     <string name="btn_view_caption">View</string>
     <string name="btn_edit_caption">Edit</string>
@@ -211,6 +211,7 @@
     <string name="msg_error_not_available_product_qty">Not available quantity for this item</string>
     <string name="msg_error_not_required_qty_less_product_qty">Required quantity greater than for available quantity</string>
     <string name="msg_error_not_selected_to_delivered">You should press delivery button to select all items to be delivered</string>
+    <string name="msg_error_no_attachment">You should Attach at least one photo</string>
     <string name="msg_error_not_load_call_cycle">Current Call Cycle not loaded correctly </string>
     <string name="msg_error_not_select_status">Should select status for this call cycle</string>
     <string name="msg_error_not_fill_notes">Should fill notes for this call cycle</string>
@@ -244,8 +245,8 @@
     <string name="lbl_trade_name">Trade Name</string>
     <string name="lbl_english_address">English Address</string>
     <string name="lbl_arabic_address">Arabic Address</string>
-    <string name="lbl_mobile_number">Mobile Number</string>
-    <string name="lbl_phone_number">Phone Number</string>
+    <string name="lbl_mobile_number">Mobile</string>
+    <string name="lbl_phone_number">Phone</string>
     <string name="lbl_contact_name">Contact Name</string>
     <string name="lbl_code">Code</string>
     <string name="lbl_customer_cat_name">Customer Category</string>
@@ -581,5 +582,6 @@
     <string name="lbl_waiting_result">...</string>
     <string name="lbl_disc_amnt">Disc Amount</string>
     <string name="btn_delivery_caption">Delivery</string>
+    <string name="lbl_unit_description">Unit Description</string>
 
 </resources>
